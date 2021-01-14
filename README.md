@@ -1,24 +1,9 @@
-# latest-vue
+README pipecraft-vue
 
-## Project setup
-```
-yarn install
-```
+Development Setup:
 
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
-
-### Compiles and minifies for production
-```
-yarn build
-```
-
-### Lints and fixes files
-```
-yarn lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+npm install vue
+npm install -g @vue/cli
+npm install -g @vue/devtools
+vue ui manual setup (include vuex router and vuetify)
+vue add electron-builder

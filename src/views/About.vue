@@ -1,5 +1,6 @@
 <template>
   <div class="about">
-    <h1>This is an about page</h1>
+    <h1>rank</h1>
+    <h1>step</h1>
   </div>
 </template>
