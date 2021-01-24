@@ -1,6 +1,7 @@
 <template>
   <div class="about">
-    <h1>rank</h1>
-    <h1>step</h1>
+    <!-- <span>{{ this.$route.params }}</span>
+    <span>{{ $attrs.newsletterPopup }}</span> -->
+    <span>yo</span>
   </div>
 </template>

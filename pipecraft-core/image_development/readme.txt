@@ -20,3 +20,5 @@ qiime2/core:2020.8 ===> pipecraft/qiime2:2020.8.0
 virusx/mmseqs2:4e96669bc ===> edit and build ===> pipecraft/mmseqs2:12
 tbattaglia/kraken2:latest ===> edit and build ===> pipecraft/kraken2:2.1.1
 pegi3s/seqkit:0.12.1 ===> edit and build ===> pipecraft/seqkit:0.15.0
+flowcraft/krona:2.7-1 ===> pipecraft/krona:2.7.1
+florianbw/pavian:latest ===> pipecraft/pavian:0.1.3

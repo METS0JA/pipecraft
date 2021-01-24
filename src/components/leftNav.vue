@@ -12,6 +12,7 @@
     </v-list-item>
     <RouteButtons />
     <v-divider></v-divider>
+    <SelectedRoutes />
   </v-list>
 </template>
 
@@ -19,10 +20,11 @@
 import AddMenu from "./AddMenu.vue";
 import RouteButtons from "./RouteButtons";
 import RunButton from "./RunButton";
+import SelectedRoutes from "./SelectedRoutes";
 
 export default {
   name: "leftNav",
-  components: { AddMenu, RouteButtons, RunButton },
+  components: { AddMenu, RouteButtons, RunButton, SelectedRoutes },
   data() {
     return {
       items: [

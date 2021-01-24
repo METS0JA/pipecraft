@@ -1,21 +1,17 @@
 import Vue from "vue";
 import Vuex from "vuex";
+var _ = require("lodash");
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
     env_variables: ["FOO=bar", "BAZ=quux"],
-    icon: "mdi-docker",
-    test1: [],
-    leftNav: [
-      { title: "Home", icon: "mdi-view-dashboard" },
-      { title: "About", icon: "mdi-forum" },
-    ],
-    selectedSteps: [
+    selectedSteps: [],
+    steps: [
       {
-        stepName: "x",
-        serviceName: "y",
+        stepName: "demultiplex",
+        order: null,
         numericInputs: [
           { name: "param1", value: 10, tooltip: "yo" },
           { name: "param2", value: 1, tooltip: "yo mees" },
@@ -38,8 +34,8 @@ export default new Vuex.Store({
         ],
       },
       {
-        stepName: "x",
-        serviceName: "y",
+        stepName: "remove adapters",
+        order: null,
         numericInputs: [
           { name: "param1", value: 10, tooltip: "yo" },
           { name: "param2", value: 1, tooltip: "yo mees" },
@@ -62,8 +58,8 @@ export default new Vuex.Store({
         ],
       },
       {
-        stepName: "x",
-        serviceName: "y",
+        stepName: "quality filter",
+        order: null,
         numericInputs: [
           { name: "param1", value: 10, tooltip: "yo" },
           { name: "param2", value: 1, tooltip: "yo mees" },
@@ -86,8 +82,8 @@ export default new Vuex.Store({
         ],
       },
       {
-        stepName: "x",
-        serviceName: "y",
+        stepName: "assemble paired-end",
+        order: null,
         numericInputs: [
           { name: "param1", value: 10, tooltip: "yo" },
           { name: "param2", value: 1, tooltip: "yo mees" },
@@ -110,8 +106,8 @@ export default new Vuex.Store({
         ],
       },
       {
-        stepName: "x",
-        serviceName: "y",
+        stepName: "gene extraction",
+        order: null,
         numericInputs: [
           { name: "param1", value: 10, tooltip: "yo" },
           { name: "param2", value: 1, tooltip: "yo mees" },
@@ -134,8 +130,8 @@ export default new Vuex.Store({
         ],
       },
       {
-        stepName: "x",
-        serviceName: "y",
+        stepName: "cluster",
+        order: null,
         numericInputs: [
           { name: "param1", value: 10, tooltip: "yo" },
           { name: "param2", value: 1, tooltip: "yo mees" },
@@ -158,8 +154,8 @@ export default new Vuex.Store({
         ],
       },
       {
-        stepName: "z",
-        serviceName: "y",
+        stepName: "assing taxonomy",
+        order: null,
         numericInputs: [
           { name: "param1", value: 10, tooltip: "yo" },
           { name: "param2", value: 1, tooltip: "yo mees" },
@@ -182,78 +178,19 @@ export default new Vuex.Store({
         ],
       },
     ],
-    qualityFilter: {
-      selected: "",
-      services: [
-        {
-          name: "vsearch",
-          selected: false,
-          numericInputs: [
-            { title: "fastq_maxee", tooltip: "tere", value: 1 },
-            { title: "fastq_maxns", tooltip: "tere", value: 1 },
-            { title: "fastq_minlen", tooltip: "tere", value: 1 },
-            { title: "fastq_maxlen", tooltip: "tere", value: 1 },
-            { title: "fastq_truncqual", tooltip: "tere", value: 1 },
-            { title: "fastq_maxee_rate", tooltip: "tere", value: 1 },
-            { title: "fastq_qmin", tooltip: "tere", value: 1 },
-          ],
-        },
-        {
-          name: "mothur",
-          selected: false,
-          numericInputs: [
-            { title: "", tooltip: "", value: 1 },
-            { title: "", tooltip: "", value: 1 },
-            { title: "", tooltip: "", value: 1 },
-            { title: "", tooltip: "", value: 1 },
-            { title: "", tooltip: "", value: 1 },
-            { title: "", tooltip: "", value: 1 },
-            { title: "", tooltip: "", value: 1 },
-          ],
-        },
-        {
-          name: "dada2",
-          selected: false,
-          numericInputs: [
-            { title: "", tooltip: "", value: 1 },
-            { title: "", tooltip: "", value: 1 },
-            { title: "", tooltip: "", value: 1 },
-            { title: "", tooltip: "", value: 1 },
-            { title: "", tooltip: "", value: 1 },
-            { title: "", tooltip: "", value: 1 },
-            { title: "", tooltip: "", value: 1 },
-          ],
-        },
-        {
-          name: "userach",
-          selected: false,
-          numericInputs: [
-            { title: "", tooltip: "", value: 1 },
-            { title: "", tooltip: "", value: 1 },
-            { title: "", tooltip: "", value: 1 },
-            { title: "", tooltip: "", value: 1 },
-            { title: "", tooltip: "", value: 1 },
-            { title: "", tooltip: "", value: 1 },
-            { title: "", tooltip: "", value: 1 },
-          ],
-        },
-        {
-          name: "trimmomatic",
-          selected: false,
-          numericInputs: [
-            { title: "", tooltip: "", value: 1 },
-            { title: "", tooltip: "", value: 1 },
-            { title: "", tooltip: "", value: 1 },
-            { title: "", tooltip: "", value: 1 },
-            { title: "", tooltip: "", value: 1 },
-            { title: "", tooltip: "", value: 1 },
-            { title: "", tooltip: "", value: 1 },
-          ],
-        },
-      ],
+  },
+  mutations: {
+    removeStep(state) {
+      state.test1.push("Kiwi");
+    },
+    addStep(state, payload) {
+      let step = _.cloneDeep(payload.step);
+      // console.log(payload.order);
+      // console.log(step);
+      step.order = payload.order;
+      state.selectedSteps.push(step);
     },
   },
-  mutations: {},
   actions: {},
   modules: {},
 });

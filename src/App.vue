@@ -2,7 +2,7 @@
   <v-app>
     <v-navigation-drawer app clipped width="250" permanent dark>
       <leftNav />
-      <SelectedRoutes />
+      <!-- <SelectedRoutes /> -->
     </v-navigation-drawer>
 
     <v-navigation-drawer app clipped right permanent width="70" dark>
@@ -10,7 +10,7 @@
     </v-navigation-drawer>
 
     <v-main>
-      <SelectedRoutes />
+      <router-view />
     </v-main>
   </v-app>
 </template>
@@ -19,7 +19,7 @@
 // import HelloWorld from "./components/HelloWorld";
 import leftNav from "./components/leftNav";
 import rightNav from "./components/rightNav";
-import SelectedRoutes from "./components/SelectedRoutes";
+// import SelectedRoutes from "./components/SelectedRoutes";
 
 export default {
   theme: { dark: true },
@@ -29,7 +29,7 @@ export default {
     // HelloWorld,
     leftNav,
     rightNav,
-    SelectedRoutes,
+    // SelectedRoutes,
   },
 
   data: () => ({

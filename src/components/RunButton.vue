@@ -45,4 +45,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+.v-btn {
+  justify-content: center;
+}
+</style>
