@@ -46,6 +46,7 @@ export default {
     },
     removeAt(index) {
       this.selectedSteps.splice(index, 1);
+      // router.removeRoute('about')
     },
   },
   computed: {

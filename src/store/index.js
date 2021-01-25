@@ -185,8 +185,8 @@ export default new Vuex.Store({
     },
     addStep(state, payload) {
       let step = _.cloneDeep(payload.step);
-      // console.log(payload.order);
-      // console.log(step);
+      console.log(payload.order);
+      console.log(step);
       step.order = payload.order;
       state.selectedSteps.push(step);
     },
