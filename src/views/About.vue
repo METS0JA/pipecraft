@@ -5,12 +5,7 @@
         <v-expansion-panel-header>Item</v-expansion-panel-header>
         <v-expansion-panel-content>
           <div class="about">
-            <span @click="testAttrs($attrs.stepName)">{{
-              $attrs.stepName
-            }}</span>
-            <span @click="testAttrs($attrs.stepOrder)">{{
-              $attrs.stepOrder
-            }}</span>
+            <span @click="testAttrs()">{{ stepData.stepName }}</span>
           </div>
         </v-expansion-panel-content>
       </v-expansion-panel>
@@ -19,29 +14,32 @@
 </template>
 
 <script>
+// import SelectedRoutes from "../components/SelectedRoutes";
 export default {
   name: "AddMenu",
-  data: () => ({
-    items2: [],
-  }),
+  components: {
+    // SelectedRoutes,
+  },
+  data: () => ({}),
   computed: {
     selectedSteps() {
       return this.$store.state.selectedSteps;
     },
+    stepData() {
+      return this.$store.state.selectedSteps.find(
+        (selectedStep) => selectedStep.route === this.$attrs.route,
+      );
+    },
   },
   methods: {
-    addStep(item) {
-      this.$store.commit("addStep", {
-        step: item,
-        order: this.nrOfSelectedSteps,
-      });
+    selectService() {
+      this.$store.commit("selectService");
     },
-    testAttrs(attr) {
-      console.log(attr);
+    testAttrs() {
+      console.log(this.stepData);
     },
   },
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

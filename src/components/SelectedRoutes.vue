@@ -1,21 +1,19 @@
 <template>
   <draggable
     class="list-group"
-    tag="ul"
-    v-bind="dragOptions"
-    :move="onMove"
-    @start="isDragging = true"
-    @end="isDragging = false"
+    v-model="selectedSteps"
+    @start="drag = true"
+    @end="drag = false"
   >
     <transition-group type="transition" :name="'flip-list'">
       <li
-        class="list-group-item"
         v-for="(element, index) in selectedSteps"
-        :key="element.order"
+        class="list-group-item"
+        :key="element.route"
       >
-        <v-btn block color="grey">
+        <v-btn block color="grey" @click="push2route(element.route)">
           {{ element.stepName }}
-          <v-icon @click="removeAt(index)">mdi-close-box</v-icon>
+          <v-icon @click="removeAt(index, element.route)">mdi-close-box</v-icon>
         </v-btn>
       </li>
     </transition-group>
@@ -23,55 +21,36 @@
 </template>
 
 <script>
+// import About from "../views/About";
 import draggable from "vuedraggable";
 export default {
-  name: "SelectedRoutes",
   components: {
     draggable,
   },
-  data() {
-    return {
-      editable: true,
-      isDragging: false,
-      delayedDragging: false,
-    };
+  computed: {
+    selectedSteps: {
+      get() {
+        return this.$store.state.selectedSteps;
+      },
+      set(value) {
+        this.$store.commit("DraggableUpdate", value);
+      },
+    },
   },
   methods: {
-    onMove({ relatedContext, draggedContext }) {
-      const relatedElement = relatedContext.element;
-      const draggedElement = draggedContext.element;
-      return (
-        (!relatedElement || !relatedElement.fixed) && !draggedElement.fixed
-      );
+    removeAt(index, route) {
+      console.log(route);
+      this.$store.commit("removeStep", index);
     },
-    removeAt(index) {
-      this.selectedSteps.splice(index, 1);
-      // router.removeRoute('about')
-    },
-  },
-  computed: {
-    selectedSteps() {
-      return this.$store.state.selectedSteps;
-    },
-    dragOptions() {
-      return {
-        animation: 0,
-        group: "description",
-        disabled: !this.editable,
-        ghostClass: "ghost",
-      };
-    },
-  },
-  watch: {
-    isDragging(newValue) {
-      if (newValue) {
-        this.delayedDragging = true;
-        return;
+    push2route(route) {
+      if (this.$route.path != route) {
+        this.$router.push(route);
       }
-      this.$nextTick(() => {
-        this.delayedDragging = false;
-      });
     },
+    // removeRoute: function(index, route) {
+    //   console.log(route, index);
+    //   this.$router.removeRoute("midaiganes");
+    // },
   },
 };
 </script>

@@ -14,9 +14,7 @@
           @click="addRoute(item, nrOfSelectedSteps)"
         >
           <v-list-item-title>{{ item.stepName }}</v-list-item-title>
-          <v-icon 
-            >mdi-plus-box</v-icon
-          >
+          <v-icon>mdi-plus-box</v-icon>
         </v-list-item>
       </v-list>
     </v-menu>
@@ -40,21 +38,26 @@ export default {
   }),
   methods: {
     addRoute: function(item, nrOfSelectedSteps) {
+      let route = `/${item.stepName}/${nrOfSelectedSteps}`.replace(/\s/g, "");
       this.$router.addRoutes([
         {
-          path: `/${item.stepName}/${nrOfSelectedSteps}`,
+          path: route,
           component: About,
-          props: { stepName: item.stepName, stepOrder: nrOfSelectedSteps },
+          props: {
+            route: route,
+          },
         },
       ]);
-      this.$router.push(`/${item.stepName}/${nrOfSelectedSteps}`);
-      console.log(item.stepName, nrOfSelectedSteps);
-        this.addStep(item)
+      if (this.$route.path != route) {
+        this.$router.push(route);
+      }
+      this.addStep(item, nrOfSelectedSteps);
     },
-    addStep(item) {
+    addStep(item, nrOfSelectedSteps) {
+      let route = `/${item.stepName}/${nrOfSelectedSteps}`.replace(/\s/g, "");
       this.$store.commit("addStep", {
         step: item,
-        order: this.nrOfSelectedSteps,
+        route: route,
       });
     },
   },
