@@ -11,7 +11,7 @@
           link
           v-for="item in items"
           v-bind:key="item.stepName"
-          @click="addRoute(item, nrOfSelectedSteps)"
+          @click="addStep(item, nrOfSelectedSteps)"
         >
           <v-list-item-title>{{ item.stepName }}</v-list-item-title>
           <v-icon>mdi-plus-box</v-icon>
@@ -54,7 +54,10 @@ export default {
       this.addStep(item, nrOfSelectedSteps);
     },
     addStep(item, nrOfSelectedSteps) {
-      let route = `/${item.stepName}/${nrOfSelectedSteps}`.replace(/\s/g, "");
+      let route = `/step/${item.stepName}/${nrOfSelectedSteps}`.replace(
+        /\s/g,
+        "",
+      );
       this.$store.commit("addStep", {
         step: item,
         route: route,

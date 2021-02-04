@@ -39,12 +39,30 @@ export default {
   },
   methods: {
     removeAt(index, route) {
-      console.log(route);
       this.$store.commit("removeStep", index);
+      console.log(index, this.selectedSteps.length);
+      if (this.$route.path == route && index > 0) {
+        let prevStep = index - 1;
+        let prevRoute = `${this.selectedSteps[prevStep].route}`;
+        this.$router.push(prevRoute);
+      } else if ((index = 0 && this.selectedSteps.length > 0)) {
+        let nextRoute = `${this.selectedSteps[index].route}`;
+        this.$router.push(nextRoute);
+      } else {
+        if (this.$route.path != "/home") {
+          this.$router.push("/home");
+        }
+      }
     },
     push2route(route) {
       if (this.$route.path != route) {
         this.$router.push(route);
+      }
+    },
+    push2routeTEST(route) {
+      let routeTEST = `/step${route}`;
+      if (this.$route.path != routeTEST) {
+        this.$router.push(routeTEST);
       }
     },
     // removeRoute: function(index, route) {
