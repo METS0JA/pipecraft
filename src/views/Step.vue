@@ -2,6 +2,7 @@
   <div class="home">
     <span>{{ $route.params.stepName }}</span>
     <span>{{ $route.params.order }}</span>
+    <span>{{ $route.params.order }}</span>
   </div>
 </template>
 

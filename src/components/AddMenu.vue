@@ -22,8 +22,6 @@
 </template>
 
 <script>
-// import { component } from "vue/types/umd";
-import About from "../views/About";
 import { mapState } from "vuex";
 
 export default {
@@ -37,30 +35,9 @@ export default {
     nrOfSelectedSteps: (state) => state.selectedSteps.length + 1,
   }),
   methods: {
-    addRoute: function(item, nrOfSelectedSteps) {
-      let route = `/${item.stepName}/${nrOfSelectedSteps}`.replace(/\s/g, "");
-      this.$router.addRoutes([
-        {
-          path: route,
-          component: About,
-          props: {
-            route: route,
-          },
-        },
-      ]);
-      if (this.$route.path != route) {
-        this.$router.push(route);
-      }
-      this.addStep(item, nrOfSelectedSteps);
-    },
-    addStep(item, nrOfSelectedSteps) {
-      let route = `/step/${item.stepName}/${nrOfSelectedSteps}`.replace(
-        /\s/g,
-        "",
-      );
+    addStep(item) {
       this.$store.commit("addStep", {
         step: item,
-        route: route,
       });
     },
   },

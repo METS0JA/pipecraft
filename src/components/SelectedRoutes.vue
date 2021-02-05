@@ -9,11 +9,11 @@
       <li
         v-for="(element, index) in selectedSteps"
         class="list-group-item"
-        :key="element.route"
+        :key="index"
       >
-        <v-btn block color="grey" @click="push2route(element.route)">
+        <v-btn block color="grey" @click="push2route(element.stepName, index)">
           {{ element.stepName }}
-          <v-icon @click="removeAt(index, element.route)">mdi-close-box</v-icon>
+          <v-icon @click="removeAt(index)">mdi-close-box</v-icon>
         </v-btn>
       </li>
     </transition-group>
@@ -38,23 +38,15 @@ export default {
     },
   },
   methods: {
-    removeAt(index, route) {
+    removeAt(index) {
       this.$store.commit("removeStep", index);
       console.log(index, this.selectedSteps.length);
-      if (this.$route.path == route && index > 0) {
-        let prevStep = index - 1;
-        let prevRoute = `${this.selectedSteps[prevStep].route}`;
-        this.$router.push(prevRoute);
-      } else if ((index = 0 && this.selectedSteps.length > 0)) {
-        let nextRoute = `${this.selectedSteps[index].route}`;
-        this.$router.push(nextRoute);
-      } else {
         if (this.$route.path != "/home") {
           this.$router.push("/home");
         }
-      }
     },
-    push2route(route) {
+    push2route(stepName, index) {
+      let route = `/step/${stepName}/${index}`
       if (this.$route.path != route) {
         this.$router.push(route);
       }

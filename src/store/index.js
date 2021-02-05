@@ -258,9 +258,6 @@ export default new Vuex.Store({
     },
     addStep(state, payload) {
       let step = _.cloneDeep(payload.step);
-      console.log(payload.route);
-      console.log(step);
-      step.route = payload.route;
       state.selectedSteps.push(step);
     },
     DraggableUpdate(state, value) {
