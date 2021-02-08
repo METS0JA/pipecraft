@@ -9,7 +9,7 @@
       <rightNav />
     </v-navigation-drawer>
 
-    <v-main>
+    <v-main style="background-color:#9e9e9e">
       <router-view />
     </v-main>
   </v-app>

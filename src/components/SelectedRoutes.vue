@@ -3,7 +3,7 @@
     class="list-group"
     v-model="selectedSteps"
     @start="drag = true"
-    @end="drag = false"
+    @end="push2routeOnEnd($event), (drag = false)"
   >
     <transition-group type="transition" :name="'flip-list'">
       <li
@@ -13,7 +13,7 @@
       >
         <v-btn block color="grey" @click="push2route(element.stepName, index)">
           {{ element.stepName }}
-          <v-icon @click="removeAt(index)">mdi-close-box</v-icon>
+          <v-icon @click.stop="removeAt(index)">mdi-close-box</v-icon>
         </v-btn>
       </li>
     </transition-group>
@@ -40,27 +40,24 @@ export default {
   methods: {
     removeAt(index) {
       this.$store.commit("removeStep", index);
-      console.log(index, this.selectedSteps.length);
-        if (this.$route.path != "/home") {
-          this.$router.push("/home");
-        }
+      if (this.$route.path != "/home") {
+        this.$router.push("/home");
+      }
     },
     push2route(stepName, index) {
-      let route = `/step/${stepName}/${index}`
+      let route = `/step/${stepName}/${index}`;
       if (this.$route.path != route) {
         this.$router.push(route);
       }
     },
-    push2routeTEST(route) {
-      let routeTEST = `/step${route}`;
-      if (this.$route.path != routeTEST) {
-        this.$router.push(routeTEST);
+    push2routeOnEnd(value) {
+      let route = `/step/${this.selectedSteps[value.newIndex].stepName}/${
+        value.newIndex
+      }`;
+      if (this.$route.path != route) {
+        this.$router.push(route);
       }
     },
-    // removeRoute: function(index, route) {
-    //   console.log(route, index);
-    //   this.$router.removeRoute("midaiganes");
-    // },
   },
 };
 </script>

@@ -13,15 +13,16 @@
         background-color="transparent"
         :rules="numberRules"
         solo
-      ></v-text-field> </v-col
-  ></v-row>
+      ></v-text-field>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
 export default {
   name: "TextField",
   data: () => ({
-    numberRules: [v => isNaN(v) != true]
-  })
+    numberRules: [(v) => isNaN(v) != true],
+  }),
 };
 </script>

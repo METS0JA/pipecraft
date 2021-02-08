@@ -12,4 +12,10 @@ new Vue({
   store,
   vuetify,
   render: (h) => h(App),
+  created() {
+    // Prevent blank screen in Electron builds
+    if (this.$route.path != "/home") {
+      this.$router.push("/home");
+    }
+  },
 }).$mount("#app");

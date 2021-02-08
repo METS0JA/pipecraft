@@ -15,29 +15,27 @@ export default new Vuex.Store({
         route: "",
         services: [
           {
-            mothur: [
-              {
-                selected: false,
-                description: "",
-                inputs: [
-                  { name: "param1", value: 10, tooltip: "yo" },
-                  { name: "param2", value: 1, tooltip: "yo mees" },
-                  { name: "param3", value: true, tooltip: "cya" },
-                  { name: "param4", value: false, tooltip: "tere" },
-                ],
-              },
+            serviceName: "mothur",
+            selected: null,
+            numericInputs: [
+              { name: "param1", value: 10, tooltip: "yo" },
+              { name: "param2", value: 1, tooltip: "yo mees" },
             ],
-            cutadapt: [
-              {
-                selected: false,
-                description: "",
-                inputs: [
-                  { name: "param1", value: 10, tooltip: "yo" },
-                  { name: "param2", value: 1, tooltip: "yo mees" },
-                  { name: "param3", value: true, tooltip: "cya" },
-                  { name: "param4", value: false, tooltip: "tere" },
-                ],
-              },
+            booleanInputs: [
+              { name: "param3", value: true, tooltip: "cya" },
+              { name: "param4", value: false, tooltip: "tere" },
+            ],
+          },
+          {
+            serviceName: "cutadapt",
+            selected: null,
+            numericInputs: [
+              { name: "param1", value: 10, tooltip: "yo" },
+              { name: "param2", value: 1, tooltip: "yo mees" },
+            ],
+            booleanInputs: [
+              { name: "param3", value: true, tooltip: "cya" },
+              { name: "param4", value: false, tooltip: "tere" },
             ],
           },
         ],
