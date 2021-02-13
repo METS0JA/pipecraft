@@ -18,24 +18,24 @@ export default new Vuex.Store({
             serviceName: "mothur",
             selected: null,
             numericInputs: [
-              { name: "param1", value: 10, tooltip: "yo" },
-              { name: "param2", value: 1, tooltip: "yo mees" },
+              { name: "mothur_param1", value: 1, tooltip: "yo" },
+              { name: "mothur_param2", value: 2, tooltip: "yo mees" },
             ],
             booleanInputs: [
-              { name: "param3", value: true, tooltip: "cya" },
-              { name: "param4", value: false, tooltip: "tere" },
+              { name: "mothur_param3", value: true, tooltip: "cya" },
+              { name: "mothur_param4", value: true, tooltip: "tere" },
             ],
           },
           {
             serviceName: "cutadapt",
             selected: null,
             numericInputs: [
-              { name: "param1", value: 10, tooltip: "yo" },
-              { name: "param2", value: 1, tooltip: "yo mees" },
+              { name: "cutadapt_param1", value: 3, tooltip: "yo" },
+              { name: "cutadapt_param2", value: 4, tooltip: "yo mees" },
             ],
             booleanInputs: [
-              { name: "param3", value: true, tooltip: "cya" },
-              { name: "param4", value: false, tooltip: "tere" },
+              { name: "cutadapt_param3", value: false, tooltip: "cya" },
+              { name: "cutadapt_param4", value: false, tooltip: "tere" },
             ],
           },
         ],
@@ -250,6 +250,7 @@ export default new Vuex.Store({
       },
     ],
   },
+  getters: {},
   mutations: {
     removeStep(state, index) {
       state.selectedSteps.splice(index, 1);
@@ -259,7 +260,13 @@ export default new Vuex.Store({
       state.selectedSteps.push(step);
     },
     DraggableUpdate(state, value) {
+      console.log(value);
       state.selectedSteps = value;
+    },
+    serviceInputUpdate(state, payload) {
+      console.log(payload.text);
+      console.log(payload.value);
+      console.log(state);
     },
   },
   actions: {},

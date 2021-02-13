@@ -5,6 +5,7 @@ import store from "./store";
 import vuetify from "./plugins/vuetify";
 import Sortable from "vue-sortable";
 Vue.config.productionTip = false;
+Vue.prototype.$test = 0;
 
 new Vue({
   router,
