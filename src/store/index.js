@@ -16,7 +16,7 @@ export default new Vuex.Store({
         services: [
           {
             serviceName: "mothur",
-            selected: null,
+            selected: false,
             numericInputs: [
               { name: "mothur_param1", value: 1, tooltip: "yo" },
               { name: "mothur_param2", value: 2, tooltip: "yo mees" },
@@ -25,10 +25,27 @@ export default new Vuex.Store({
               { name: "mothur_param3", value: true, tooltip: "cya" },
               { name: "mothur_param4", value: true, tooltip: "tere" },
             ],
+            selectInputs: [
+              {
+                name: "mothur_param5",
+                value: ["16S", "ITS", "18S"],
+                tooltip: "zzzZZzzZZZzzz",
+              },
+              {
+                name: "mothur_param6",
+                value: [
+                  "Silva",
+                  "Unite",
+                  "GreenGenesGreenGenesGreenGenesGreenGenes",
+                  "RDP",
+                ],
+                tooltip: "zzzZZzzZZZzzz",
+              },
+            ],
           },
           {
             serviceName: "cutadapt",
-            selected: null,
+            selected: false,
             numericInputs: [
               { name: "cutadapt_param1", value: 3, tooltip: "yo" },
               { name: "cutadapt_param2", value: 4, tooltip: "yo mees" },
@@ -36,6 +53,18 @@ export default new Vuex.Store({
             booleanInputs: [
               { name: "cutadapt_param3", value: false, tooltip: "cya" },
               { name: "cutadapt_param4", value: false, tooltip: "tere" },
+            ],
+            selectInputs: [
+              {
+                name: "cutadapt_param5",
+                value: ["16S", "ITS", "18S"],
+                tooltip: "zzzZZzzZZZzzz",
+              },
+              {
+                name: "cutadapt_param6",
+                value: ["Silva", "Unite", "GreenGenes", "RDP"],
+                tooltip: "zzzZZzzZZZzzz",
+              },
             ],
           },
         ],
@@ -264,9 +293,24 @@ export default new Vuex.Store({
       state.selectedSteps = value;
     },
     serviceInputUpdate(state, payload) {
-      console.log(payload.text);
-      console.log(payload.value);
-      console.log(state);
+      state.selectedSteps[payload.stepIndex].services[payload.serviceIndex] =
+        payload.value;
+    },
+    checkService(state, payload) {
+      for (
+        let index = 0;
+        index < state.selectedSteps[payload.stepIndex].services.length;
+        index++
+      ) {
+        if (index === payload.serviceIndex) {
+          state.selectedSteps[payload.stepIndex].services[index].selected =
+            payload.selected;
+        } else {
+          state.selectedSteps[payload.stepIndex].services[
+            index
+          ].selected = false;
+        }
+      }
     },
   },
   actions: {},
