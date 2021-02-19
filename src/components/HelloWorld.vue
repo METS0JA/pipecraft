@@ -1,33 +1,27 @@
 <template>
-  <v-row justify="center" style="padding-top:20px">
-    <v-col
-      v-for="input in service.selectInputs"
-      :key="input.name"
-      cols="12"
-      xl="2"
-      lg="3"
-      md="4"
-      sm="6"
-      style="height:fit-content"
-    >
-      <v-card light elevation="2">
-        <v-card-title style="justify-content:center; padding:10px 0px;">{{
-          input.name
-        }}</v-card-title>
-        <v-card-actions style="justify-content:center;">
-          <v-row style="justify-content:center;"
-            ><v-col style="padding:0;" cols="6" offset="0">
-              <v-select
-                @change="selectUpdate()"
-                :items="input.value"
-                outlined
-              ></v-select>
-            </v-col>
-          </v-row>
-        </v-card-actions>
-      </v-card>
-    </v-col>
-  </v-row>
+  <v-col
+    v-for="input in service.fileInputs"
+    :key="input.name"
+    cols="12"
+    xl="2"
+    lg="3"
+    md="4"
+    sm="6"
+    style="height:fit-content"
+  >
+    <v-card light elevation="2">
+      <v-card-title style="justify-content:center; padding:10px 0px;">{{
+        input.name
+      }}</v-card-title>
+      <v-card-actions style="justify-content:center;">
+        <v-row style="justify-content:center;"
+          ><v-col style="padding:0;" cols="6" offset="0">
+            <v-file-input label="File input" outlined dense></v-file-input>
+          </v-col>
+        </v-row>
+      </v-card-actions>
+    </v-card>
+  </v-col>
 </template>
 
 <script>

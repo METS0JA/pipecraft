@@ -42,6 +42,20 @@ export default new Vuex.Store({
                 tooltip: "zzzZZzzZZZzzz",
               },
             ],
+            fileInputs: [
+              {
+                name: "mothur_file_1",
+                btnName: "select file",
+                value: "No file selected",
+                tooltip: "zzZZzz",
+              },
+              {
+                name: "mothur_file_2",
+                btnName: "select file",
+                value: "No file selected",
+                tooltip: "zzZZzz",
+              },
+            ],
           },
           {
             serviceName: "cutadapt",
@@ -64,6 +78,20 @@ export default new Vuex.Store({
                 name: "cutadapt_param6",
                 value: ["Silva", "Unite", "GreenGenes", "RDP"],
                 tooltip: "zzzZZzzZZZzzz",
+              },
+            ],
+            fileInputs: [
+              {
+                name: "cutadapt_file_1",
+                btnName: "select file",
+                value: "No file selected",
+                tooltip: "zzZZzz",
+              },
+              {
+                name: "cutadapt_file_2",
+                btnName: "select file",
+                value: "No file selected",
+                tooltip: "zzZZzz",
               },
             ],
           },

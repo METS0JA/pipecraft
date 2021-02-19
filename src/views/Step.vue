@@ -24,10 +24,16 @@
               style="height:fit-content"
             >
               <v-card light elevation="2">
-                <v-card-title
-                  style="justify-content:center; padding:10px 0px;"
-                  >{{ input.name }}</v-card-title
-                >
+                <v-tooltip top>
+                  <template v-slot:activator="{ on }">
+                    <v-card-title
+                      v-on="on"
+                      style="justify-content:center; padding:10px 0px;"
+                      >{{ input.name }}</v-card-title
+                    >
+                  </template>
+                  <span>{{ input.tooltip }}</span>
+                </v-tooltip>
                 <v-card-actions style="justify-content:center;">
                   <v-row
                     ><v-col
@@ -37,6 +43,7 @@
                       offset="3"
                     >
                       <v-text-field
+                        style="padding-top:10%"
                         v-model="input.value"
                         type="number"
                         class="centered-input"
@@ -60,14 +67,21 @@
               style="height:fit-content"
             >
               <v-card light elevation="2">
-                <v-card-title
-                  style="justify-content:center; padding:10px 0px;"
-                  >{{ input.name }}</v-card-title
-                >
+                <v-tooltip top>
+                  <template v-slot:activator="{ on }">
+                    <v-card-title
+                      v-on="on"
+                      style="justify-content:center; padding:10px 0px;"
+                      >{{ input.name }}</v-card-title
+                    >
+                  </template>
+                  <span>{{ input.tooltip }}</span>
+                </v-tooltip>
                 <v-card-actions style="justify-content:center;">
                   <v-row style="justify-content:center;"
-                    ><v-col style="padding:0;" cols="6" offset="3">
+                    ><v-col style="padding:0;" cols="6" offset="4">
                       <v-switch
+                        style="padding-top:10%;"
                         @change="formUpdate(index)"
                         v-model="input.value"
                         color="teal accent-3"
@@ -88,15 +102,22 @@
               style="height:fit-content"
             >
               <v-card light elevation="2">
-                <v-card-title
-                  style="justify-content:center; padding:10px 0px;"
-                  >{{ input.name }}</v-card-title
-                >
+                <v-tooltip top>
+                  <template v-slot:activator="{ on }">
+                    <v-card-title
+                      v-on="on"
+                      style="justify-content:center; padding:10px 0px;"
+                      >{{ input.name }}</v-card-title
+                    >
+                  </template>
+                  <span>{{ input.tooltip }}</span>
+                </v-tooltip>
                 <v-card-actions style="justify-content:center;">
                   <v-row style="justify-content:center;"
                     ><v-col style="padding:0;" cols="6" offset="0">
                       <v-select
-                        @change="formUpdate()"
+                        style="padding-top:10%"
+                        @change="formUpdate(index)"
                         v-model="input.value[0]"
                         :items="input.value"
                         outlined
@@ -106,7 +127,57 @@
                 </v-card-actions>
               </v-card>
             </v-col>
-            <!-- <HelloWorld :index="index" /> -->
+            <v-col
+              v-for="(input, i) in service.fileInputs"
+              :key="input.name"
+              cols="12"
+              xl="2"
+              lg="3"
+              md="4"
+              sm="6"
+              style="height:fit-content"
+            >
+              <v-card light elevation="2">
+                <v-tooltip top>
+                  <template v-slot:activator="{ on }">
+                    <v-card-title
+                      v-on="on"
+                      style="justify-content:center; padding:10px 0px;"
+                      >{{ input.name }}</v-card-title
+                    >
+                  </template>
+                  <span>{{ input.tooltip }}</span>
+                </v-tooltip>
+                <v-card-actions style="justify-content:center;">
+                  <v-row
+                    ><v-col style="padding:0;" cols="8" offset="2">
+                      <v-tooltip right>
+                        <template v-slot:activator="{ on }">
+                          <div v-on="on">
+                            <v-text-field
+                              disabled
+                              style="border-bottom-right-radius: 0; border-bottom-left-radius:0;"
+                              hide-details="true"
+                              v-model="input.value"
+                              class="centered-input"
+                              background-color="transparent"
+                              solo
+                            ></v-text-field>
+                          </div>
+                          <v-btn
+                            @click="fileSelect(index, i)"
+                            style="justify-content:center; max-width:100px; border-top-right-radius:0; border-top-left-radius:0;"
+                            block
+                            >{{ input.btnName }}</v-btn
+                          >
+                        </template>
+                        <span>{{ input.value }}</span>
+                      </v-tooltip>
+                    </v-col>
+                  </v-row>
+                </v-card-actions>
+              </v-card>
+            </v-col>
           </v-row>
         </v-expansion-panel-content>
       </v-expansion-panel>
@@ -117,6 +188,7 @@
 <script>
 // import fileSelect from "../components/fileSelect.vue";
 // import HelloWorld from "../components/HelloWorld.vue";
+const { dialog } = require("electron").remote;
 
 export default {
   name: "Home",
@@ -132,6 +204,22 @@ export default {
     },
   },
   methods: {
+    fileSelect(index, i) {
+      dialog
+        .showOpenDialog({
+          title: "Select input files",
+          properties: ["multiSelections", "showHiddenFiles"],
+        })
+        .then((result) => {
+          if (typeof result.filePaths[0] !== "undefined") {
+            this.services[index].fileInputs[i].value = result.filePaths[0];
+            this.formUpdate(index);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
     formUpdate(index) {
       this.$store.commit("serviceInputUpdate", {
         stepIndex: this.$route.params.order,
@@ -140,7 +228,6 @@ export default {
       });
     },
     check_one(value, index) {
-      console.log(value);
       this.$store.commit("checkService", {
         stepIndex: this.$route.params.order,
         serviceIndex: index,
@@ -157,7 +244,7 @@ export default {
   text-align: center;
 }
 .v-card {
-  height: 125px;
+  height: 145px;
 }
 span {
   width: 34px;
