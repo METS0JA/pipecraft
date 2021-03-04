@@ -7,7 +7,7 @@
     </v-list-item>
     <v-list-item>
       <v-list-item-content>
-        <v-btn block color="grey" @click="fileSelect">
+        <v-btn block color="grey" @click="folderSelect">
           Select workDir
         </v-btn>
       </v-list-item-content>
@@ -24,6 +24,8 @@
 </template>
 
 <script>
+// var path = require("path");
+const slash = require("slash");
 const { dialog } = require("electron").remote;
 import AddMenu from "./AddMenu.vue";
 import RouteButtons from "./RouteButtons";
@@ -42,15 +44,16 @@ export default {
     };
   },
   methods: {
-    fileSelect() {
+    folderSelect() {
       dialog
         .showOpenDialog({
           title: "Select working directory",
           properties: ["showHiddenFiles", "openDirectory"],
         })
         .then((result) => {
-          console.log(result.filePaths[0]);
-          this.$store.commit("addWorkingDir", result.filePaths[0]);
+          var correctedPath = slash(result.filePaths[0]);
+          this.$store.commit("addWorkingDir", correctedPath);
+          console.log(correctedPath);
         })
         .catch((err) => {
           console.log(err);

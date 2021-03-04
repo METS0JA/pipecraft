@@ -1,5 +1,5 @@
 <template>
-  <v-btn block color="grey" @click="runWorkFlow">
+  <v-btn block color="grey" @click="runStep">
     Run workflow
   </v-btn>
 </template>
@@ -93,14 +93,25 @@ export default {
       });
     },
     runStep() {
-      (async (envVariables, serviceName) => {
-        const result = await ipcRenderer.invoke(
-          "runStep",
-          serviceName,
-          envVariables,
-        );
-        console.log(result);
-      })();
+      var scriptName = `vsearch-quality.sh`;
+      var imageName = "pipecraft/vsearch:2.15.0";
+      var envVariables = ["a=1", "b=2", "c=3"];
+      console.log(
+        ipcRenderer.sendSync("runStep", imageName, scriptName, envVariables),
+      );
+      //     "runStep",
+      //     serviceName,
+      //     envVariables,
+      //   );
+
+      // (async (envVariables, serviceName) => {
+      //   const result = await ipcRenderer.invoke(
+      //     "runStep",
+      //     serviceName,
+      //     envVariables,
+      //   );
+      //   console.log(result);
+      // })();
     },
   },
 };

@@ -4,50 +4,74 @@ import { app, protocol, BrowserWindow, ipcMain } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
 import { promises as fs } from "fs";
-import { exitCode, stdout } from "process";
+// import { exitCode, stdout } from "process";
 var Docker = require("dockerode");
 var docker = new Docker({ socketPath: "//./pipe/docker_engine" });
+const streams = require("memory-streams");
+var stdout = new streams.WritableStream();
+var stderr = new streams.WritableStream();
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 
-ipcMain.handle("runStep", async (event, serviceName, env_variables) => {
-  const result = await docker
-    .run(
-      "pipecraft/vsearch:2.15.0",
-      ["/bin/ash", "-c", "vsearch --help > /newFolder/step.log"],
-      process.stdout,
-      {
-        WorkingDir: "/",
-        Volumes: {
-          "/newFolder": {},
-        },
-        HostConfig: {
-          Binds: [
-            "C:\\Users\\m_4_r\\Desktop\\latest-vue\\pipecraft-core:/newFolder:rw",
-          ],
-        },
-        Env: env_variables,
+function runStep(serviceImage, scriptName, envVariables) {
+  return new Promise((resolve, reject) => {
+    // var imageList = docker.listImages();
+    // resolve(image)
+    var result = docker
+      .run("pipecraft/mothur:1.43", ["bash", "-c", "ls"], [stdout, stderr], {
+        Tty: false,
+      })
+      .then(function(data) {
+        console.log("stdout:", stdout.toString());
+        console.log("stderr:", stderr.toString());
+        var output = data[0];
+        var container = data[1];
+        console.log(output);
+        container.remove();
+        return "tere";
+      })
+      .then(function(data) {
+        console.log("container removed");
+      })
+      .catch(function(err) {
+        console.log(err);
+      });
+    resolve(result);
+  });
+}
+
+ipcMain.on("runStep", async (event, imageName, scriptName, envVariables) => {
+  var result = await docker
+    .run(imageName, ["ash", "-c", `/scripts/${scriptName}`], [stdout, stderr], {
+      Tty: false,
+      WorkingDir: "/input",
+      Volumes: {},
+      HostConfig: {
+        Binds: [
+          "C:\\Users\\m_4_r\\Desktop\\pipecraft-vue\\pipecraft-core\\service_scripts:/scripts",
+          "C:/Users/m_4_r/Desktop/test_data/Illumina_16S:/input",
+        ],
       },
-    )
-    .then(async function(data) {
-      var output = data[0];
-      var container = data[1];
-      console.log(container.id);
-      console.log(output.StatusCode);
-      return container.remove();
+      Env: envVariables,
     })
-    .then(function(data) {
-      console.log("container removed");
-      console.log(serviceName);
-      console.log(env_variables);
-      var next_working_dir = "/input/vsearch_quality";
-      return next_working_dir;
+    .then(([res, container]) => {
+      console.log(res);
+      console.log("stdout: %j", stdout.toString());
+      console.log("stderr: %j", stderr.toString());
+      container.remove();
+      if (res.StatusCode === 0) {
+        return stdout.toString();
+      } else {
+        return stderr.toString();
+      }
     })
-    .catch(function(err) {
+    .catch((err) => {
       console.log(err);
       return err;
     });
-  return result;
+  event.returnValue = result;
+  stdout = new streams.WritableStream();
+  stderr = new streams.WritableStream();
 });
 
 // Scheme must be registered before the app is ready

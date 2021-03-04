@@ -55,6 +55,7 @@ export default new Vuex.Store({
             booleanSelectInputs: [],
             booleanFileInputs: [],
             selectInputs: [],
+            chipInputs: [],
           },
           {
             serviceName: "example inputs",
@@ -123,6 +124,18 @@ export default new Vuex.Store({
                 active: false,
               },
             ],
+            chipInputs: [
+              {
+                name: "chipSelect",
+                value: ["16S", "ITS", "18S"],
+                tooltip: "zzzZZzzZZZzzz",
+              },
+              {
+                name: "chipSelect2",
+                value: ["Silva", "Unite", "GreenGenes", "RDP"],
+                tooltip: "zzzZZzzZZZzzz",
+              },
+            ],
           },
         ],
       },
@@ -138,6 +151,7 @@ export default new Vuex.Store({
             booleanSelectInputs: [],
             booleanFileInputs: [],
             selectInputs: [],
+            chipInputs: [],
           },
           {
             serviceName: "trimmomatic",
@@ -148,6 +162,7 @@ export default new Vuex.Store({
             booleanSelectInputs: [],
             booleanFileInputs: [],
             selectInputs: [],
+            chipInputs: [],
           },
           {
             serviceName: "mothur",
@@ -158,6 +173,7 @@ export default new Vuex.Store({
             booleanSelectInputs: [],
             booleanFileInputs: [],
             selectInputs: [],
+            chipInputs: [],
           },
         ],
       },
@@ -216,6 +232,7 @@ export default new Vuex.Store({
             booleanSelectInputs: [],
             booleanFileInputs: [],
             selectInputs: [],
+            chipInputs: [],
           },
           {
             serviceName: "mothur",
@@ -261,6 +278,7 @@ export default new Vuex.Store({
             booleanSelectInputs: [],
             booleanFileInputs: [],
             selectInputs: [],
+            chipInputs: [],
           },
           {
             serviceName: "dada2",
@@ -314,6 +332,7 @@ export default new Vuex.Store({
             booleanSelectInputs: [],
             booleanFileInputs: [],
             selectInputs: [],
+            chipInputs: [],
           },
           {
             serviceName: "usearch",
@@ -360,6 +379,7 @@ export default new Vuex.Store({
             booleanSelectInputs: [],
             booleanFileInputs: [],
             selectInputs: [],
+            chipInputs: [],
           },
           {
             serviceName: "trimmomatic",
@@ -406,6 +426,7 @@ export default new Vuex.Store({
             booleanSelectInputs: [],
             booleanFileInputs: [],
             selectInputs: [],
+            chipInputs: [],
           },
         ],
       },
@@ -452,6 +473,7 @@ export default new Vuex.Store({
             booleanSelectInputs: [],
             booleanFileInputs: [],
             selectInputs: [],
+            chipInputs: [],
           },
           {
             serviceName: "flash",
@@ -503,6 +525,7 @@ export default new Vuex.Store({
             booleanSelectInputs: [],
             booleanFileInputs: [],
             selectInputs: [],
+            chipInputs: [],
           },
           {
             serviceName: "vsearch",
@@ -537,6 +560,7 @@ export default new Vuex.Store({
             booleanSelectInputs: [],
             booleanFileInputs: [],
             selectInputs: [],
+            chipInputs: [],
           },
         ],
       },
@@ -605,6 +629,7 @@ export default new Vuex.Store({
             booleanSelectInputs: [],
             booleanFileInputs: [],
             selectInputs: [],
+            chipInputs: [],
           },
         ],
       },
@@ -620,6 +645,7 @@ export default new Vuex.Store({
             booleanSelectInputs: [],
             booleanFileInputs: [],
             selectInputs: [],
+            chipInputs: [],
           },
           {
             serviceName: "metaxa",
@@ -630,6 +656,7 @@ export default new Vuex.Store({
             booleanSelectInputs: [],
             booleanFileInputs: [],
             selectInputs: [],
+            chipInputs: [],
           },
           {
             serviceName: "vxtractor",
@@ -640,6 +667,7 @@ export default new Vuex.Store({
             booleanSelectInputs: [],
             booleanFileInputs: [],
             selectInputs: [],
+            chipInputs: [],
           },
         ],
       },
@@ -655,6 +683,7 @@ export default new Vuex.Store({
             booleanSelectInputs: [],
             booleanFileInputs: [],
             selectInputs: [],
+            chipInputs: [],
           },
           {
             serviceName: "cd-hit",
@@ -665,6 +694,7 @@ export default new Vuex.Store({
             booleanSelectInputs: [],
             booleanFileInputs: [],
             selectInputs: [],
+            chipInputs: [],
           },
           {
             serviceName: "swarm",
@@ -675,6 +705,7 @@ export default new Vuex.Store({
             booleanSelectInputs: [],
             booleanFileInputs: [],
             selectInputs: [],
+            chipInputs: [],
           },
           {
             serviceName: "vsearch",
@@ -685,6 +716,7 @@ export default new Vuex.Store({
             booleanSelectInputs: [],
             booleanFileInputs: [],
             selectInputs: [],
+            chipInputs: [],
           },
         ],
       },
@@ -700,6 +732,7 @@ export default new Vuex.Store({
             booleanSelectInputs: [],
             booleanFileInputs: [],
             selectInputs: [],
+            chipInputs: [],
           },
           {
             serviceName: "blast",
@@ -710,6 +743,7 @@ export default new Vuex.Store({
             booleanSelectInputs: [],
             booleanFileInputs: [],
             selectInputs: [],
+            chipInputs: [],
           },
         ],
       },

@@ -1,6 +1,7 @@
 <template>
   <div class="home">
-    <span>home view</span>
+    <v-combobox small-chips multiple></v-combobox>
+    <!-- <span>home view</span> -->
   </div>
 </template>
 
