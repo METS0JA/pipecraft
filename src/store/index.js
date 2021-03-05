@@ -11,6 +11,35 @@ export default new Vuex.Store({
     selectedSteps: [],
     steps: [
       {
+        stepName: "reorient",
+        services: [
+          {
+            serviceName: "reorient",
+            selected: false,
+            fileInputs: [],
+            numericInputs: [
+              { name: "mismatches", value: 2, tooltip: "???????????" },
+            ],
+            booleanInputs: [],
+            booleanSelectInputs: [],
+            booleanFileInputs: [],
+            selectInputs: [],
+            chipInputs: [
+              {
+                name: "forward primers",
+                value: [],
+                tooltip: "manually define up to 13 primers",
+              },
+              {
+                name: "reverse primers",
+                value: [],
+                tooltip: "manually define up to 13 primers",
+              },
+            ],
+          },
+        ],
+      },
+      {
         stepName: "demultiplex",
         services: [
           {

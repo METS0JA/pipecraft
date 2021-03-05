@@ -22,7 +22,7 @@
               lg="3"
               md="4"
               sm="6"
-              style="height:fit-content"
+              style="height:fit-content;"
             >
               <v-card light elevation="2">
                 <v-tooltip top>
@@ -182,49 +182,6 @@
                 </v-card-actions>
               </v-card>
             </v-col>
-            <!-- chips -->
-            <v-col
-              v-for="input in service.chipInputs"
-              :key="input.name"
-              cols="12"
-              xl="4"
-              lg="6"
-              md="12"
-              sm="12"
-              style="height:fit-content"
-            >
-              <v-card
-                light
-                elevation="2"
-                style="height: fit-content; resize:auto"
-              >
-                <v-tooltip top>
-                  <template v-slot:activator="{ on }">
-                    <v-card-title
-                      v-on="on"
-                      style="justify-content:center; padding:10px 0px;"
-                      >{{ input.name }}</v-card-title
-                    >
-                  </template>
-                  <span>{{ input.tooltip }}</span>
-                </v-tooltip>
-                <v-card-actions style="justify-content:center; ">
-                  <v-row style="height: fit-content; resize:auto"
-                    ><v-col style="padding:0;" cols="10" offset="1">
-                      <v-combobox
-                        type="text"
-                        @change="formUpdate(index)"
-                        deletable-chips
-                        small-chips
-                        multiple
-                        @keydown="IUPAC($event)"
-                        v-model="input.value"
-                      ></v-combobox>
-                    </v-col>
-                  </v-row>
-                </v-card-actions>
-              </v-card>
-            </v-col>
             <!-- booleanFileInputs -->
             <v-col
               v-for="(input, i) in service.booleanFileInputs"
@@ -341,6 +298,51 @@
                 </v-card-actions>
               </v-card>
             </v-col>
+            <!-- chips -->
+            <v-col
+              v-for="input in service.chipInputs"
+              :key="input.name"
+              cols="12"
+              xl="4"
+              lg="6"
+              md="12"
+              sm="12"
+              style="height:fit-content"
+            >
+              <v-card
+                light
+                elevation="2"
+                style="height: fit-content; resize:auto; min-height: 145px"
+              >
+                <v-tooltip top>
+                  <template v-slot:activator="{ on }">
+                    <v-card-title
+                      v-on="on"
+                      style="justify-content:center; padding:10px 0px; "
+                      >{{ input.name }}</v-card-title
+                    >
+                  </template>
+                  <span>{{ input.tooltip }}</span>
+                </v-tooltip>
+                <v-card-actions style="justify-content:center; ">
+                  <v-row style="height: fit-content; resize:auto;"
+                    ><v-col style="padding:0;" cols="10" offset="1">
+                      <v-combobox
+                        type="text"
+                        @change="formUpdate(index)"
+                        append-icon=""
+                        deletable-chips
+                        small-chips
+                        multiple
+                        style="text-transform: uppercase"
+                        @keydown="IUPAC($event)"
+                        v-model="input.value"
+                      ></v-combobox>
+                    </v-col>
+                  </v-row>
+                </v-card-actions>
+              </v-card>
+            </v-col>
           </v-row>
         </v-expansion-panel-content>
       </v-expansion-panel>
@@ -356,15 +358,8 @@ const { dialog } = require("electron").remote;
 export default {
   name: "Home",
   data: () => ({
-    chips: [
-      "Programming",
-      "Playing video games",
-      "Watching movies",
-      "Sleeping",
-    ],
     isActive: true,
     numberRules: [(v) => isNaN(v) != true],
-    // IUPACrules: [(v) => ],
   }),
   components: {
     // HelloWorld,
@@ -376,8 +371,30 @@ export default {
   },
   methods: {
     IUPAC(event) {
-      event.preventDefault();
-      console.log(event.key);
+      if (
+        ![
+          "Backspace",
+          "Enter",
+          "i",
+          "a",
+          "c",
+          "g",
+          "t",
+          "r",
+          "y",
+          "s",
+          "w",
+          "k",
+          "m",
+          "b",
+          "d",
+          "h",
+          "v",
+          "n",
+        ].includes(event.key.toLowerCase())
+      ) {
+        event.preventDefault();
+      }
     },
     fileSelect(index, i, type) {
       dialog

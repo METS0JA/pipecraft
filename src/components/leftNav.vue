@@ -51,9 +51,11 @@ export default {
           properties: ["showHiddenFiles", "openDirectory"],
         })
         .then((result) => {
-          var correctedPath = slash(result.filePaths[0]);
-          this.$store.commit("addWorkingDir", correctedPath);
-          console.log(correctedPath);
+          if (typeof result.filePaths[0] !== "undefined") {
+            var correctedPath = slash(result.filePaths[0]);
+            this.$store.commit("addWorkingDir", correctedPath);
+            console.log(correctedPath);
+          }
         })
         .catch((err) => {
           console.log(err);

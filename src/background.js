@@ -40,39 +40,47 @@ function runStep(serviceImage, scriptName, envVariables) {
   });
 }
 
-ipcMain.on("runStep", async (event, imageName, scriptName, envVariables) => {
-  var result = await docker
-    .run(imageName, ["ash", "-c", `/scripts/${scriptName}`], [stdout, stderr], {
-      Tty: false,
-      WorkingDir: "/input",
-      Volumes: {},
-      HostConfig: {
-        Binds: [
-          "C:\\Users\\m_4_r\\Desktop\\pipecraft-vue\\pipecraft-core\\service_scripts:/scripts",
-          "C:/Users/m_4_r/Desktop/test_data/Illumina_16S:/input",
-        ],
-      },
-      Env: envVariables,
-    })
-    .then(([res, container]) => {
-      console.log(res);
-      console.log("stdout: %j", stdout.toString());
-      console.log("stderr: %j", stderr.toString());
-      container.remove();
-      if (res.StatusCode === 0) {
-        return stdout.toString();
-      } else {
-        return stderr.toString();
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-      return err;
-    });
-  event.returnValue = result;
-  stdout = new streams.WritableStream();
-  stderr = new streams.WritableStream();
-});
+ipcMain.on(
+  "runStep",
+  async (event, imageName, scriptName, envVariables, Input) => {
+    var result = await docker
+      .run(
+        imageName,
+        ["ash", "-c", `ls && /scripts/${scriptName}`],
+        [stdout, stderr],
+        {
+          Tty: false,
+          WorkingDir: "/input",
+          Volumes: {},
+          HostConfig: {
+            Binds: [
+              "C:\\Users\\m_4_r\\Desktop\\pipecraft-vue\\pipecraft-core\\service_scripts:/scripts", // Edit path for build
+              `${Input}:/input`,
+            ],
+          },
+          Env: envVariables,
+        },
+      )
+      .then(([res, container]) => {
+        console.log(res);
+        console.log("stdout: %j", stdout.toString());
+        console.log("stderr: %j", stderr.toString());
+        container.remove();
+        if (res.StatusCode === 0) {
+          return stdout.toString();
+        } else {
+          return stderr.toString();
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        return err;
+      });
+    event.returnValue = result;
+    stdout = new streams.WritableStream();
+    stderr = new streams.WritableStream();
+  },
+);
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([

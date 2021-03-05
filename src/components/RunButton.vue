@@ -97,7 +97,13 @@ export default {
       var imageName = "pipecraft/vsearch:2.15.0";
       var envVariables = ["a=1", "b=2", "c=3"];
       console.log(
-        ipcRenderer.sendSync("runStep", imageName, scriptName, envVariables),
+        ipcRenderer.sendSync(
+          "runStep",
+          imageName,
+          scriptName,
+          envVariables,
+          this.$store.state.workingDir,
+        ),
       );
       //     "runStep",
       //     serviceName,
