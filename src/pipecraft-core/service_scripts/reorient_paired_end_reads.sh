@@ -29,7 +29,7 @@
 
 ###############################
 #These variables are for testing (DELETE when implementing to PipeCraft)
-extension=$"fq.gz"
+extension=$"fastq.gz"
 mismatches=$"2"
 fwd_tempprimer=$"ACCTGCTAGGCTAGATGC"
 rev_tempprimer=$"GGGATCCATCGATTTAAC"
@@ -47,12 +47,12 @@ set -e
 ### Prepare the tempdirs and variables ###
 ##########################################
 ### Text colors in terminal outputs (usage: printf "${RED}red text ${NORMAL}normal text")
-NORMAL=$(tput sgr0)
-RED=$(tput setaf 1)
-GREEN=$(tput setaf 2)
-YELLOW=$(tput setaf 3)
-BLUE=$(tput setaf 4)
-BOLD=$(tput bold)
+# NORMAL=$(tput sgr0)
+# RED=$(tput setaf 1)
+# GREEN=$(tput setaf 2)
+# YELLOW=$(tput setaf 3)
+# BLUE=$(tput setaf 4)
+# BOLD=$(tput bold)
 
 ### Function to convert IUPAC codes in primers
 function convert_IUPAC () {

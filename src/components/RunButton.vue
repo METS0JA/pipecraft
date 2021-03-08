@@ -94,7 +94,7 @@ export default {
     },
     runStep() {
       var scriptName = `reorient_paired_end_reads.sh`;
-      var imageName = "pipecraft/mothur:1.43";
+      var imageName = "pipecraft/reorient:1";
       var envVariables = ["a=1", "b=2", "c=3"];
       console.log(
         ipcRenderer.sendSync(

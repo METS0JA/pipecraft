@@ -63,8 +63,8 @@ ipcMain.on(
       )
       .then(([res, container]) => {
         console.log(res);
-        console.log("stdout: %j", stdout.toString());
-        console.log("stderr: %j", stderr.toString());
+        console.log("stdout:", stdout.toString());
+        console.log("stderr:", stderr.toString());
         container.remove();
         if (res.StatusCode === 0) {
           return stdout.toString();
@@ -76,7 +76,7 @@ ipcMain.on(
         console.log(err);
         return err;
       });
-      console.log(process.cwd())
+    console.log(process.cwd());
     event.returnValue = result;
     stdout = new streams.WritableStream();
     stderr = new streams.WritableStream();
