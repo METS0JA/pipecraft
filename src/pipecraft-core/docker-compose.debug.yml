@@ -1,8 +1,0 @@
-version: '3.4'
-
-services:
-  pipecraftcore:
-    image: pipecraftcore
-    build:
-      context: .
-      dockerfile: ./Dockerfile
