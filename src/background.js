@@ -46,7 +46,7 @@ ipcMain.on(
     var result = await docker
       .run(
         imageName,
-        ["ash", "-c", `ls && /scripts/${scriptName}`],
+        ["bash", "-c", `/scripts/${scriptName}`],
         [stdout, stderr],
         {
           Tty: false,
@@ -54,7 +54,7 @@ ipcMain.on(
           Volumes: {},
           HostConfig: {
             Binds: [
-              "C:\\Users\\m_4_r\\Desktop\\pipecraft-vue\\pipecraft-core\\service_scripts:/scripts", // Edit path for build
+              `${process.cwd()}/src/pipecraft-core/service_scripts:/scripts`, // Edit path for build
               `${Input}:/input`,
             ],
           },
@@ -76,6 +76,7 @@ ipcMain.on(
         console.log(err);
         return err;
       });
+      console.log(process.cwd())
     event.returnValue = result;
     stdout = new streams.WritableStream();
     stderr = new streams.WritableStream();

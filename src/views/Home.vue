@@ -75,6 +75,7 @@ div {
   color: #999;
   font: 400 16px/1.5 exo, ubuntu, "segoe ui", helvetica, arial, sans-serif;
   text-align: center;
+  padding-top: 100px;
   /* img size is 50x50 */
   background: url($bg-url) repeat 0 0;
 

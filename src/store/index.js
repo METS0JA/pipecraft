@@ -15,6 +15,7 @@ export default new Vuex.Store({
         services: [
           {
             serviceName: "reorient",
+            imageName: 'pipecraft/mothur:1.43',
             selected: false,
             fileInputs: [],
             numericInputs: [
