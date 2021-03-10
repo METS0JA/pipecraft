@@ -94,6 +94,8 @@ export default new Vuex.Store({
             numericInputs: [
               { name: "param1", value: 1, tooltip: "yo" },
               { name: "param2", value: 2, tooltip: "yo mees" },
+              { name: "param12", value: 2, tooltip: "yo mees" },
+              { name: "param11", value: 2, tooltip: "yo mees", extra: true },
             ],
             booleanInputs: [
               { name: "param3", value: true, tooltip: "cya" },
@@ -177,12 +179,72 @@ export default new Vuex.Store({
             serviceName: "cutadapt",
             selected: false,
             fileInputs: [],
-            numericInputs: [],
-            booleanInputs: [],
+            numericInputs: [
+              {
+                name: "error_rate",
+                value: 0.15,
+                tooltip:
+                  "Allowed error rate in primer search. By default, error rate is 0.1, which means that in e.g. 1 error is allowd in a 10 bp primer (10% error rate).",
+              },
+              {
+                name: "min_seq_length",
+                value: 10,
+                tooltip: "minimum length of the output sequence",
+                extra: true,
+              },
+              {
+                name: "cores",
+                value: 1,
+                tooltip:
+                  "number of cores to use. For paired-end dta in fasta format, set to 1 [default]. For fastq formats you may set the value to 0 to use all cores.",
+                extra: true,
+              },
+            ],
+            booleanInputs: [
+              {
+                name: "revcomp",
+                value: true,
+                tooltip:
+                  "search also revere complementary matches for barcodes",
+                extra: true,
+              },
+              {
+                name: "no_indels",
+                value: false,
+                tooltip:
+                  "do not allow insertions or deletions is primer search. Mismatches are the only type of errprs accounted in the error rate parameter. ",
+                extra: true,
+              },
+              {
+                name: "discard_untrimmed",
+                value: true,
+                tooltip:
+                  "Discard sequences where specified primers were not found.",
+                extra: true,
+              },
+            ],
             booleanSelectInputs: [],
             booleanFileInputs: [],
-            selectInputs: [],
-            chipInputs: [],
+            selectInputs: [
+              {
+                name: "seqs_to_keep",
+                value: ["keep_all", "keep_only_linked"],
+                tooltip:
+                  "Keep seqs with primers found in both ends(linked), or keeps seqs with primer found atlest in one end(all)",
+              },
+            ],
+            chipInputs: [
+              {
+                name: "forward_primers",
+                value: [],
+                tooltip: "Add up to 13 PCR primers",
+              },
+              {
+                name: "reverse_primers",
+                value: [],
+                tooltip: "Add up to 13 PCR primers",
+              },
+            ],
           },
           {
             serviceName: "trimmomatic",
@@ -782,6 +844,28 @@ export default new Vuex.Store({
   },
   getters: {},
   mutations: {
+    toggleExtra(state, payload) {
+      console.log(state, payload);
+      const inputTypes = [
+        "chipInputs",
+        "fileInputs",
+        "numericInputs",
+        "booleanInputs",
+        "booleanFileInputs",
+        "selectInputs",
+        "booleanSelectInputs",
+      ];
+      for (let index = 0; index < inputTypes.length; index++) {
+        var element = inputTypes[index];
+        state.selectedSteps[payload.stepIndex].services[payload.serviceIndex][
+          element
+        ].forEach((input) => {
+          if (input.extra !== undefined) {
+            input.extra = !input.extra;
+          }
+        });
+      }
+    },
     addWorkingDir(state, filePath) {
       state.workingDir = filePath;
     },

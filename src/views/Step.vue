@@ -15,7 +15,9 @@
           <v-row>
             <!-- numericInputs -->
             <v-col
-              v-for="input in service.numericInputs"
+              v-for="input in service.numericInputs.filter(
+                (x) => x.extra != true
+              )"
               :key="input.name"
               cols="12"
               xl="2"
@@ -59,7 +61,9 @@
             </v-col>
             <!-- booleanInputs -->
             <v-col
-              v-for="input in service.booleanInputs"
+              v-for="input in service.booleanInputs.filter(
+                (x) => x.extra != true
+              )"
               :key="input.name"
               cols="12"
               xl="2"
@@ -95,7 +99,9 @@
             </v-col>
             <!-- selectInputs -->
             <v-col
-              v-for="input in service.selectInputs"
+              v-for="input in service.selectInputs.filter(
+                (x) => x.extra != true
+              )"
               :key="input.name"
               cols="12"
               xl="2"
@@ -117,11 +123,10 @@
                 </v-tooltip>
                 <v-card-actions style="justify-content:center;">
                   <v-row style="justify-content:center;"
-                    ><v-col style="padding:0;" cols="6" offset="0">
+                    ><v-col style="padding:0;" cols="8" offset="0">
                       <v-select
                         style="padding-top:10%"
                         @change="formUpdate(index)"
-                        v-model="input.value[0]"
                         :items="input.value"
                         outlined
                       ></v-select>
@@ -132,7 +137,9 @@
             </v-col>
             <!-- fileInputs -->
             <v-col
-              v-for="(input, i) in service.fileInputs"
+              v-for="(input, i) in service.fileInputs.filter(
+                (x) => x.extra != true
+              )"
               :key="input.name"
               cols="12"
               xl="2"
@@ -184,7 +191,9 @@
             </v-col>
             <!-- booleanFileInputs -->
             <v-col
-              v-for="(input, i) in service.booleanFileInputs"
+              v-for="(input, i) in service.booleanFileInputs.filter(
+                (x) => x.extra != true
+              )"
               :key="input.name"
               cols="12"
               xl="2"
@@ -250,7 +259,9 @@
             </v-col>
             <!-- booleanSelectInputs -->
             <v-col
-              v-for="input in service.booleanSelectInputs"
+              v-for="input in service.booleanSelectInputs.filter(
+                (x) => x.extra != true
+              )"
               :key="input.name"
               cols="12"
               xl="2"
@@ -284,12 +295,11 @@
                 </v-tooltip>
                 <v-card-actions style="justify-content:center;">
                   <v-row style="justify-content:center;"
-                    ><v-col style="padding:0;" cols="6" offset="0">
+                    ><v-col style="padding:0;" cols="8" offset="0">
                       <v-select
                         :disabled="!input.active"
                         style="padding-top:10%"
                         @change="formUpdate(index)"
-                        v-model="input.value[0]"
                         :items="input.value"
                         outlined
                       ></v-select>
@@ -300,7 +310,9 @@
             </v-col>
             <!-- chips -->
             <v-col
-              v-for="input in service.chipInputs"
+              v-for="input in service.chipInputs.filter(
+                (x) => x.extra != true
+              )"
               :key="input.name"
               cols="12"
               xl="4"
@@ -344,6 +356,15 @@
               </v-card>
             </v-col>
           </v-row>
+          <v-btn
+            block
+            light
+            class="mt-5"
+            style="justify-content: center;"
+            @click="toggleExtra(index)"
+          >
+            show more options
+          </v-btn>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
@@ -423,6 +444,12 @@ export default {
         stepIndex: this.$route.params.order,
         serviceIndex: index,
         value: this.services[index],
+      });
+    },
+    toggleExtra(index) {
+      this.$store.commit("toggleExtra", {
+        stepIndex: this.$route.params.order,
+        serviceIndex: index,
       });
     },
     check_one(value, index) {

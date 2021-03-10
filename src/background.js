@@ -62,14 +62,17 @@ ipcMain.on(
         },
       )
       .then(([res, container]) => {
+        var resObj = {statusCode : res.StatusCode,}
         console.log(res);
         console.log("stdout:", stdout.toString());
         console.log("stderr:", stderr.toString());
         container.remove();
         if (res.StatusCode === 0) {
-          return stdout.toString();
+          resObj.log = stdout.toString()
+          return resObj
         } else {
-          return stderr.toString();
+          resObj.log = stderr.toString()
+          return resObj;
         }
       })
       .catch((err) => {
