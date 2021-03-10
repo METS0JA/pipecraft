@@ -30,7 +30,7 @@
                     <v-card-title
                       v-on="on"
                       style="justify-content:center; padding:10px 0px;"
-                      >{{ input.name }}</v-card-title
+                      >{{ input.name.replace(/_/g, " ") }}</v-card-title
                     >
                   </template>
                   <span>{{ input.tooltip }}</span>
@@ -74,7 +74,7 @@
                     <v-card-title
                       v-on="on"
                       style="justify-content:center; padding:10px 0px;"
-                      >{{ input.name }}</v-card-title
+                      >{{ input.name.replace(/_/g, " ") }}</v-card-title
                     >
                   </template>
                   <span>{{ input.tooltip }}</span>
@@ -110,7 +110,7 @@
                     <v-card-title
                       v-on="on"
                       style="justify-content:center; padding:10px 0px;"
-                      >{{ input.name }}</v-card-title
+                      >{{ input.name.replace(/_/g, " ") }}</v-card-title
                     >
                   </template>
                   <span>{{ input.tooltip }}</span>
@@ -147,7 +147,7 @@
                     <v-card-title
                       v-on="on"
                       style="justify-content:center; padding:10px 0px;"
-                      >{{ input.name }}</v-card-title
+                      >{{ input.name.replace(/_/g, " ") }}</v-card-title
                     >
                   </template>
                   <span>{{ input.tooltip }}</span>
@@ -208,7 +208,7 @@
                       >
                         <template v-slot:label>
                           <div style="color:black">
-                            {{ input.name }}
+                            {{ input.name.replace(/_/g, " ") }}
                           </div>
                         </template></v-checkbox
                       >
@@ -274,7 +274,7 @@
                       >
                         <template v-slot:label>
                           <div style="color:black">
-                            {{ input.name }}
+                            {{ input.name.replace(/_/g, " ") }}
                           </div>
                         </template></v-checkbox
                       >
@@ -319,7 +319,7 @@
                     <v-card-title
                       v-on="on"
                       style="justify-content:center; padding:10px 0px; "
-                      >{{ input.name }}</v-card-title
+                      >{{ input.name.replace(/_/g, " ") }}</v-card-title
                     >
                   </template>
                   <span>{{ input.tooltip }}</span>

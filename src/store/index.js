@@ -15,7 +15,8 @@ export default new Vuex.Store({
         services: [
           {
             serviceName: "reorient",
-            imageName: 'pipecraft/mothur:1.43',
+            scriptName: "reorient_paired_end_reads.sh",
+            imageName: "pipecraft/reorient:1",
             selected: false,
             fileInputs: [],
             numericInputs: [
@@ -27,12 +28,12 @@ export default new Vuex.Store({
             selectInputs: [],
             chipInputs: [
               {
-                name: "forward primers",
+                name: "forward_primers",
                 value: [],
                 tooltip: "manually define up to 13 primers",
               },
               {
-                name: "reverse primers",
+                name: "reverse_primers",
                 value: [],
                 tooltip: "manually define up to 13 primers",
               },

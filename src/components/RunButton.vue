@@ -1,5 +1,5 @@
 <template>
-  <v-btn block color="grey" @click="runStep">
+  <v-btn block color="grey" @click="runWorkFlow">
     Run workflow
   </v-btn>
 </template>
@@ -8,10 +8,6 @@
 import { ipcRenderer } from "electron";
 import { mapState } from "vuex";
 import { stringify } from "envfile";
-
-ipcRenderer.on("log", (event, log) => {
-  console.log(log);
-});
 
 export default {
   name: "Run",
@@ -28,6 +24,7 @@ export default {
       let envVariables = [];
       const listInputTypes = ["selectInputs", "booleanSelectInputs"];
       const inputTypes = [
+        "chipInputs",
         "fileInputs",
         "numericInputs",
         "booleanInputs",
@@ -88,37 +85,50 @@ export default {
       this.selectedSteps.forEach(async (step, index) => {
         let serviceIndex = this.findSelectedService(index);
         let envVariables = this.createVariableObj(index, serviceIndex);
+        let scriptName = this.selectedSteps[index].services[serviceIndex]
+          .scriptName;
+        let imageName = this.selectedSteps[index].services[serviceIndex]
+          .imageName;
+        console.log(imageName);
+        console.log(scriptName);
+        console.log(serviceIndex);
         console.log(envVariables);
-        // let stepResult = await this.runStep(envVariables)
+        let stepResult = await this.runStep(
+          envVariables,
+          scriptName,
+          imageName,
+        );
+        console.log(stepResult);
       });
     },
-    runStep() {
-      var scriptName = `reorient_paired_end_reads.sh`;
-      var imageName = "pipecraft/reorient:1";
-      var envVariables = ["a=1", "b=2", "c=3"];
-      console.log(
-        ipcRenderer.sendSync(
-          "runStep",
-          imageName,
-          scriptName,
-          envVariables,
-          this.$store.state.workingDir,
-        ),
+    async runStep(envVariables, scriptName, imageName) {
+      // var scriptName = `reorient_paired_end_reads.sh`;
+      // var imageName = "pipecraft/reorient:1";
+      // var envVariables = ["a=1", "b=2", "c=3"];
+      var result = await ipcRenderer.sendSync(
+        "runStep",
+        imageName,
+        scriptName,
+        envVariables,
+        this.$store.state.workingDir,
       );
-      //     "runStep",
-      //     serviceName,
-      //     envVariables,
-      //   );
-
-      // (async (envVariables, serviceName) => {
-      //   const result = await ipcRenderer.invoke(
-      //     "runStep",
-      //     serviceName,
-      //     envVariables,
-      //   );
-      //   console.log(result);
-      // })();
+      console.log(result);
+      return result;
     },
+    // runStep() {
+    //   var scriptName = `reorient_paired_end_reads.sh`;
+    //   var imageName = "pipecraft/reorient:1";
+    //   var envVariables = ["a=1", "b=2", "c=3"];
+    //   console.log(
+    //     ipcRenderer.sendSync(
+    //       "runStep",
+    //       imageName,
+    //       scriptName,
+    //       envVariables,
+    //       this.$store.state.workingDir,
+    //     ),
+    //   );
+    // },
   },
 };
 </script>

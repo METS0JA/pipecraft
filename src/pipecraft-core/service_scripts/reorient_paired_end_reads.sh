@@ -29,8 +29,21 @@
 
 ###############################
 #These variables are for testing (DELETE when implementing to PipeCraft)
+IFS=',' read -r -a array1 <<< "$forward_primers"
+IFS=',' read -r -a array2 <<< "$reverse_primers"
+
+for element in "${array1[@]}"
+do
+    echo "$element"
+done
+
+for element in "${array2[@]}"
+do
+    echo "$element"
+done
+
 extension=$"fastq.gz"
-mismatches=$"2"
+# mismatches=$"2"
 fwd_tempprimer=$"ACCTGCTAGGCTAGATGC"
 rev_tempprimer=$"GGGATCCATCGATTTAAC"
 ###############################
