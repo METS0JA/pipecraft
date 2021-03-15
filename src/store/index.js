@@ -38,6 +38,7 @@ export default new Vuex.Store({
                 tooltip: "manually define up to 13 primers",
               },
             ],
+            slideInputs: [],
           },
         ],
       },
@@ -87,6 +88,7 @@ export default new Vuex.Store({
             booleanFileInputs: [],
             selectInputs: [],
             chipInputs: [],
+            slideInputs: [],
           },
           {
             serviceName: "example inputs",
@@ -169,6 +171,16 @@ export default new Vuex.Store({
                 tooltip: "zzzZZzzZZZzzz",
               },
             ],
+            slideInputs: [
+              {
+                name: "slide1",
+                value: 0,
+                tooltip: "slide 4 life",
+                max: 1,
+                min: 0,
+                step: 0.01,
+              },
+            ],
           },
         ],
       },
@@ -245,6 +257,7 @@ export default new Vuex.Store({
                 tooltip: "Add up to 13 PCR primers",
               },
             ],
+            slideInputs: [],
           },
           {
             serviceName: "trimmomatic",
@@ -256,6 +269,7 @@ export default new Vuex.Store({
             booleanFileInputs: [],
             selectInputs: [],
             chipInputs: [],
+            slideInputs: [],
           },
           {
             serviceName: "mothur",
@@ -267,6 +281,7 @@ export default new Vuex.Store({
             booleanFileInputs: [],
             selectInputs: [],
             chipInputs: [],
+            slideInputs: [],
           },
         ],
       },
@@ -326,6 +341,7 @@ export default new Vuex.Store({
             booleanFileInputs: [],
             selectInputs: [],
             chipInputs: [],
+            slideInputs: [],
           },
           {
             serviceName: "mothur",
@@ -372,6 +388,7 @@ export default new Vuex.Store({
             booleanFileInputs: [],
             selectInputs: [],
             chipInputs: [],
+            slideInputs: [],
           },
           {
             serviceName: "dada2",
@@ -426,6 +443,7 @@ export default new Vuex.Store({
             booleanFileInputs: [],
             selectInputs: [],
             chipInputs: [],
+            slideInputs: [],
           },
           {
             serviceName: "usearch",
@@ -473,6 +491,7 @@ export default new Vuex.Store({
             booleanFileInputs: [],
             selectInputs: [],
             chipInputs: [],
+            slideInputs: [],
           },
           {
             serviceName: "trimmomatic",
@@ -520,6 +539,7 @@ export default new Vuex.Store({
             booleanFileInputs: [],
             selectInputs: [],
             chipInputs: [],
+            slideInputs: [],
           },
         ],
       },
@@ -567,6 +587,7 @@ export default new Vuex.Store({
             booleanFileInputs: [],
             selectInputs: [],
             chipInputs: [],
+            slideInputs: [],
           },
           {
             serviceName: "flash",
@@ -619,6 +640,7 @@ export default new Vuex.Store({
             booleanFileInputs: [],
             selectInputs: [],
             chipInputs: [],
+            slideInputs: [],
           },
           {
             serviceName: "vsearch",
@@ -654,6 +676,7 @@ export default new Vuex.Store({
             booleanFileInputs: [],
             selectInputs: [],
             chipInputs: [],
+            slideInputs: [],
           },
         ],
       },
@@ -691,6 +714,8 @@ export default new Vuex.Store({
             booleanSelectInputs: [],
             booleanFileInputs: [],
             selectInputs: [],
+            chipInputs: [],
+            slideInputs: [],
           },
           {
             serviceName: "usearch",
@@ -723,6 +748,7 @@ export default new Vuex.Store({
             booleanFileInputs: [],
             selectInputs: [],
             chipInputs: [],
+            slideInputs: [],
           },
         ],
       },
@@ -739,6 +765,7 @@ export default new Vuex.Store({
             booleanFileInputs: [],
             selectInputs: [],
             chipInputs: [],
+            slideInputs: [],
           },
           {
             serviceName: "metaxa",
@@ -750,6 +777,7 @@ export default new Vuex.Store({
             booleanFileInputs: [],
             selectInputs: [],
             chipInputs: [],
+            slideInputs: [],
           },
           {
             serviceName: "vxtractor",
@@ -761,6 +789,7 @@ export default new Vuex.Store({
             booleanFileInputs: [],
             selectInputs: [],
             chipInputs: [],
+            slideInputs: [],
           },
         ],
       },
@@ -768,7 +797,7 @@ export default new Vuex.Store({
         stepName: "cluster",
         services: [
           {
-            serviceName: "mothure",
+            serviceName: "mothur",
             selected: false,
             fileInputs: [],
             numericInputs: [],
@@ -777,6 +806,7 @@ export default new Vuex.Store({
             booleanFileInputs: [],
             selectInputs: [],
             chipInputs: [],
+            slideInputs: [],
           },
           {
             serviceName: "cd-hit",
@@ -788,6 +818,7 @@ export default new Vuex.Store({
             booleanFileInputs: [],
             selectInputs: [],
             chipInputs: [],
+            slideInputs: [],
           },
           {
             serviceName: "swarm",
@@ -799,6 +830,7 @@ export default new Vuex.Store({
             booleanFileInputs: [],
             selectInputs: [],
             chipInputs: [],
+            slideInputs: [],
           },
           {
             serviceName: "vsearch",
@@ -810,6 +842,7 @@ export default new Vuex.Store({
             booleanFileInputs: [],
             selectInputs: [],
             chipInputs: [],
+            slideInputs: [],
           },
         ],
       },
@@ -826,6 +859,7 @@ export default new Vuex.Store({
             booleanFileInputs: [],
             selectInputs: [],
             chipInputs: [],
+            slideInputs: [],
           },
           {
             serviceName: "blast",
@@ -837,6 +871,7 @@ export default new Vuex.Store({
             booleanFileInputs: [],
             selectInputs: [],
             chipInputs: [],
+            slideInputs: [],
           },
         ],
       },

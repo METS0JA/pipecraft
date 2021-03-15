@@ -51,9 +51,54 @@
                         type="number"
                         class="centered-input"
                         background-color="transparent"
-                        :rules="numberRules"
+                        :rules="rules"
                         solo
                       ></v-text-field>
+                    </v-col>
+                  </v-row>
+                </v-card-actions>
+              </v-card>
+            </v-col>
+            <!-- slideInputs -->
+            <v-col
+              v-for="input in service.slideInputs.filter(
+                (x) => x.extra != true
+              )"
+              :key="input.name"
+              cols="12"
+              xl="2"
+              lg="3"
+              md="4"
+              sm="6"
+              style="height:fit-content;"
+            >
+              <v-card light elevation="2">
+                <v-tooltip top>
+                  <template v-slot:activator="{ on }">
+                    <v-card-title
+                      v-on="on"
+                      style="justify-content:center; padding:10px 0px;"
+                      >{{ input.name.replace(/_/g, " ") }}</v-card-title
+                    >
+                  </template>
+                  <span>{{ input.tooltip }}</span>
+                </v-tooltip>
+                <v-card-actions style="justify-content:center;">
+                  <v-row
+                    ><v-col
+                      @change="formUpdate(index)"
+                      style="padding:0;"
+                      cols="8"
+                      offset="2"
+                    >
+                      <v-slider
+                        :min="input.min"
+                        :max="input.max"
+                        :step="input.step"
+                        style="padding-top: 25px"
+                        v-model="input.value"
+                        thumb-label="always"
+                      ></v-slider>
                     </v-col>
                   </v-row>
                 </v-card-actions>
@@ -310,9 +355,7 @@
             </v-col>
             <!-- chips -->
             <v-col
-              v-for="input in service.chipInputs.filter(
-                (x) => x.extra != true
-              )"
+              v-for="input in service.chipInputs.filter((x) => x.extra != true)"
               :key="input.name"
               cols="12"
               xl="4"
@@ -361,9 +404,9 @@
             light
             class="mt-5"
             style="justify-content: center;"
-            @click="toggleExtra(index)"
+            @click="toggleExtra($event, index)"
           >
-            show more options
+            toggle extra options
           </v-btn>
         </v-expansion-panel-content>
       </v-expansion-panel>
@@ -380,7 +423,12 @@ export default {
   name: "Home",
   data: () => ({
     isActive: true,
-    numberRules: [(v) => isNaN(v) != true],
+    rules: [
+      (v) => v >= 0 || "value should be",
+      (v) => v <= 100 || "Max should not be above £50,000",
+    ],
+    // numberRules: [(v) => (v < 0 ? true : false)],
+    // numberRules: [(v) => isNaN(v) != true],
   }),
   components: {
     // HelloWorld,
@@ -446,7 +494,7 @@ export default {
         value: this.services[index],
       });
     },
-    toggleExtra(index) {
+    toggleExtra(event, index) {
       this.$store.commit("toggleExtra", {
         stepIndex: this.$route.params.order,
         serviceIndex: index,
@@ -458,7 +506,6 @@ export default {
         serviceIndex: index,
         selected: value,
       });
-      // this.services[index].selected = false;
     },
   },
 };

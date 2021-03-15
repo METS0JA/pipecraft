@@ -1,8 +1,0 @@
-File	Reads	Reoriented_reads
-s1_R1.fastq	8	7
-s1_R2.fastq	8	7
-s2_R1.fastq	8	0
-s2_R2.fastq	8	0
-
-Please note that sequence count assumes that there are 4 lines per sequence in a FASTQ file (as this is mostly the case).
-You may double-check the sequence count of one file using implemented 'FastQC' program in PipeCraft.
