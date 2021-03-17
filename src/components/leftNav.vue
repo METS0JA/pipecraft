@@ -7,7 +7,7 @@
     </v-list-item>
     <v-list-item>
       <v-list-item-content>
-        <v-btn block color="grey" @click="folderSelect">
+        <v-btn block color="grey" @click="folderSelect2">
           Select workDir
         </v-btn>
       </v-list-item-content>
@@ -25,6 +25,7 @@
 
 <script>
 // var path = require("path");
+const Swal = require("sweetalert2");
 const slash = require("slash");
 const { dialog } = require("electron").remote;
 import AddMenu from "./AddMenu.vue";
@@ -59,6 +60,65 @@ export default {
         })
         .catch((err) => {
           console.log(err);
+        });
+    },
+    folderSelect2() {
+      Swal.mixin({
+        input: "select",
+        confirmButtonText: "Next &rarr;",
+        showCancelButton: true,
+        progressSteps: ["1", "2", "3"],
+      })
+        .queue([
+          {
+            title: "Sequencing read types",
+            inputOptions: {
+              singleend: "single-end",
+              pairedend: "paired-end",
+            },
+          },
+          {
+            title: "Sequencing data format",
+            inputOptions: {
+              demulitplexed: "demulitplexed",
+              multiplexed: "multiplexed",
+            },
+          },
+          {
+            title: "Sequence files extension",
+            inputOptions: {
+              Uncompressed: {
+                fastq: "*.fastq",
+                fasta: "*.fasta",
+                fq: "*.fq",
+                fa: "*.fa",
+                txt: "*.txt",
+              },
+              Compressed: {
+                fastqDOTgz: "*.fastq.gz",
+                fastaDOTgz: "*.fasta.gz",
+                fqDOTgz: "*.fq.gz",
+                faDOTgz: "*.fa.gz",
+                txtDOTgz: "*.txt.gz",
+              },
+            },
+          },
+        ])
+        .then((result) => {
+          if (result.value) {
+            console.log(result);
+            dialog
+              .showOpenDialog({
+                title: "Select the folder containing your sequnece files",
+                properties: ["openDirectory", "showHiddenFiles"],
+              })
+              .then((result) => {
+                console.log(result);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          }
         });
     },
   },
