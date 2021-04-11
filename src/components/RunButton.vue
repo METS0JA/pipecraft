@@ -12,8 +12,6 @@ import { stringify } from "envfile";
 export default {
   name: "Run",
   computed: mapState({
-    // arrow functions can make the code very succinct!
-    env_variables: (state) => state.env_variables,
     selectedSteps: (state) => state.selectedSteps,
   }),
   data: () => ({
@@ -38,16 +36,16 @@ export default {
               let varObj = {};
               varObj[input.name] = "inactive";
               envVariables.push(
-                stringify(varObj).replace(/(\r\n|\n|\r)/gm, "")
+                stringify(varObj).replace(/(\r\n|\n|\r)/gm, ""),
               );
             } else {
               let varObj = {};
               varObj[input.name] = input.value;
               envVariables.push(
-                stringify(varObj).replace(/(\r\n|\n|\r)/gm, "")
+                stringify(varObj).replace(/(\r\n|\n|\r)/gm, ""),
               );
             }
-          }
+          },
         );
       }
       for (let index = 0; index < listInputTypes.length; index++) {
@@ -58,16 +56,16 @@ export default {
               let varObj = {};
               varObj[input.name] = "inactive";
               envVariables.push(
-                stringify(varObj).replace(/(\r\n|\n|\r)/gm, "")
+                stringify(varObj).replace(/(\r\n|\n|\r)/gm, ""),
               );
             } else {
               let varObj = {};
               varObj[input.name] = input.value;
               envVariables.push(
-                stringify(varObj).replace(/(\r\n|\n|\r)/gm, "")
+                stringify(varObj).replace(/(\r\n|\n|\r)/gm, ""),
               );
             }
-          }
+          },
         );
       }
       return envVariables;
@@ -96,7 +94,7 @@ export default {
         let stepResult = await this.runStep(
           envVariables,
           scriptName,
-          imageName
+          imageName,
         );
         console.log(stepResult.log);
         console.log(stepResult.statusCode);
@@ -114,14 +112,14 @@ export default {
         let stepResult = await this.runStep(
           envVariables,
           scriptName,
-          imageName
+          imageName,
         );
         console.log(stepResult.log);
         console.log(stepResult.statusCode);
         console.log(
           `Finished step ${index[0] + 1} ${
             index[1].stepName
-          } with code statusCode: ${stepResult.statusCode}`
+          } with statusCode: ${stepResult.statusCode}`,
         );
       }
     },
@@ -131,24 +129,10 @@ export default {
         imageName,
         scriptName,
         envVariables,
-        this.$store.state.workingDir
+        this.$store.state.workingDir,
       );
       return result;
     },
-    // runStep() {
-    //   var scriptName = `reorient_paired_end_reads.sh`;
-    //   var imageName = "pipecraft/reorient:1";
-    //   var envVariables = ["a=1", "b=2", "c=3"];
-    //   console.log(
-    //     ipcRenderer.sendSync(
-    //       "runStep",
-    //       imageName,
-    //       scriptName,
-    //       envVariables,
-    //       this.$store.state.workingDir,
-    //     ),
-    //   );
-    // },
   },
 };
 </script>

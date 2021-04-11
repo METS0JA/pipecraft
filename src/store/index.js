@@ -14,9 +14,9 @@ export default new Vuex.Store({
         stepName: "reorient",
         services: [
           {
-            serviceName: "reorient",
             scriptName: "reorient_paired_end_reads.sh",
             imageName: "pipecraft/reorient:1",
+            serviceName: "reorient",
             selected: false,
             fileInputs: [],
             numericInputs: [
@@ -46,6 +46,8 @@ export default new Vuex.Store({
         stepName: "demultiplex",
         services: [
           {
+            scriptName: "demultiplex.sh",
+            imageName: "mothur:1.43",
             serviceName: "demultiplex",
             selected: false,
             fileInputs: [
@@ -91,12 +93,14 @@ export default new Vuex.Store({
             slideInputs: [],
           },
           {
+            scriptName: "",
+            imageName: "",
             serviceName: "example inputs",
             selected: false,
             numericInputs: [
               { name: "param1", value: 1, tooltip: "yo" },
               { name: "param2", value: 2, tooltip: "yo mees" },
-              { name: "param12", value: 2, tooltip: "yo mees" },
+              { name: "param12", value: 2, tooltip: "yo mees", extra: true },
               { name: "param11", value: 2, tooltip: "yo mees", extra: true },
             ],
             booleanInputs: [
@@ -182,12 +186,72 @@ export default new Vuex.Store({
               },
             ],
           },
+          {
+            scriptName: "",
+            imageName: "",
+            serviceName: "Inputs as 1",
+            selected: false,
+            Inputs: [
+              {
+                name: "param12",
+                value: 2,
+                tooltip: "yo mees",
+                type: "numeric",
+              },
+              {
+                name: "param11",
+                value: 2,
+                tooltip: "yo mees",
+                type: "numeric",
+              },
+              { name: "param3", value: true, tooltip: "cya" },
+              {
+                name: "param5",
+                value: ["16S", "ITS", "18S"],
+                tooltip: "zzzZZzzZZZzzz",
+              },
+              {
+                name: "file_1",
+                btnName: "select file",
+                value: "No file selected",
+                tooltip: "zzZZzz",
+              },
+              {
+                name: "bool_file_1",
+                btnName: "select file",
+                value: "No file selected",
+                tooltip: "zzZZzz",
+                active: false,
+              },
+              {
+                name: "bool_select_1",
+                value: ["16S", "ITS", "18S"],
+                tooltip: "zzZZzz",
+                active: false,
+              },
+              {
+                name: "chipSelect",
+                value: ["16S", "ITS", "18S"],
+                tooltip: "zzzZZzzZZZzzz",
+              },
+              {
+                name: "slide1",
+                value: 0,
+                tooltip: "slide 4 life",
+                max: 1,
+                min: 0,
+                step: 0.01,
+              },
+            ],
+          },
         ],
       },
       {
         stepName: "remove adapters",
         services: [
           {
+            scriptName: "cutadapat-cut.sh",
+            imageName: "pipecraft/cutadapt:2.10",
             serviceName: "cutadapt",
             selected: false,
             fileInputs: [],
@@ -260,6 +324,8 @@ export default new Vuex.Store({
             slideInputs: [],
           },
           {
+            scriptName: "trimmomatic-cut.sh",
+            imageName: "pipecraft/trimmomatic:0.39",
             serviceName: "trimmomatic",
             selected: false,
             fileInputs: [],
@@ -272,6 +338,8 @@ export default new Vuex.Store({
             slideInputs: [],
           },
           {
+            scriptName: "mothur-cut.sh",
+            imageName: "pipecraft/mothur:1.43",
             serviceName: "mothur",
             selected: false,
             fileInputs: [],
@@ -289,6 +357,8 @@ export default new Vuex.Store({
         stepName: "quality filter",
         services: [
           {
+            scriptName: "vsearch-quality.sh",
+            imageName: "pipecraft/vsearch:2.15.0",
             serviceName: "vsearch",
             selected: false,
             numericInputs: [
@@ -344,6 +414,8 @@ export default new Vuex.Store({
             slideInputs: [],
           },
           {
+            scriptName: "mothur-quality.sh",
+            imageName: "pipecraft/mothur:1.43",
             serviceName: "mothur",
             selected: false,
             numericInputs: [
@@ -391,6 +463,8 @@ export default new Vuex.Store({
             slideInputs: [],
           },
           {
+            scriptName: "dada2-quality.R",
+            imageName: "pipecraft/dada2:3.10",
             serviceName: "dada2",
             selected: false,
             numericInputs: [
@@ -446,6 +520,8 @@ export default new Vuex.Store({
             slideInputs: [],
           },
           {
+            scriptName: "usearch-quality.sh",
+            imageName: "pipecraft/usearch",
             serviceName: "usearch",
             selected: false,
             numericInputs: [
@@ -494,6 +570,8 @@ export default new Vuex.Store({
             slideInputs: [],
           },
           {
+            scriptName: "trimmomatic-quality.sh",
+            imageName: "pipecraft/trimmomatic:0.39",
             serviceName: "trimmomatic",
             selected: false,
             numericInputs: [
@@ -547,6 +625,8 @@ export default new Vuex.Store({
         stepName: "assemble paired-end",
         services: [
           {
+            scriptName: "pandaseq-assemble.sh",
+            imageName: "pipecraft/pandaseq:2.11",
             serviceName: "pandaseq",
             selected: false,
             numericInputs: [
@@ -590,7 +670,9 @@ export default new Vuex.Store({
             slideInputs: [],
           },
           {
-            serviceName: "flash",
+            scriptName: "flash-assemble.sh",
+            imageName: "pipecraft/flash",
+            serviceName: "flash:2",
             selected: false,
             numericInputs: [
               {
@@ -643,6 +725,8 @@ export default new Vuex.Store({
             slideInputs: [],
           },
           {
+            scriptName: "vsearch-assemble.sh",
+            imageName: "pipecraft/vsearch:2.15.0",
             serviceName: "vsearch",
             selected: false,
             numericInputs: [
@@ -684,6 +768,8 @@ export default new Vuex.Store({
         stepName: "remove chimeras",
         services: [
           {
+            scriptName: "vsearch-chimera.sh",
+            imageName: "pipecraft/vsearch:2.15.0",
             serviceName: "vsearch",
             selected: false,
             booleanInputs: [
@@ -718,6 +804,8 @@ export default new Vuex.Store({
             slideInputs: [],
           },
           {
+            scriptName: "usearch-chimera.sh",
+            imageName: "pipecraft/usearch",
             serviceName: "usearch",
             selected: false,
             booleanInputs: [
@@ -756,6 +844,8 @@ export default new Vuex.Store({
         stepName: "gene extraction",
         services: [
           {
+            scriptName: "itsx-extraction.sh",
+            imageName: "pipecraft/itsx:latest",
             serviceName: "itsx",
             selected: false,
             fileInputs: [],
@@ -768,6 +858,8 @@ export default new Vuex.Store({
             slideInputs: [],
           },
           {
+            scriptName: "metaxa-extraction.sh",
+            imageName: "pipecraft/metaxa:latest",
             serviceName: "metaxa",
             selected: false,
             fileInputs: [],
@@ -780,6 +872,8 @@ export default new Vuex.Store({
             slideInputs: [],
           },
           {
+            scriptName: "vxtractor-extraction.sh",
+            imageName: "pipecraft/vxtractor:latest",
             serviceName: "vxtractor",
             selected: false,
             fileInputs: [],
@@ -797,6 +891,8 @@ export default new Vuex.Store({
         stepName: "cluster",
         services: [
           {
+            scriptName: "mothur-cluster.sh",
+            imageName: "pipecraft/mothur:1.43",
             serviceName: "mothur",
             selected: false,
             fileInputs: [],
@@ -809,6 +905,8 @@ export default new Vuex.Store({
             slideInputs: [],
           },
           {
+            scriptName: "cd-hit-cluster.sh",
+            imageName: "pipecraft/cdhit:4.8.1",
             serviceName: "cd-hit",
             selected: false,
             fileInputs: [],
@@ -821,6 +919,8 @@ export default new Vuex.Store({
             slideInputs: [],
           },
           {
+            scriptName: "swarm-cluster.sh",
+            imageName: "pipecraft/swarm:3.0.0",
             serviceName: "swarm",
             selected: false,
             fileInputs: [],
@@ -833,6 +933,8 @@ export default new Vuex.Store({
             slideInputs: [],
           },
           {
+            scriptName: "vsearch-cluster.sh",
+            imageName: "pipecraft/vsearch:2.15.0",
             serviceName: "vsearch",
             selected: false,
             fileInputs: [],
@@ -850,6 +952,8 @@ export default new Vuex.Store({
         stepName: "assing taxonomy",
         services: [
           {
+            scriptName: "",
+            imageName: "",
             serviceName: "mothur",
             selected: false,
             fileInputs: [],
@@ -862,6 +966,8 @@ export default new Vuex.Store({
             slideInputs: [],
           },
           {
+            scriptName: "",
+            imageName: "",
             serviceName: "blast",
             selected: false,
             fileInputs: [],

@@ -13,36 +13,46 @@ var stderr = new streams.WritableStream();
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 
-function runStep(serviceImage, scriptName, envVariables) {
-  return new Promise((resolve, reject) => {
-    // var imageList = docker.listImages();
-    // resolve(image)
-    var result = docker
-      .run("pipecraft/mothur:1.43", ["bash", "-c", "ls"], [stdout, stderr], {
-        Tty: false,
-      })
-      .then(function(data) {
-        console.log("stdout:", stdout.toString());
-        console.log("stderr:", stderr.toString());
-        var output = data[0];
-        var container = data[1];
-        console.log(output);
-        container.remove();
-        return "tere";
-      })
-      .then(function(data) {
-        console.log("container removed");
-      })
-      .catch(function(err) {
-        console.log(err);
-      });
-    resolve(result);
+// function runStep(serviceImage, scriptName, envVariables) {
+//   return new Promise((resolve, reject) => {
+//     // var imageList = docker.listImages();
+//     // resolve(image)
+//     var result = docker
+//       .run("pipecraft/mothur:1.43", ["bash", "-c", "ls"], [stdout, stderr], {
+//         Tty: false,
+//       })
+//       .then(function(data) {
+//         var output = data[0];
+//         var container = data[1];
+//         container.remove();
+//       })
+//       .then(function(data) {
+//         console.log("container removed");
+//       })
+//       .catch(function(err) {
+//         console.log(err);
+//       });
+//     resolve(result);
+//   });
+// }
+async function imageCheck(imageName) {
+  console.log(imageName);
+  let repoList = [];
+  let imageList = await docker.listImages();
+  imageList.forEach((image) => {
+    repoList.push(image.RepoTags[0]);
   });
+  console.log(repoList);
+  if (repoList.includes(imageName) === false) {
+    console.log(`pulling image ${imageName}`);
+    await docker.pull(imageName);
+  }
 }
 
 ipcMain.on(
   "runStep",
   async (event, imageName, scriptName, envVariables, Input) => {
+    await imageCheck(imageName);
     var result = await docker
       .run(
         imageName,
@@ -62,24 +72,26 @@ ipcMain.on(
         },
       )
       .then(([res, container]) => {
-        var resObj = {statusCode : res.StatusCode,}
+        let resObj = { statusCode: res.StatusCode };
         console.log(res);
         console.log("stdout:", stdout.toString());
         console.log("stderr:", stderr.toString());
         container.remove();
         if (res.StatusCode === 0) {
-          resObj.log = stdout.toString()
-          return resObj
+          resObj.log = stdout.toString();
+          return resObj;
         } else {
-          resObj.log = stderr.toString()
+          resObj.log = stderr.toString();
           return resObj;
         }
       })
       .catch((err) => {
         console.log(err);
-        return err;
+        let resObj = { statusCode: err.statusCode, log: err.Error };
+        return resObj;
       });
     console.log(process.cwd());
+    console.log(result);
     event.returnValue = result;
     stdout = new streams.WritableStream();
     stderr = new streams.WritableStream();
