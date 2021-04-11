@@ -204,35 +204,42 @@ export default new Vuex.Store({
                 tooltip: "yo mees",
                 type: "numeric",
               },
-              { name: "param3", value: true, tooltip: "cya" },
+              { name: "param3", value: true, tooltip: "cya", type: "bool" },
               {
                 name: "param5",
-                value: ["16S", "ITS", "18S"],
+                items: ["16S", "ITS", "18S"],
+                value: "16S",
                 tooltip: "zzzZZzzZZZzzz",
+                type: "select",
               },
               {
                 name: "file_1",
                 btnName: "select file",
-                value: "No file selected",
+                value: "undefined",
                 tooltip: "zzZZzz",
+                type: "file",
               },
               {
                 name: "bool_file_1",
                 btnName: "select file",
-                value: "No file selected",
+                value: "undefined",
                 tooltip: "zzZZzz",
                 active: false,
+                type: "boolfile",
               },
               {
                 name: "bool_select_1",
-                value: ["16S", "ITS", "18S"],
+                items: ["16S", "ITS", "18S"],
                 tooltip: "zzZZzz",
-                active: false,
+                value: "undefined",
+                active: true,
+                type: "boolselect",
               },
               {
                 name: "chipSelect",
                 value: ["16S", "ITS", "18S"],
                 tooltip: "zzzZZzzZZZzzz",
+                type: "chip",
               },
               {
                 name: "slide1",
@@ -241,6 +248,7 @@ export default new Vuex.Store({
                 max: 1,
                 min: 0,
                 step: 0.01,
+                type: "slide",
               },
             ],
           },
@@ -1023,6 +1031,21 @@ export default new Vuex.Store({
     serviceInputUpdate(state, payload) {
       state.selectedSteps[payload.stepIndex].services[payload.serviceIndex] =
         payload.value;
+    },
+    inputUpdate(state, payload) {
+      state.selectedSteps[payload.stepIndex].services[
+        payload.serviceIndex
+      ].Inputs[payload.inputIndex].value = payload.value;
+    },
+    toggleActive(state, payload) {
+      state.selectedSteps[payload.stepIndex].services[
+        payload.serviceIndex
+      ].Inputs[payload.inputIndex].active = payload.value;
+      if (payload.value == false) {
+        state.selectedSteps[payload.stepIndex].services[
+          payload.serviceIndex
+        ].Inputs[payload.inputIndex].value = "undefined";
+      }
     },
     checkService(state, payload) {
       for (

@@ -1,0 +1,77 @@
+<template>
+  <v-card light elevation="2">
+    <v-tooltip top>
+      <template v-slot:activator="{ on }">
+        <v-card-title
+          v-on="on"
+          style="justify-content:center; padding:10px 0px;"
+          ><v-checkbox
+            @change="toggleActive(input.active)"
+            hide-details
+            class="ma-0 pa-0"
+            style="padding:0"
+            v-model="input.active"
+          >
+            <template v-slot:label>
+              <div style="color:black">
+                {{ input.name.replace(/_/g, " ") }}
+              </div>
+            </template></v-checkbox
+          >
+        </v-card-title>
+      </template>
+      <span>{{ input.tooltip }}</span>
+    </v-tooltip>
+    <v-card-actions style="justify-content:center;">
+      <v-row style="justify-content:center;"
+        ><v-col style="padding:0;" cols="8" offset="0">
+          <v-select
+            :placeholder="input.value"
+            :disabled="!input.active"
+            v-model="input.value"
+            style="padding-top:10%"
+            @change="inputUpdate(input.value)"
+            :items="input.items"
+            outlined
+          ></v-select>
+        </v-col>
+      </v-row>
+    </v-card-actions>
+  </v-card>
+</template>
+
+<script>
+export default {
+  computed: {
+    input() {
+      return this.$store.state.selectedSteps[this.$route.params.order].services[
+        this.$attrs.serviceIndex
+      ].Inputs[this.$attrs.inputIndex];
+    },
+  },
+  methods: {
+    toggleActive(value) {
+      this.$store.commit("toggleActive", {
+        stepIndex: this.$route.params.order,
+        serviceIndex: this.$attrs.serviceIndex,
+        inputIndex: this.$attrs.inputIndex,
+        value: value,
+      });
+    },
+    inputUpdate(value) {
+      this.$store.commit("inputUpdate", {
+        stepIndex: this.$route.params.order,
+        serviceIndex: this.$attrs.serviceIndex,
+        inputIndex: this.$attrs.inputIndex,
+        value: value,
+      });
+    },
+  },
+};
+</script>
+
+<style scoped>
+.centered-input >>> input {
+  text-align: center;
+}
+</style>

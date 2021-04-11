@@ -23,351 +23,33 @@
               lg="3"
               md="4"
               sm="6"
-              style="height:fit-content;"
+              style="height:fit-content; width:fit-content"
             >
               <v-container v-if="input.type === 'numeric'"
                 ><InputNumeric :serviceIndex="index" :inputIndex="i"
               /></v-container>
+              <v-container v-if="input.type === 'bool'"
+                ><InputBool :serviceIndex="index" :inputIndex="i"
+              /></v-container>
+              <v-container v-if="input.type === 'select'"
+                ><InputSelect :serviceIndex="index" :inputIndex="i"
+              /></v-container>
+              <v-container v-if="input.type === 'file'"
+                ><InputFile :serviceIndex="index" :inputIndex="i"
+              /></v-container>
+              <v-container v-if="input.type === 'boolfile'"
+                ><InputBoolFile :serviceIndex="index" :inputIndex="i"
+              /></v-container>
+              <v-container v-if="input.type === 'boolselect'"
+                ><InputBoolSelect :serviceIndex="index" :inputIndex="i"
+              /></v-container>
+              <v-container v-if="input.type === 'chip'"
+                ><InputChip :serviceIndex="index" :inputIndex="i"
+              /></v-container>
+              <v-container v-if="input.type === 'slide'"
+                ><InputSlide :serviceIndex="index" :inputIndex="i"
+              /></v-container>
             </v-col>
-            <!-- slideInputs -->
-            <!-- <v-col
-              v-for="input in service.slideInputs.filter(
-                (x) => x.extra != true,
-              )"
-              :key="input.name"
-              cols="12"
-              xl="2"
-              lg="3"
-              md="4"
-              sm="6"
-              style="height:fit-content;"
-            >
-              <v-card light elevation="2">
-                <v-tooltip top>
-                  <template v-slot:activator="{ on }">
-                    <v-card-title
-                      v-on="on"
-                      style="justify-content:center; padding:10px 0px;"
-                      >{{ input.name.replace(/_/g, " ") }}</v-card-title
-                    >
-                  </template>
-                  <span>{{ input.tooltip }}</span>
-                </v-tooltip>
-                <v-card-actions style="justify-content:center;">
-                  <v-row
-                    ><v-col
-                      @change="formUpdate(index)"
-                      style="padding:0;"
-                      cols="8"
-                      offset="2"
-                    >
-                      <v-slider
-                        :min="input.min"
-                        :max="input.max"
-                        :step="input.step"
-                        style="padding-top: 25px"
-                        v-model="input.value"
-                        thumb-label="always"
-                      ></v-slider>
-                    </v-col>
-                  </v-row>
-                </v-card-actions>
-              </v-card>
-            </v-col> -->
-            <!-- booleanInputs -->
-            <!-- <v-col
-              v-for="input in service.booleanInputs.filter(
-                (x) => x.extra != true,
-              )"
-              :key="input.name"
-              cols="12"
-              xl="2"
-              lg="3"
-              md="4"
-              sm="6"
-              style="height:fit-content"
-            >
-              <v-card light elevation="2">
-                <v-tooltip top>
-                  <template v-slot:activator="{ on }">
-                    <v-card-title
-                      v-on="on"
-                      style="justify-content:center; padding:10px 0px;"
-                      >{{ input.name.replace(/_/g, " ") }}</v-card-title
-                    >
-                  </template>
-                  <span>{{ input.tooltip }}</span>
-                </v-tooltip>
-                <v-card-actions style="justify-content:center;">
-                  <v-row style="justify-content:center;"
-                    ><v-col style="padding:0;" cols="6" offset="4">
-                      <v-switch
-                        style="padding-top:10%;"
-                        @change="formUpdate(index)"
-                        v-model="input.value"
-                        color="teal accent-3"
-                      ></v-switch>
-                    </v-col>
-                  </v-row>
-                </v-card-actions>
-              </v-card>
-            </v-col> -->
-            <!-- selectInputs -->
-            <!-- <v-col
-              v-for="input in service.selectInputs.filter(
-                (x) => x.extra != true,
-              )"
-              :key="input.name"
-              cols="12"
-              xl="2"
-              lg="3"
-              md="4"
-              sm="6"
-              style="height:fit-content"
-            >
-              <v-card light elevation="2">
-                <v-tooltip top>
-                  <template v-slot:activator="{ on }">
-                    <v-card-title
-                      v-on="on"
-                      style="justify-content:center; padding:10px 0px;"
-                      >{{ input.name.replace(/_/g, " ") }}</v-card-title
-                    >
-                  </template>
-                  <span>{{ input.tooltip }}</span>
-                </v-tooltip>
-                <v-card-actions style="justify-content:center;">
-                  <v-row style="justify-content:center;"
-                    ><v-col style="padding:0;" cols="8" offset="0">
-                      <v-select
-                        style="padding-top:10%"
-                        @change="formUpdate(index)"
-                        :items="input.value"
-                        outlined
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                </v-card-actions>
-              </v-card>
-            </v-col> -->
-            <!-- fileInputs -->
-            <!-- <v-col
-              v-for="(input, i) in service.fileInputs.filter(
-                (x) => x.extra != true,
-              )"
-              :key="input.name"
-              cols="12"
-              xl="2"
-              lg="3"
-              md="4"
-              sm="6"
-              style="height:fit-content"
-            >
-              <v-card light elevation="2">
-                <v-tooltip top>
-                  <template v-slot:activator="{ on }">
-                    <v-card-title
-                      v-on="on"
-                      style="justify-content:center; padding:10px 0px;"
-                      >{{ input.name.replace(/_/g, " ") }}</v-card-title
-                    >
-                  </template>
-                  <span>{{ input.tooltip }}</span>
-                </v-tooltip>
-                <v-card-actions style="justify-content:center;">
-                  <v-row
-                    ><v-col style="padding:0;" cols="8" offset="2">
-                      <v-tooltip right>
-                        <template v-slot:activator="{ on }">
-                          <div v-on="on">
-                            <v-text-field
-                              disabled
-                              style="border-bottom-right-radius: 0; border-bottom-left-radius:0;"
-                              hide-details="true"
-                              v-model="input.value"
-                              class="centered-input"
-                              background-color="transparent"
-                              solo
-                            ></v-text-field>
-                          </div>
-                          <v-btn
-                            @click="fileSelect(index, i, 'fileInputs')"
-                            style="justify-content:center; max-width:100px; border-top-right-radius:0; border-top-left-radius:0;"
-                            block
-                            >{{ input.btnName }}</v-btn
-                          >
-                        </template>
-                        <span>{{ input.value }}</span>
-                      </v-tooltip>
-                    </v-col>
-                  </v-row>
-                </v-card-actions>
-              </v-card>
-            </v-col> -->
-            <!-- booleanFileInputs -->
-            <!-- <v-col
-              v-for="(input, i) in service.booleanFileInputs.filter(
-                (x) => x.extra != true,
-              )"
-              :key="input.name"
-              cols="12"
-              xl="2"
-              lg="3"
-              md="4"
-              sm="6"
-              style="height:fit-content"
-            >
-              <v-card light elevation="2">
-                <v-tooltip top>
-                  <template v-slot:activator="{ on }">
-                    <v-card-title
-                      v-on="on"
-                      style="justify-content:center; padding:10px 0px;"
-                      ><v-checkbox
-                        @change="formUpdate(index)"
-                        hide-details
-                        class="ma-0 pa-0"
-                        style="padding:0"
-                        v-model="input.active"
-                      >
-                        <template v-slot:label>
-                          <div style="color:black">
-                            {{ input.name.replace(/_/g, " ") }}
-                          </div>
-                        </template></v-checkbox
-                      >
-                    </v-card-title>
-                  </template>
-                  <span>{{ input.tooltip }}</span>
-                </v-tooltip>
-                <v-card-actions style="justify-content:center;">
-                  <v-row>
-                    <v-col style="padding:0;" cols="8" offset="2">
-                      <v-tooltip right>
-                        <template v-slot:activator="{ on }">
-                          <div v-on="on">
-                            <v-text-field
-                              disabled
-                              style="border-bottom-right-radius: 0; border-bottom-left-radius:0;"
-                              hide-details="true"
-                              v-model="input.value"
-                              class="centered-input"
-                              background-color="transparent"
-                              solo
-                            ></v-text-field>
-                          </div>
-                          <v-btn
-                            elevation="1"
-                            :disabled="!input.active"
-                            @click="fileSelect(index, i, 'booleanFileInputs')"
-                            style="justify-content:center; max-width:100px; border-top-right-radius:0; border-top-left-radius:0;"
-                            block
-                            >{{ input.btnName }}</v-btn
-                          >
-                        </template>
-                        <span>{{ input.value }}</span>
-                      </v-tooltip>
-                    </v-col>
-                  </v-row>
-                </v-card-actions>
-              </v-card>
-            </v-col> -->
-            <!-- booleanSelectInputs -->
-            <!-- <v-col
-              v-for="input in service.booleanSelectInputs.filter(
-                (x) => x.extra != true,
-              )"
-              :key="input.name"
-              cols="12"
-              xl="2"
-              lg="3"
-              md="4"
-              sm="6"
-              style="height:fit-content"
-            >
-              <v-card light elevation="2">
-                <v-tooltip top>
-                  <template v-slot:activator="{ on }">
-                    <v-card-title
-                      v-on="on"
-                      style="justify-content:center; padding:10px 0px;"
-                      ><v-checkbox
-                        @change="formUpdate(index)"
-                        hide-details
-                        class="ma-0 pa-0"
-                        style="padding:0"
-                        v-model="input.active"
-                      >
-                        <template v-slot:label>
-                          <div style="color:black">
-                            {{ input.name.replace(/_/g, " ") }}
-                          </div>
-                        </template></v-checkbox
-                      >
-                    </v-card-title>
-                  </template>
-                  <span>{{ input.tooltip }}</span>
-                </v-tooltip>
-                <v-card-actions style="justify-content:center;">
-                  <v-row style="justify-content:center;"
-                    ><v-col style="padding:0;" cols="8" offset="0">
-                      <v-select
-                        :disabled="!input.active"
-                        style="padding-top:10%"
-                        @change="formUpdate(index)"
-                        :items="input.value"
-                        outlined
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                </v-card-actions>
-              </v-card>
-            </v-col> -->
-            <!-- chips -->
-            <!-- <v-col
-              v-for="input in service.chipInputs.filter((x) => x.extra != true)"
-              :key="input.name"
-              cols="12"
-              xl="4"
-              lg="6"
-              md="12"
-              sm="12"
-              style="height:fit-content"
-            >
-              <v-card
-                light
-                elevation="2"
-                style="height: fit-content; resize:auto; min-height: 145px"
-              >
-                <v-tooltip top>
-                  <template v-slot:activator="{ on }">
-                    <v-card-title
-                      v-on="on"
-                      style="justify-content:center; padding:10px 0px; "
-                      >{{ input.name.replace(/_/g, " ") }}</v-card-title
-                    >
-                  </template>
-                  <span>{{ input.tooltip }}</span>
-                </v-tooltip>
-                <v-card-actions style="justify-content:center; ">
-                  <v-row style="height: fit-content; resize:auto;"
-                    ><v-col style="padding:0;" cols="10" offset="1">
-                      <v-combobox
-                        type="text"
-                        @change="formUpdate(index)"
-                        append-icon=""
-                        deletable-chips
-                        small-chips
-                        multiple
-                        style="text-transform: uppercase"
-                        @keydown="IUPAC($event)"
-                        v-model="input.value"
-                      ></v-combobox>
-                    </v-col>
-                  </v-row>
-                </v-card-actions>
-              </v-card>
-            </v-col> -->
           </v-row>
           <v-btn
             block
@@ -386,6 +68,13 @@
 
 <script>
 import InputNumeric from "../components/InputNumeric.vue";
+import InputBool from "../components/InputBool.vue";
+import InputSelect from "../components/InputSelect.vue";
+import InputFile from "../components/InputFile.vue";
+import InputBoolFile from "../components/InputBoolFile.vue";
+import InputBoolSelect from "../components/InputBoolSelect.vue";
+import InputChip from "../components/InputChip.vue";
+import InputSlide from "../components/InputSlide.vue";
 // import HelloWorld from "../components/HelloWorld.vue";
 const { dialog } = require("electron").remote;
 
@@ -401,8 +90,14 @@ export default {
     // numberRules: [(v) => isNaN(v) != true],
   }),
   components: {
-    // HelloWorld,
+    InputChip,
     InputNumeric,
+    InputBool,
+    InputSelect,
+    InputFile,
+    InputBoolFile,
+    InputBoolSelect,
+    InputSlide,
   },
   computed: {
     services() {

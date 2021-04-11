@@ -1,43 +1,54 @@
 <template>
-  <v-col
-    v-for="input in service.booleanInputs.filter((x) => x.extra != true)"
-    :key="input.name"
-    cols="12"
-    xl="2"
-    lg="3"
-    md="4"
-    sm="6"
-    style="height:fit-content"
-  >
-    <v-card light elevation="2">
-      <v-tooltip top>
-        <template v-slot:activator="{ on }">
-          <v-card-title
-            v-on="on"
-            style="justify-content:center; padding:10px 0px;"
-            >{{ input.name.replace(/_/g, " ") }}</v-card-title
-          >
-        </template>
-        <span>{{ input.tooltip }}</span>
-      </v-tooltip>
-      <v-card-actions style="justify-content:center;">
-        <v-row style="justify-content:center;"
-          ><v-col style="padding:0;" cols="6" offset="4">
-            <v-switch
-              style="padding-top:10%;"
-              @change="formUpdate(index)"
-              v-model="input.value"
-              color="teal accent-3"
-            ></v-switch>
-          </v-col>
-        </v-row>
-      </v-card-actions>
-    </v-card>
-  </v-col>
+  <v-card light elevation="2">
+    <v-tooltip top>
+      <template v-slot:activator="{ on }">
+        <v-card-title
+          v-on="on"
+          style="justify-content:center; padding:10px 0px;"
+          >{{ input.name.replace(/_/g, " ") }}</v-card-title
+        >
+      </template>
+      <span>{{ input.tooltip }}</span>
+    </v-tooltip>
+    <v-card-actions style="justify-content:center;">
+      <v-row style="justify-content:center;"
+        ><v-col style="padding:0;" cols="6" offset="4">
+          <v-switch
+            style="padding-top:10%;"
+            @change="inputUpdate(input.value)"
+            v-model="input.value"
+            color="teal accent-3"
+          ></v-switch>
+        </v-col>
+      </v-row>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script>
-export default {};
+export default {
+  computed: {
+    input() {
+      return this.$store.state.selectedSteps[this.$route.params.order].services[
+        this.$attrs.serviceIndex
+      ].Inputs[this.$attrs.inputIndex];
+    },
+  },
+  methods: {
+    inputUpdate(value) {
+      this.$store.commit("inputUpdate", {
+        stepIndex: this.$route.params.order,
+        serviceIndex: this.$attrs.serviceIndex,
+        inputIndex: this.$attrs.inputIndex,
+        value: value,
+      });
+    },
+  },
+};
 </script>
 
-<style></style>
+<style scoped>
+.centered-input >>> input {
+  text-align: center;
+}
+</style>
