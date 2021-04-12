@@ -475,48 +475,56 @@ export default new Vuex.Store({
             imageName: "pipecraft/dada2:3.10",
             serviceName: "dada2",
             selected: false,
-            numericInputs: [
+
+            Inputs: [
               {
                 name: "maxEE",
                 value: 1,
                 tooltip:
                   "Discard sequences with more than the specified number of expected errors",
+                type: "numeric",
               },
               {
                 name: "maxN",
                 value: 0,
                 tooltip:
                   "Discard sequences with more than the specified number of N’s",
+                type: "numeric",
               },
               {
                 name: "minLen",
                 value: 20,
                 tooltip:
                   "Remove reads with length less than minLen. minLen is enforced after all other trimming and truncation",
+                type: "numeric",
               },
               {
                 name: "truncQ",
                 value: null,
                 tooltip:
                   "Truncate reads at the first instance of a quality score less than or equal to truncQ",
+                type: "numeric",
               },
               {
                 name: "truncLen",
                 value: 0,
                 tooltip:
                   "Truncate reads after truncLen bases. Reads shorter than this are discarded",
+                type: "numeric",
               },
               {
                 name: "maxLen",
                 value: null,
                 tooltip:
                   "Remove reads with length greater than maxLen. maxLen is enforced on the raw reads",
+                type: "numeric",
               },
               {
                 name: "minQ",
                 value: 0,
                 tooltip:
                   "After truncation, reads contain a quality score below minQ will be discarded",
+                type: "numeric",
               },
             ],
             fileInputs: [],
@@ -632,6 +640,34 @@ export default new Vuex.Store({
       {
         stepName: "assemble paired-end",
         services: [
+          {
+            scriptName: "dada2-assemble.R",
+            imageName: "pipecraft/dada2:3.10",
+            serviceName: "dada2",
+            selected: false,
+            Inputs: [
+              {
+                name: "minOverlap",
+                value: 12,
+                tooltip:
+                  "The minimum length of the overlap required for mergingthe forward and reverse reads.",
+                type: "numeric",
+              },
+              {
+                name: "maxMismatch",
+                value: 0,
+                tooltip: "The maximum mismatches allowed in the overlap region",
+                type: "numeric",
+              },
+              {
+                name: "returnRejects",
+                value: false,
+                tooltip:
+                  "Return and retain, the pairs that that were rejected based on mismatches in the overlap region",
+                type: "bool",
+              },
+            ],
+          },
           {
             scriptName: "pandaseq-assemble.sh",
             imageName: "pipecraft/pandaseq:2.11",
@@ -775,6 +811,22 @@ export default new Vuex.Store({
       {
         stepName: "remove chimeras",
         services: [
+          {
+            scriptName: "dada2-chimera.R",
+            imageName: "pipecraft/dada2:3.10",
+            serviceName: "dada2",
+            selected: false,
+            Inputs: [
+              {
+                name: "method",
+                items: ["consensus", "pooled", "per-sample"],
+                value: "consensus",
+                tooltip:
+                  "If 'pooled': The samples in the sequence table are all pooled together for bimera identification, If 'consensus': The samples in a sequence table are independently checked for bimeras, If 'per-sample': The samples in a sequence table are independently checked for bimeras",
+                type: "select",
+              },
+            ],
+          },
           {
             scriptName: "vsearch-chimera.sh",
             imageName: "pipecraft/vsearch:2.15.0",
@@ -972,6 +1024,35 @@ export default new Vuex.Store({
             selectInputs: [],
             chipInputs: [],
             slideInputs: [],
+          },
+          {
+            scriptName: "dada2-classifier.R",
+            imageName: "pipecraft/dada2:3.10",
+            serviceName: "dada2",
+            selected: false,
+            Inputs: [
+              {
+                name: "refFasta",
+                btnName: "select file",
+                value: "undefined",
+                tooltip: "Select a reference fasta file",
+                type: "file",
+              },
+              {
+                name: "minBoot",
+                value: 50,
+                tooltip:
+                  "The minimum bootstrap confidence for assigning a taxonomic level.",
+                type: "numeric",
+              },
+              {
+                name: "tryRC",
+                value: false,
+                tooltip:
+                  "the reverse-complement of each sequences will be used for classification if it is a better match to the reference sequences than the forward sequence.",
+                type: "bool",
+              },
+            ],
           },
           {
             scriptName: "",
