@@ -3,7 +3,6 @@
 import { app, protocol, BrowserWindow, ipcMain } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
-import { promises as fs } from "fs";
 // import { exitCode, stdout } from "process";
 var Docker = require("dockerode");
 var docker = new Docker({ socketPath: "//./pipe/docker_engine" });
@@ -13,28 +12,6 @@ var stderr = new streams.WritableStream();
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 
-// function runStep(serviceImage, scriptName, envVariables) {
-//   return new Promise((resolve, reject) => {
-//     // var imageList = docker.listImages();
-//     // resolve(image)
-//     var result = docker
-//       .run("pipecraft/mothur:1.43", ["bash", "-c", "ls"], [stdout, stderr], {
-//         Tty: false,
-//       })
-//       .then(function(data) {
-//         var output = data[0];
-//         var container = data[1];
-//         container.remove();
-//       })
-//       .then(function(data) {
-//         console.log("container removed");
-//       })
-//       .catch(function(err) {
-//         console.log(err);
-//       });
-//     resolve(result);
-//   });
-// }
 async function imageCheck(imageName) {
   console.log(imageName);
   let repoList = [];
@@ -52,7 +29,6 @@ async function imageCheck(imageName) {
 ipcMain.on(
   "runStep",
   async (event, imageName, scriptName, envVariables, Input) => {
-    await imageCheck(imageName);
     var result = await docker
       .run(
         imageName,
@@ -87,7 +63,9 @@ ipcMain.on(
       })
       .catch((err) => {
         console.log(err);
-        let resObj = { statusCode: err.statusCode, log: err.Error };
+        console.log(err);
+        console.log(err);
+        let resObj = { statusCode: err.code, log: err };
         return resObj;
       });
     console.log(process.cwd());
@@ -98,6 +76,11 @@ ipcMain.on(
   }
 );
 
+ipcMain.on("checkDockerStatus", async (event) => {
+  var result = await docker.ping();
+  console.log(result);
+  event.returnValue = result;
+});
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: "app", privileges: { secure: true, standard: true } },
