@@ -56,7 +56,7 @@ ipcMain.on(
     var result = await docker
       .run(
         imageName,
-        ["bash", "-c", `/scripts/${scriptName}`],
+        ["sh", "-c", `/scripts/${scriptName}`],
         [stdout, stderr],
         {
           Tty: false,
@@ -69,7 +69,7 @@ ipcMain.on(
             ],
           },
           Env: envVariables,
-        },
+        }
       )
       .then(([res, container]) => {
         let resObj = { statusCode: res.StatusCode };
@@ -95,7 +95,7 @@ ipcMain.on(
     event.returnValue = result;
     stdout = new streams.WritableStream();
     stderr = new streams.WritableStream();
-  },
+  }
 );
 
 // Scheme must be registered before the app is ready

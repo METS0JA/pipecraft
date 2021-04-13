@@ -18,27 +18,28 @@ export default new Vuex.Store({
             imageName: "pipecraft/reorient:1",
             serviceName: "reorient",
             selected: false,
-            fileInputs: [],
-            numericInputs: [
-              { name: "mismatches", value: 2, tooltip: "???????????" },
-            ],
-            booleanInputs: [],
-            booleanSelectInputs: [],
-            booleanFileInputs: [],
-            selectInputs: [],
-            chipInputs: [
+            extraInputs: [],
+            Inputs: [
+              {
+                name: "mismatches",
+                value: 2,
+                tooltip: "???????????",
+                type: "numeric",
+              },
+
               {
                 name: "forward_primers",
                 value: [],
                 tooltip: "manually define up to 13 primers",
+                type: "chip",
               },
               {
                 name: "reverse_primers",
                 value: [],
                 tooltip: "manually define up to 13 primers",
+                type: "chip",
               },
             ],
-            slideInputs: [],
           },
         ],
       },
@@ -50,199 +51,98 @@ export default new Vuex.Store({
             imageName: "mothur:1.43",
             serviceName: "demultiplex",
             selected: false,
-            fileInputs: [
+            extraInputs: [],
+            Inputs: [
               {
                 name: "add a barcodes file",
                 btnName: "select file",
                 value: "No file selected",
                 tooltip:
                   "Add a file that can contain the sequences of the forward and reverse primers and barcodes and their sample identfiers.",
+                type: "file",
               },
-            ],
-            numericInputs: [
               {
                 name: "bdiffs",
                 value: 1,
                 tooltip:
                   "Maximum number of differences to the barcode sequence.",
+                type: "numeric",
               },
               {
                 name: "pdiffs",
                 value: 2,
                 tooltip:
                   "Maximum number of differences to the primer sequence.",
+                type: "numeric",
               },
               {
                 name: "tdiffs",
                 value: 2,
                 tooltip:
                   "Maximum total number of differences to the barcode and primer.",
+                type: "numeric",
               },
               {
                 name: "min_unique_size",
                 value: 2,
                 tooltip:
                   "Discard sequences with an abundance value smaller than set value",
+                type: "numeric",
               },
             ],
-            booleanInputs: [],
-            booleanSelectInputs: [],
-            booleanFileInputs: [],
-            selectInputs: [],
-            chipInputs: [],
-            slideInputs: [],
           },
           {
             scriptName: "",
             imageName: "",
             serviceName: "example inputs",
             selected: false,
-            numericInputs: [
-              { name: "param1", value: 1, tooltip: "yo" },
-              { name: "param2", value: 2, tooltip: "yo mees" },
-              { name: "param12", value: 2, tooltip: "yo mees", extra: true },
-              { name: "param11", value: 2, tooltip: "yo mees", extra: true },
-            ],
-            booleanInputs: [
-              { name: "param3", value: true, tooltip: "cya" },
-              { name: "param4", value: true, tooltip: "tere" },
-            ],
-            selectInputs: [
-              {
-                name: "param5",
-                value: ["16S", "ITS", "18S"],
-                tooltip: "zzzZZzzZZZzzz",
-              },
-              {
-                name: "param6",
-                value: ["Silva", "Unite", "GreenGenes", "RDP"],
-                tooltip: "zzzZZzzZZZzzz",
-              },
-            ],
-            fileInputs: [
-              {
-                name: "file_1",
-                btnName: "select file",
-                value: "No file selected",
-                tooltip: "zzZZzz",
-              },
-              {
-                name: "file_2",
-                btnName: "select file",
-                value: "No file selected",
-                tooltip: "zzZZzz",
-              },
-            ],
-            booleanFileInputs: [
-              {
-                name: "bool_file_1",
-                btnName: "select file",
-                value: "No file selected",
-                tooltip: "zzZZzz",
-                active: false,
-              },
-              {
-                name: "bool_file_2",
-                btnName: "select file",
-                value: "No file selected",
-                tooltip: "zzZZzz",
-                active: false,
-              },
-            ],
-            booleanSelectInputs: [
-              {
-                name: "bool_select_1",
-                value: ["16S", "ITS", "18S"],
-                tooltip: "zzZZzz",
-                active: false,
-              },
-              {
-                name: "bool_select_2",
-                value: ["Silva", "Unite", "GreenGenes", "RDP"],
-                tooltip: "zzZZzz",
-                active: false,
-              },
-            ],
-            chipInputs: [
-              {
-                name: "chipSelect",
-                value: ["16S", "ITS", "18S"],
-                tooltip: "zzzZZzzZZZzzz",
-              },
-              {
-                name: "chipSelect2",
-                value: ["Silva", "Unite", "GreenGenes", "RDP"],
-                tooltip: "zzzZZzzZZZzzz",
-              },
-            ],
-            slideInputs: [
-              {
-                name: "slide1",
-                value: 0,
-                tooltip: "slide 4 life",
-                max: 1,
-                min: 0,
-                step: 0.01,
-              },
-            ],
-          },
-          {
-            scriptName: "",
-            imageName: "",
-            serviceName: "Inputs as 1",
-            selected: false,
+            extraInputs: [],
             Inputs: [
               {
-                name: "param12",
+                name: "param1",
                 value: 2,
-                tooltip: "yo mees",
+                tooltip: "numeric",
                 type: "numeric",
               },
+              { name: "param2", value: true, tooltip: "boolean", type: "bool" },
               {
-                name: "param11",
-                value: 2,
-                tooltip: "yo mees",
-                type: "numeric",
-              },
-              { name: "param3", value: true, tooltip: "cya", type: "bool" },
-              {
-                name: "param5",
+                name: "select 1",
                 items: ["16S", "ITS", "18S"],
                 value: "16S",
-                tooltip: "zzzZZzzZZZzzz",
+                tooltip: "selection",
                 type: "select",
               },
               {
-                name: "file_1",
+                name: "file 1",
                 btnName: "select file",
                 value: "undefined",
-                tooltip: "zzZZzz",
+                tooltip: "file select",
                 type: "file",
               },
               {
-                name: "bool_file_1",
+                name: "file 2",
                 btnName: "select file",
                 value: "undefined",
-                tooltip: "zzZZzz",
+                tooltip: "boolean file select",
                 active: false,
                 type: "boolfile",
               },
               {
-                name: "bool_select_1",
+                name: "select 2",
                 items: ["16S", "ITS", "18S"],
-                tooltip: "zzZZzz",
+                tooltip: "boolean select",
                 value: "undefined",
                 active: true,
                 type: "boolselect",
               },
               {
-                name: "chipSelect",
-                value: ["16S", "ITS", "18S"],
-                tooltip: "zzzZZzzZZZzzz",
+                name: "chips",
+                value: ["ACCTTGG", "GCGTAAA", "YNAAGGCCTT"],
+                tooltip: "IUPAC primers",
                 type: "chip",
               },
               {
-                name: "slide1",
+                name: "slide",
                 value: 0,
                 tooltip: "slide 4 life",
                 max: 1,
@@ -262,102 +162,85 @@ export default new Vuex.Store({
             imageName: "pipecraft/cutadapt:2.10",
             serviceName: "cutadapt",
             selected: false,
-            fileInputs: [],
-            numericInputs: [
+            extraInputs: [],
+            Inputs: [
               {
                 name: "error_rate",
                 value: 0.15,
                 tooltip:
                   "Allowed error rate in primer search. By default, error rate is 0.1, which means that in e.g. 1 error is allowd in a 10 bp primer (10% error rate).",
+                type: "numeric",
               },
               {
                 name: "min_seq_length",
                 value: 10,
                 tooltip: "minimum length of the output sequence",
-                extra: true,
+                type: "numeric",
               },
               {
                 name: "cores",
                 value: 1,
                 tooltip:
                   "number of cores to use. For paired-end dta in fasta format, set to 1 [default]. For fastq formats you may set the value to 0 to use all cores.",
-                extra: true,
+                type: "numeric",
               },
-            ],
-            booleanInputs: [
               {
                 name: "revcomp",
                 value: true,
                 tooltip:
                   "search also revere complementary matches for barcodes",
-                extra: true,
+                type: "bool",
               },
               {
                 name: "no_indels",
                 value: false,
                 tooltip:
                   "do not allow insertions or deletions is primer search. Mismatches are the only type of errprs accounted in the error rate parameter. ",
-                extra: true,
+                type: "bool",
               },
               {
                 name: "discard_untrimmed",
                 value: true,
                 tooltip:
                   "Discard sequences where specified primers were not found.",
-                extra: true,
+                type: "bool",
               },
-            ],
-            booleanSelectInputs: [],
-            booleanFileInputs: [],
-            selectInputs: [
               {
                 name: "seqs_to_keep",
                 value: ["keep_all", "keep_only_linked"],
                 tooltip:
                   "Keep seqs with primers found in both ends(linked), or keeps seqs with primer found atlest in one end(all)",
+                type: "select",
               },
-            ],
-            chipInputs: [
               {
                 name: "forward_primers",
                 value: [],
                 tooltip: "Add up to 13 PCR primers",
+                type: "chip",
               },
               {
                 name: "reverse_primers",
                 value: [],
                 tooltip: "Add up to 13 PCR primers",
+                type: "chip",
               },
             ],
-            slideInputs: [],
           },
           {
             scriptName: "trimmomatic-cut.sh",
             imageName: "pipecraft/trimmomatic:0.39",
             serviceName: "trimmomatic",
             selected: false,
-            fileInputs: [],
-            numericInputs: [],
-            booleanInputs: [],
-            booleanSelectInputs: [],
-            booleanFileInputs: [],
-            selectInputs: [],
-            chipInputs: [],
-            slideInputs: [],
+            extraInputs: [],
+            Inputs: [],
           },
           {
             scriptName: "mothur-cut.sh",
             imageName: "pipecraft/mothur:1.43",
             serviceName: "mothur",
             selected: false,
-            fileInputs: [],
-            numericInputs: [],
-            booleanInputs: [],
-            booleanSelectInputs: [],
-            booleanFileInputs: [],
-            selectInputs: [],
-            chipInputs: [],
-            slideInputs: [],
+            extraInputs: [],
+            Inputs: [],
           },
         ],
       },
@@ -369,113 +252,114 @@ export default new Vuex.Store({
             imageName: "pipecraft/vsearch:2.15.0",
             serviceName: "vsearch",
             selected: false,
-            numericInputs: [
+            extraInputs: [],
+            Inputs: [
               {
                 name: "fastq_maxee",
                 value: 1,
                 tooltip:
                   "Discard sequences with more than the specified number of expected error",
+                type: "numeric",
               },
               {
                 name: "fastq_maxns",
                 value: 0,
                 tooltip:
                   "Discard sequences with more than the specified number of N’s",
+                type: "numeric",
               },
               {
                 name: "fastq_minlen",
                 value: 1,
                 tooltip:
                   "Discard sequences with less than the specified number of bases",
+                type: "numeric",
               },
               {
                 name: "fastq_maxlen",
                 value: null,
                 tooltip:
                   "Discard sequences with more than the specified number of bases",
+                type: "numeric",
               },
               {
                 name: "fastq_truncqual",
                 value: 0,
                 tooltip:
                   "Truncate sequences starting from the first basewith the specified base quality score value or lower",
+                type: "numeric",
               },
               {
                 name: "fastq_maxee_rate",
                 value: null,
                 tooltip:
                   "Discard sequences with more than the specified number of expected errors per base",
+                type: "numeric",
               },
               {
                 name: "fastq_qmin",
                 value: 0,
                 tooltip:
                   "Specify the minimum quality score accepted for FASTQ files",
+                type: "numeric",
               },
             ],
-            fileInputs: [],
-            booleanInputs: [],
-            booleanSelectInputs: [],
-            booleanFileInputs: [],
-            selectInputs: [],
-            chipInputs: [],
-            slideInputs: [],
           },
           {
             scriptName: "mothur-quality.sh",
             imageName: "pipecraft/mothur:1.43",
             serviceName: "mothur",
             selected: false,
-            numericInputs: [
+            extraInputs: [],
+            Inputs: [
               {
                 name: "qwindowaverage",
                 value: 30,
                 tooltip:
                   "Set the minimum average quality score allowed over a window",
+                type: "numeric",
               },
               {
                 name: "qwindowsize",
                 value: 32,
                 tooltip: "Set the number of bases in a window",
+                type: "numeric",
               },
               {
                 name: "maxambig",
                 value: 0,
                 tooltip: "Set the number of allowed ambiguous base calls",
+                type: "numeric",
               },
               {
                 name: "qthreshold",
                 value: null,
                 tooltip:
                   "Discard sequences with a basecall below set quality value",
+                type: "numeric",
               },
               {
                 name: "minlength",
                 value: null,
                 tooltip:
                   "Discard sequences with less than the specified number of bases",
+                type: "numeric",
               },
               {
                 name: "maxlength",
                 value: null,
                 tooltip:
                   "Discard sequences with more than the specified number of bases",
+                type: "numeric",
               },
             ],
-            fileInputs: [],
-            booleanInputs: [],
-            booleanSelectInputs: [],
-            booleanFileInputs: [],
-            selectInputs: [],
-            chipInputs: [],
-            slideInputs: [],
           },
           {
             scriptName: "dada2-quality.R",
             imageName: "pipecraft/dada2:3.10",
             serviceName: "dada2",
             selected: false,
-
+            extraInputs: [],
             Inputs: [
               {
                 name: "maxEE",
@@ -527,113 +411,106 @@ export default new Vuex.Store({
                 type: "numeric",
               },
             ],
-            fileInputs: [],
-            booleanInputs: [],
-            booleanSelectInputs: [],
-            booleanFileInputs: [],
-            selectInputs: [],
-            chipInputs: [],
-            slideInputs: [],
           },
           {
             scriptName: "usearch-quality.sh",
             imageName: "pipecraft/usearch",
             serviceName: "usearch",
             selected: false,
-            numericInputs: [
+            extraInputs: [],
+            Inputs: [
               {
                 name: "fastq_maxee",
                 value: null,
                 tooltip:
                   "Discard sequences with more than the specified number of expected errors for all bases in the read (is used after any truncation options have been applied).",
+                type: "numeric",
               },
               {
                 name: "fastq_maxns",
                 value: null,
                 tooltip:
                   "Discard sequences with more than the specified number of N’s",
+                type: "numeric",
               },
               {
                 name: "fastq_minlen",
                 value: null,
                 tooltip:
                   "Discard sequences with less than the specified number of bases",
+                type: "numeric",
               },
               {
                 name: "fastq_stripleft",
                 value: null,
                 tooltip: "Delete the first N bases in the read",
+                type: "numeric",
               },
               {
                 name: "fastq_truncqual",
                 value: null,
                 tooltip:
                   "Truncate sequences starting from the first basewith the specified base quality score value or lower",
+                type: "numeric",
               },
               {
                 name: "fastq_maxee_rate",
                 value: null,
                 tooltip:
                   "Discard sequences with more than the specified number of expected errors per base",
+                type: "numeric",
               },
             ],
-            fileInputs: [],
-            booleanInputs: [],
-            booleanSelectInputs: [],
-            booleanFileInputs: [],
-            selectInputs: [],
-            chipInputs: [],
-            slideInputs: [],
           },
           {
             scriptName: "trimmomatic-quality.sh",
             imageName: "pipecraft/trimmomatic:0.39",
             serviceName: "trimmomatic",
             selected: false,
-            numericInputs: [
+            extraInputs: [],
+            Inputs: [
               {
                 name: "windowSize",
                 value: 1,
                 tooltip:
                   "Perform a sliding window trimming, cutting once the average quality within the window falls below a treshold",
+                type: "numeric",
               },
               {
                 name: "requiredQuality",
                 value: 0,
                 tooltip:
                   "Perform a sliding window trimming, cutting once the average quality within the window falls below a treshold",
+                type: "numeric",
               },
               {
                 name: "LEADING",
                 value: null,
                 tooltip:
                   "Cut bases off the start of a read, if below a threshold quality",
+                type: "numeric",
               },
               {
                 name: "TRAILING",
                 value: null,
                 tooltip:
                   "Cut bases off the end of a read, if below a threshold quality",
+                type: "numeric",
               },
               {
                 name: "MINLEN",
                 value: null,
                 tooltip: "Drop the read if it is below a specified length",
+                type: "numeric",
               },
               {
                 name: "AVGQAUL",
                 value: null,
                 tooltip:
                   "Drop the read if the average quality is below the specified level",
+                type: "numeric",
               },
             ],
-            fileInputs: [],
-            booleanInputs: [],
-            booleanSelectInputs: [],
-            booleanFileInputs: [],
-            selectInputs: [],
-            chipInputs: [],
-            slideInputs: [],
           },
         ],
       },
@@ -645,6 +522,7 @@ export default new Vuex.Store({
             imageName: "pipecraft/dada2:3.10",
             serviceName: "dada2",
             selected: false,
+            extraInputs: [],
             Inputs: [
               {
                 name: "minOverlap",
@@ -673,138 +551,134 @@ export default new Vuex.Store({
             imageName: "pipecraft/pandaseq:2.11",
             serviceName: "pandaseq",
             selected: false,
-            numericInputs: [
+            extraInputs: [],
+            Inputs: [
               {
                 name: "minoverlap -o",
                 value: 1,
                 tooltip:
                   "Sets the minimum overlap between forward and reverse reads.",
+                type: "numeric",
               },
               {
                 name: "minlen -l",
                 value: 1,
                 tooltip:
                   "Sets the minimum length for a sequence before assembly",
+                type: "numeric",
               },
               {
                 name: "maxoverlap -O",
                 value: 1,
                 tooltip:
                   "Sets the maximum overlap between forward and reverse reads.",
+                type: "numeric",
               },
               {
                 name: "maxlen -L",
                 value: 1,
                 tooltip: "Sets maximum length for a sequence before assembly.",
+                type: "numeric",
               },
-            ],
-            booleanInputs: [
               {
                 name: "write unpaired",
                 value: false,
                 tooltip:
                   "Write sequences for which the optimal alignment cannot be computed to a file as concatenated pairs.",
+                type: "bool",
               },
             ],
-            fileInputs: [],
-            booleanSelectInputs: [],
-            booleanFileInputs: [],
-            selectInputs: [],
-            chipInputs: [],
-            slideInputs: [],
           },
           {
             scriptName: "flash-assemble.sh",
-            imageName: "pipecraft/flash",
-            serviceName: "flash:2",
+            imageName: "pipecraft/flash:2",
+            serviceName: "flash",
             selected: false,
-            numericInputs: [
+            extraInputs: [],
+            Inputs: [
               {
                 name: "min overlap -m",
                 value: 100,
                 tooltip:
                   "Set the minimum required overlap length between two reads to provide a confident overlap.",
+                type: "numeric",
               },
               {
                 name: "mismatch ratio -x",
                 value: 0.25,
                 tooltip:
                   "Set the maximum allowed ratio of the number of mismatches at the overlap length.",
+                type: "numeric",
               },
               {
                 name: "max overlap -M",
                 value: null,
                 tooltip:
                   "Set the maximum overlap length expected in approximately 90% of read pairs.",
+                type: "numeric",
               },
               {
                 name: "read length -r",
                 value: 1,
                 tooltip: "Average read length.",
+                type: "numeric",
               },
               {
                 name: "fragment length -f",
                 value: 1,
                 tooltip: "Average fragment length",
+                type: "numeric",
               },
               {
                 name: "σ fragment lengths -s",
                 value: 1,
                 tooltip:
                   "if you do not know standard deviation of the fragment library, you can probably assume that the standard deviation is 10% of the average fragment length",
+                type: "numeric",
               },
               {
                 name: "phredOffset -p",
                 value: 1,
                 tooltip:
                   "Set the smallest ASCII value of the characters used to represent quality values of bases in fastq files. 33 for latest Illumina and Sanger or 64 for earlier Illumina.",
+                type: "numeric",
               },
             ],
-            fileInputs: [],
-            booleanInputs: [],
-            booleanSelectInputs: [],
-            booleanFileInputs: [],
-            selectInputs: [],
-            chipInputs: [],
-            slideInputs: [],
           },
           {
             scriptName: "vsearch-assemble.sh",
             imageName: "pipecraft/vsearch:2.15.0",
             serviceName: "vsearch",
             selected: false,
-            numericInputs: [
+            extraInputs: [],
+            Inputs: [
               {
                 name: "--fastq_minmergelen",
                 value: 1,
                 tooltip: "Specify the minimum length of the merged sequence",
+                type: "numeric",
               },
               {
                 name: "--fastq_maxdiffs",
                 value: 1,
                 tooltip:
                   "Specify the maximum number of non-matching nucleotides allowed in the overlap region.",
+                type: "numeric",
               },
               {
                 name: "--fastq_minovlen",
                 value: 1,
                 tooltip: "Specify the minimum overlap between the mergedreads.",
+                type: "numeric",
               },
-            ],
-            booleanInputs: [
               {
                 name: "allowmergestagger",
                 value: true,
                 tooltip:
                   "Allow to merge staggered read pairs.(--fastq_allowmergestagger) Staggered pairsare pairs where the 3’ end of the reverse read has an overhang to the left of the 5’ end of the forward read",
+                type: "bool",
               },
             ],
-            fileInputs: [],
-            booleanSelectInputs: [],
-            booleanFileInputs: [],
-            selectInputs: [],
-            chipInputs: [],
-            slideInputs: [],
           },
         ],
       },
@@ -816,6 +690,7 @@ export default new Vuex.Store({
             imageName: "pipecraft/dada2:3.10",
             serviceName: "dada2",
             selected: false,
+            extraInputs: [],
             Inputs: [
               {
                 name: "method",
@@ -832,71 +707,70 @@ export default new Vuex.Store({
             imageName: "pipecraft/vsearch:2.15.0",
             serviceName: "vsearch",
             selected: false,
-            booleanInputs: [
-              { name: "denovno", value: false, tooltip: "zzzZZzzZZZzzz" },
+            extraInputs: [],
+            Inputs: [
               {
-                name: "refrence based",
-                value: false,
+                name: "abskew",
+                value: 1,
                 tooltip: "zzzZZzzZZZzzz",
+                type: "numeric",
               },
-            ],
-
-            numericInputs: [
-              { name: "abskew", value: 1, tooltip: "zzzZZzzZZZzzz" },
               {
                 name: "abundace annotation",
                 value: 1,
                 tooltip: "zzzZZzzZZZzzz",
+                type: "numeric",
               },
-            ],
-            fileInputs: [
               {
-                name: "select refrence DB",
-                btnName: "select file",
-                value: "No file selected",
-                tooltip: "zzZZzz",
+                name: "denovno",
+                value: false,
+                tooltip: "zzzZZzzZZZzzz",
+                type: "bool",
+              },
+              {
+                name: "refrence based",
+                active: false,
+                btnName: "select file",
+                value: "undefined",
+                tooltip: "zzzZZzzZZZzzz",
+                type: "boolfile",
               },
             ],
-            booleanSelectInputs: [],
-            booleanFileInputs: [],
-            selectInputs: [],
-            chipInputs: [],
-            slideInputs: [],
           },
           {
             scriptName: "usearch-chimera.sh",
             imageName: "pipecraft/usearch",
             serviceName: "usearch",
             selected: false,
-            booleanInputs: [
-              { name: "denovo", value: false, tooltip: "zzzZZzzZZZzzz" },
+            extraInputs: [],
+            Inputs: [
               {
-                name: "refrence based",
-                value: false,
+                name: "abskew",
+                value: 1,
                 tooltip: "zzzZZzzZZZzzz",
+                type: "numeric",
               },
-            ],
-            numericInputs: [
-              { name: "abskew", value: 1, tooltip: "zzzZZzzZZZzzz" },
               {
                 name: "abundance annotation",
                 value: 1,
                 tooltip: "zzzZZzzZZZzzz",
+                type: "numeric",
               },
-            ],
-            fileInputs: [
               {
-                name: "select refrence DB",
+                name: "denovo",
+                value: false,
+                tooltip: "zzzZZzzZZZzzz",
+                type: "bool",
+              },
+              {
+                name: "refrence based",
+                active: false,
                 btnName: "select file",
-                value: "No file selected",
+                value: "undefined",
                 tooltip: "zzZZzz",
+                type: "boolfile",
               },
             ],
-            booleanSelectInputs: [],
-            booleanFileInputs: [],
-            selectInputs: [],
-            chipInputs: [],
-            slideInputs: [],
           },
         ],
       },
@@ -908,42 +782,24 @@ export default new Vuex.Store({
             imageName: "pipecraft/itsx:latest",
             serviceName: "itsx",
             selected: false,
-            fileInputs: [],
-            numericInputs: [],
-            booleanInputs: [],
-            booleanSelectInputs: [],
-            booleanFileInputs: [],
-            selectInputs: [],
-            chipInputs: [],
-            slideInputs: [],
+            extraInputs: [],
+            Inputs: [],
           },
           {
             scriptName: "metaxa-extraction.sh",
             imageName: "pipecraft/metaxa:latest",
             serviceName: "metaxa",
             selected: false,
-            fileInputs: [],
-            numericInputs: [],
-            booleanInputs: [],
-            booleanSelectInputs: [],
-            booleanFileInputs: [],
-            selectInputs: [],
-            chipInputs: [],
-            slideInputs: [],
+            extraInputs: [],
+            Inputs: [],
           },
           {
             scriptName: "vxtractor-extraction.sh",
             imageName: "pipecraft/vxtractor:latest",
             serviceName: "vxtractor",
             selected: false,
-            fileInputs: [],
-            numericInputs: [],
-            booleanInputs: [],
-            booleanSelectInputs: [],
-            booleanFileInputs: [],
-            selectInputs: [],
-            chipInputs: [],
-            slideInputs: [],
+            extraInputs: [],
+            Inputs: [],
           },
         ],
       },
@@ -955,56 +811,32 @@ export default new Vuex.Store({
             imageName: "pipecraft/mothur:1.43",
             serviceName: "mothur",
             selected: false,
-            fileInputs: [],
-            numericInputs: [],
-            booleanInputs: [],
-            booleanSelectInputs: [],
-            booleanFileInputs: [],
-            selectInputs: [],
-            chipInputs: [],
-            slideInputs: [],
+            extraInputs: [],
+            Inputs: [],
           },
           {
             scriptName: "cd-hit-cluster.sh",
             imageName: "pipecraft/cdhit:4.8.1",
             serviceName: "cd-hit",
             selected: false,
-            fileInputs: [],
-            numericInputs: [],
-            booleanInputs: [],
-            booleanSelectInputs: [],
-            booleanFileInputs: [],
-            selectInputs: [],
-            chipInputs: [],
-            slideInputs: [],
+            extraInputs: [],
+            Inputs: [],
           },
           {
             scriptName: "swarm-cluster.sh",
             imageName: "pipecraft/swarm:3.0.0",
             serviceName: "swarm",
             selected: false,
-            fileInputs: [],
-            numericInputs: [],
-            booleanInputs: [],
-            booleanSelectInputs: [],
-            booleanFileInputs: [],
-            selectInputs: [],
-            chipInputs: [],
-            slideInputs: [],
+            extraInputs: [],
+            Inputs: [],
           },
           {
             scriptName: "vsearch-cluster.sh",
             imageName: "pipecraft/vsearch:2.15.0",
             serviceName: "vsearch",
             selected: false,
-            fileInputs: [],
-            numericInputs: [],
-            booleanInputs: [],
-            booleanSelectInputs: [],
-            booleanFileInputs: [],
-            selectInputs: [],
-            chipInputs: [],
-            slideInputs: [],
+            extraInputs: [],
+            Inputs: [],
           },
         ],
       },
@@ -1016,20 +848,15 @@ export default new Vuex.Store({
             imageName: "",
             serviceName: "mothur",
             selected: false,
-            fileInputs: [],
-            numericInputs: [],
-            booleanInputs: [],
-            booleanSelectInputs: [],
-            booleanFileInputs: [],
-            selectInputs: [],
-            chipInputs: [],
-            slideInputs: [],
+            extraInputs: [],
+            Inputs: [],
           },
           {
             scriptName: "dada2-classifier.R",
             imageName: "pipecraft/dada2:3.10",
             serviceName: "dada2",
             selected: false,
+            extraInputs: [],
             Inputs: [
               {
                 name: "refFasta",
@@ -1059,14 +886,8 @@ export default new Vuex.Store({
             imageName: "",
             serviceName: "blast",
             selected: false,
-            fileInputs: [],
-            numericInputs: [],
-            booleanInputs: [],
-            booleanSelectInputs: [],
-            booleanFileInputs: [],
-            selectInputs: [],
-            chipInputs: [],
-            slideInputs: [],
+            extraInputs: [],
+            Inputs: [],
           },
         ],
       },
@@ -1076,25 +897,6 @@ export default new Vuex.Store({
   mutations: {
     toggleExtra(state, payload) {
       console.log(state, payload);
-      const inputTypes = [
-        "chipInputs",
-        "fileInputs",
-        "numericInputs",
-        "booleanInputs",
-        "booleanFileInputs",
-        "selectInputs",
-        "booleanSelectInputs",
-      ];
-      for (let index = 0; index < inputTypes.length; index++) {
-        var element = inputTypes[index];
-        state.selectedSteps[payload.stepIndex].services[payload.serviceIndex][
-          element
-        ].forEach((input) => {
-          if (input.extra !== undefined) {
-            input.extra = !input.extra;
-          }
-        });
-      }
     },
     addWorkingDir(state, filePath) {
       state.workingDir = filePath;

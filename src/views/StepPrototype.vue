@@ -51,15 +51,16 @@
               /></v-container>
             </v-col>
           </v-row>
-          <v-btn
-            block
-            light
-            class="mt-5"
-            style="justify-content: center;"
-            @click="toggleExtra($event, index)"
+          <v-row justify="center">
+            <v-btn
+              light
+              class="mt-5 mb-5"
+              style="justify-content: center;"
+              @click="toggleExtra($event, index)"
+            >
+              toggle advance options
+            </v-btn></v-row
           >
-            toggle extra options
-          </v-btn>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
