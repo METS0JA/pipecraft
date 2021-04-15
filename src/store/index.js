@@ -804,12 +804,20 @@ export default new Vuex.Store({
         ],
       },
       {
-        stepName: "cluster",
+        stepName: "cluster | ASV",
         services: [
           {
             scriptName: "mothur-cluster.sh",
             imageName: "pipecraft/mothur:1.43",
             serviceName: "mothur",
+            selected: false,
+            extraInputs: [],
+            Inputs: [],
+          },
+          {
+            scriptName: "dada2-asv.sh",
+            imageName: "pipecraft/dada2:3.10",
+            serviceName: "dada2",
             selected: false,
             extraInputs: [],
             Inputs: [],
@@ -895,6 +903,9 @@ export default new Vuex.Store({
   },
   getters: {},
   mutations: {
+    loadWorkflow(state, payload) {
+      state.selectedSteps = payload;
+    },
     toggleExtra(state, payload) {
       console.log(state, payload);
     },

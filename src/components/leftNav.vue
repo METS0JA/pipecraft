@@ -91,7 +91,7 @@ export default {
                 }
               })
               .catch((err) => {
-                alert(err);
+                console.log(err);
               });
           }
         });

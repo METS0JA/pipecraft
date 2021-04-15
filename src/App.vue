@@ -41,6 +41,9 @@ export default {
 </script>
 
 <style>
+::-webkit-scrollbar {
+  display: none;
+}
 .slide-fade-enter-active {
   transition: all 0.3s ease;
 }

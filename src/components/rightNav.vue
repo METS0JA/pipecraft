@@ -1,19 +1,33 @@
 <template>
   <v-list dense>
     <v-list-item>
-      <v-list-item-content @click="checkStat">
-        <v-icon color="lime">
-          mdi-docker
-        </v-icon>
-      </v-list-item-content>
+      <v-tooltip left nudge-left="10">
+        <template v-slot:activator="{ on }">
+          <v-list-item-content v-on="on">
+            <v-icon large :color="dockerActive">
+              mdi-docker
+            </v-icon>
+          </v-list-item-content>
+        </template>
+        <span v-if="dockerActive === '#1DE9B6'">docker desktop is running</span>
+        <span v-else-if="dockerActive === '#FF7043'"
+          >docker desktop stopped</span
+        >
+      </v-tooltip>
     </v-list-item>
 
     <v-divider class="mt-2 mb-2"></v-divider>
 
-    <v-list-item ripple link v-for="item in this.items" :key="item.title">
+    <v-list-item
+      class="mt-5"
+      ripple
+      link
+      v-for="item in this.items"
+      :key="item.title"
+    >
       <v-tooltip left nudge-left="10">
         <template v-slot:activator="{ on }">
-          <v-list-item-content v-on="on">
+          <v-list-item-content v-on="on" @click="item.action">
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-item-content>
         </template>
@@ -24,42 +38,95 @@
 </template>
 
 <script>
-// https://stackoverflow.com/questions/57041538/how-to-check-if-docker-is-running-or-not-after-reboot-on-windows-10
+const { dialog } = require("electron").remote;
+const slash = require("slash");
+const fs = require("fs");
 var Docker = require("dockerode");
 var docker = new Docker({ socketPath: "//./pipe/docker_engine" });
-import { ipcRenderer } from "electron";
 export default {
   name: "rightNav",
   data() {
     return {
+      dockerActive: "pending",
       items: [
-        { title: "Home", icon: "mdi-content-save", tooltip: "save workflow" },
-        { title: "About", icon: "mdi-folder-open", tooltip: "load workflow" },
+        {
+          title: "Save",
+          icon: "mdi-content-save",
+          tooltip: "save workflow",
+          action: this.saveWorkFlow,
+        },
+        {
+          title: "Load",
+          icon: "mdi-folder-open",
+          tooltip: "load workflow",
+          action: this.loadWorkFlow,
+        },
+        {
+          title: "Exper",
+          icon: "mdi-iframe",
+          tooltip: "expert mode",
+          action: "",
+        },
+        {
+          title: "Step-by-step mode",
+          icon: "mdi-format-list-bulleted",
+          tooltip: "step-by-step mode",
+          action: "",
+        },
+        {
+          title: "Usearch",
+          icon: "mdi-alpha-u-box",
+          tooltip: "get usearch",
+          action: "",
+        },
       ],
     };
   },
-  computed: {
-    dockerStatus: async () => {
-      let result = await ipcRenderer
-        .sendSync("checkDockerStatus")
-        .catch((err) => {
-          console.log(err);
-          let errorObj = { statusCode: err.code, log: err };
-          return errorObj;
+  created() {
+    var self = this;
+    setInterval(async function() {
+      self.dockerActive = await docker
+        .version()
+        .then(() => {
+          return "#1DE9B6";
+        })
+        .catch(() => {
+          return "#FF7043";
         });
-      console.log(result.log);
-      return result;
-    },
+    }, 1000);
   },
   methods: {
-    async checkStat() {
-      let result = await docker.version().catch((err) => {
-        console.log(err);
-        let errorObj = { statusCode: err.code, log: err };
-        return errorObj;
-      });
-      console.log(result.log);
-      return result;
+    saveWorkFlow() {
+      dialog
+        .showSaveDialog({
+          title: "Save current configuration",
+          filters: [{ name: "JSON", extensions: ["JSON"] }],
+        })
+        .then((result) => {
+          if (result.canceled !== true) {
+            let configSavePath = slash(result.filePath);
+            let confJson = JSON.stringify(this.$store.state.selectedSteps);
+            fs.writeFileSync(configSavePath, confJson);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    loadWorkFlow() {
+      dialog
+        .showOpenDialog({
+          title: "Select a previous configuration",
+          filters: [{ name: "JSON", extensions: ["JSON"] }],
+        })
+        .then((result) => {
+          if (result.canceled !== true) {
+            let configLoadPath = slash(result.filePaths[0]);
+            let configJSON = fs.readFileSync(configLoadPath);
+            let configObj = JSON.parse(configJSON);
+            this.$store.commit("loadWorkflow", configObj);
+          }
+        });
     },
   },
 };
