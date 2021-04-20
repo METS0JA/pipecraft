@@ -31,7 +31,7 @@ export default {
     input() {
       return this.$store.state.selectedSteps[this.$route.params.order].services[
         this.$attrs.serviceIndex
-      ].Inputs[this.$attrs.inputIndex];
+      ][this.$attrs.list][this.$attrs.inputIndex];
     },
   },
   methods: {
@@ -40,6 +40,7 @@ export default {
         stepIndex: this.$route.params.order,
         serviceIndex: this.$attrs.serviceIndex,
         inputIndex: this.$attrs.inputIndex,
+        listName: this.$attrs.list,
         value: value,
       });
     },

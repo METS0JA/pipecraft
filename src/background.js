@@ -52,7 +52,6 @@ ipcMain.on(
         console.log(res);
         console.log("stdout:", stdout.toString());
         console.log("stderr:", stderr.toString());
-        container.remove();
         if (res.StatusCode === 0) {
           resObj.log = stdout.toString();
           return resObj;
@@ -60,6 +59,11 @@ ipcMain.on(
           resObj.log = stderr.toString();
           return resObj;
         }
+      })
+      .then(async (container) => {
+        let variables = await docker.container.exec({ Cmd: ["env"] });
+        console.log(variables);
+        console.log("plz");
       })
       .catch((err) => {
         console.log(err);
@@ -97,7 +101,7 @@ async function createWindow() {
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
     },
   });
-  win.removeMenu();
+  //win.removeMenu();
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode

@@ -14,7 +14,6 @@
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <v-row>
-            <!-- numericInputs -->
             <v-col
               v-for="(input, i) in service.Inputs"
               :key="input.name"
@@ -26,37 +25,125 @@
               style="height:fit-content; width:fit-content"
             >
               <v-container v-if="input.type === 'numeric'"
-                ><InputNumeric :serviceIndex="index" :inputIndex="i"
+                ><InputNumeric
+                  :serviceIndex="index"
+                  :inputIndex="i"
+                  :list="'Inputs'"
               /></v-container>
               <v-container v-if="input.type === 'bool'"
-                ><InputBool :serviceIndex="index" :inputIndex="i"
+                ><InputBool
+                  :serviceIndex="index"
+                  :inputIndex="i"
+                  :list="'Inputs'"
               /></v-container>
               <v-container v-if="input.type === 'select'"
-                ><InputSelect :serviceIndex="index" :inputIndex="i"
+                ><InputSelect
+                  :serviceIndex="index"
+                  :inputIndex="i"
+                  :list="'Inputs'"
               /></v-container>
               <v-container v-if="input.type === 'file'"
-                ><InputFile :serviceIndex="index" :inputIndex="i"
+                ><InputFile
+                  :serviceIndex="index"
+                  :inputIndex="i"
+                  :list="'Inputs'"
               /></v-container>
               <v-container v-if="input.type === 'boolfile'"
-                ><InputBoolFile :serviceIndex="index" :inputIndex="i"
+                ><InputBoolFile
+                  :serviceIndex="index"
+                  :inputIndex="i"
+                  :list="'Inputs'"
               /></v-container>
               <v-container v-if="input.type === 'boolselect'"
-                ><InputBoolSelect :serviceIndex="index" :inputIndex="i"
+                ><InputBoolSelect
+                  :serviceIndex="index"
+                  :inputIndex="i"
+                  :list="'Inputs'"
               /></v-container>
               <v-container v-if="input.type === 'chip'"
-                ><InputChip :serviceIndex="index" :inputIndex="i"
+                ><InputChip
+                  :serviceIndex="index"
+                  :inputIndex="i"
+                  :list="'Inputs'"
               /></v-container>
               <v-container v-if="input.type === 'slide'"
-                ><InputSlide :serviceIndex="index" :inputIndex="i"
+                ><InputSlide
+                  :serviceIndex="index"
+                  :inputIndex="i"
+                  :list="'Inputs'"
               /></v-container>
             </v-col>
           </v-row>
-          <v-row justify="center">
+          <v-row
+            v-if="service.extraInputs.length > 0 && service.showExtra == true"
+          >
+            <!-- numericInputs -->
+            <v-col
+              v-for="(input, i) in service.extraInputs"
+              :key="input.name"
+              cols="12"
+              xl="2"
+              lg="3"
+              md="4"
+              sm="6"
+              style="height:fit-content; width:fit-content"
+            >
+              <v-container v-if="input.type === 'numeric'"
+                ><InputNumeric
+                  :serviceIndex="index"
+                  :inputIndex="i"
+                  :list="'extraInputs'"
+              /></v-container>
+              <v-container v-if="input.type === 'bool'"
+                ><InputBool
+                  :serviceIndex="index"
+                  :inputIndex="i"
+                  :list="'extraInputs'"
+              /></v-container>
+              <v-container v-if="input.type === 'select'"
+                ><InputSelect
+                  :serviceIndex="index"
+                  :inputIndex="i"
+                  :list="'extraInputs'"
+              /></v-container>
+              <v-container v-if="input.type === 'file'"
+                ><InputFile
+                  :serviceIndex="index"
+                  :inputIndex="i"
+                  :list="'extraInputs'"
+              /></v-container>
+              <v-container v-if="input.type === 'boolfile'"
+                ><InputBoolFile
+                  :serviceIndex="index"
+                  :inputIndex="i"
+                  :list="'extraInputs'"
+              /></v-container>
+              <v-container v-if="input.type === 'boolselect'"
+                ><InputBoolSelect
+                  :serviceIndex="index"
+                  :inputIndex="i"
+                  :list="'extraInputs'"
+              /></v-container>
+              <v-container v-if="input.type === 'chip'"
+                ><InputChip
+                  :serviceIndex="index"
+                  :inputIndex="i"
+                  :list="'extraInputs'"
+              /></v-container>
+              <v-container v-if="input.type === 'slide'"
+                ><InputSlide
+                  :serviceIndex="index"
+                  :inputIndex="i"
+                  :list="'extraInputs'"
+              /></v-container>
+            </v-col>
+          </v-row>
+          <v-row v-if="service.extraInputs.length > 0" justify="center">
             <v-btn
               light
               class="mt-5 mb-5"
               style="justify-content: center;"
-              @click="toggleExtra($event, index)"
+              @click="toggleExtra(index)"
             >
               toggle advance options
             </v-btn></v-row
@@ -76,20 +163,9 @@ import InputBoolFile from "../components/InputBoolFile.vue";
 import InputBoolSelect from "../components/InputBoolSelect.vue";
 import InputChip from "../components/InputChip.vue";
 import InputSlide from "../components/InputSlide.vue";
-// import HelloWorld from "../components/HelloWorld.vue";
-const { dialog } = require("electron").remote;
 
 export default {
   name: "Home",
-  data: () => ({
-    isActive: true,
-    rules: [
-      (v) => v >= 0 || "value should be",
-      (v) => v <= 100 || "Max should not be above £50,000",
-    ],
-    // numberRules: [(v) => (v < 0 ? true : false)],
-    // numberRules: [(v) => isNaN(v) != true],
-  }),
   components: {
     InputChip,
     InputNumeric,
@@ -106,62 +182,7 @@ export default {
     },
   },
   methods: {
-    IUPAC(event) {
-      if (
-        ![
-          "Backspace",
-          "Enter",
-          "i",
-          "a",
-          "c",
-          "g",
-          "t",
-          "r",
-          "y",
-          "s",
-          "w",
-          "k",
-          "m",
-          "b",
-          "d",
-          "h",
-          "v",
-          "n",
-        ].includes(event.key.toLowerCase())
-      ) {
-        event.preventDefault();
-      }
-    },
-    fileSelect(index, i, type) {
-      dialog
-        .showOpenDialog({
-          title: "Select input files",
-          properties: ["multiSelections", "showHiddenFiles"],
-        })
-        .then((result) => {
-          if (typeof result.filePaths[0] !== "undefined") {
-            if (type == "booleanFileInputs") {
-              this.services[index].booleanFileInputs[i].value =
-                result.filePaths[0];
-              this.formUpdate(index);
-            } else if (type == "fileInputs") {
-              this.services[index].fileInputs[i].value = result.filePaths[0];
-              this.formUpdate(index);
-            }
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
-    formUpdate(index) {
-      this.$store.commit("serviceInputUpdate", {
-        stepIndex: this.$route.params.order,
-        serviceIndex: index,
-        value: this.services[index],
-      });
-    },
-    toggleExtra(event, index) {
+    toggleExtra(index) {
       this.$store.commit("toggleExtra", {
         stepIndex: this.$route.params.order,
         serviceIndex: index,

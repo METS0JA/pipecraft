@@ -87,7 +87,7 @@ export default {
               .then((result) => {
                 if (typeof result.filePaths[0] !== "undefined") {
                   var correctedPath = slash(result.filePaths[0]);
-                  this.$store.commit("addWorkingDir", correctedPath);
+                  this.$store.commit("addInputDir", correctedPath);
                 }
               })
               .catch((err) => {

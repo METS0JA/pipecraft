@@ -6,7 +6,8 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    workingDir: "",
+    workingDir: "/input",
+    inputDir: "",
     env_variables: ["FOO=bar", "BAZ=quux"],
     selectedSteps: [],
     steps: [
@@ -18,6 +19,7 @@ export default new Vuex.Store({
             imageName: "pipecraft/reorient:1",
             serviceName: "reorient",
             selected: false,
+            showExtra: false,
             extraInputs: [],
             Inputs: [
               {
@@ -51,6 +53,7 @@ export default new Vuex.Store({
             imageName: "mothur:1.43",
             serviceName: "demultiplex",
             selected: false,
+            showExtra: false,
             extraInputs: [],
             Inputs: [
               {
@@ -96,6 +99,7 @@ export default new Vuex.Store({
             imageName: "",
             serviceName: "example inputs",
             selected: false,
+            showExtra: false,
             extraInputs: [],
             Inputs: [
               {
@@ -162,6 +166,7 @@ export default new Vuex.Store({
             imageName: "pipecraft/cutadapt:2.10",
             serviceName: "cutadapt",
             selected: false,
+            showExtra: false,
             extraInputs: [],
             Inputs: [
               {
@@ -231,6 +236,7 @@ export default new Vuex.Store({
             imageName: "pipecraft/trimmomatic:0.39",
             serviceName: "trimmomatic",
             selected: false,
+            showExtra: false,
             extraInputs: [],
             Inputs: [],
           },
@@ -239,6 +245,7 @@ export default new Vuex.Store({
             imageName: "pipecraft/mothur:1.43",
             serviceName: "mothur",
             selected: false,
+            showExtra: false,
             extraInputs: [],
             Inputs: [],
           },
@@ -252,29 +259,8 @@ export default new Vuex.Store({
             imageName: "pipecraft/vsearch:2.15.0",
             serviceName: "vsearch",
             selected: false,
-            extraInputs: [],
-            Inputs: [
-              {
-                name: "fastq_maxee",
-                value: 1,
-                tooltip:
-                  "Discard sequences with more than the specified number of expected error",
-                type: "numeric",
-              },
-              {
-                name: "fastq_maxns",
-                value: 0,
-                tooltip:
-                  "Discard sequences with more than the specified number of N’s",
-                type: "numeric",
-              },
-              {
-                name: "fastq_minlen",
-                value: 1,
-                tooltip:
-                  "Discard sequences with less than the specified number of bases",
-                type: "numeric",
-              },
+            showExtra: false,
+            extraInputs: [
               {
                 name: "fastq_maxlen",
                 value: null,
@@ -304,12 +290,36 @@ export default new Vuex.Store({
                 type: "numeric",
               },
             ],
+            Inputs: [
+              {
+                name: "fastq_maxee",
+                value: 1,
+                tooltip:
+                  "Discard sequences with more than the specified number of expected error",
+                type: "numeric",
+              },
+              {
+                name: "fastq_maxns",
+                value: 0,
+                tooltip:
+                  "Discard sequences with more than the specified number of N’s",
+                type: "numeric",
+              },
+              {
+                name: "fastq_minlen",
+                value: 1,
+                tooltip:
+                  "Discard sequences with less than the specified number of bases",
+                type: "numeric",
+              },
+            ],
           },
           {
             scriptName: "mothur-quality.sh",
             imageName: "pipecraft/mothur:1.43",
             serviceName: "mothur",
             selected: false,
+            showExtra: false,
             extraInputs: [],
             Inputs: [
               {
@@ -359,6 +369,7 @@ export default new Vuex.Store({
             imageName: "pipecraft/dada2:3.10",
             serviceName: "dada2",
             selected: false,
+            showExtra: false,
             extraInputs: [],
             Inputs: [
               {
@@ -417,6 +428,7 @@ export default new Vuex.Store({
             imageName: "pipecraft/usearch",
             serviceName: "usearch",
             selected: false,
+            showExtra: false,
             extraInputs: [],
             Inputs: [
               {
@@ -467,6 +479,7 @@ export default new Vuex.Store({
             imageName: "pipecraft/trimmomatic:0.39",
             serviceName: "trimmomatic",
             selected: false,
+            showExtra: false,
             extraInputs: [],
             Inputs: [
               {
@@ -522,6 +535,7 @@ export default new Vuex.Store({
             imageName: "pipecraft/dada2:3.10",
             serviceName: "dada2",
             selected: false,
+            showExtra: false,
             extraInputs: [],
             Inputs: [
               {
@@ -551,6 +565,7 @@ export default new Vuex.Store({
             imageName: "pipecraft/pandaseq:2.11",
             serviceName: "pandaseq",
             selected: false,
+            showExtra: false,
             extraInputs: [],
             Inputs: [
               {
@@ -594,6 +609,7 @@ export default new Vuex.Store({
             imageName: "pipecraft/flash:2",
             serviceName: "flash",
             selected: false,
+            showExtra: false,
             extraInputs: [],
             Inputs: [
               {
@@ -650,6 +666,7 @@ export default new Vuex.Store({
             imageName: "pipecraft/vsearch:2.15.0",
             serviceName: "vsearch",
             selected: false,
+            showExtra: false,
             extraInputs: [],
             Inputs: [
               {
@@ -690,6 +707,7 @@ export default new Vuex.Store({
             imageName: "pipecraft/dada2:3.10",
             serviceName: "dada2",
             selected: false,
+            showExtra: false,
             extraInputs: [],
             Inputs: [
               {
@@ -707,6 +725,7 @@ export default new Vuex.Store({
             imageName: "pipecraft/vsearch:2.15.0",
             serviceName: "vsearch",
             selected: false,
+            showExtra: false,
             extraInputs: [],
             Inputs: [
               {
@@ -742,6 +761,7 @@ export default new Vuex.Store({
             imageName: "pipecraft/usearch",
             serviceName: "usearch",
             selected: false,
+            showExtra: false,
             extraInputs: [],
             Inputs: [
               {
@@ -782,6 +802,7 @@ export default new Vuex.Store({
             imageName: "pipecraft/itsx:latest",
             serviceName: "itsx",
             selected: false,
+            showExtra: false,
             extraInputs: [],
             Inputs: [],
           },
@@ -790,6 +811,7 @@ export default new Vuex.Store({
             imageName: "pipecraft/metaxa:latest",
             serviceName: "metaxa",
             selected: false,
+            showExtra: false,
             extraInputs: [],
             Inputs: [],
           },
@@ -798,6 +820,7 @@ export default new Vuex.Store({
             imageName: "pipecraft/vxtractor:latest",
             serviceName: "vxtractor",
             selected: false,
+            showExtra: false,
             extraInputs: [],
             Inputs: [],
           },
@@ -811,14 +834,16 @@ export default new Vuex.Store({
             imageName: "pipecraft/mothur:1.43",
             serviceName: "mothur",
             selected: false,
+            showExtra: false,
             extraInputs: [],
             Inputs: [],
           },
           {
-            scriptName: "dada2-asv.sh",
+            scriptName: "dada2-asv.R",
             imageName: "pipecraft/dada2:3.10",
             serviceName: "dada2",
             selected: false,
+            showExtra: false,
             extraInputs: [],
             Inputs: [],
           },
@@ -827,6 +852,7 @@ export default new Vuex.Store({
             imageName: "pipecraft/cdhit:4.8.1",
             serviceName: "cd-hit",
             selected: false,
+            showExtra: false,
             extraInputs: [],
             Inputs: [],
           },
@@ -835,6 +861,7 @@ export default new Vuex.Store({
             imageName: "pipecraft/swarm:3.0.0",
             serviceName: "swarm",
             selected: false,
+            showExtra: false,
             extraInputs: [],
             Inputs: [],
           },
@@ -843,6 +870,7 @@ export default new Vuex.Store({
             imageName: "pipecraft/vsearch:2.15.0",
             serviceName: "vsearch",
             selected: false,
+            showExtra: false,
             extraInputs: [],
             Inputs: [],
           },
@@ -856,6 +884,7 @@ export default new Vuex.Store({
             imageName: "",
             serviceName: "mothur",
             selected: false,
+            showExtra: false,
             extraInputs: [],
             Inputs: [],
           },
@@ -864,6 +893,7 @@ export default new Vuex.Store({
             imageName: "pipecraft/dada2:3.10",
             serviceName: "dada2",
             selected: false,
+            showExtra: false,
             extraInputs: [],
             Inputs: [
               {
@@ -894,6 +924,7 @@ export default new Vuex.Store({
             imageName: "",
             serviceName: "blast",
             selected: false,
+            showExtra: false,
             extraInputs: [],
             Inputs: [],
           },
@@ -907,10 +938,17 @@ export default new Vuex.Store({
       state.selectedSteps = payload;
     },
     toggleExtra(state, payload) {
-      console.log(state, payload);
+      state.selectedSteps[payload.stepIndex].services[
+        payload.serviceIndex
+      ].showExtra = !state.selectedSteps[payload.serviceIndex].services[
+        payload.serviceIndex
+      ].showExtra;
     },
     addWorkingDir(state, filePath) {
       state.workingDir = filePath;
+    },
+    addInputDir(state, filePath) {
+      state.inputDir = filePath;
     },
     removeStep(state, index) {
       state.selectedSteps.splice(index, 1);
@@ -927,9 +965,9 @@ export default new Vuex.Store({
         payload.value;
     },
     inputUpdate(state, payload) {
-      state.selectedSteps[payload.stepIndex].services[
-        payload.serviceIndex
-      ].Inputs[payload.inputIndex].value = payload.value;
+      state.selectedSteps[payload.stepIndex].services[payload.serviceIndex][
+        payload.listName
+      ][payload.inputIndex].value = payload.value;
     },
     toggleActive(state, payload) {
       state.selectedSteps[payload.stepIndex].services[
