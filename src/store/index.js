@@ -8,6 +8,11 @@ export default new Vuex.Store({
   state: {
     workingDir: "/input",
     inputDir: "",
+    data: {
+      readType: "",
+      dataFormat: "",
+      fileFormat: "",
+    },
     env_variables: ["FOO=bar", "BAZ=quux"],
     selectedSteps: [],
     steps: [
@@ -931,6 +936,245 @@ export default new Vuex.Store({
         ],
       },
     ],
+    dada2Miseq: [
+      {
+        scriptName: "reorient_paired_end_reads.sh",
+        imageName: "pipecraft/reorient:1",
+        serviceName: "reorient",
+        selected: false,
+        showExtra: false,
+        extraInputs: [],
+        Inputs: [
+          {
+            name: "mismatches",
+            value: 2,
+            tooltip: "???????????",
+            type: "numeric",
+          },
+
+          {
+            name: "forward_primers",
+            value: [],
+            tooltip: "manually define up to 13 primers",
+            type: "chip",
+          },
+          {
+            name: "reverse_primers",
+            value: [],
+            tooltip: "manually define up to 13 primers",
+            type: "chip",
+          },
+        ],
+      },
+      {
+        scriptName: "cutadapat-cut.sh",
+        imageName: "pipecraft/cutadapt:2.10",
+        serviceName: "cutadapt",
+        selected: false,
+        showExtra: false,
+        extraInputs: [],
+        Inputs: [
+          {
+            name: "error_rate",
+            value: 0.15,
+            tooltip:
+              "Allowed error rate in primer search. By default, error rate is 0.1, which means that in e.g. 1 error is allowd in a 10 bp primer (10% error rate).",
+            type: "numeric",
+          },
+          {
+            name: "min_seq_length",
+            value: 10,
+            tooltip: "minimum length of the output sequence",
+            type: "numeric",
+          },
+          {
+            name: "cores",
+            value: 1,
+            tooltip:
+              "number of cores to use. For paired-end dta in fasta format, set to 1 [default]. For fastq formats you may set the value to 0 to use all cores.",
+            type: "numeric",
+          },
+          {
+            name: "revcomp",
+            value: true,
+            tooltip: "search also revere complementary matches for barcodes",
+            type: "bool",
+          },
+          {
+            name: "no_indels",
+            value: false,
+            tooltip:
+              "do not allow insertions or deletions is primer search. Mismatches are the only type of errprs accounted in the error rate parameter. ",
+            type: "bool",
+          },
+          {
+            name: "discard_untrimmed",
+            value: true,
+            tooltip:
+              "Discard sequences where specified primers were not found.",
+            type: "bool",
+          },
+          {
+            name: "seqs_to_keep",
+            value: ["keep_all", "keep_only_linked"],
+            tooltip:
+              "Keep seqs with primers found in both ends(linked), or keeps seqs with primer found atlest in one end(all)",
+            type: "select",
+          },
+          {
+            name: "forward_primers",
+            value: [],
+            tooltip: "Add up to 13 PCR primers",
+            type: "chip",
+          },
+          {
+            name: "reverse_primers",
+            value: [],
+            tooltip: "Add up to 13 PCR primers",
+            type: "chip",
+          },
+        ],
+      },
+      {
+        scriptName: "dada2-quality.R",
+        imageName: "pipecraft/dada2:3.10",
+        serviceName: "filterAndTrim",
+        selected: false,
+        showExtra: false,
+        extraInputs: [],
+        Inputs: [
+          {
+            name: "maxEE",
+            value: 1,
+            tooltip:
+              "Discard sequences with more than the specified number of expected errors",
+            type: "numeric",
+          },
+          {
+            name: "maxN",
+            value: 0,
+            tooltip:
+              "Discard sequences with more than the specified number of N’s",
+            type: "numeric",
+          },
+          {
+            name: "minLen",
+            value: 20,
+            tooltip:
+              "Remove reads with length less than minLen. minLen is enforced after all other trimming and truncation",
+            type: "numeric",
+          },
+          {
+            name: "truncQ",
+            value: null,
+            tooltip:
+              "Truncate reads at the first instance of a quality score less than or equal to truncQ",
+            type: "numeric",
+          },
+          {
+            name: "truncLen",
+            value: 0,
+            tooltip:
+              "Truncate reads after truncLen bases. Reads shorter than this are discarded",
+            type: "numeric",
+          },
+          {
+            name: "maxLen",
+            value: null,
+            tooltip:
+              "Remove reads with length greater than maxLen. maxLen is enforced on the raw reads",
+            type: "numeric",
+          },
+          {
+            name: "minQ",
+            value: 0,
+            tooltip:
+              "After truncation, reads contain a quality score below minQ will be discarded",
+            type: "numeric",
+          },
+        ],
+      },
+      {
+        scriptName: "dada2-assemble.R",
+        imageName: "pipecraft/dada2:3.10",
+        serviceName: "mergePairs",
+        selected: false,
+        showExtra: false,
+        extraInputs: [],
+        Inputs: [
+          {
+            name: "minOverlap",
+            value: 12,
+            tooltip:
+              "The minimum length of the overlap required for mergingthe forward and reverse reads.",
+            type: "numeric",
+          },
+          {
+            name: "maxMismatch",
+            value: 0,
+            tooltip: "The maximum mismatches allowed in the overlap region",
+            type: "numeric",
+          },
+          {
+            name: "returnRejects",
+            value: false,
+            tooltip:
+              "Return and retain, the pairs that that were rejected based on mismatches in the overlap region",
+            type: "bool",
+          },
+        ],
+      },
+      {
+        scriptName: "dada2-chimera.R",
+        imageName: "pipecraft/dada2:3.10",
+        serviceName: "removeBimeraDenovo",
+        selected: false,
+        showExtra: false,
+        extraInputs: [],
+        Inputs: [
+          {
+            name: "method",
+            items: ["consensus", "pooled", "per-sample"],
+            value: "consensus",
+            tooltip:
+              "If 'pooled': The samples in the sequence table are all pooled together for bimera identification, If 'consensus': The samples in a sequence table are independently checked for bimeras, If 'per-sample': The samples in a sequence table are independently checked for bimeras",
+            type: "select",
+          },
+        ],
+      },
+
+      {
+        scriptName: "dada2-classifier.R",
+        imageName: "pipecraft/dada2:3.10",
+        serviceName: "assignTaxonomy",
+        selected: false,
+        showExtra: false,
+        extraInputs: [],
+        Inputs: [
+          {
+            name: "refFasta",
+            btnName: "select file",
+            value: "undefined",
+            tooltip: "Select a reference fasta file",
+            type: "file",
+          },
+          {
+            name: "minBoot",
+            value: 50,
+            tooltip:
+              "The minimum bootstrap confidence for assigning a taxonomic level.",
+            type: "numeric",
+          },
+          {
+            name: "tryRC",
+            value: false,
+            tooltip:
+              "the reverse-complement of each sequences will be used for classification if it is a better match to the reference sequences than the forward sequence.",
+            type: "bool",
+          },
+        ],
+      },
+    ],
   },
   getters: {},
   mutations: {
@@ -949,6 +1193,11 @@ export default new Vuex.Store({
     },
     addInputDir(state, filePath) {
       state.inputDir = filePath;
+    },
+    addInputInfo(state, payload) {
+      (state.data.dataFormat = payload.dataFormat),
+        (state.data.fileFormat = payload.fileFormat),
+        (state.data.readType = payload.readType);
     },
     removeStep(state, index) {
       state.selectedSteps.splice(index, 1);
@@ -969,14 +1218,29 @@ export default new Vuex.Store({
         payload.listName
       ][payload.inputIndex].value = payload.value;
     },
+    premadeInputUpdate(state, payload) {
+      state[payload.workflowName][payload.serviceIndex][payload.listName][
+        payload.inputIndex
+      ].value = payload.value;
+    },
     toggleActive(state, payload) {
-      state.selectedSteps[payload.stepIndex].services[
-        payload.serviceIndex
-      ].Inputs[payload.inputIndex].active = payload.value;
+      state.selectedSteps[payload.stepIndex].services[payload.serviceIndex][
+        payload.listName
+      ][payload.inputIndex].active = payload.value;
       if (payload.value == false) {
-        state.selectedSteps[payload.stepIndex].services[
-          payload.serviceIndex
-        ].Inputs[payload.inputIndex].value = "undefined";
+        state.selectedSteps[payload.stepIndex].services[payload.serviceIndex][
+          payload.listName
+        ][payload.inputIndex].value = "undefined";
+      }
+    },
+    premadeToggleActive(state, payload) {
+      state[payload.workflowName][payload.serviceIndex][payload.listName][
+        payload.inputIndex
+      ].active = payload.value;
+      if (payload.value == false) {
+        state[payload.workflowName][payload.serviceIndex][payload.listName][
+          payload.inputIndex
+        ].value = "undefined";
       }
     },
     checkService(state, payload) {

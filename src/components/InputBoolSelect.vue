@@ -44,28 +44,56 @@
 export default {
   computed: {
     input() {
-      return this.$store.state.selectedSteps[this.$route.params.order].services[
-        this.$attrs.serviceIndex
-      ][this.$attrs.list][this.$attrs.inputIndex];
+      if (this.$route.params.workflowName) {
+        return this.$store.state[this.$route.params.workflowName][
+          this.$attrs.serviceIndex
+        ][this.$attrs.list][this.$attrs.inputIndex];
+      } else {
+        return this.$store.state.selectedSteps[this.$route.params.order]
+          .services[this.$attrs.serviceIndex][this.$attrs.list][
+          this.$attrs.inputIndex
+        ];
+      }
     },
   },
   methods: {
     toggleActive(value) {
-      this.$store.commit("toggleActive", {
-        stepIndex: this.$route.params.order,
-        serviceIndex: this.$attrs.serviceIndex,
-        inputIndex: this.$attrs.inputIndex,
-        value: value,
-      });
+      if (this.$route.params.workflowName) {
+        this.$store.commit("premadeToggleActive", {
+          workflowName: this.$route.params.workflowName,
+          serviceIndex: this.$attrs.serviceIndex,
+          inputIndex: this.$attrs.inputIndex,
+          listName: this.$attrs.list,
+          value: value,
+        });
+      } else {
+        this.$store.commit("toggleActive", {
+          stepIndex: this.$route.params.order,
+          serviceIndex: this.$attrs.serviceIndex,
+          inputIndex: this.$attrs.inputIndex,
+          listName: this.$attrs.list,
+          value: value,
+        });
+      }
     },
     inputUpdate(value) {
-      this.$store.commit("inputUpdate", {
-        stepIndex: this.$route.params.order,
-        serviceIndex: this.$attrs.serviceIndex,
-        inputIndex: this.$attrs.inputIndex,
-        listName: this.$attrs.list,
-        value: value,
-      });
+      if (this.$route.params.workflowName) {
+        this.$store.commit("premadeInputUpdate", {
+          workflowName: this.$route.params.workflowName,
+          serviceIndex: this.$attrs.serviceIndex,
+          inputIndex: this.$attrs.inputIndex,
+          listName: this.$attrs.list,
+          value: value,
+        });
+      } else {
+        this.$store.commit("inputUpdate", {
+          stepIndex: this.$route.params.order,
+          serviceIndex: this.$attrs.serviceIndex,
+          inputIndex: this.$attrs.inputIndex,
+          listName: this.$attrs.list,
+          value: value,
+        });
+      }
     },
   },
 };

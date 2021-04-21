@@ -46,8 +46,8 @@ export default {
           {
             title: "Sequencing read types",
             inputOptions: {
-              singleend: "paired-end",
-              pairedend: "single-end",
+              paired_end: "paired-end",
+              single_end: "single-end",
             },
           },
           {
@@ -68,17 +68,22 @@ export default {
                 txt: "*.txt",
               },
               Compressed: {
-                fastqDOTgz: "*.fastq.gz",
-                fastaDOTgz: "*.fasta.gz",
-                fqDOTgz: "*.fq.gz",
-                faDOTgz: "*.fa.gz",
-                txtDOTgz: "*.txt.gz",
+                fastq_gz: "*.fastq.gz",
+                fasta_gz: "*.fasta.gz",
+                fq_gz: "*.fq.gz",
+                fa_gz: "*.fa.gz",
+                txt_gz: "*.txt.gz",
               },
             },
           },
         ])
         .then((result) => {
           if (result.value) {
+            this.$store.commit("addInputInfo", {
+              readType: result.value[0],
+              dataFormat: result.value[1],
+              fileFormat: result.value[2],
+            });
             dialog
               .showOpenDialog({
                 title: "Select the folder containing your sequnece files",

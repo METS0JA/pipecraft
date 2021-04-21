@@ -1,5 +1,5 @@
 <template>
-  <v-btn block color="grey" @click="test">
+  <v-btn block color="grey" @click="runWorkFlow">
     Run workflow
   </v-btn>
 </template>
@@ -23,12 +23,14 @@ export default {
     items: [],
   }),
   methods: {
-    async test() {
+    async runWorkFlow() {
       this.$store.commit("addWorkingDir", "/input");
       for (let index of this.selectedSteps.entries()) {
+        let envVariables;
         console.log(`Startin step ${index[0] + 1} ${index[1].stepName}`);
         let serviceIndex = this.findSelectedService(index[0]);
-        let envVariables = this.createVariableObj(index[0], serviceIndex);
+        envVariables = this.createVariableObj(index[0], serviceIndex);
+        console.log(envVariables);
         let scriptName = this.selectedSteps[index[0]].services[serviceIndex]
           .scriptName;
         let imageName = this.selectedSteps[index[0]].services[serviceIndex]
@@ -72,6 +74,12 @@ export default {
         console.log(result.log);
         let newWorkingDir = this.getVariableFromLog(result.log, "workingDir");
         console.log(newWorkingDir);
+        let newDataInfo = {
+          dataFormat: this.getVariableFromLog(result.log, "dataFormat"),
+          fileFormat: this.getVariableFromLog(result.log, "fileFormat"),
+          readType: this.getVariableFromLog(result.log, "readType"),
+        };
+        this.$store.commit("addInputInfo", newDataInfo);
         this.$store.commit("addWorkingDir", newWorkingDir);
         stdout = new streams.WritableStream();
         stderr = new streams.WritableStream();
@@ -79,11 +87,11 @@ export default {
     },
     getVariableFromLog(log, varName) {
       var re = new RegExp(`(${varName}=.*)`, "g");
-      let mida = log
+      let value = log
         .match(re)[0]
         .replace('"', "")
         .split("=")[1];
-      return mida;
+      return value;
     },
     createVariableObj(stepIndex, serviceIndex) {
       let envVariables = [];
@@ -94,12 +102,17 @@ export default {
           envVariables.push(stringify(varObj).replace(/(\r\n|\n|\r)/gm, ""));
         }
       );
-      envVariables.push(
-        stringify({ workingDir: this.$store.state.workingDir }).replace(
-          /(\r\n|\n|\r)/gm,
-          ""
-        )
-      );
+      let dataInfo = {
+        workingDir: this.$store.state.workingDir,
+        fileFormat: this.$store.state.data.fileFormat,
+        dataFormat: this.$store.state.data.dataFormat,
+        readType: this.$store.state.data.readType,
+      };
+      Object.entries(dataInfo).forEach(([key, value]) => {
+        let varObj = {};
+        varObj[key] = value;
+        envVariables.push(stringify(varObj).replace(/(\r\n|\n|\r)/gm, ""));
+      });
       return envVariables;
     },
     findSelectedService(i) {

@@ -34,6 +34,16 @@
         <span>{{ item.tooltip }}</span>
       </v-tooltip>
     </v-list-item>
+    <v-list-item class="mt-5" ripple link>
+      <v-tooltip left nudge-left="10">
+        <template v-slot:activator="{ on }">
+          <v-list-item-content v-on="on" @click="push2premade('dada2Miseq')">
+            <v-icon>mdi-alpha-d-box</v-icon>
+          </v-list-item-content>
+        </template>
+        <span>DADA2 MiSeq workflow</span>
+      </v-tooltip>
+    </v-list-item>
   </v-list>
 </template>
 
@@ -127,6 +137,11 @@ export default {
             this.$store.commit("loadWorkflow", configObj);
           }
         });
+    },
+    push2premade(name) {
+      if (this.$route.path != `/premade/${name}`) {
+        this.$router.push(`/premade/${name}`);
+      }
     },
   },
 };
