@@ -27,6 +27,9 @@
 #pigz
 ##########################################################
 
+
+echo 'Variable check'
+
 ###############################
 #These variables are for testing (DELETE when implementing to PipeCraft)
 IFS=',' read -r -a array1 <<< "$forward_primers"
@@ -42,10 +45,30 @@ do
     echo "$element"
 done
 
+echo $R1
+echo $R2
+echo $mismatches
+echo $readType
+echo $dataFormat
+echo $fileFormat
+echo $workingDir
+
+echo 'Variable check complete'
+
 extension=$"fastq.gz"
 # mismatches=$"2"
 fwd_tempprimer=$"ACCTGCTAGGCTAGATGC"
 rev_tempprimer=$"GGGATCCATCGATTTAAC"
+
+# fwd_tempprimer=$"ACCTGCGGARGGATCA"
+# rev_tempprimer=$"GAGATCCRTTGYTRAAAGTT"
+
+
+
+# The BITS3 (forward) and B58S3 (reverse) primers were used to amplify dada2 ITS tutorial dataset. 
+# We record the DNA sequences, including ambiguous nucleotides, for those primers.
+# FWD <- "ACCTGCGGARGGATCA"  REV <- "GAGATCCRTTGYTRAAAGTT"
+
 ###############################
 ###############################
 ###############################
@@ -99,6 +122,7 @@ else
 fi
 }
 
+
 #Format primer strings for reorienting:
     #check if IUPAC codes exist in primers and convert primers for reorienting
 fwd_primer=$(convert_IUPAC $fwd_tempprimer)
@@ -115,6 +139,7 @@ if [ -d tempdir2 ]; then
 fi
 mkdir -p tempdir2
 
+
 ### Make a file where to read R1 and R2 file names for paired-end read processing.
 if [ -s tempdir2/paired_end_files.txt ]; then
     rm tempdir2/paired_end_files.txt
@@ -123,18 +148,30 @@ if [ -s tempdir2/files_in_folder.txt ]; then
     rm tempdir2/files_in_folder.txt
 fi
 
+
 touch tempdir2/files_in_folder.txt
 for file in *.$extension; do
     echo $file >> tempdir2/files_in_folder.txt
 done
     #Get only R1 reads
-grep "R1" < tempdir2/files_in_folder.txt > tempdir2/paired_end_files.txt
+grep "R1"  < tempdir2/files_in_folder.txt > tempdir2/paired_end_files.txt || true
     #Check if everything is ok considering file names
+
+
 if [ -s tempdir2/paired_end_files.txt ]; then
     :
 else
-    printf "\n${RED}[ERROR]: No paired-end read files found.\nFile names must contain ${BOLD}'R1' and 'R2' ${NORMAL}${RED}strings! (e.g. s01_R1.fastq and s01_R2.fastq)${NORMAL}\n" && exit 1
+    # BEFORE
+    
+    # printf "\n${RED}[ERROR]: No paired-end read files found.\nFile names must contain ${BOLD}'R1' and 'R2' ${NORMAL}${RED}strings! (e.g. s01_R1.fastq and s01_R2.fastq)${NORMAL}\n" \ 
+    # && exit 1
+
+    # AFTER
+    printf '%s\n' "[ERROR]: No paired-end read files found. File names must contain 'R1' and 'R2' strings! (e.g. s01_R1.fastq and s01_R2.fastq)">&2 # write error message to stderr
+    exit 1
 fi
+
+
 
 
 #############################
@@ -409,3 +446,9 @@ printf "\n${GREEN}${BOLD}DONE${NORMAL}\n"
 printf "${GREEN}Data in directory ${BOLD}'reoriented_out'${NORMAL}\n"
 printf "${GREEN}Summary of sequence counts in ${BOLD}'reoriented_out/seq_count_summary_reorient.txt'${NORMAL}\n"
 printf "${GREEN}Check ${BOLD}README.txt ${NORMAL}${GREEN}files in output directory for further information about the process.${NORMAL}\n\n"
+printf ""
+
+printf "workingDir=/input/reorient-out\n"
+printf "fileFormat=$extension\n"
+printf "dataFormat=$dataFormat\n"
+printf "readType=paired-end\n"

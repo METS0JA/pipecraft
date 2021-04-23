@@ -24,8 +24,9 @@
             deletable-chips
             small-chips
             multiple
+            :rules="input.rules"
             style="text-transform: uppercase"
-            @keydown="IUPAC($event)"
+            @keydown="input.iupac ? IUPAC($event) : void 0"
             v-model="input.value"
           ></v-combobox>
         </v-col>

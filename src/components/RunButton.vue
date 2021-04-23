@@ -53,9 +53,10 @@ export default {
                 ],
               },
               Env: envVariables,
-            }
+            },
           )
           .then(async ([res, container]) => {
+            console.log(stdout.toString());
             let resObj = { statusCode: res.StatusCode };
             container.remove();
             if (res.StatusCode === 0) {
@@ -72,15 +73,15 @@ export default {
             return resObj;
           });
         console.log(result.log);
-        let newWorkingDir = this.getVariableFromLog(result.log, "workingDir");
-        console.log(newWorkingDir);
-        let newDataInfo = {
-          dataFormat: this.getVariableFromLog(result.log, "dataFormat"),
-          fileFormat: this.getVariableFromLog(result.log, "fileFormat"),
-          readType: this.getVariableFromLog(result.log, "readType"),
-        };
-        this.$store.commit("addInputInfo", newDataInfo);
-        this.$store.commit("addWorkingDir", newWorkingDir);
+        // let newWorkingDir = this.getVariableFromLog(result.log, "workingDir");
+        // console.log(newWorkingDir);
+        // let newDataInfo = {
+        //   dataFormat: this.getVariableFromLog(result.log, "dataFormat"),
+        //   fileFormat: this.getVariableFromLog(result.log, "fileFormat"),
+        //   readType: this.getVariableFromLog(result.log, "readType"),
+        // };
+        // this.$store.commit("addInputInfo", newDataInfo);
+        // this.$store.commit("addWorkingDir", newWorkingDir);
         stdout = new streams.WritableStream();
         stderr = new streams.WritableStream();
       }
@@ -100,7 +101,7 @@ export default {
           let varObj = {};
           varObj[input.name] = input.value;
           envVariables.push(stringify(varObj).replace(/(\r\n|\n|\r)/gm, ""));
-        }
+        },
       );
       let dataInfo = {
         workingDir: this.$store.state.workingDir,
@@ -130,7 +131,7 @@ export default {
         imageName,
         scriptName,
         envVariables,
-        this.$store.state.workingDir
+        this.$store.state.workingDir,
       );
       return result;
     },

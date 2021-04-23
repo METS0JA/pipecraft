@@ -44,13 +44,6 @@ export default {
       })
         .queue([
           {
-            title: "Sequencing read types",
-            inputOptions: {
-              paired_end: "paired-end",
-              single_end: "single-end",
-            },
-          },
-          {
             title: "Sequencing data format",
             inputOptions: {
               demulitplexed: "demulitplexed",
@@ -76,8 +69,15 @@ export default {
               },
             },
           },
+          {
+            title: "Sequencing read types",
+            inputOptions: {
+              paired_end: "paired-end",
+              single_end: "single-end",
+            },
+          },
         ])
-        .then((result) => {
+        .then(async (result) => {
           if (result.value) {
             this.$store.commit("addInputInfo", {
               readType: result.value[0],

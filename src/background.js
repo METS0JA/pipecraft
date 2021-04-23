@@ -45,7 +45,7 @@ ipcMain.on(
             ],
           },
           Env: envVariables,
-        }
+        },
       )
       .then(([res, container]) => {
         let resObj = { statusCode: res.StatusCode };
@@ -77,7 +77,7 @@ ipcMain.on(
     event.returnValue = result;
     stdout = new streams.WritableStream();
     stderr = new streams.WritableStream();
-  }
+  },
 );
 
 ipcMain.on("checkDockerStatus", async (event) => {
