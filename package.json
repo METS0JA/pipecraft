@@ -1,6 +1,6 @@
 {
-  "name": "Pipecraft2-alpha",
-  "version": "0.1.0",
+  "name": "Pipecraft",
+  "version": "0.2.0beta",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -50,7 +50,7 @@
     "prettier": "^1.19.1",
     "sass": "^1.19.0",
     "sass-loader": "^8.0.0",
-    "vue-cli-plugin-electron-builder": "~2.0.0-rc.5",
+    "vue-cli-plugin-electron-builder": "~2.0.0-rc.6",
     "vue-cli-plugin-vuetify": "^2.0.9",
     "vue-devtools": "^5.1.4",
     "vue-template-compiler": "^2.6.11",

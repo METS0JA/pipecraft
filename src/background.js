@@ -80,6 +80,10 @@ ipcMain.on(
   },
 );
 
+ipcMain.on("openDevConsole", () => {
+  mainWindow.webContents.openDevTools();
+});
+
 ipcMain.on("checkDockerStatus", async (event) => {
   var result = await docker.ping();
   console.log(result);

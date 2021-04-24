@@ -55,8 +55,7 @@ export default {
     IUPAC(event) {
       if (
         ![
-          "Backspace",
-          "Enter",
+          "backspace",
           "i",
           "a",
           "c",
@@ -101,8 +100,12 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .centered-input >>> input {
   text-align: center;
+}
+.v-text-field__details {
+  position: relative;
+  margin-bottom: 5%;
 }
 </style>

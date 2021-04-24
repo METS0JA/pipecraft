@@ -6,6 +6,11 @@ module.exports = {
   pluginOptions: {
     electronBuilder: {
       nodeIntegration: true,
+      builderOptions: {
+        appId: "pipecraft",
+        productName: "pipecraft",
+        extraResources: ["src/pipecraft-core"],
+      },
     },
   },
 };
