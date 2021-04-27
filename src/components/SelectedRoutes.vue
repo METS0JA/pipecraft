@@ -9,9 +9,17 @@
       <li
         v-for="(element, index) in selectedSteps"
         class="list-group-item"
-        :key="index"
+        :key="`${element.stepName}${index}`"
       >
-        <v-btn block color="grey" @click="push2route(element.stepName, index)">
+        <v-btn
+          block
+          :style="
+            `/step/${element.stepName}/${index}` == $route.path
+              ? { background: '#1DE9B6' }
+              : { background: 'grey' }
+          "
+          @click="push2route(element.stepName, index)"
+        >
           {{ element.stepName }}
           <v-icon @click.stop="removeAt(index)">mdi-close-box</v-icon>
         </v-btn>
@@ -24,10 +32,19 @@
 // import About from "../views/About";
 import draggable from "vuedraggable";
 export default {
+  data() {
+    return {
+      active: "red",
+    };
+  },
+
   components: {
     draggable,
   },
   computed: {
+    path() {
+      return this.$route.path;
+    },
     selectedSteps: {
       get() {
         return this.$store.state.selectedSteps;
@@ -63,6 +80,10 @@ export default {
 </script>
 
 <style>
+.active {
+  color: #1de9b6;
+}
+,
 .flip-list-move {
   transition: transform 0.5s;
 }

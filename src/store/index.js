@@ -17,44 +17,6 @@ export default new Vuex.Store({
     selectedSteps: [],
     steps: [
       {
-        stepName: "reorient",
-        services: [
-          {
-            scriptName: "reorient_paired_end_reads.sh",
-            imageName: "pipecraft/reorient:1",
-            serviceName: "reorient",
-            selected: false,
-            showExtra: false,
-            extraInputs: [],
-            Inputs: [
-              {
-                name: "mismatches",
-                value: 2,
-                tooltip: "???????????",
-                type: "numeric",
-              },
-
-              {
-                name: "forward_primers",
-                value: [],
-                tooltip: "manually define up to 13 primers",
-                type: "chip",
-                iupac: true,
-                rules: [(v) => v.length <= 13 || "TOO MANY PRIMERS"],
-              },
-              {
-                name: "reverse_primers",
-                value: [],
-                tooltip: "manually define up to 13 primers",
-                type: "chip",
-                iupac: true,
-                rules: [(v) => v.length <= 13 || "TOO MANY PRIMERS"],
-              },
-            ],
-          },
-        ],
-      },
-      {
         stepName: "demultiplex",
         services: [
           {
@@ -164,6 +126,44 @@ export default new Vuex.Store({
                 min: 0,
                 step: 0.01,
                 type: "slide",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        stepName: "reorient",
+        services: [
+          {
+            scriptName: "reorient_paired_end_reads.sh",
+            imageName: "pipecraft/reorient:1",
+            serviceName: "reorient",
+            selected: false,
+            showExtra: false,
+            extraInputs: [],
+            Inputs: [
+              {
+                name: "mismatches",
+                value: 2,
+                tooltip: "???????????",
+                type: "numeric",
+              },
+
+              {
+                name: "forward_primers",
+                value: [],
+                tooltip: "manually define up to 13 primers",
+                type: "chip",
+                iupac: true,
+                rules: [(v) => v.length <= 13 || "TOO MANY PRIMERS"],
+              },
+              {
+                name: "reverse_primers",
+                value: [],
+                tooltip: "manually define up to 13 primers",
+                type: "chip",
+                iupac: true,
+                rules: [(v) => v.length <= 13 || "TOO MANY PRIMERS"],
               },
             ],
           },
@@ -962,7 +962,7 @@ export default new Vuex.Store({
             type: "numeric",
           },
           {
-            name: "paired-end tags",
+            name: "paired-end_tags",
             value: ["R1", "R2"],
             tooltip: "Define a tag for fwd and rev reads",
             type: "chip",
@@ -1037,7 +1037,8 @@ export default new Vuex.Store({
           },
           {
             name: "seqs_to_keep",
-            value: ["keep_all", "keep_only_linked"],
+            items: ["keep_all", "keep_only_linked"],
+            value: "keep_all",
             tooltip:
               "Keep seqs with primers found in both ends(linked), or keeps seqs with primer found atlest in one end(all)",
             type: "select",

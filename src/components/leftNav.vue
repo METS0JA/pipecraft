@@ -81,8 +81,8 @@ export default {
           if (result.value) {
             this.$store.commit("addInputInfo", {
               readType: result.value[0],
-              dataFormat: result.value[1],
-              fileFormat: result.value[2],
+              dataFormat: result.value[2],
+              fileFormat: result.value[1].replace("_", "."),
             });
             dialog
               .showOpenDialog({
