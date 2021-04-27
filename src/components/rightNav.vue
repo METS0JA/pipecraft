@@ -38,7 +38,14 @@
       <v-tooltip left nudge-left="10">
         <template v-slot:activator="{ on }">
           <v-list-item-content v-on="on" @click="push2premade('dada2Miseq')">
-            <v-icon>mdi-alpha-d-box</v-icon>
+            <v-icon
+              :style="
+                `/premade/dada2Miseq` == $route.path
+                  ? { color: '#1DE9B6' }
+                  : { color: 'white' }
+              "
+              >mdi-alpha-d-box</v-icon
+            >
           </v-list-item-content>
         </template>
         <span>DADA2 MiSeq workflow</span>

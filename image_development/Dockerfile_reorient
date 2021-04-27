@@ -1,6 +1,8 @@
 FROM ubuntu:18.04
 ARG DEBIAN_FRONTEND=noninteractive
 
+vsearch version > 2
+
 RUN apt-get update -y && apt-get install bc wget build-essential libreadline7 zlib1g zlib1g-dev unzip libtre-dev libtre5 fastx-toolkit pigz -y
 RUN wget https://github.com/mothur/mothur/releases/download/v.1.43.0/Mothur.Ubuntu_18.zip && unzip Mothur.Ubuntu_18.zip && rm Mothur.Ubuntu_18.zip && rm -r /var/lib/apt/lists/*
 RUN wget https://github.com/indraniel/fqgrep/archive/v0.4.4.zip  && unzip v0.4.4.zip && rm v0.4.4.zip && cd fqgrep-0.4.4 && make
