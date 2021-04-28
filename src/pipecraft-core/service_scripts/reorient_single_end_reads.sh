@@ -43,7 +43,11 @@ rev_tempprimer=$"GGGATCCATCGATTTAAC"
 #############################
 start=$(date +%s)
 # Source for functions
+<<<<<<< HEAD
+source /scripts/framework.functions.sh
+=======
 source /home/sten/Dropbox/PIPELINE/PipeCraft2.0/framework.functions.sh
+>>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
 #output dir
 output_dir=$"reoriented_out"
 ### Check if files with specified extension exist in the dir
