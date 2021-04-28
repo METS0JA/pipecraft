@@ -61,7 +61,6 @@ while read LINE; do
     ########################
     ### Start assembling ###
     ########################
-    mkdir -p $output_dir
     fastqout=$(echo $inputR1 | sed -e 's/R1.*/assembled/')
 
     #variables for not_merged output files

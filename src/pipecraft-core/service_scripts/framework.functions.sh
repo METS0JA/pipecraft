@@ -3,11 +3,8 @@
 # Set of functions for PipeCraft (2.0) workflows,
 # for chacking data integrity.
 
-<<<<<<< HEAD
 # v0.1 27.04.2021 Sten Anslan
 
-=======
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
 ###############################
 ### Quit process upon ERROR ###
 ###############################
@@ -63,11 +60,7 @@ count=$(ls -1 *.$extension 2>/dev/null | wc -l)
 if [ $count != 0 ]; then 
     :
 else
-<<<<<<< HEAD
     printf '%s\n' "ERROR]: cannot find files with specified extension '$extension'
-=======
-    printf '%s\n' "[ERROR]: cannot find files with specified extension '$extension'
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
 Files are compressed? Please check the extension of your files and specify again.
 >Quitting" >&2
     end_process
@@ -104,20 +97,12 @@ done < tempdir2/files_in_folder.txt
 #Fix also names in files_in_folder file if they contained space
 sed -i 's/ /_/g' tempdir2/files_in_folder.txt
 #Check if R1 string is in the file name (if so, then assume that then reverse file has R2 in the file name)
-<<<<<<< HEAD
 grep "R1" < tempdir2/files_in_folder.txt > tempdir2/paired_end_files.txt || true
-=======
-grep "R1" < tempdir2/files_in_folder.txt > tempdir2/paired_end_files.txt
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
     #Check if everything is ok considering file names
 if [ -s tempdir2/paired_end_files.txt ]; then
     :
 else
-<<<<<<< HEAD
     printf '%s\n' "ERROR]: no paired-end read files found.
-=======
-    printf '%s\n' "[ERROR]: no paired-end read files found.
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
 File names must contain 'R1' and 'R2' strings! (e.g. s01_R1.fastq and s01_R2.fastq)
 >Quitting" >&2
     end_process
@@ -128,19 +113,11 @@ while read file; do
     if [[ $x == "1" ]]; then
         :
     elif [[ $x == "0" ]]; then
-<<<<<<< HEAD
         printf '%s\n' "ERROR]: $file name does not contain R1 or R2 strings to identify paired-end reads. Remove file from folder or fix the name.
 >Quitting" >&2
         end_process
     else    
         printf '%s\n' "ERROR]: $file name contains multiple R1 or R2 strings -> change names (e.g. R123.R1.fastq to S123.R1.fastq)
-=======
-        printf '%s\n' "[ERROR]: $file name does not contain R1 or R2 strings to identify paired-end reads. Remove file from folder or fix the name.
->Quitting" >&2
-        end_process
-    else    
-        printf '%s\n' "[ERROR]: $file name contains multiple R1 or R2 strings -> change names (e.g. R123.R1.fastq to S123.R1.fastq)
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
 >Quitting" >&2
         end_process
     fi
@@ -176,11 +153,7 @@ function check_gz_zip_SE () {
         pigz --decompress --force --keep $input.$extension
         #Check errors
         if [ "$?" != "0" ]; then
-<<<<<<< HEAD
             printf '%s\n' "ERROR]: $input.$extension decompressing failed! File not compressed as gz or zip.
-=======
-            printf '%s\n' "[ERROR]: $input.$extension decompressing failed! File not compressed as gz or zip.
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
 Decompressing other formats is not supported, please decompress manually.
 >Quitting" >&2 
             quit_process      
@@ -205,11 +178,7 @@ if [[ $check_compress == "gz" ]] || [[ $check_compress == "zip" ]]; then
     pigz --decompress --force --keep $inputR1.$extension
     #Check errors
     if [ "$?" != "0" ]; then
-<<<<<<< HEAD
         printf '%s\n' "ERROR]: $inputR1.$extension decompressing failed! File not compressed as gz or zip.
-=======
-        printf '%s\n' "[ERROR]: $inputR1.$extension decompressing failed! File not compressed as gz or zip.
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
 Decompressing other formats is not supported, please decompress manually.
 >Quitting" >&2
         end_process
@@ -217,11 +186,7 @@ Decompressing other formats is not supported, please decompress manually.
     pigz --decompress --force --keep $inputR2.$extension
     #Check errors
     if [ "$?" != "0" ]; then
-<<<<<<< HEAD
         printf '%s\n' "ERROR]: $inputR2.$extension decompressing failed! File not compressed as gz or zip.
-=======
-        printf '%s\n' "[ERROR]: $inputR2.$extension decompressing failed! File not compressed as gz or zip.
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
 Decompressing other formats is not supported, please decompress manually.
 >Quitting" >&2
         end_process
@@ -236,11 +201,7 @@ else
 if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]]; then
     :
 else
-<<<<<<< HEAD
     printf '%s\n' "ERROR]: $file formatting not supported here!
-=======
-    printf '%s\n' "[ERROR]: $file formatting not supported here!
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
 Supported extensions: fastq, fq (and gz or zip compressed formats).
 >Quitting" >&2
     end_process
@@ -255,11 +216,7 @@ function check_extension_fastq () {
 if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]]; then
     :
 else
-<<<<<<< HEAD
     printf '%s\n' "ERROR]: $file formatting not supported here!
-=======
-    printf '%s\n' "[ERROR]: $file formatting not supported here!
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
 Supported extensions: fastq, fq (and gz or zip compressed formats).
 >Quitting" >&2
     end_process
@@ -273,11 +230,7 @@ function check_extension_fasta () {
 if [[ $newextension == "fasta" ]] || [[ $newextension == "fa" ]] || [[ $newextension == "fas" ]]; then
     :
 else
-<<<<<<< HEAD
     printf '%s\n' "ERROR]: $file formatting not supported here!
-=======
-    printf '%s\n' "[ERROR]: $file formatting not supported here!
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
 Supported extensions: fasta, fas, fa (and gz or zip compressed formats).
 >Quitting" >&2
     end_process
@@ -291,11 +244,7 @@ function check_extension_fastx () {
 if [[ $newextension == "fasta" ]] || [[ $newextension == "fa" ]] || [[ $newextension == "fas" ]] || [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]]; then
     :
 else
-<<<<<<< HEAD
     printf '%s\n' "ERROR]: $file formatting not supported here!
-=======
-    printf '%s\n' "[ERROR]: $file formatting not supported here!
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
 Supported extensions: fastq, fq, fasta, fas, fa (and gz or zip compressed formats).
 >Quitting" >&2
     end_process
@@ -306,11 +255,7 @@ fi
 #############################################################################
 ### Cleaning up and compiling final stats file, only for assemble PE data ###
 #############################################################################
-<<<<<<< HEAD
 function clean_and_make_stats_Assemble_Demux () {
-=======
-function clean_and_make_stats_assemblePEreads () {
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
 #Delete empty output files
 find $output_dir -empty -type f -delete
 # Count input reads
@@ -329,11 +274,7 @@ if [ $outfile_check != 0 ]; then
         printf "$filename\t$size\n" >> tempdir2/seq_count_after.txt
     done
 else 
-<<<<<<< HEAD
     printf '%s\n' "ERROR]: no output files generated ($output_dir). Adjust settings." >&2
-=======
-    printf '%s\n' "[ERROR]: no output files generated ($output_dir). Adjust settings." >&2
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
     end_process
 fi
 ### Compile a track reads summary file (seq_count_summary_demultiplex.txt)
@@ -382,11 +323,7 @@ if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]]; then
 	        printf "$file\t$size\n" >> tempdir2/seq_count_after.txt
 	    done
 	else
-<<<<<<< HEAD
 		printf '%s\n' "ERROR]: no output files generated ($output_dir). Check settings!" >&2
-=======
-		printf '%s\n' "[ERROR]: no output files generated ($output_dir). Check settings!" >&2
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
     	end_process
 	fi
 fi
@@ -404,11 +341,7 @@ if [[ $newextension == "fasta" ]] || [[ $newextension == "fa" ]] || [[ $newexten
 	        printf "$file\t$size\n" >> tempdir2/seq_count_after.txt
 	    done
 	else
-<<<<<<< HEAD
 		printf '%s\n' "ERROR]: no output files generated ($output_dir). Check settings!" >&2
-=======
-		printf '%s\n' "[ERROR]: no output files generated ($output_dir). Check settings!" >&2
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
     	end_process
 	fi
 fi
@@ -506,11 +439,7 @@ for primer in $(echo $fwd_tempprimer | sed "s/,/ /g"); do
     elif [[ $newextension == "fasta" ]] || [[ $newextension == "fa" ]] || [[ $newextension == "fas" ]]; then
     	fqgrep -m $mismatches -p $fwd_primer -f -e $input.$newextension >> tempdir/5_3.fastx
     else
-<<<<<<< HEAD
 	    printf '%s\n' "ERROR]: $file formatting not supported!
-=======
-	    printf '%s\n' "[ERROR]: $file formatting not supported!
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
 Supported extensions: fastq, fq, fasta, fa, fas (and gz or zip compressed formats).
 >Quitting" >&2
 		end_process
@@ -534,11 +463,7 @@ for primer in $(echo $rev_tempprimer | sed "s/,/ /g"); do
     elif [[ $newextension == "fasta" ]] || [[ $newextension == "fa" ]] || [[ $newextension == "fas" ]]; then
     	fqgrep -m $mismatches -p $rev_primer -f -e $input.$newextension >> tempdir/3_5.fastx
     else
-<<<<<<< HEAD
 	    printf '%s\n' "ERROR]: $file formatting not supported!
-=======
-	    printf '%s\n' "[ERROR]: $file formatting not supported!
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
 Supported extensions: fastq, fq, fasta, fa, fas (and gz or zip compressed formats).
 >Quitting" >&2
 		end_process
@@ -618,8 +543,6 @@ fi
 }
 
 
-
-
 ###########################
 ### Check barcodes file ###
 ###########################
@@ -629,24 +552,16 @@ printf "\nValidating barcodes file ...\n"
     #is fasta format?
 cat $indexes_file | seqkit seq -v > tempdir2/ValidatedBarcodesFileForDemux.fasta.temp
 if [ "$?" != "0" ]; then
-<<<<<<< HEAD
-    printf '%s\n' "ERROR]: barcodes file not in correct fasta format. 
-=======
-    printf '%s\n' "[ERROR]: barcodes file not in correct fasta format. 
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
-Please check the barcodes file and format according to the 'indexes_file_example.txt'
+    printf '%s\n' "ERROR]: 'indexes file' not in correct fasta format. 
+Please check the indexes file and format according to the 'indexes_file_example.txt'
 >Quitting" >&2
     end_process
 fi
     #does not contain duplicate values?
 sort tempdir2/ValidatedBarcodesFileForDemux.fasta.temp | \
 uniq --count --repeated | \
-<<<<<<< HEAD
-grep . && printf '%s\n' "ERROR]: barcodes or samples names (above) are not unique in the barcodes file. 
-=======
-grep . && printf '%s\n' "[ERROR]: barcodes or samples names (above) are not unique in the barcodes file. 
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
-Please check the barcodes file and include only unique barcode combinations and sample names.
+grep . && printf '%s\n' "ERROR]: indexes or samples names (above) are not unique in the indexes file. 
+Please check the indexes file and include only unique index combinations and sample names.
 >Quitting" >&2 && end_process \
 || :
     # report if dual indexes or single indexes
