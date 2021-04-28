@@ -115,7 +115,7 @@ export default {
     async runWorkFlow() {
       this.$store.commit("addWorkingDir", "/input");
       for (let index of this.selectedSteps.entries()) {
-        console.log(`Startin step ${index[0] + 1} ${index[1].stepName}`);
+        console.log(`Startin step: ${index[0] + 1} ${index[1].stepName}`);
         let serviceIndex = this.findSelectedService(index[0]);
         let scriptName = this.selectedSteps[index[0]].services[serviceIndex]
           .scriptName;
@@ -165,8 +165,9 @@ export default {
             }
           })
           .catch((err) => {
-            console.log(err);
-            let resObj = { statusCode: err.code, log: err };
+            let resObj = {};
+            resObj.statusCode = err.statusCode;
+            resObj.log = err.json.message;
             return resObj;
           });
         console.log(result);
@@ -187,7 +188,7 @@ export default {
         }
         stdout = new streams.WritableStream();
         stderr = new streams.WritableStream();
-        console.log(`Finished step ${index[0] + 1}: ${index[1].serviceName}`);
+        console.log(`Finished step ${index[0] + 1}: ${index[1].stepName}`);
       }
     },
     getVariableFromLog(log, varName) {

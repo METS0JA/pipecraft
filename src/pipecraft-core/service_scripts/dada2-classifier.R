@@ -14,20 +14,6 @@ database = Sys.getenv('database')
 
 
 #define input and output file paths
-seqtab.nochim = list.files(pattern = "nochim")
-output = paste('/input/dada2-classifier-output/',input, sep="")
-
-#save parameters to comma separated string
-library(stringr)
-parameters = paste(database, sep=', ')
-parameters = str_replace_all(parameters, ', ,', ',')
-
-#construct the full command for execution
-command = paste(taxa <- assignTaxonomy(seqtab.nochim, parameters, multithread=TRUE))
-
-
-#turns string into an expression, and evaluates the expression.
-
-#show stats
-command
-head(out)
+unite.ref <- "~/tax/sh_general_release_dynamic_s_01.12.2017.fasta"  # CHANGE ME to location on your machine
+seqtab.nochim <- readRDS("seqtab.nochim.rds")
+taxa <- assignTaxonomy(seqtab.nochim, unite.ref, multithread = TRUE, tryRC = TRUE)

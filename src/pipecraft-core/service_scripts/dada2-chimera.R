@@ -14,20 +14,6 @@ method = Sys.getenv('method')
 
 
 #define input and output file paths
-seqtab.nochim = list.files(pattern = "seqtab")
-output = paste('/input/dada2-chimera-output/',input, sep="")
-
-#save parameters to comma separated string
-library(stringr)
-parameters = paste(method, sep=', ')
-parameters = str_replace_all(parameters, ', ,', ',')
-
-#construct the full command for execution
-command = paste(seqtab.nochim <- removeBimeraDenovo(seqtab, method=method, multithread=TRUE, verbose=TRUE))
-
-
-#turns string into an expression, and evaluates the expression.
-
-#show stats
-command
-head(out)
+seqtab <- readRDS("seqtab.rds")
+seqtab.nochim <- removeBimeraDenovo(seqtab, method="consensus", multithread=FALSE, verbose=TRUE)
+saveRDS(seqtab.nochim, "/input/dada2-chimera-output/seqtab.nochim.rds")
