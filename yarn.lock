@@ -1076,6 +1076,11 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.19.11.tgz#9220ab4b20d91169eb78f456dbfcbabee89dfb50"
   integrity sha512-bwVfNTFZOrGXyiQ6t4B9sZerMSShWNsGRw8tC5DY1qImUNczS9SjT4G6PnzjCnxsu5Ubj6xjL2lgwddkxtQl5w==
 
+"@types/node@^8.0.13":
+  version "8.10.66"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.10.66.tgz#dd035d409df322acc83dff62a602f12a5783bbb3"
+  integrity sha512-tktOkFUA4kXx2hhhrB8bIFb5TbwzS4uOhKEmwiD+NoiL0qtP2OQ9mFldbgD4dV1djrlBYP6eBuQZiWjuHUpqFw==
+
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/@types/normalize-package-data/-/normalize-package-data-2.4.0.tgz#e486d0d97396d79beedd0a6e33f4534ff6b4973e"
@@ -3479,6 +3484,13 @@ docker-modem@^2.1.0:
     readable-stream "^3.5.0"
     split-ca "^1.0.1"
     ssh2 "^0.8.7"
+
+dockerode-utils@^0.0.7:
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/dockerode-utils/-/dockerode-utils-0.0.7.tgz#f1491dda593c107d35fe728e2ae0cc45384ae98d"
+  integrity sha512-vxMjHFl54CZ/XNtaaBgeaYchIY1F79nD3ymZkiM1HC5cL9SRAFvsJfplqobsT3cfbLJPaUlHW1nuVJEnlu+SOg==
+  dependencies:
+    "@types/node" "^8.0.13"
 
 dockerode@^3.2.1:
   version "3.2.1"

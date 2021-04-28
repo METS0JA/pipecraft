@@ -173,7 +173,7 @@ export default new Vuex.Store({
         stepName: "remove adapters",
         services: [
           {
-            scriptName: "cutadapat-cut.sh",
+            scriptName: "cutadapt.sh",
             imageName: "pipecraft/cutadapt:2.10",
             serviceName: "cutadapt",
             selected: false,

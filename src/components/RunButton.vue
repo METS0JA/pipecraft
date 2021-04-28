@@ -14,8 +14,10 @@
 
 <script>
 const Swal = require("sweetalert2");
-var Docker = require("dockerode");
-var docker = new Docker({ socketPath: "//./pipe/docker_engine" });
+import * as Dockerode from "dockerode";
+var dockerode = new Dockerode({ socketPath: "//./pipe/docker_engine" });
+import { pullImageAsync } from "dockerode-utils";
+import { imageExists } from "dockerode-utils";
 const streams = require("memory-streams");
 var stdout = new streams.WritableStream();
 var stderr = new streams.WritableStream();
@@ -32,34 +34,6 @@ export default {
     items: [],
   }),
   methods: {
-    async checkImage(imageName) {
-      console.log(imageName);
-      let repoList = [];
-      let imageList = await docker.listImages();
-      imageList.forEach((image) => {
-        repoList.push(image.RepoTags[0]);
-      });
-      console.log(repoList);
-      if (repoList.includes(imageName) === false) {
-        console.log(`pulling image ${imageName}`);
-        await docker.pull(imageName, (err, stream) => {
-          console.log(err);
-          docker.modem.followProgress(stream, onFinished, onProgress);
-          function onFinished(err, output) {
-            if (!err) {
-              console.log(output);
-              console.log("\nDone pulling.");
-            } else {
-              console.log(err);
-              process.exit(1);
-            }
-          }
-          function onProgress(event) {
-            console.log(event);
-          }
-        });
-      }
-    },
     async runCustomWorkFlow(name) {
       console.log(name);
       this.$store.commit("addWorkingDir", "/input");
@@ -69,12 +43,18 @@ export default {
         let imageName = this.$store.state[name][index[0]].imageName;
         let Input = this.$store.state.inputDir;
         let WorkingDir = this.$store.state.workingDir;
-        console.log(scriptName, imageName, Input, WorkingDir);
         let envVariables;
         envVariables = this.createCustomVariableObj(name, index[0]);
+        let gotImg = await imageExists(dockerode, imageName);
+        if (gotImg === false) {
+          console.log(`Pulling image ${imageName}`);
+          let output = await pullImageAsync(dockerode, imageName);
+          console.log(output);
+          console.log(`Pull complete`);
+        }
+        console.log(scriptName, "\n", imageName, "\n", Input, "\n", WorkingDir);
         console.log(envVariables);
-        await this.checkImage(imageName);
-        let result = await docker
+        let result = await dockerode
           .run(
             imageName,
             ["sh", "-c", `/scripts/${scriptName}`],
@@ -135,18 +115,26 @@ export default {
     async runWorkFlow() {
       this.$store.commit("addWorkingDir", "/input");
       for (let index of this.selectedSteps.entries()) {
-        let envVariables;
         console.log(`Startin step ${index[0] + 1} ${index[1].stepName}`);
         let serviceIndex = this.findSelectedService(index[0]);
-        envVariables = this.createVariableObj(index[0], serviceIndex);
-        console.log(envVariables);
         let scriptName = this.selectedSteps[index[0]].services[serviceIndex]
           .scriptName;
         let imageName = this.selectedSteps[index[0]].services[serviceIndex]
           .imageName;
         let Input = this.$store.state.inputDir;
         let WorkingDir = this.$store.state.workingDir;
-        var result = await docker
+        let envVariables;
+        envVariables = this.createVariableObj(index[0], serviceIndex);
+        let gotImg = await imageExists(dockerode, imageName);
+        if (gotImg === false) {
+          console.log(`Pulling image ${imageName}`);
+          let output = await pullImageAsync(dockerode, imageName);
+          console.log(output);
+          console.log(`Pull complete`);
+        }
+        console.log(scriptName, "\n", imageName, "\n", Input, "\n", WorkingDir);
+        console.log(envVariables);
+        let result = await dockerode
           .run(
             imageName,
             ["sh", "-c", `/scripts/${scriptName}`],
@@ -181,18 +169,25 @@ export default {
             let resObj = { statusCode: err.code, log: err };
             return resObj;
           });
-        console.log(result.log);
-        let newWorkingDir = this.getVariableFromLog(result.log, "workingDir");
-        console.log(newWorkingDir);
-        let newDataInfo = {
-          dataFormat: this.getVariableFromLog(result.log, "dataFormat"),
-          fileFormat: this.getVariableFromLog(result.log, "fileFormat"),
-          readType: this.getVariableFromLog(result.log, "readType"),
-        };
-        this.$store.commit("addInputInfo", newDataInfo);
-        this.$store.commit("addWorkingDir", newWorkingDir);
+        console.log(result);
+        if (result.statusCode == 0) {
+          let newWorkingDir = this.getVariableFromLog(result.log, "workingDir");
+          let newDataInfo = {
+            dataFormat: this.getVariableFromLog(result.log, "dataFormat"),
+            fileFormat: this.getVariableFromLog(result.log, "fileFormat"),
+            readType: this.getVariableFromLog(result.log, "readType"),
+          };
+          this.$store.commit("addInputInfo", newDataInfo);
+          this.$store.commit("addWorkingDir", newWorkingDir);
+        } else {
+          Swal.fire(result.log);
+          stdout = new streams.WritableStream();
+          stderr = new streams.WritableStream();
+          break;
+        }
         stdout = new streams.WritableStream();
         stderr = new streams.WritableStream();
+        console.log(`Finished step ${index[0] + 1}: ${index[1].serviceName}`);
       }
     },
     getVariableFromLog(log, varName) {
