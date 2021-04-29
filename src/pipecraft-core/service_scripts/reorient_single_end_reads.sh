@@ -31,9 +31,9 @@
 
 ###############################
 #These variables are for testing (DELETE when implementing to PipeCraft)
-extension=$"fq.gz"
+extension=$"fastq"
 mismatches=$"2"
-fwd_tempprimer=$"ACCTGCTAGGCTAGATGC,GGTACAGGTTGAACAGTTTATCC"
+fwd_tempprimer=$"ACCTGCYAGGCTAGATGC"
 rev_tempprimer=$"GGGATCCATCGATTTAAC"
 ###############################
 ###############################
@@ -43,11 +43,7 @@ rev_tempprimer=$"GGGATCCATCGATTTAAC"
 #############################
 start=$(date +%s)
 # Source for functions
-<<<<<<< HEAD
 source /scripts/framework.functions.sh
-=======
-source /home/sten/Dropbox/PIPELINE/PipeCraft2.0/framework.functions.sh
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
 #output dir
 output_dir=$"reoriented_out"
 ### Check if files with specified extension exist in the dir
@@ -67,7 +63,7 @@ for file in *.$extension; do
     outfile=$(echo $input | sed -e "s/.$extension//")
     ### Preparing files for reorienting
     printf "\n___________________________________\n"
-    printf "Preparing $file for reorienting ...\n"
+    printf "Processing $file ...\n"
 
     #If input is compressed, then decompress (keeping the compressed file, but overwriting if filename exists!)
         #$extension will be $newextension
@@ -84,8 +80,9 @@ for file in *.$extension; do
     SE_reorient_REV & 
     wait
     #if rev primer found, then make reverse complementary and merge with 5_3.fastq file
-    if [ -s tempdir/R1.3_5.fastx ]; then
-        seqkit seq --quiet -t dna -r -p tempdir/3_5.fastq >> tempdir/5_3.fastx
+    if [ -s tempdir/3_5.fastx ]; then
+        checkerror=$(seqkit seq --quiet -t dna -r -p tempdir/3_5.fastx >> tempdir/5_3.fastx 2>&1)
+        check_app_error
     fi
 
     ### Remove multiprimer artefacts
@@ -154,7 +151,7 @@ RUNNING THE PROCESS SEVERAL TIMES IN THE SAME DIRECTORY WILL OVERWRITE ALL THE O
 printf "\nDONE\n"
 printf "Data in directory '$output_dir'\n"
 printf "Summary of sequence counts in '$output_dir/seq_count_summary.txt'\n"
-printf "Check README.txt files in output directory for further information about the process.\n"
+printf "Check README.txt file in $output_dir directory for further information about the process.\n"
 
 end=$(date +%s)
 runtime=$((end-start))

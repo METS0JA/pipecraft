@@ -69,7 +69,8 @@ for primer in $rev_primer_array; do
     ((i=i+1))
 done
 # Reverse complement REV primers
-seqkit seq --quiet -t dna -r -p tempdir2/rev_primer.fasta >> tempdir2/rev_primer_RC.fasta
+checkerror=$(seqkit seq --quiet -t dna -r -p tempdir2/rev_primer.fasta >> tempdir2/rev_primer_RC.fasta 2>&1)
+check_app_error
 # Make linked primers files
 i=1
 while read LINE; do
@@ -93,7 +94,7 @@ done < tempdir2/fwd_primer.fasta
 #############################
 ### Start of the workflow ###
 #############################
-if [ $no_indels == "TRUE" ]; then
+if [[ $no_indels == "TRUE" ]]; then
     indels=$"--no-indels"
 fi
 ### Read through each fastq/fasta file in folder
@@ -102,7 +103,7 @@ for file in *.$extension; do
     input=$(echo $file | sed -e "s/.$extension//")
     ## Preparing files
     printf "\n____________________________________\n"
-    printf "Preparing $input ...\n"
+    printf "Checking $input ...\n"
 
     #If input is compressed, then decompress (keeping the compressed file, but overwriting if filename exists!)
         #$extension will be $newextension
@@ -118,15 +119,15 @@ for file in *.$extension; do
     printf " reverse primer(s): $rev_tempprimer\n"
 
     #If discard_untrimmed = TRUE, then assigns outputs and make outdir
-    if [ $discard_untrimmed == "TRUE" ]; then
+    if [[ $discard_untrimmed == "TRUE" ]]; then
         mkdir -p $output_dir/untrimmed
         untrimmed_output=$"--untrimmed-output $output_dir/untrimmed/$input.untrimmed.$newextension"
     fi
 
     ### Clip primers with cutadapt
         # --revcomp compared RC seq strands, so no need to specify RC primers
-    if [ $seqs_to_keep == "keep_all" ]; then
-        cutadapt --quiet --revcomp \
+    if [[ $seqs_to_keep == "keep_all" ]]; then
+        checkerror=$(cutadapt --quiet --revcomp \
         $mismatches \
         $min_length \
         $overlap \
@@ -137,10 +138,11 @@ for file in *.$extension; do
         -g file:tempdir2/fwd_primer.fasta \
         -a file:tempdir2/rev_primer_RC.fasta \
         -o $output_dir/$input.primersCut.$newextension \
-        $input.$newextension
+        $input.$newextension 2>&1)
+        check_app_error
 
-    elif [ $seqs_to_keep == "keep_only_linked" ]; then
-        cutadapt --quiet --revcomp \
+    elif [[ $seqs_to_keep == "keep_only_linked" ]]; then
+        checkerror=$(cutadapt --quiet --revcomp \
         $mismatches \
         $min_length \
         $overlap \
@@ -149,7 +151,8 @@ for file in *.$extension; do
         $untrimmed_output \
         -g file:tempdir2/liked_fwd_revRC.fasta \
         -o $output_dir/$input.primersCut.$newextension \
-        $input.$newextension
+        $input.$newextension 2>&1)
+        check_app_error
     fi
 done
 
@@ -162,7 +165,7 @@ outfile_addition=$"primersCut"
 clean_and_make_stats
 
 #Make README.txt file for untrimmed seqs
-if [ $discard_untrimmed == "TRUE" ]; then
+if [[ $discard_untrimmed == "TRUE" ]]; then
     printf "Files in /untrimmed folder represent seqs that did not contain specified primer strings.
 Forward primer(s) [has to be 5'-3']: $fwd_tempprimer
 Reverse primer(s) [has to be 3'-5']: $rev_tempprimer

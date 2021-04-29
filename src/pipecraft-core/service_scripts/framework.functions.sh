@@ -18,6 +18,18 @@ fi
 exit 1
 }
 
+#######################################
+### Check if APP run was successful ###
+#######################################
+function check_app_error () {
+if [ "$?" = "0" ]; then
+    :
+else
+    printf '%s\n' "ERROR]: $checkerror" >&2
+    end_process
+fi
+}
+
 ##################################################
 ### Function to convert IUPAC codes in primers ###
 ##################################################
@@ -61,7 +73,7 @@ if [ $count != 0 ]; then
     :
 else
     printf '%s\n' "ERROR]: cannot find files with specified extension '$extension'
-Files are compressed? Please check the extension of your files and specify again.
+Please check the extension of your files and specify again.
 >Quitting" >&2
     end_process
 fi 
@@ -423,9 +435,10 @@ for primer in $(echo $rev_tempprimer | sed "s/,/ /g"); do
 done
 }
 
-###########################################################
-### Single-End data reorient reads based on FWD primers ###
-###########################################################
+#######################################################
+### Single-End data reorient reads based on primers ###
+#######################################################
+#Fwd primers
 function SE_reorient_FWD () {
 touch tempdir/5_3.fastx
 ### Reorient based on FWD primer(s)
@@ -446,10 +459,7 @@ Supported extensions: fastq, fq, fasta, fa, fas (and gz or zip compressed format
     fi
 done
 }
-
-###########################################################
-### Single-End data reorient reads based on REV primers ###
-###########################################################
+#Rev primers
 function SE_reorient_REV () {
 touch tempdir/3_5.fastx
 ### Reorient based on REV primer(s)
@@ -476,15 +486,18 @@ done
 ################################
 # R1 multi-primer artefacts search
 function multiprimer_search_R1 () {
-seqkit rmdup --quiet -n -D tempdir/duplicates.temp tempdir/R1.5_3.fastq > tempdir/R1.5_3.fastq.temp
+checkerror=$(seqkit rmdup --quiet -n -D tempdir/duplicates.temp tempdir/R1.5_3.fastq > tempdir/R1.5_3.fastq.temp 2>&1)
+check_app_error
 if [ -s tempdir/duplicates.temp ]; then
     awk 'BEGIN{FS=","}{print $2}' tempdir/duplicates.temp | sed -e 's/^ //' > tempdir/duplicates.names
         #Remove duplicate seqs from fastq
-    mothur --quiet "#remove.seqs(fastq=tempdir/R1.5_3.fastq.temp, accnos=tempdir/duplicates.names)" &> /dev/null
+    checkerror=$(mothur --quiet "#remove.seqs(fastq=tempdir/R1.5_3.fastq.temp, accnos=tempdir/duplicates.names)" 2>&1)
+    check_app_error
         #Rename reoriented R1 file
     mv tempdir/R1.5_3.fastq.pick.temp tempdir/$inputR1.reoriented.$newextension
         #Get multi-primer artefacts
-    mothur --quiet "#get.seqs(fastq=tempdir/R1.5_3.fastq.temp, accnos=tempdir/duplicates.names)" &> /dev/null
+    checkerror=$(mothur --quiet "#get.seqs(fastq=tempdir/R1.5_3.fastq.temp, accnos=tempdir/duplicates.names)" 2>&1)
+    check_app_error
     mv tempdir/R1.5_3.fastq.pick.temp tempdir/$inputR1.multiprimer.$newextension
     multiprimer_count=$(wc -l tempdir/duplicates.names | awk '{print $1}')
     printf "   - found $multiprimer_count 'multi-primer' chimeric sequence(s) from $inputR1.$newextension \n"
@@ -496,15 +509,18 @@ fi
 
 # R2 multi-primer artefacts search
 function multiprimer_search_R2 () {
-seqkit rmdup --quiet -n -D tempdir/duplicates.temp tempdir/R2.3_5.fastq > tempdir/R2.3_5.fastq.temp
+checkerror=$(seqkit rmdup --quiet -n -D tempdir/duplicates.temp tempdir/R2.3_5.fastq > tempdir/R2.3_5.fastq.temp 2>&1)
+check_app_error
 if [ -s tempdir/duplicates.temp ]; then
     awk 'BEGIN{FS=","}{print $2}' tempdir/duplicates.temp | sed -e 's/^ //' > tempdir/duplicates.names
         #Remove duplicate seqs from fastq
-    mothur --quiet "#remove.seqs(fastq=tempdir/R2.3_5.fastq.temp, accnos=tempdir/duplicates.names)" &> /dev/null
+    checkerror=$(mothur --quiet "#remove.seqs(fastq=tempdir/R2.3_5.fastq.temp, accnos=tempdir/duplicates.names)" 2>&1)
+    check_app_error
         #Rename reoriented R2 file
     mv tempdir/R2.3_5.fastq.pick.temp tempdir/$inputR2.reoriented.$newextension
         #Get multi-primer artefacts
-    mothur --quiet "#get.seqs(fastq=tempdir/R2.3_5.fastq.temp, accnos=tempdir/duplicates.names)" &> /dev/null
+    checkerror=$(mothur --quiet "#get.seqs(fastq=tempdir/R2.3_5.fastq.temp, accnos=tempdir/duplicates.names)" 2>&1)
+    check_app_error
     mv tempdir/R2.3_5.fastq.pick.temp tempdir/$inputR2.multiprimer.$newextension
     multiprimer_count=$(wc -l tempdir/duplicates.names | awk '{print $1}')
     printf "   - found $multiprimer_count 'multi-primer' chimeric sequence(s) from $inputR2.$newextension \n"
@@ -516,22 +532,27 @@ fi
 
 # Single-end data multi-primer artefacts search
 function multiprimer_search_SE () {
-seqkit rmdup --quiet -n -D tempdir/duplicates.temp tempdir/5_3.fastx > tempdir/5_3.fastx.temp
+checkerror=$(seqkit rmdup --quiet -n -D tempdir/duplicates.temp tempdir/5_3.fastx > tempdir/5_3.fastx.temp 2>&1)
+check_app_error
 if [ -s tempdir/duplicates.temp ]; then
     awk 'BEGIN{FS=","}{print $2}' tempdir/duplicates.temp | sed -e 's/^ //' > tempdir/duplicates.names
         #Remove duplicate seqs from fastx
     if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]]; then
-    	mothur --quiet "#remove.seqs(fastq=tempdir/5_3.fastx.temp, accnos=tempdir/duplicates.names)" &> /dev/null
+    	checkerror=$(mothur --quiet "#remove.seqs(fastq=tempdir/5_3.fastx.temp, accnos=tempdir/duplicates.names)" 2>&1)
+        check_app_error
     elif [[ $newextension == "fasta" ]] || [[ $newextension == "fas" ]] || [[ $newextension == "fa" ]]; then
-    	mothur --quiet "#remove.seqs(fasta=tempdir/5_3.fastx.temp, accnos=tempdir/duplicates.names)" &> /dev/null
+    	checkerror=$(mothur --quiet "#remove.seqs(fasta=tempdir/5_3.fastx.temp, accnos=tempdir/duplicates.names)" 2>&1)
+        check_app_error
     fi
         #Rename reoriented file
     mv tempdir/5_3.fastx.pick.temp tempdir/$input.reoriented.$newextension
         #Get multi-primer artefacts
     if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]]; then
-    	mothur --quiet "#get.seqs(fastq=tempdir/5_3.fastx.temp, accnos=tempdir/duplicates.names)" &> /dev/null
+    	checkerror=$(mothur --quiet "#get.seqs(fastq=tempdir/5_3.fastx.temp, accnos=tempdir/duplicates.names)" 2>&1)
+        check_app_error
     elif [[ $newextension == "fasta" ]] || [[ $newextension == "fas" ]] || [[ $newextension == "fa" ]]; then
-    	mothur --quiet "#get.seqs(fasta=tempdir/5_3.fastx.temp, accnos=tempdir/duplicates.names)" &> /dev/null
+    	checkerror=$(mothur --quiet "#get.seqs(fasta=tempdir/5_3.fastx.temp, accnos=tempdir/duplicates.names)" 2>&1)
+        check_app_error
     fi
     mv tempdir/5_3.fastx.pick.temp tempdir/$input.multiprimer.$newextension
     multiprimer_count=$(wc -l tempdir/duplicates.names | awk '{print $1}')
@@ -571,3 +592,4 @@ else
     echo "ok; single indexes"
 fi
 }
+

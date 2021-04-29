@@ -31,27 +31,12 @@
 
 ###############################
 #These variables are for testing (DELETE when implementing to PipeCraft)
-<<<<<<< HEAD
 extension=$"fq.gz"
 mismatches=$"1"
 fwd_tempprimer=$"ACCTGCTAGGCTAGATGC,TAGCTGATCGATCGATCG"
 rev_tempprimer=$"GGGATCCATCGATTTAAC"
 ###############################
 ###############################
-=======
-extension=$fileFormat
-fwd_tempprimer=$forward_primers
-#fwd_tempprimer=$"ACCTGCTAGGCTAGATGC,TAGCTGATCGATCGATCG"
-#rev_tempprimer=$"GGGATCCATCGATTTAAC"
-rev_tempprimer=$reverse_primers
-
-echo $mismatches
-echo $extension
-echo $fwd_tempprimer
-echo $rev_tempprimer
-###############################
-###############################
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
 
 #############################
 ### Start of the workflow ###
@@ -78,7 +63,7 @@ while read LINE; do
     inputR2=$(echo $inputR1 | sed -e 's/R1/R2/')
     ## Preparing files for reorienting
     printf "\n____________________________________\n"
-    printf "Preparing $inputR1 and $inputR2 for reorienting ...\n"
+    printf "Processing $inputR1 and $inputR2 ...\n"
 
     #If input is compressed, then decompress (keeping the compressed file, but overwriting if filename exists!)
         #$extension will be $newextension
@@ -97,32 +82,26 @@ while read LINE; do
     wait
     #if rev primer found in R1, then make reverse complementary and merge with 5_3.fastq file
     if [ -s tempdir/R1.3_5.fastq ]; then
-        seqkit seq --quiet -t dna -r -p tempdir/R1.3_5.fastq >> tempdir/R1.5_3.fastq
+        checkerror=$(seqkit seq --quiet -t dna -r -p tempdir/R1.3_5.fastq >> tempdir/R1.5_3.fastq 2>&1)
+        check_app_error
     fi
     #if fwd primer found in R2, then make reverse complementary and merge with 3_5.fastq file
     if [ -s tempdir/R2.5_3.fastq ]; then
-        seqkit seq --quiet -t dna -r -p tempdir/R2.5_3.fastq >> tempdir/R2.3_5.fastq
+        checkerror=$(seqkit seq --quiet -t dna -r -p tempdir/R2.5_3.fastq >> tempdir/R2.3_5.fastq 2>&1)
+        check_app_error
     fi
 
     #Check if seqs contained the specified primer strings
     if [ -s tempdir/R1.5_3.fastq ]; then
         :
     else
-<<<<<<< HEAD
         printf '%s\n' "WARNING]: specified primers not found in $inputR1.$newextension (SKIPPING file; also $inputR2.$newextension)" \
-=======
-        printf '%s\n' "[WARNING]: specified primers not found in $inputR1.$newextension (SKIPPING file; also $inputR2.$newextension)" \
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
         && rm -rf tempdir && continue
     fi
     if [ -s tempdir/R2.3_5.fastq ]; then
         :
    else
-<<<<<<< HEAD
         printf '%s\n' "WARNING]: specified primers not found in $inputR2.$newextension (SKIPPING file; also $inputR1.$newextension)" \
-=======
-        printf '%s\n' "[WARNING]: specified primers not found in $inputR2.$newextension (SKIPPING file; also $inputR1.$newextension)" \
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
         && rm -rf tempdir && continue
     fi
 
@@ -144,7 +123,8 @@ while read LINE; do
     #pair R1 and R2 seqs (synchronize)
     printf "\nSynchronizing R1 and R2 reads (matching order for paired-end reads merging)\n"
     cd tempdir && \
-    seqkit pair -1 $inputR1.reoriented.$newextension -2 $inputR2.reoriented.$newextension --quiet
+    checkerror=$(seqkit pair -1 $inputR1.reoriented.$newextension -2 $inputR2.reoriented.$newextension 2>&1)
+    check_app_error
     rm $inputR1.reoriented.$newextension
     rm $inputR2.reoriented.$newextension
     mv $inputR1.reoriented.paired.$newextension $inputR1.reoriented.$newextension
@@ -159,22 +139,14 @@ while read LINE; do
         size=$(echo $(cat $output_dir/$inputR1.reoriented.$newextension | wc -l) / 4 | bc)
         printf "$size sequences in $inputR1.reoriented.$newextension\n"
     else
-<<<<<<< HEAD
         printf '%s\n' "WARNING]: after synchronizing, $inputR1 has 0 seqs (no output)"
-=======
-        printf '%s\n' "[WARNING]: after synchronizing, $inputR1 has 0 seqs (no output)"
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
         rm $output_dir/$inputR1.reoriented.$newextension
     fi
     if [ -s $output_dir/$inputR2.reoriented.$newextension ]; then
         size=$(echo $(cat $output_dir/$inputR2.reoriented.$newextension | wc -l) / 4 | bc)
         printf "$size sequences in $inputR2.reoriented.$newextension\n"
     else
-<<<<<<< HEAD
         printf '%s\n' "WARNING]: after synchronizing, $inputR2 has 0 seqs (no output)"
-=======
-        printf '%s\n' "[WARNING]: after synchronizing, $inputR2 has 0 seqs (no output)"
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
         rm $output_dir/$inputR2.reoriented.$newextension
     fi
 done < tempdir2/paired_end_files.txt
@@ -214,7 +186,7 @@ RUNNING THE PROCESS SEVERAL TIMES IN THE SAME DIRECTORY WILL OVERWRITE ALL THE O
 printf "\nDONE\n"
 printf "Data in directory '$output_dir'\n"
 printf "Summary of sequence counts in '$output_dir/seq_count_summary.txt'\n"
-printf "Check README.txt files in output directory for further information about the process.\n"
+printf "Check README.txt file in $output_dir directory for further information about the process.\n"
 
 end=$(date +%s)
 runtime=$((end-start))

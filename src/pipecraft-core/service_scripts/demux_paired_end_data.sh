@@ -30,7 +30,6 @@ no_indels=$"--no-indels"
 minlen=$"--minimum-length 20"
 cores=$"--cores 1"
 overlap=$"--overlap 12"
-
 ###############################
 ###############################
 
@@ -50,7 +49,7 @@ prepare_PE_env
 check_indexes_file
 
 ### Process file
-printf "Preparing files for demultiplexing ...\n"
+printf "Checking files ...\n"
 while read LINE; do
 
     #Write file name without extension
@@ -63,7 +62,7 @@ while read LINE; do
     ### Check input formats (fastq/fasta supported)
     check_extension_fastx
 
-    ### CCheck if dual indexes or single indexes and prepare workflow accordingly
+    ### Check if dual indexes or single indexes and prepare workflow accordingly
     if grep -q "\..." tempdir2/ValidatedBarcodesFileForDemux.fasta.temp; then
         #dual indexes
         #make rev barcodes file
@@ -111,7 +110,7 @@ while read LINE; do
     printf "   (this may take some time for large files)\n"
 
     ### Round1 demux
-    cutadapt --quiet \
+    checkerror=$(cutadapt --quiet \
     $indexes_file_in1 \
     $error_rate \
     $no_indels \
@@ -120,11 +119,12 @@ while read LINE; do
     $cores \
     $outR1 \
     $outR2 \
-    $inputR1.$newextension $inputR2.$newextension
+    $inputR1.$newextension $inputR2.$newextension 2>&1)
+    check_app_error
 
     #Round2 demux (RC; R1 and R2 position switched!)
     cd $output_dir
-    cutadapt --quiet \
+    checkerror=$(cutadapt --quiet \
     $indexes_file_in2 \
     $error_rate \
     $no_indels \
@@ -133,7 +133,8 @@ while read LINE; do
     $cores \
     $outR2_round2 \
     $outR1_round2 \
-    $input_for_round2_R2.$newextension $input_for_round2_R1.$newextension
+    $input_for_round2_R2.$newextension $input_for_round2_R1.$newextension 2>&1)
+    check_app_error
     
     #Remove round1 unknowns and remane final unknowns
     rm $input_for_round2_R2.$newextension
