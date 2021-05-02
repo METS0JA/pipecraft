@@ -31,10 +31,20 @@
 
 ###############################
 #These variables are for testing (DELETE when implementing to PipeCraft)
-extension=$"fq.gz"
-mismatches=$"1"
-fwd_tempprimer=$"ACCTGCTAGGCTAGATGC,TAGCTGATCGATCGATCG"
-rev_tempprimer=$"GGGATCCATCGATTTAAC"
+
+echo $forward_primers
+echo $reverse_primers
+echo $mismatches
+
+
+extension=$fileFormat
+mismatches=$mismatches
+fwd_tempprimer=$forward_primers
+rev_tempprimer=$reverse_primers
+# fwd_tempprimer=$"ACCTGCGGARGGATCA"
+# rev_tempprimer=$"GAGATCCRTTGYTRAAAGTT"
+# fwd_tempprimer=$"ACCTGCTAGGCTAGATGC,TAGCTGATCGATCGATCG"
+# rev_tempprimer=$"GGGATCCATCGATTTAAC"
 ###############################
 ###############################
 

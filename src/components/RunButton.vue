@@ -70,7 +70,7 @@ export default {
                 ],
               },
               Env: envVariables,
-            }
+            },
           )
           .then(async ([res, container]) => {
             console.log(stdout.toString());
@@ -150,7 +150,7 @@ export default {
                 ],
               },
               Env: envVariables,
-            }
+            },
           )
           .then(async ([res, container]) => {
             console.log(stdout.toString());
@@ -206,7 +206,7 @@ export default {
           let varObj = {};
           varObj[input.name] = input.value;
           envVariables.push(stringify(varObj).replace(/(\r\n|\n|\r)/gm, ""));
-        }
+        },
       );
       let dataInfo = {
         workingDir: this.$store.state.workingDir,
@@ -257,7 +257,7 @@ export default {
         imageName,
         scriptName,
         envVariables,
-        this.$store.state.workingDir
+        this.$store.state.workingDir,
       );
       return result;
     },
@@ -268,5 +268,11 @@ export default {
 <style scoped>
 .v-btn {
   justify-content: center;
+}
+.swal-wide {
+  width: 850px !important;
+}
+.swal2-popup {
+  width: auto;
 }
 </style>

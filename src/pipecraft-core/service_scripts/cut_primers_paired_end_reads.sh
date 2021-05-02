@@ -22,17 +22,33 @@
 ###############################
 ###############################
 #These variables are for testing (DELETE when implementing to PipeCraft)
-extension=$"fq"
+# echo $fileFormat
+# echo $mismatches
+# echo $min_seq_length
+# echo $overlap
+# echo $cores
+# echo $no_indels
+# echo $discard_untrimmed
+# echo $seqs_to_keep
+# echo $forward_primers
+# echo $reverse_primers
+# echo "-e $mismatches"
+extension=$"fastq.gz"
 mismatches=$"-e 2"
 min_length=$"--minimum-length 19"
 overlap=$"--overlap 15"
 cores=$"--cores 0"
 no_indels=$"TRUE"
 discard_untrimmed=$"TRUE"
-seqs_to_keep=$"keep_only_linked" #keep_all/keep_only_linked
+seqs_to_keep=$"keep_all" #keep_all/keep_only_linked
 
-fwd_tempprimer=$"ACCTGCTAGGCTAGATGC,GCTAGCTAGCTAGCTGATGC,ATCGATGCTAGCTAGCTAGCTGA"
-rev_tempprimer=$"GGGATCCATCGATTTAAC,GCTAGCTAGCTAGCTAGCTAGC"
+
+# fwd_tempprimer=$forward_primers
+# rev_tempprimer=$reverse_primers
+fwd_tempprimer=$"ACCTGCGGARGGATCA"
+rev_tempprimer=$"GAGATCCRTTGYTRAAAGTT"
+# fwd_tempprimer=$"ACCTGCTAGGCTAGATGC,GCTAGCTAGCTAGCTGATGC,ATCGATGCTAGCTAGCTAGCTGA"
+# rev_tempprimer=$"GGGATCCATCGATTTAAC,GCTAGCTAGCTAGCTAGCTAGC"
 
 ###############################
 ###############################
@@ -55,6 +71,7 @@ prepare_PE_env
 fwd_primer_array=$(echo $fwd_tempprimer | sed 's/,/ /g' | sed 's/I/N/g')
 rev_primer_array=$(echo $rev_tempprimer | sed 's/,/ /g' | sed 's/I/N/g')
 # Forward primer(s) to fasta file
+
 i=1
 for primer in $fwd_primer_array; do
     echo ">fwd_primer$i" >> tempdir2/fwd_primer.fasta
