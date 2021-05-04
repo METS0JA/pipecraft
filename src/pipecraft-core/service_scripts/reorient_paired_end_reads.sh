@@ -39,10 +39,10 @@ echo $mismatches
 
 extension=$fileFormat
 mismatches=$mismatches
-fwd_tempprimer=$forward_primers
-rev_tempprimer=$reverse_primers
-# fwd_tempprimer=$"ACCTGCGGARGGATCA"
-# rev_tempprimer=$"GAGATCCRTTGYTRAAAGTT"
+# fwd_tempprimer=$forward_primers
+# rev_tempprimer=$reverse_primers
+fwd_tempprimer=$"ACCTGCGGARGGATCA"
+rev_tempprimer=$"GAGATCCRTTGYTRAAAGTT"
 # fwd_tempprimer=$"ACCTGCTAGGCTAGATGC,TAGCTGATCGATCGATCG"
 # rev_tempprimer=$"GGGATCCATCGATTTAAC"
 ###############################
@@ -55,7 +55,7 @@ start=$(date +%s)
 # Source for functions
 source /scripts/framework.functions.sh
 #output dir
-output_dir=$"reoriented_out"
+output_dir=$"/input/reoriented_out"
 ### Check if files with specified extension exist in the dir
 first_file_check
 ### Prepare working env and check paired-end data
@@ -203,7 +203,7 @@ runtime=$((end-start))
 printf "Total time: $runtime sec.\n\n"
 
 #variables for all services
-echo "workingDir=/$output_dir"
+echo "workingDir=$output_dir"
 echo "fileFormat=$newextension"
 echo "dataFormat=demultiplexed"
 echo "readType=paired-end"

@@ -1,3 +1,4 @@
+#!/usr/bin/env Rscript
 #load dada2
 library("dada2")
 
@@ -17,3 +18,9 @@ method = Sys.getenv('method')
 seqtab <- readRDS("seqtab.rds")
 seqtab.nochim <- removeBimeraDenovo(seqtab, method="consensus", multithread=FALSE, verbose=TRUE)
 saveRDS(seqtab.nochim, "/input/dada2-chimera-output/seqtab.nochim.rds")
+write.csv(seqtab.nochim, file="seqtab.nochim.csv")
+
+print('workingDir=/input/dada2-chimera-output')
+print('fileFormat=seqtab')
+print('dataFormat=demultiplexed')
+print('readType=paired-end')

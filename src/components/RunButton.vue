@@ -52,7 +52,15 @@ export default {
           console.log(output);
           console.log(`Pull complete`);
         }
-        console.log(scriptName, "\n", imageName, "\n", Input, "\n", WorkingDir);
+        console.log(
+          `SCRIPT: ${scriptName}`,
+          "\n",
+          `IMAGE: ${imageName}`,
+          "\n",
+          `INPUT: ${Input}`,
+          "\n",
+          `WORKDIR: ${WorkingDir}`,
+        );
         console.log(envVariables);
         let result = await dockerode
           .run(

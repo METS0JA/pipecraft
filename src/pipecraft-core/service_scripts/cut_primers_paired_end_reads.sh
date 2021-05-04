@@ -33,7 +33,7 @@
 # echo $forward_primers
 # echo $reverse_primers
 # echo "-e $mismatches"
-extension=$"fastq.gz"
+extension=$"fastq"
 mismatches=$"-e 2"
 min_length=$"--minimum-length 19"
 overlap=$"--overlap 15"
@@ -60,7 +60,7 @@ start=$(date +%s)
 # Source for functions
 source /scripts/framework.functions.sh
 #output dir
-output_dir=$"primersCut_out"
+output_dir=$"/input/primersCut_out"
 ### Check if files with specified extension exist in the dir
 first_file_check
 ### Prepare working env and check paired-end data
@@ -247,7 +247,7 @@ runtime=$((end-start))
 printf "Total time: $runtime sec.\n\n"
 
 #variables for all services
-echo "workingDir=/$output_dir"
+echo "workingDir=$output_dir"
 echo "fileFormat=$newextension"
 echo "dataFormat=$dataFormat"
 echo "readType=paired-end"

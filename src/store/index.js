@@ -6,6 +6,10 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+    loader: {
+      active: true,
+      index: 5,
+    },
     workingDir: "/input",
     inputDir: "",
     data: {
@@ -990,7 +994,7 @@ export default new Vuex.Store({
       },
       {
         scriptName: "cut_primers_paired_end_reads.sh",
-        imageName: "pipecraft/cutadapt:2.10",
+        imageName: "pipecraft/cutadapt:3.40",
         serviceName: "cutadapt",
         selected: false,
         showExtra: false,
