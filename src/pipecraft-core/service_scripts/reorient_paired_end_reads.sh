@@ -31,14 +31,6 @@
 
 ###############################
 #These variables are for testing (DELETE when implementing to PipeCraft)
-<<<<<<< HEAD
-extension=$"fq.gz"
-mismatches=$"1"
-fwd_tempprimer=$"ACCTGCTAGGCTAGATGC,TAGCTGATCGATCGATCG"
-rev_tempprimer=$"GGGATCCATCGATTTAAC"
-###############################
-###############################
-=======
 extension=$fileFormat
 fwd_tempprimer=$forward_primers
 #fwd_tempprimer=$"ACCTGCTAGGCTAGATGC,TAGCTGATCGATCGATCG"
@@ -51,7 +43,6 @@ echo $fwd_tempprimer
 echo $rev_tempprimer
 ###############################
 ###############################
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
 
 #############################
 ### Start of the workflow ###
@@ -108,21 +99,13 @@ while read LINE; do
     if [ -s tempdir/R1.5_3.fastq ]; then
         :
     else
-<<<<<<< HEAD
-        printf '%s\n' "WARNING]: specified primers not found in $inputR1.$newextension (SKIPPING file; also $inputR2.$newextension)" \
-=======
         printf '%s\n' "[WARNING]: specified primers not found in $inputR1.$newextension (SKIPPING file; also $inputR2.$newextension)" \
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
         && rm -rf tempdir && continue
     fi
     if [ -s tempdir/R2.3_5.fastq ]; then
         :
    else
-<<<<<<< HEAD
-        printf '%s\n' "WARNING]: specified primers not found in $inputR2.$newextension (SKIPPING file; also $inputR1.$newextension)" \
-=======
         printf '%s\n' "[WARNING]: specified primers not found in $inputR2.$newextension (SKIPPING file; also $inputR1.$newextension)" \
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
         && rm -rf tempdir && continue
     fi
 
@@ -159,22 +142,14 @@ while read LINE; do
         size=$(echo $(cat $output_dir/$inputR1.reoriented.$newextension | wc -l) / 4 | bc)
         printf "$size sequences in $inputR1.reoriented.$newextension\n"
     else
-<<<<<<< HEAD
-        printf '%s\n' "WARNING]: after synchronizing, $inputR1 has 0 seqs (no output)"
-=======
         printf '%s\n' "[WARNING]: after synchronizing, $inputR1 has 0 seqs (no output)"
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
         rm $output_dir/$inputR1.reoriented.$newextension
     fi
     if [ -s $output_dir/$inputR2.reoriented.$newextension ]; then
         size=$(echo $(cat $output_dir/$inputR2.reoriented.$newextension | wc -l) / 4 | bc)
         printf "$size sequences in $inputR2.reoriented.$newextension\n"
     else
-<<<<<<< HEAD
-        printf '%s\n' "WARNING]: after synchronizing, $inputR2 has 0 seqs (no output)"
-=======
         printf '%s\n' "[WARNING]: after synchronizing, $inputR2 has 0 seqs (no output)"
->>>>>>> 4b889649a114235143b87a2bc78ca6db201480a0
         rm $output_dir/$inputR2.reoriented.$newextension
     fi
 done < tempdir2/paired_end_files.txt

@@ -988,7 +988,7 @@ export default new Vuex.Store({
         ],
       },
       {
-        scriptName: "cutadapat-cut.sh",
+        scriptName: "cut_primers_paired_end_reads.sh",
         imageName: "pipecraft/cutadapt:2.10",
         serviceName: "cutadapt",
         selected: false,
