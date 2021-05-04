@@ -49,7 +49,7 @@ prepare_SE_env
 check_indexes_file
 
 ### Process file
-printf "Preparing files for demultiplexing ...\n"
+printf "Checking files ...\n"
 for file in *.$extension; do
 
     #Write file name without extension
@@ -107,7 +107,7 @@ for file in *.$extension; do
     #indexes_file_in=$"-g file:$indexes_file"
     #out=$"-o $output_dir/{name}.$newextension"
     ### Demultiplex with cutadapt
-    cutadapt --quiet \
+    checkerror=$(cutadapt --quiet \
     $indexes_file_in \
     $error_rate \
     $no_indels \
@@ -116,7 +116,8 @@ for file in *.$extension; do
     $minlen \
     $cores \
     $out \
-    $input.$newextension
+    $input.$newextension 2>&1)
+    check_app_error
 done
 
 #Remove 'rc' string from seq if the indexes were found on reverse complementary strand

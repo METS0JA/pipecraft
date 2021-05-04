@@ -30,6 +30,11 @@ fnFs <- sort(list.files(pattern = "_R1", full.names = TRUE))
 fnRs <- sort(list.files(pattern = "_R2", full.names = TRUE))
 filtFs <- file.path("/input/dada2-quality-filter-output", basename(fnFs))
 filtRs <- file.path("/input/dada2-quality-filter-output", basename(fnRs))
+print(fnFs)
+print(fnRs)
+print(filtFs)
+print(filtRs)
+
 
 
 #filter

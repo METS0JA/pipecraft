@@ -31,6 +31,7 @@ dadaRs <- dada(derepRs, err = errR, multithread = TRUE)
 mergers <- mergePairs(dadaFs, derepFs, dadaRs, derepRs, verbose=TRUE)
 seqtab <- makeSequenceTable(mergers)
 saveRDS(seqtab, "/input/dada2-assemble-output/seqtab.rds")
+write.csv(seqtab, file="seqtab.csv")
 
 
 

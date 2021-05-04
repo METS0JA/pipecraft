@@ -52,7 +52,15 @@ export default {
           console.log(output);
           console.log(`Pull complete`);
         }
-        console.log(scriptName, "\n", imageName, "\n", Input, "\n", WorkingDir);
+        console.log(
+          `SCRIPT: ${scriptName}`,
+          "\n",
+          `IMAGE: ${imageName}`,
+          "\n",
+          `INPUT: ${Input}`,
+          "\n",
+          `WORKDIR: ${WorkingDir}`,
+        );
         console.log(envVariables);
         let result = await dockerode
           .run(
@@ -70,7 +78,7 @@ export default {
                 ],
               },
               Env: envVariables,
-            }
+            },
           )
           .then(async ([res, container]) => {
             console.log(stdout.toString());
@@ -150,7 +158,7 @@ export default {
                 ],
               },
               Env: envVariables,
-            }
+            },
           )
           .then(async ([res, container]) => {
             console.log(stdout.toString());
@@ -206,7 +214,7 @@ export default {
           let varObj = {};
           varObj[input.name] = input.value;
           envVariables.push(stringify(varObj).replace(/(\r\n|\n|\r)/gm, ""));
-        }
+        },
       );
       let dataInfo = {
         workingDir: this.$store.state.workingDir,
@@ -257,7 +265,7 @@ export default {
         imageName,
         scriptName,
         envVariables,
-        this.$store.state.workingDir
+        this.$store.state.workingDir,
       );
       return result;
     },
@@ -268,5 +276,11 @@ export default {
 <style scoped>
 .v-btn {
   justify-content: center;
+}
+.swal-wide {
+  width: 850px !important;
+}
+.swal2-popup {
+  width: auto;
 }
 </style>

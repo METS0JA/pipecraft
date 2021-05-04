@@ -6,6 +6,10 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+    loader: {
+      active: true,
+      index: 5,
+    },
     workingDir: "/input",
     inputDir: "",
     data: {
@@ -173,7 +177,7 @@ export default new Vuex.Store({
         stepName: "remove adapters",
         services: [
           {
-            scriptName: "cutadapt.sh",
+            scriptName: "cut_primers_paired_end_reads.sh",
             imageName: "pipecraft/cutadapt:2.10",
             serviceName: "cutadapt",
             selected: false,
@@ -223,7 +227,8 @@ export default new Vuex.Store({
               },
               {
                 name: "seqs_to_keep",
-                value: ["keep_all", "keep_only_linked"],
+                items: ["keep_all", "keep_only_linked"],
+                value: "keep_all",
                 tooltip:
                   "Keep seqs with primers found in both ends(linked), or keeps seqs with primer found atlest in one end(all)",
                 type: "select",
@@ -989,7 +994,7 @@ export default new Vuex.Store({
       },
       {
         scriptName: "cut_primers_paired_end_reads.sh",
-        imageName: "pipecraft/cutadapt:2.10",
+        imageName: "pipecraft/cutadapt:3.40",
         serviceName: "cutadapt",
         selected: false,
         showExtra: false,

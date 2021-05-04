@@ -1,11 +1,16 @@
-FROM ubuntu:18.04
-ARG DEBIAN_FRONTEND=noninteractive
+FROM ubuntu:groovy
+# ARG DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update -y && apt-get install bc wget build-essential libreadline7 zlib1g zlib1g-dev unzip libtre-dev libtre5 fastx-toolkit pigz -y
-RUN wget https://github.com/mothur/mothur/releases/download/v.1.43.0/Mothur.Ubuntu_18.zip && unzip Mothur.Ubuntu_18.zip && rm Mothur.Ubuntu_18.zip && rm -r /var/lib/apt/lists/*
-RUN wget https://github.com/indraniel/fqgrep/archive/v0.4.4.zip  && unzip v0.4.4.zip && rm v0.4.4.zip && cd fqgrep-0.4.4 && make
+RUN apt-get update -y 
+RUN apt-get install build-essential -y
+RUN apt-get install python3-dev -y
+RUN apt-get install curl -y
+RUN apt-get install pigz -y
+RUN apt-get install wget -y
+RUN apt-get install curl -y
 RUN wget https://github.com/shenwei356/seqkit/releases/download/v0.15.0/seqkit_linux_amd64.tar.gz -O /tmp/seqkit.tar.gz && \
-	tar zxvf /tmp/seqkit.tar.gz -C /usr/bin/ && rm /tmp/seqkit.tar.gz
-RUN apt-get remove wget -y && apt-get remove unzip -y
-ENV PATH "$PATH:/fqgrep-0.4.4"
-ENV PATH "$PATH:/mothur"
+ 	tar zxvf /tmp/seqkit.tar.gz -C /usr/bin/ && rm /tmp/seqkit.tar.gz
+RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+RUN python3 get-pip.py
+RUN python3 -m pip install cutadapt
+

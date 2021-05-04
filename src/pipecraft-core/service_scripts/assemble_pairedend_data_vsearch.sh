@@ -51,7 +51,7 @@ while read LINE; do
     inputR2=$(echo $inputR1 | sed -e 's/R1/R2/')
     ## Preparing files for the process
     printf "\n____________________________________\n"
-    printf "Preparing $inputR1 and $inputR2 ...\n"
+    printf "Checking $inputR1 and $inputR2 ...\n"
     #If input is compressed, then decompress (keeping the compressed file, but overwriting if filename exists!)
         #$extension will be $newextension
     check_gz_zip_PE
@@ -64,20 +64,20 @@ while read LINE; do
     fastqout=$(echo $inputR1 | sed -e 's/R1.*/assembled/')
 
     #variables for not_merged output files
-    if [ $notmerged_files == "TRUE" ]; then
+    if [[ $notmerged_files == "TRUE" ]]; then
     	mkdir -p $output_dir/not_assembled_paired_end_reads
     	fastqout_notmerged_fwd="--fastqout_notmerged_fwd $output_dir/not_assembled_paired_end_reads/$inputR1.notAssembled.$newextension"
     	fastqout_notmerged_rev="--fastqout_notmerged_rev $output_dir/not_assembled_paired_end_reads/$inputR2.notAssembled.$newextension"
     fi
-    if [ $fastq_allowmergestagger == "TRUE" ]; then
+    if [[ $fastq_allowmergestagger == "TRUE" ]]; then
         allowmergestagger=$"--fastq_allowmergestagger"
     fi 
     #When including R1 to the assembled output, then include fastqout_notmerged_fwd (in case notmerged_files=FALSE)
-    if [ $include_R1 == "TRUE" ]; then
+    if [[ $include_R1 == "TRUE" ]]; then
     	fastqout_notmerged_fwd="--fastqout_notmerged_fwd $output_dir/not_assembled_paired_end_reads/$inputR1.notAssembled.$newextension"
     fi
 
-	vsearch --quiet --fastq_mergepairs $inputR1.$newextension \
+	checkerror=$(vsearch --quiet --fastq_mergepairs $inputR1.$newextension \
 	--reverse $inputR2.$newextension \
 	$fastq_minoverlen \
 	$fastq_minmergelen \
@@ -89,18 +89,11 @@ while read LINE; do
 	$fastqout_notmerged_rev \
 	--fastq_qmax $fastq_qmax \
 	--fastq_qmaxout $fastq_qmax \
-	--fastqout $output_dir/$fastqout.$newextension
+	--fastqout $output_dir/$fastqout.$newextension 2>&1)
+    check_app_error
 
-	if [ "$?" = "0" ]; then
-		:
-	else
-		printf '%s\n' "ERROR]: Unknown ERROR when assembling $inputR1.$newextension and $inputR2.$newextension.
-Please check the files - not correct FASTQ formats? Paired-end file names not matching? Quality values >41 (check with FatQC module)? If latter then edit 'fastq qmax' option. 
->Quitting" >&2
-        end_process
-    fi
     #Include R1 reads to assembled data set if include_R1 = TRUE
-    if [ $include_R1 == "TRUE" ]; then
+    if [[ $include_R1 == "TRUE" ]]; then
     	printf '%s\n' "include only R1 = TRUE, including also unmerged R1 reads to the assembled output"
     	cat $output_dir/not_assembled_paired_end_reads/$inputR1.notAssembled.$newextension >> $output_dir/$fastqout.$newextension
     fi
