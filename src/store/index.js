@@ -7,7 +7,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     loader: {
-      active: true,
+      active: false,
       index: 5,
     },
     workingDir: "/input",
@@ -947,6 +947,38 @@ export default new Vuex.Store({
             showExtra: false,
             extraInputs: [],
             Inputs: [],
+          },
+        ],
+      },
+    ],
+    OTU_Miseq: [
+      {
+        scriptName: "demux_script",
+        imageName: "demux_img",
+        serviceName: "demultiplex",
+        selected: false,
+        showExtra: false,
+        extraInputs: [],
+        Inputs: [
+          {
+            name: "barcodes file",
+            value: "undefined",
+            tooltip:
+              "a file in a fasta format where the headers are sample ids and sequences are barcodes for samples",
+            type: "file",
+          },
+          {
+            name: "max error rate",
+            value: 1,
+            tooltip: "number of allowed mismatches in the index sequence",
+            type: "numeric",
+          },
+          {
+            name: "overlap",
+            value: 12,
+            tooltip:
+              "number of overlap bases with the index. Recommended overlap is the max length of the index for confident sequence assignments to samples in the indexes file.",
+            type: "numeric",
           },
         ],
       },

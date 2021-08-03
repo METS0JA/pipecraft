@@ -14,6 +14,24 @@
     </v-list-item>
     <v-list-item>
       <v-list-item-content>
+        <v-btn
+          block
+          :loading="loading"
+          :disabled="loading"
+          color="grey"
+          @click="loader = 'loading'"
+        >
+          Run and load
+          <template v-slot:loader>
+            <span class="custom-loader">
+              <v-icon light>mdi-cached</v-icon>
+            </span>
+          </template>
+        </v-btn>
+      </v-list-item-content>
+    </v-list-item>
+    <v-list-item>
+      <v-list-item-content>
         <AddMenu />
       </v-list-item-content>
     </v-list-item>
@@ -34,6 +52,22 @@ import SelectedRoutes from "./SelectedRoutes";
 export default {
   name: "leftNav",
   components: { AddMenu, RunButton, SelectedRoutes },
+  data() {
+    return {
+      loader: null,
+      loading: false,
+    };
+  },
+  watch: {
+    loader() {
+      const l = this.loader;
+      this[l] = !this[l];
+
+      setTimeout(() => (this[l] = false), 9000);
+
+      this.loader = null;
+    },
+  },
   methods: {
     folderSelect() {
       Swal.mixin({
@@ -108,5 +142,41 @@ export default {
 <style scoped>
 .v-btn {
   justify-content: center;
+}
+.custom-loader {
+  animation: loader 1s infinite;
+  display: flex;
+}
+@-moz-keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@-o-keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

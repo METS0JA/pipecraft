@@ -59,7 +59,7 @@ export default {
           "\n",
           `INPUT: ${Input}`,
           "\n",
-          `WORKDIR: ${WorkingDir}`,
+          `WORKDIR: ${WorkingDir}`
         );
         console.log(envVariables);
         let result = await dockerode
@@ -78,7 +78,7 @@ export default {
                 ],
               },
               Env: envVariables,
-            },
+            }
           )
           .then(async ([res, container]) => {
             console.log(stdout.toString());
@@ -158,7 +158,7 @@ export default {
                 ],
               },
               Env: envVariables,
-            },
+            }
           )
           .then(async ([res, container]) => {
             console.log(stdout.toString());
@@ -214,7 +214,7 @@ export default {
           let varObj = {};
           varObj[input.name] = input.value;
           envVariables.push(stringify(varObj).replace(/(\r\n|\n|\r)/gm, ""));
-        },
+        }
       );
       let dataInfo = {
         workingDir: this.$store.state.workingDir,
@@ -265,7 +265,7 @@ export default {
         imageName,
         scriptName,
         envVariables,
-        this.$store.state.workingDir,
+        this.$store.state.workingDir
       );
       return result;
     },

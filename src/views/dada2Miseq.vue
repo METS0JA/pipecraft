@@ -28,13 +28,19 @@
       >
     </v-card>
     <v-expansion-panels dark multiple popout>
-      <v-overlay z-index="2" opacity="0.6" absolute value:true>
+      <v-overlay
+        z-index="2"
+        opacity="0.6"
+        absolute
+        :value="this.$store.state.loader.active"
+      >
         <v-progress-circular
           :size="70"
           :width="7"
           color="purple"
           indeterminate
-        ></v-progress-circular>
+          >{{ `${this.$store.state.loader.index}%` }}</v-progress-circular
+        >
       </v-overlay>
       <v-expansion-panel v-for="(service, index) in services" :key="index">
         <v-expansion-panel-header style="justify-content:center">
