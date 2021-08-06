@@ -6,16 +6,16 @@
 
 ##########################################################
 ###Third-party applications:
-#trimmomatic
+#trimmomatic v0.39
     #citation: Bolger, A. M., Lohse, M., & Usadel, B. (2014). Trimmomatic: A flexible trimmer for Illumina Sequence Data. Bioinformatics, btu1
     #Distributed under the GNU GENERAL PUBLIC LICENE
     #https://github.com/usadellab/Trimmomatic
-#seqkit
+#seqkit v0.15.0
     #citation: Shen W, Le S, Li Y, Hu F (2016) SeqKit: A Cross-Platform and Ultrafast Toolkit for FASTA/Q File Manipulation. PLOS ONE 11(10): e0163962. https://doi.org/10.1371/journal.pone.0163962
     #Distributed under the MIT License
     #Copyright © 2016-2019 Wei Shen, 2019 Oxford Nanopore Technologies.
     #https://bioinf.shenwei.me/seqkit/
-#pigz
+#pigz v2.4
 ##########################################################
 
 ###############################
@@ -52,6 +52,7 @@ fi
 start=$(date +%s)
 # Source for functions
 source /scripts/framework.functions.sh
+
 #output dir
 output_dir=$"qualFiltered_out"
 ### Check if files with specified extension exist in the dir
@@ -86,7 +87,7 @@ for file in *.$extension; do
     check_app_error
 
     #Convert output fastq files to FASTA
-    mkdir -p $output_dir/qualFilt_FASTA
+    mkdir -p $output_dir/FASTA
     checkerror=$(seqkit fq2fa -t dna --line-width 0 $output_dir/$input.qualFilt.$newextension -o $output_dir/FASTA/$input.qualFilt.fasta 2>&1)
     check_app_error
 done

@@ -5,28 +5,18 @@
 #Reorient SINGLE-END reads: 
 #mismatches = allowed number of differences for primer.
 #Degenerate primers are allowed using IUPAC codes.
-#Note that : symbols in the sequence headers will be changed to _
 
 ##########################################################
 ###Third-party applications:
-#mothur
-    #citation: Schloss PD et al. (2009) Introducing mothur: Open-Source, Platform-Independent, Community-Supported Software for Describing and Comparing Microbial Communities Appl Environ Microbiol 75:7537-7541
-    #Distributed under the GNU General Public License version 3 by the Free Software Foundation"
-    #https://github.com/mothur/mothur
-#seqkit
+#seqkit v0.15.0
     #citation: Shen W, Le S, Li Y, Hu F (2016) SeqKit: A Cross-Platform and Ultrafast Toolkit for FASTA/Q File Manipulation. PLOS ONE 11(10): e0163962. https://doi.org/10.1371/journal.pone.0163962
     #Distributed under the MIT License
     #Copyright © 2016-2019 Wei Shen, 2019 Oxford Nanopore Technologies.
     #https://bioinf.shenwei.me/seqkit/
-#fqgrep
+#fqgrep v0.4.4
     #Copyright (c) 2011-2016, Indraniel Das
     #https://github.com/indraniel/fqgrep
-#vsearch
-    #citation: Rognes T, Flouri T, Nichols B, Quince C, Mahé F (2016) VSEARCH: a versatile open source tool for metagenomics PeerJ 4:e2584
-    #Copyright (C) 2014-2021, Torbjorn Rognes, Frederic Mahe and Tomas Flouri
-    #Distributed under the GNU General Public License version 3 by the Free Software Foundation
-    #https://github.com/torognes/vsearch
-#pigz
+#pigz v2.4
 ##########################################################
 
 ###############################
@@ -44,6 +34,7 @@ rev_tempprimer=$"GGGATCCATCGATTTAAC"
 start=$(date +%s)
 # Source for functions
 source /scripts/framework.functions.sh
+
 #output dir
 output_dir=$"reoriented_out"
 ### Check if files with specified extension exist in the dir
@@ -145,8 +136,7 @@ printf "*.$outfile_addition.fastq files here represent sequences that have been 
 Forward primer(s) [has to be 5'-3']: $fwd_tempprimer
 Reverse primer(s) [has to be 3'-5']: $rev_tempprimer
 [If primers were not specified in orientations noted above, please run this step again].\n
-Note that, when applicable, then ':' symbols in the sequence headers (before space or tab) are changed to '_'.\n
-RUNNING THE PROCESS SEVERAL TIMES IN THE SAME DIRECTORY WILL OVERWRITE ALL THE OUTPUTS!" > $output_dir/README.txt
+RUNNING THE PROCESS SEVERAL TIMES IN THE SAME DIRECTORY WILL OVERWRITE ALL OUTPUTS!" > $output_dir/README.txt
 
 printf "\nDONE\n"
 printf "Data in directory '$output_dir'\n"

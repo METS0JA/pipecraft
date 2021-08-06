@@ -6,31 +6,36 @@
 
 ##########################################################
 ###Third-party applications:
-#vsearch
+#vsearch v2.17.0
     #citation: Rognes T, Flouri T, Nichols B, Quince C, Mahé F (2016) VSEARCH: a versatile open source tool for metagenomics PeerJ 4:e2584
     #Copyright (C) 2014-2021, Torbjorn Rognes, Frederic Mahe and Tomas Flouri
     #Distributed under the GNU General Public License version 3 by the Free Software Foundation
     #https://github.com/torognes/vsearch
-#pigz
-#perl
+#seqkit v0.15.0
+    #citation: Shen W, Le S, Li Y, Hu F (2016) SeqKit: A Cross-Platform and Ultrafast Toolkit for FASTA/Q File Manipulation. PLOS ONE 11(10): e0163962. https://doi.org/10.1371/journal.pone.0163962
+    #Distributed under the MIT License
+    #Copyright © 2016-2019 Wei Shen, 2019 Oxford Nanopore Technologies.
+    #https://bioinf.shenwei.me/seqkit/
+#pigz v2.4
+#perl v5.32.0
 ##########################################################
 
 ###############################
 ###############################
 #These variables are for testing (DELETE when implementing to PipeCraft)
-extension=$"fasta"
+extension=$"fq"
 #mandatory options
-id="--id 0.98"
-minuniquesize="--minuniquesize 1"
+id=$"--id 0.97"                    # float (0-1)
+minuniquesize=$"--minuniquesize 1" #pos int
 #additional options
-cores=$"--threads 4"
-abskew=$"--abskew 2"
-minh=$"--minh 0.28"
+cores=$"--threads 4"               # pos int
+abskew=$"--abskew 2"               # pos int
+minh=$"--minh 0.28"                # float (0-1)
 
 #reference_based=$"undefined"
-denovo=$"undefined"
-reference_based=$"/home/sten/Downloads/uchime_reference_dataset_28.06.2017/ITS1_ITS2_datasets/uchime_reference_dataset_ITS2_28.06.2017.fasta" #or 'undefined', if selection is not active
-
+denovo=$"TRUE"                #undefined or TRUE
+#reference_based=$"/home/sten/Downloads/uchime_reference_dataset_28.06.2017/ITS1_ITS2_datasets/uchime_reference_dataset_ITS2_28.06.2017.fasta" #or 'undefined', if selection is not active
+reference_based=$"undefined"
 ###############################
 ###############################
 
@@ -52,8 +57,6 @@ fi
 start=$(date +%s)
 # Source for functions
 source /scripts/framework.functions.sh
-# map.pl script location
-map=$"/scripts/map.pl"
 
 #output dir
 output_dir=$"chimera_Filtered_out"
@@ -78,17 +81,19 @@ for file in *.$extension; do
     #If input is compressed, then decompress (keeping the compressed file, but overwriting if filename exists!)
         #$extension will be $newextension
     check_gz_zip_SE
-    ### Check input formats (fastq supported)
+    ### Check input formats (fastq/fasta supported)
     check_extension_fastx
 
     #If input is FASTQ then convert to FASTA
     if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]]; then
-        checkerror=$(seqkit fq2fa -t dna --line-width 0 $input.$newextension -o $input.qualFilt.fasta 2>&1)
+        checkerror=$(seqkit fq2fa -t dna --line-width 0 $input.$newextension -o $input.fasta 2>&1)
         check_app_error
         printf "Note: converted $newextension to FASTA \n"
 
         newextension=$"fasta"
         export newextension
+        was_fastq=$"TRUE"
+        export was_fastq
     fi
 
     ###############################
@@ -98,79 +103,95 @@ for file in *.$extension; do
     if [[ $denovo_filt == "TRUE" ]]; then
         checkerror=$(vsearch --derep_fulllength $input.$newextension \
         $minuniquesize \
-        --sizeout \
+        --sizein --sizeout \
         --fasta_width 0 \
-        --uc tempdir/dereplicated.uc \
-        --output tempdir/$input.derep.$newextension 2>&1)
+        --uc tempdir/$input.dereplicated.uc \
+        --output tempdir/$input.derep.fasta 2>&1)
         check_app_error
 
         #pre-cluster sequences; sorts seqs automaticcaly by decreasing abundance
-        checkerror=$(vsearch --cluster_size tempdir/$input.derep.$newextension \
+        checkerror=$(vsearch --cluster_size tempdir/$input.derep.fasta \
         $cores \
         $id \
         --strand both \
-        --sizein \
-        --sizeout \
+        --sizein --sizeout \
         --fasta_width 0 \
-        --uc tempdir/preclustered.uc \
-        --centroids tempdir/$input.preclustered.$newextension 2>&1)
+        --uc tempdir/$input.preclustered.uc \
+        --centroids tempdir/$input.preclustered.fasta 2>&1)
         check_app_error
 
         #search chimeras
-        checkerror=$(vsearch --uchime_denovo tempdir/$input.preclustered.$newextension \
+        checkerror=$(vsearch --uchime_denovo tempdir/$input.preclustered.fasta \
         $abskew \
         $minh \
         --sizein \
         --sizeout \
         --fasta_width 0 \
-        --chimeras $output_dir/chimeras/$input.denovo.chimeras.$newextension \
-        --nonchimeras tempdir/$input.denovo.nonchimeras.$newextension 2>&1)
+        --chimeras $output_dir/chimeras/$input.denovo.chimeras.fasta \
+        --nonchimeras tempdir/$input.denovo.nonchimeras.fasta 2>&1)
         check_app_error
 
         if [[ $reference_based == "undefined" ]]; then
             #Extract all non-chimeric sequences and add to $output_dir
-            perl $map tempdir/$input.derep.$newextension \
-            tempdir/preclustered.uc \
-            tempdir/$input.denovo.nonchimeras.$newextension \
-            > tempdir/denovo.nonchimeras.fasta
+            checkerror=$(vsearch --usearch_global $input.fasta \
+            -db tempdir/$input.denovo.nonchimeras.fasta \
+            --sizein --xsize \
+            $id \
+            --strand both \
+            --fasta_width 0 \
+            --matched $output_dir/$input.denovo.nonchimeras.fasta 2>&1)
+            check_app_error
 
-            perl $map $input.$newextension \
-            tempdir/dereplicated.uc \
-            tempdir/denovo.nonchimeras.fasta \
-            > $output_dir/$input.denovo.nonchimeras.$newextension
+            #If input was fastq, then move all converted FASTA files to $output_dir/FASTA
+            if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]]; then
+                mkdir -p $output_dir/FASTA
+                mv $input.fasta $output_dir/FASTA
+            fi
+
         else
-            checkerror=$(vsearch --uchime_ref tempdir/$input.denovo.nonchimeras.$newextension \
+            checkerror=$(vsearch --uchime_ref tempdir/$input.denovo.nonchimeras.fasta \
             $cores \
             --db $database \
             --sizein \
             --sizeout \
             --fasta_width 0 \
-            --chimeras $output_dir/chimeras/$input.ref.chimeras.$newextension \
-            --nonchimeras tempdir/$input.ref.denovo.nonchimeras.$newextension 2>&1)
+            --chimeras $output_dir/chimeras/$input.ref.chimeras.fasta \
+            --nonchimeras tempdir/$input.ref.denovo.nonchimeras.fasta 2>&1)
             check_app_error
 
             #Extract all non-chimeric sequences
-            perl $map tempdir/$input.derep.$newextension \
-            tempdir/preclustered.uc \
-            tempdir/$input.ref.denovo.nonchimeras.$newextension \
-            > tempdir/ref.denovo.nonchimeras.fasta
+            checkerror=$(vsearch --usearch_global $input.fasta \
+            -db tempdir/$input.ref.denovo.nonchimeras.fasta \
+            --sizein --xsize \
+            $id \
+            --strand both \
+            --fasta_width 0 \
+            --matched $output_dir/$input.ref.denovo.nonchimeras.fasta 2>&1)
+            check_app_error
 
-            perl $map $input.$newextension \
-            tempdir/dereplicated.uc \
-            tempdir/ref.denovo.nonchimeras.fasta \
-            > $output_dir/$input.ref.denovo.nonchimeras.$newextension
+            #If input was fastq, then move all converted FASTA files to $output_dir/FASTA
+            if [[ $was_fastq == "TRUE" ]]; then
+                mkdir -p $output_dir/FASTA
+                mv $input.fasta $output_dir/FASTA
+            fi
         fi
     
     else #only reference based chimera filtering
-        checkerror=$(vsearch --uchime_ref $input.$newextension \
+        checkerror=$(vsearch --uchime_ref $input.fasta \
         $cores \
         --db $database \
         --sizein \
         --sizeout \
         --fasta_width 0 \
-        --chimeras $output_dir/chimeras/$input.ref.chimeras.$newextension \
-        --nonchimeras $output_dir/$input.ref.nonchimeras.$newextension 2>&1)
+        --chimeras $output_dir/chimeras/$input.ref.chimeras.fasta \
+        --nonchimeras $output_dir/$input.ref.nonchimeras.fasta 2>&1)
         check_app_error
+
+        #If input was fastq, then move all converted FASTA files to $output_dir/FASTA
+        if [[ $was_fastq == "TRUE" ]]; then
+            mkdir -p $output_dir/FASTA
+            mv $input.fasta $output_dir/FASTA
+        fi
     fi
 done
 

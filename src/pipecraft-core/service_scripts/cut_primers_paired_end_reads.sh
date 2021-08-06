@@ -7,48 +7,32 @@
 
 ##########################################################
 ###Third-party applications:
-#cutadapt
+#cutadapt v3.4
     #citation: Martin, M. (2011). Cutadapt removes adapter sequences from high-throughput sequencing reads. EMBnet. journal, 17(1), 10-12.
     #Distributed under MIT License"
     #https://cutadapt.readthedocs.io/en/stable/#
-#seqkit
+#seqkit v0.15.0
     #citation: Shen W, Le S, Li Y, Hu F (2016) SeqKit: A Cross-Platform and Ultrafast Toolkit for FASTA/Q File Manipulation. PLOS ONE 11(10): e0163962. https://doi.org/10.1371/journal.pone.0163962
     #Distributed under the MIT License
     #Copyright © 2016-2019 Wei Shen, 2019 Oxford Nanopore Technologies.
     #https://bioinf.shenwei.me/seqkit/
-#pigz
+#pigz v2.4
 ##########################################################
 
 ###############################
 ###############################
 #These variables are for testing (DELETE when implementing to PipeCraft)
-# echo $fileFormat
-# echo $mismatches
-# echo $min_seq_length
-# echo $overlap
-# echo $cores
-# echo $no_indels
-# echo $discard_untrimmed
-# echo $seqs_to_keep
-# echo $forward_primers
-# echo $reverse_primers
-# echo "-e $mismatches"
-extension=$"fastq"
+extension=$"fq"
 mismatches=$"-e 2"
 min_length=$"--minimum-length 19"
 overlap=$"--overlap 15"
 cores=$"--cores 0"
 no_indels=$"TRUE"
 discard_untrimmed=$"TRUE"
-seqs_to_keep=$"keep_all" #keep_all/keep_only_linked
+seqs_to_keep=$"keep_only_linked" #keep_all/keep_only_linked
 
-
-# fwd_tempprimer=$forward_primers
-# rev_tempprimer=$reverse_primers
-fwd_tempprimer=$"ACCTGCGGARGGATCA"
-rev_tempprimer=$"GAGATCCRTTGYTRAAAGTT"
-# fwd_tempprimer=$"ACCTGCTAGGCTAGATGC,GCTAGCTAGCTAGCTGATGC,ATCGATGCTAGCTAGCTAGCTGA"
-# rev_tempprimer=$"GGGATCCATCGATTTAAC,GCTAGCTAGCTAGCTAGCTAGC"
+fwd_tempprimer=$"ACCTGCTAGGCTAGATGC,GCTAGCTAGCTAGCTGATGC,ATCGATGCTAGCTAGCTAGCTGA"
+rev_tempprimer=$"GGGATCCATCGATTTAAC,GCTAGCTAGCTAGCTAGCTAGC"
 
 ###############################
 ###############################
@@ -59,8 +43,9 @@ rev_tempprimer=$"GAGATCCRTTGYTRAAAGTT"
 start=$(date +%s)
 # Source for functions
 source /scripts/framework.functions.sh
+
 #output dir
-output_dir=$"/input/primersCut_out"
+output_dir=$"primersCut_out"
 ### Check if files with specified extension exist in the dir
 first_file_check
 ### Prepare working env and check paired-end data
@@ -71,7 +56,6 @@ prepare_PE_env
 fwd_primer_array=$(echo $fwd_tempprimer | sed 's/,/ /g' | sed 's/I/N/g')
 rev_primer_array=$(echo $rev_tempprimer | sed 's/,/ /g' | sed 's/I/N/g')
 # Forward primer(s) to fasta file
-
 i=1
 for primer in $fwd_primer_array; do
     echo ">fwd_primer$i" >> tempdir2/fwd_primer.fasta
@@ -247,7 +231,7 @@ runtime=$((end-start))
 printf "Total time: $runtime sec.\n\n"
 
 #variables for all services
-echo "workingDir=$output_dir"
+echo "workingDir=/$output_dir"
 echo "fileFormat=$newextension"
 echo "dataFormat=$dataFormat"
 echo "readType=paired-end"

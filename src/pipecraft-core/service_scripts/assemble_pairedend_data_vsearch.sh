@@ -6,12 +6,12 @@
 
 ##########################################################
 ###Third-party applications:
-#vsearch
+#vsearch v2.17.0
     #citation: Rognes T, Flouri T, Nichols B, Quince C, Mahé F (2016) VSEARCH: a versatile open source tool for metagenomics PeerJ 4:e2584
     #Copyright (C) 2014-2021, Torbjorn Rognes, Frederic Mahe and Tomas Flouri
     #Distributed under the GNU General Public License version 3 by the Free Software Foundation
     #https://github.com/torognes/vsearch
-#pigz
+#pigz v2.4
 ##########################################################
 
 ###############################
@@ -38,6 +38,7 @@ notmerged_files="FALSE"
 start=$(date +%s)
 # Source for functions
 source /scripts/framework.functions.sh
+
 #output dir
 output_dir=$"assembled_out"
 ### Check if files with specified extension exist in the dir
@@ -74,6 +75,7 @@ while read LINE; do
     fi 
     #When including R1 to the assembled output, then include fastqout_notmerged_fwd (in case notmerged_files=FALSE)
     if [[ $include_R1 == "TRUE" ]]; then
+        mkdir -p $output_dir/not_assembled_paired_end_reads
     	fastqout_notmerged_fwd="--fastqout_notmerged_fwd $output_dir/not_assembled_paired_end_reads/$inputR1.notAssembled.$newextension"
     fi
 

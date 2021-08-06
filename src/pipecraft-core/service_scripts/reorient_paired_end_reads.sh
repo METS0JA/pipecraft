@@ -5,46 +5,26 @@
 #Reorient PAIRED-END reads: 
 #mismatches = allowed number of differences for primer.
 #Degenerate primers are allowed using IUPAC codes.
-#Note that : symbols in the sequence headers will be changed to _
 
 ##########################################################
 ###Third-party applications:
-#mothur
-    #citation: Schloss PD et al. (2009) Introducing mothur: Open-Source, Platform-Independent, Community-Supported Software for Describing and Comparing Microbial Communities Appl Environ Microbiol 75:7537-7541
-    #Distributed under the GNU General Public License version 3 by the Free Software Foundation"
-    #https://github.com/mothur/mothur
-#seqkit
+#seqkit v0.15.0
     #citation: Shen W, Le S, Li Y, Hu F (2016) SeqKit: A Cross-Platform and Ultrafast Toolkit for FASTA/Q File Manipulation. PLOS ONE 11(10): e0163962. https://doi.org/10.1371/journal.pone.0163962
     #Distributed under the MIT License
     #Copyright © 2016-2019 Wei Shen, 2019 Oxford Nanopore Technologies.
     #https://bioinf.shenwei.me/seqkit/
-#fqgrep
+#fqgrep v0.4.4
     #Copyright (c) 2011-2016, Indraniel Das
     #https://github.com/indraniel/fqgrep
-#vsearch
-    #citation: Rognes T, Flouri T, Nichols B, Quince C, Mahé F (2016) VSEARCH: a versatile open source tool for metagenomics PeerJ 4:e2584
-    #Copyright (C) 2014-2021, Torbjorn Rognes, Frederic Mahe and Tomas Flouri
-    #Distributed under the GNU General Public License version 3 by the Free Software Foundation
-    #https://github.com/torognes/vsearch
-#pigz
+#pigz v2.4
 ##########################################################
 
 ###############################
 #These variables are for testing (DELETE when implementing to PipeCraft)
-
-echo $forward_primers
-echo $reverse_primers
-echo $mismatches
-
-
-extension=$fileFormat
-mismatches=$mismatches
-# fwd_tempprimer=$forward_primers
-# rev_tempprimer=$reverse_primers
-fwd_tempprimer=$"ACCTGCGGARGGATCA"
-rev_tempprimer=$"GAGATCCRTTGYTRAAAGTT"
-# fwd_tempprimer=$"ACCTGCTAGGCTAGATGC,TAGCTGATCGATCGATCG"
-# rev_tempprimer=$"GGGATCCATCGATTTAAC"
+extension=$"fq.gz"
+mismatches=$"2"
+fwd_tempprimer=$"ATGCGTTGGAGAGARCGTTTC"
+rev_tempprimer=$"GATCACCTTCTAATTTACCWACAACTG"
 ###############################
 ###############################
 
@@ -54,8 +34,9 @@ rev_tempprimer=$"GAGATCCRTTGYTRAAAGTT"
 start=$(date +%s)
 # Source for functions
 source /scripts/framework.functions.sh
+
 #output dir
-output_dir=$"/input/reoriented_out"
+output_dir=$"reoriented_out"
 ### Check if files with specified extension exist in the dir
 first_file_check
 ### Prepare working env and check paired-end data
@@ -105,13 +86,13 @@ while read LINE; do
     if [ -s tempdir/R1.5_3.fastq ]; then
         :
     else
-        printf '%s\n' "[WARNING]: specified primers not found in $inputR1.$newextension (SKIPPING file; also $inputR2.$newextension)" \
+        printf '%s\n' "WARNING]: specified primers not found in $inputR1.$newextension (SKIPPING file; also $inputR2.$newextension)" \
         && rm -rf tempdir && continue
     fi
     if [ -s tempdir/R2.3_5.fastq ]; then
         :
    else
-        printf '%s\n' "[WARNING]: specified primers not found in $inputR2.$newextension (SKIPPING file; also $inputR1.$newextension)" \
+        printf '%s\n' "WARNING]: specified primers not found in $inputR2.$newextension (SKIPPING file; also $inputR1.$newextension)" \
         && rm -rf tempdir && continue
     fi
 
@@ -132,7 +113,7 @@ while read LINE; do
         
     #pair R1 and R2 seqs (synchronize)
     printf "\nSynchronizing R1 and R2 reads (matching order for paired-end reads merging)\n"
-    cd tempdir && \
+    cd tempdir
     checkerror=$(seqkit pair -1 $inputR1.reoriented.$newextension -2 $inputR2.reoriented.$newextension 2>&1)
     check_app_error
     rm $inputR1.reoriented.$newextension
@@ -149,14 +130,14 @@ while read LINE; do
         size=$(echo $(cat $output_dir/$inputR1.reoriented.$newextension | wc -l) / 4 | bc)
         printf "$size sequences in $inputR1.reoriented.$newextension\n"
     else
-        printf '%s\n' "[WARNING]: after synchronizing, $inputR1 has 0 seqs (no output)"
+        printf '%s\n' "WARNING]: after synchronizing, $inputR1 has 0 seqs (no output)"
         rm $output_dir/$inputR1.reoriented.$newextension
     fi
     if [ -s $output_dir/$inputR2.reoriented.$newextension ]; then
         size=$(echo $(cat $output_dir/$inputR2.reoriented.$newextension | wc -l) / 4 | bc)
         printf "$size sequences in $inputR2.reoriented.$newextension\n"
     else
-        printf '%s\n' "[WARNING]: after synchronizing, $inputR2 has 0 seqs (no output)"
+        printf '%s\n' "WARNING]: after synchronizing, $inputR2 has 0 seqs (no output)"
         rm $output_dir/$inputR2.reoriented.$newextension
     fi
 done < tempdir2/paired_end_files.txt
@@ -189,9 +170,8 @@ Reverse primer(s) [has to be 3'-5']: $rev_tempprimer
 [If primers were not specified in orientations noted above, please run this step again].\n
 Output R1 and R2 reads have been synchronized for merging paired-end data. 
 (R1 reads are 5'-3' oriented and R2 reads 3'-5' oriented (for merging paired-end data)).\n
-Note that, when applicable, then ':' symbols in the sequence headers (before space or tab) are changed to '_'.
 This does not affect merging paired-end reads using PipeCraft implemented software.\n
-RUNNING THE PROCESS SEVERAL TIMES IN THE SAME DIRECTORY WILL OVERWRITE ALL THE OUTPUTS!" > $output_dir/README.txt
+RUNNING THE PROCESS SEVERAL TIMES IN THE SAME DIRECTORY WILL OVERWRITE ALL OUTPUTS!" > $output_dir/README.txt
 
 printf "\nDONE\n"
 printf "Data in directory '$output_dir'\n"
@@ -203,7 +183,7 @@ runtime=$((end-start))
 printf "Total time: $runtime sec.\n\n"
 
 #variables for all services
-echo "workingDir=$output_dir"
+echo "workingDir=/$output_dir"
 echo "fileFormat=$newextension"
 echo "dataFormat=demultiplexed"
 echo "readType=paired-end"
