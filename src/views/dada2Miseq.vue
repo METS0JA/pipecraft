@@ -52,10 +52,10 @@
               v-for="(input, i) in service.Inputs"
               :key="input.name"
               cols="12"
-              xl="2"
-              lg="3"
-              md="4"
-              sm="6"
+              :xl="input.type === 'combobox' ? 4 : 2"
+              :lg="input.type === 'combobox' ? 6 : 3"
+              :md="input.type === 'combobox' ? 8 : 4"
+              :sm="input.type === 'combobox' ? 12 : 3"
               style="height:fit-content; width:fit-content"
             >
               <v-container v-if="input.type === 'numeric'"
@@ -102,6 +102,12 @@
               /></v-container>
               <v-container v-if="input.type === 'slide'"
                 ><InputSlide
+                  :serviceIndex="index"
+                  :inputIndex="i"
+                  :list="'Inputs'"
+              /></v-container>
+              <v-container v-if="input.type === 'combobox'"
+                ><InputCombo
                   :serviceIndex="index"
                   :inputIndex="i"
                   :list="'Inputs'"
@@ -169,6 +175,12 @@
                   :inputIndex="i"
                   :list="'extraInputs'"
               /></v-container>
+              <v-container v-if="input.type === 'combobox'"
+                ><InputCombo
+                  :serviceIndex="index"
+                  :inputIndex="i"
+                  :list="'extraInputs'"
+              /></v-container>
             </v-col>
           </v-row>
           <v-row v-if="service.extraInputs.length > 0" justify="center">
@@ -196,6 +208,7 @@ import InputBoolFile from "../components/InputBoolFile.vue";
 import InputBoolSelect from "../components/InputBoolSelect.vue";
 import InputChip from "../components/InputChip.vue";
 import InputSlide from "../components/InputSlide.vue";
+import InputCombo from "../components/InputCombo.vue";
 
 export default {
   name: "Home",
@@ -208,16 +221,17 @@ export default {
     InputBoolFile,
     InputBoolSelect,
     InputSlide,
+    InputCombo,
   },
   computed: {
     services() {
-      return this.$store.state.dada2Miseq;
+      return this.$store.state[this.$route.params.workflowName];
     },
   },
   methods: {
     toggleExtra(index) {
-      this.$store.commit("toggleExtra", {
-        stepIndex: this.$route.params.order,
+      this.$store.commit("toggleExtraCustomWorkflow", {
+        workflowName: this.$route.params.workflowName,
         serviceIndex: index,
       });
     },

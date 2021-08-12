@@ -16,7 +16,7 @@
             <!-- numericInputs -->
             <v-col
               v-for="input in service.numericInputs.filter(
-                (x) => x.extra != true
+                (x) => x.extra != true,
               )"
               :key="input.name"
               cols="12"
@@ -62,7 +62,7 @@
             <!-- slideInputs -->
             <v-col
               v-for="input in service.slideInputs.filter(
-                (x) => x.extra != true
+                (x) => x.extra != true,
               )"
               :key="input.name"
               cols="12"
@@ -107,7 +107,7 @@
             <!-- booleanInputs -->
             <v-col
               v-for="input in service.booleanInputs.filter(
-                (x) => x.extra != true
+                (x) => x.extra != true,
               )"
               :key="input.name"
               cols="12"
@@ -145,7 +145,7 @@
             <!-- selectInputs -->
             <v-col
               v-for="input in service.selectInputs.filter(
-                (x) => x.extra != true
+                (x) => x.extra != true,
               )"
               :key="input.name"
               cols="12"
@@ -183,7 +183,7 @@
             <!-- fileInputs -->
             <v-col
               v-for="(input, i) in service.fileInputs.filter(
-                (x) => x.extra != true
+                (x) => x.extra != true,
               )"
               :key="input.name"
               cols="12"
@@ -237,7 +237,7 @@
             <!-- booleanFileInputs -->
             <v-col
               v-for="(input, i) in service.booleanFileInputs.filter(
-                (x) => x.extra != true
+                (x) => x.extra != true,
               )"
               :key="input.name"
               cols="12"
@@ -305,7 +305,7 @@
             <!-- booleanSelectInputs -->
             <v-col
               v-for="input in service.booleanSelectInputs.filter(
-                (x) => x.extra != true
+                (x) => x.extra != true,
               )"
               :key="input.name"
               cols="12"
