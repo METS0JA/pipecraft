@@ -1,4 +1,9 @@
-Prerequisites:  
+## Try out the alpha release
+
+
+## For developers
+
+### Prerequisites:  
 NodeJS (https://nodejs.org/en/download/)  
 Yarn (https://classic.yarnpkg.com/en/docs/install/#windows-stable)  
 Docker (https://www.docker.com/get-started)  
