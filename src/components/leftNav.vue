@@ -12,7 +12,7 @@
         </v-btn>
       </v-list-item-content>
     </v-list-item>
-    <v-list-item>
+    <!-- <v-list-item>
       <v-list-item-content>
         <v-btn
           block
@@ -29,7 +29,7 @@
           </template>
         </v-btn>
       </v-list-item-content>
-    </v-list-item>
+    </v-list-item> -->
     <v-list-item>
       <v-list-item-content>
         <AddMenu />

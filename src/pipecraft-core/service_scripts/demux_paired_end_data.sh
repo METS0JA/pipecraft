@@ -23,13 +23,22 @@
 ###############################
 ###############################
 #These variables are for testing (DELETE when implementing to PipeCraft)
-extension=$"fq"
-indexes_file=$"barcodes_paired.txt"
-error_rate="-e 1"
+extension=$fileFormat
+indexes_file=$"oligos_paired.txt"
+error_rate="-e ${max_error_rate}"
 no_indels=$"--no-indels"
-minlen=$"--minimum-length 20"
-cores=$"--cores 1"
-overlap=$"--overlap 12"
+minlen=$"--minimum-length ${min_seq_length}"
+cores=$"--cores ${cores}"
+overlap=$"--overlap ${overlap}"
+printf '%s\n%s' "$overlap"
+printf '%s\n%s' "$extension"
+printf '%s\n%s' "$indexes_file"
+printf '%s\n%s' "$error_rate"
+printf '%s\n%s' "$no_indels"
+printf '%s\n%s' "$minlen"
+
+
+
 ###############################
 ###############################
 
@@ -39,6 +48,7 @@ overlap=$"--overlap 12"
 start=$(date +%s)
 # Source for functions
 source /scripts/framework.functions.sh
+
 
 #output dir
 output_dir=$"demultiplex_out"
@@ -50,6 +60,7 @@ prepare_PE_env
 check_indexes_file
 
 ### Process file
+
 printf "Checking files ...\n"
 while read LINE; do
 

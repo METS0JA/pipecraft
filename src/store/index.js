@@ -131,6 +131,13 @@ export default new Vuex.Store({
                 step: 0.01,
                 type: "slide",
               },
+              {
+                name: "combobox",
+                items: ["nii", "palju", "asju", "mida", "valida"],
+                value: [],
+                tooltip: "combobreaker",
+                type: "combobox",
+              },
             ],
           },
         ],
@@ -953,8 +960,8 @@ export default new Vuex.Store({
     ],
     OTU_Miseq: [
       {
-        scriptName: "demux_script",
-        imageName: "demux_img",
+        scriptName: "demux_paired_end_data.sh",
+        imageName: "pipecraft/demux:0.1",
         serviceName: "demultiplex",
         selected: false,
         showExtra: false,
@@ -966,13 +973,13 @@ export default new Vuex.Store({
             type: "numeric",
           },
           {
-            name: "min seq lenght",
+            name: "min_seq_length",
             value: 10,
             tooltip: "minimum length of the output sequence",
             type: "numeric",
           },
           {
-            name: "no-indels",
+            name: "no_indels",
             value: true,
             tooltip: "do not allow insertions or deletions",
             type: "bool",
@@ -980,14 +987,15 @@ export default new Vuex.Store({
         ],
         Inputs: [
           {
-            name: "barcodes file",
+            name: "barcodes_file",
             value: "undefined",
+            btnName: "select fast(a/q)",
             tooltip:
               "a file in a fasta format where the headers are sample ids and sequences are barcodes for samples",
             type: "file",
           },
           {
-            name: "max error rate",
+            name: "max_error_rate",
             value: 1,
             tooltip: "number of allowed mismatches in the index sequence",
             type: "numeric",
@@ -1268,7 +1276,7 @@ export default new Vuex.Store({
             type: "numeric",
           },
           {
-            name: "chimera abundance skew",
+            name: "abundance skew",
             value: 2,
             tooltip:
               "the abundance skew is used to distinguish in a threeway alignment which sequence is the chimera and which are the parents. The assumption is that chimeras appear later in the PCR amplification process and are therefore less abundant than their parents. The default value is 2.0, which means that the parents should be at least 2 times more abundant than their chimera. Any positive value equal or greater than 1.0 can be used.",
@@ -1414,8 +1422,173 @@ export default new Vuex.Store({
         serviceName: "clustering",
         selected: false,
         showExtra: false,
-        extraInputs: [],
-        Inputs: [],
+        extraInputs: [
+          {
+            name: "similarity type",
+            items: ["0", "1", "2", "3", "4"],
+            value: "2",
+            tooltip:
+              "pairwise sequence identity definition. Default = --iddef 2 [(matching columns) / (alignment length - terminal gaps)]",
+            type: "select",
+          },
+          {
+            name: "sequence sorting",
+            items: ["cluster_fast", "cluster_size", "cluster_smallmem"],
+            value: "cluster_size",
+            tooltip:
+              'size = sort the sequences by decreasing abundance; "length" = sort the sequences by decreasing length (--cluster_fast); "no" = do not sort sequences (--cluster_smallmem --usersort)',
+            type: "select",
+          },
+          {
+            name: "centroid type",
+            items: ["similarity", "abundance"],
+            value: "similarity",
+            tooltip:
+              '"similarity" = assign representative sequence to the closest (most similar) centroid (distance-based greedy clustering); "abundance" = assign representative sequence to the most abundant centroid (abundance-based greedy clustering; --sizeorder), --maxaccepts should be > 1',
+            type: "select",
+          },
+          {
+            name: "max hits",
+            value: 1,
+            tooltip:
+              "maximum number of hits to accept before stopping the search (should be > 1 for abundance-based selection of centroids [centroid type])",
+            type: "numeric",
+          },
+          {
+            name: "relabel",
+            items: ["none", "md5m", "sha1"],
+            value: "sha1",
+            tooltip: "relabel sequence identifiers (none = do not relabel)",
+            type: "select",
+          },
+          {
+            name: "mask",
+            items: ["dust", "none"],
+            value: "dust",
+            tooltip:
+              'mask regions in sequences using the "dust" method, or do not mask ("none").',
+            type: "select",
+          },
+          {
+            name: "dbmask",
+            items: ["dust", "none"],
+            value: "dust",
+            tooltip:
+              'prior the OTU table creation, mask regions in sequences using the "dust" method, or do not mask ("none").',
+            type: "select",
+          },
+          {
+            name: "output UC",
+            value: false,
+            tooltip:
+              "output clustering results in tab-separated UCLAST-like format",
+            type: "bool",
+          },
+        ],
+        Inputs: [
+          {
+            name: "OTU type",
+            items: ["centroid", "consensus"],
+            tooltip:
+              '"centroid" = output centroid sequences; "consensus" = output consensus sequences',
+            value: "centroid",
+            type: "select",
+          },
+          {
+            name: "similarity threshold",
+            value: 0.97,
+            tooltip:
+              "define OTUs based on the sequence similarity threshold; 0.97 = 97% similarity threshold",
+            max: 1,
+            min: 0,
+            step: 0.01,
+            type: "slide",
+          },
+          {
+            name: "strands",
+            items: ["both", "plus"],
+            tooltip:
+              "when comparing sequences with the cluster seed, check both strands (forward and reverse complementary) or the plus strand only",
+            value: "both",
+            type: "select",
+          },
+          {
+            name: "min OTU size",
+            value: 2,
+            tooltip:
+              "minimum read count per output OTU (e.g., if value = 2, then singleton OTUs will be discarded [OTUs with only one sequence])",
+            type: "numeric",
+          },
+        ],
+      },
+      {
+        scriptName: "reorient_paired_end_reads.sh",
+        imageName: "pipecraft/reorient:1",
+        serviceName: "assign taxonomy",
+        selected: false,
+        showExtra: false,
+        extraInputs: [
+          {
+            name: "e-value",
+            value: 10,
+            tooltip: "",
+            type: "numeric",
+          },
+          {
+            name: "word size",
+            value: 11,
+            tooltip: "",
+            type: "numeric",
+          },
+          {
+            name: "reward",
+            value: 2,
+            tooltip: "",
+            type: "numeric",
+          },
+          {
+            name: "peanlty",
+            value: -3,
+            tooltip: "",
+            type: "numeric",
+          },
+          {
+            name: "gap open",
+            value: 5,
+            tooltip: "",
+            type: "numeric",
+          },
+          {
+            name: "gap extend",
+            value: 2,
+            tooltip: "",
+            type: "numeric",
+          },
+        ],
+        Inputs: [
+          {
+            name: "database file(s)",
+            btnName: "select file",
+            value: "undefined",
+            tooltip:
+              "database files, up to 5 files (may be fasta formated - automatically will convert to BLAST database format)",
+            type: "file",
+          },
+          {
+            name: "task",
+            items: ["blastn", "megablast"],
+            value: "blastn",
+            tooltip: "",
+            type: "select",
+          },
+          {
+            name: "strand",
+            items: ["plus", "both"],
+            value: "both",
+            tooltip: "",
+            type: "select",
+          },
+        ],
       },
     ],
     dada2Miseq: [

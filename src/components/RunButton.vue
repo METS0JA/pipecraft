@@ -16,6 +16,8 @@
 const Swal = require("sweetalert2");
 import * as Dockerode from "dockerode";
 var dockerode = new Dockerode({ socketPath: "//./pipe/docker_engine" });
+// var dockerode = new Docker({socketPath: '/var/run/docker.sock'});
+// this is the socker path for linux builds
 import { pullImageAsync } from "dockerode-utils";
 import { imageExists } from "dockerode-utils";
 const streams = require("memory-streams");
@@ -59,7 +61,7 @@ export default {
           "\n",
           `INPUT: ${Input}`,
           "\n",
-          `WORKDIR: ${WorkingDir}`
+          `WORKDIR: ${WorkingDir}`,
         );
         console.log(envVariables);
         let result = await dockerode
@@ -78,7 +80,7 @@ export default {
                 ],
               },
               Env: envVariables,
-            }
+            },
           )
           .then(async ([res, container]) => {
             console.log(stdout.toString());
@@ -158,7 +160,7 @@ export default {
                 ],
               },
               Env: envVariables,
-            }
+            },
           )
           .then(async ([res, container]) => {
             console.log(stdout.toString());
@@ -214,7 +216,7 @@ export default {
           let varObj = {};
           varObj[input.name] = input.value;
           envVariables.push(stringify(varObj).replace(/(\r\n|\n|\r)/gm, ""));
-        }
+        },
       );
       let dataInfo = {
         workingDir: this.$store.state.workingDir,
@@ -232,6 +234,11 @@ export default {
     createCustomVariableObj(name, index) {
       let envVariables = [];
       this.$store.state[name][index].Inputs.forEach((input) => {
+        let varObj = {};
+        varObj[input.name] = input.value;
+        envVariables.push(stringify(varObj).replace(/(\r\n|\n|\r)/gm, ""));
+      });
+      this.$store.state[name][index].extraInputs.forEach((input) => {
         let varObj = {};
         varObj[input.name] = input.value;
         envVariables.push(stringify(varObj).replace(/(\r\n|\n|\r)/gm, ""));
@@ -265,7 +272,7 @@ export default {
         imageName,
         scriptName,
         envVariables,
-        this.$store.state.workingDir
+        this.$store.state.workingDir,
       );
       return result;
     },
