@@ -1,9 +1,23 @@
-README pipecraft-vue
+## Try out the alpha release
 
-Development Setup:
+### Prerequisites:  
+Docker (https://www.docker.com/get-started)  
 
-npm install vue
-npm install -g @vue/cli
-npm install -g @vue/devtools
-vue ui manual setup (include vuex router and vuetify)
-vue add electron-builder
+Download the steup executable from this link  
+https://drive.google.com/file/d/1_yyENw6F-yjQ-4DEFSe_kESUBpYarJM_/view?usp=sharing  
+
+
+## For developers
+
+### Prerequisites:  
+NodeJS (https://nodejs.org/en/download/)  
+Yarn (https://classic.yarnpkg.com/en/docs/install/#windows-stable)  
+Docker (https://www.docker.com/get-started)  
+Git (https://git-scm.com/downloads)  
+
+```bash
+git clone https://github.com/SuvalineVana/pipecraft-vue
+cd pipecraft-vue
+yarn install
+yarn electron:serve
+```
