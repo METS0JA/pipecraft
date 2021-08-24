@@ -26,7 +26,14 @@
 extension=$fileFormat
 indexes_file=$"oligos_paired.txt"
 error_rate="-e ${max_error_rate}"
-no_indels=$"--no-indels"
+
+if [ "$no_indels" = true ] ; then
+    echo 'Be careful not to fall off!'
+    no_indels=$"--no-indels"
+else
+    no_indels=''
+fi
+
 minlen=$"--minimum-length ${min_seq_length}"
 cores=$"--cores ${cores}"
 overlap=$"--overlap ${overlap}"
