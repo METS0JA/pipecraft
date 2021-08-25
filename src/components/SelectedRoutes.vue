@@ -18,7 +18,7 @@
               ? { background: '#1DE9B6' }
               : { background: 'grey' }
           "
-          @click="push2route(element.stepName, index)"
+          @click="push2route(element.stepName.replace('/', ''), index)"
         >
           {{ element.stepName }}
           <v-icon @click.stop="removeAt(index)">mdi-close-box</v-icon>

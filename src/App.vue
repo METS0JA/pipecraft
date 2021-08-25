@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-navigation-drawer app clipped width="250" permanent dark>
+    <v-navigation-drawer app clipped width="260" permanent dark>
       <leftNav />
       <!-- <SelectedRoutes /> -->
     </v-navigation-drawer>

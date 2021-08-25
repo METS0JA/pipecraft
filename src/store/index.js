@@ -181,7 +181,7 @@ export default new Vuex.Store({
         ],
       },
       {
-        stepName: "remove adapters",
+        stepName: "trim adapters/primers",
         services: [
           {
             scriptName: "cut_primers_paired_end_reads.sh",
@@ -192,11 +192,14 @@ export default new Vuex.Store({
             extraInputs: [],
             Inputs: [
               {
-                name: "error_rate",
-                value: 0.15,
+                name: "mismatches",
+                value: 1,
+                max: 99,
+                min: 0,
+                step: 1,
                 tooltip:
                   "Allowed error rate in primer search. By default, error rate is 0.1, which means that in e.g. 1 error is allowd in a 10 bp primer (10% error rate).",
-                type: "numeric",
+                type: "slide",
               },
               {
                 name: "min_seq_length",
@@ -1013,7 +1016,7 @@ export default new Vuex.Store({
         scriptName: "reorient_paired_end_reads.sh",
         imageName: "pipecraft/reorient:1",
         serviceName: "reorient",
-        selected: false,
+        selected: "always",
         showExtra: false,
         extraInputs: [],
         Inputs: [
@@ -1053,7 +1056,7 @@ export default new Vuex.Store({
       {
         scriptName: "cut.sh",
         imageName: "pipecraft/cutadapt",
-        serviceName: "cut primers",
+        serviceName: "remove primers",
         selected: false,
         showExtra: false,
         extraInputs: [
@@ -1136,8 +1139,8 @@ export default new Vuex.Store({
       {
         scriptName: "mergepaired.sh",
         imageName: "pipecraft/vsearch",
-        serviceName: "merge PE reads",
-        selected: false,
+        serviceName: "merge reads",
+        selected: "always",
         showExtra: false,
         extraInputs: [
           {
@@ -1208,7 +1211,7 @@ export default new Vuex.Store({
         scriptName: "reorient_paired_end_reads.sh",
         imageName: "pipecraft/reorient:1",
         serviceName: "quality filter",
-        selected: false,
+        selected: "always",
         showExtra: false,
         extraInputs: [
           {
@@ -1266,7 +1269,7 @@ export default new Vuex.Store({
         scriptName: "reorient_paired_end_reads.sh",
         imageName: "pipecraft/reorient:1",
         serviceName: "chimera filter",
-        selected: false,
+        selected: "always",
         showExtra: false,
         extraInputs: [
           {
@@ -1317,7 +1320,7 @@ export default new Vuex.Store({
         scriptName: "reorient_paired_end_reads.sh",
         imageName: "pipecraft/reorient:1",
         serviceName: "gene extraction",
-        selected: false,
+        selected: "always",
         showExtra: false,
         extraInputs: [
           {
@@ -1420,7 +1423,7 @@ export default new Vuex.Store({
         scriptName: "cluster.sh",
         imageName: "ppiecraft/",
         serviceName: "clustering",
-        selected: false,
+        selected: "always",
         showExtra: false,
         extraInputs: [
           {
@@ -1525,7 +1528,7 @@ export default new Vuex.Store({
         scriptName: "reorient_paired_end_reads.sh",
         imageName: "pipecraft/reorient:1",
         serviceName: "assign taxonomy",
-        selected: false,
+        selected: "always",
         showExtra: false,
         extraInputs: [
           {
@@ -1591,12 +1594,62 @@ export default new Vuex.Store({
         ],
       },
     ],
-    dada2Miseq: [
+    DADA2_Miseq: [
+      {
+        scriptName: "demux_paired_end_data.sh",
+        imageName: "pipecraft/demux:0.1",
+        serviceName: "demultiplex",
+        selected: false,
+        showExtra: false,
+        extraInputs: [
+          {
+            name: "cores",
+            value: 2,
+            tooltip: "number of cores to use",
+            type: "numeric",
+          },
+          {
+            name: "min_seq_length",
+            value: 10,
+            tooltip: "minimum length of the output sequence",
+            type: "numeric",
+          },
+          {
+            name: "no_indels",
+            value: true,
+            tooltip: "do not allow insertions or deletions",
+            type: "bool",
+          },
+        ],
+        Inputs: [
+          {
+            name: "barcodes_file",
+            value: "undefined",
+            btnName: "select fast(a/q)",
+            tooltip:
+              "a file in a fasta format where the headers are sample ids and sequences are barcodes for samples",
+            type: "file",
+          },
+          {
+            name: "max_error_rate",
+            value: 1,
+            tooltip: "number of allowed mismatches in the index sequence",
+            type: "numeric",
+          },
+          {
+            name: "overlap",
+            value: 12,
+            tooltip:
+              "number of overlap bases with the index. Recommended overlap is the max length of the index for confident sequence assignments to samples in the indexes file.",
+            type: "numeric",
+          },
+        ],
+      },
       {
         scriptName: "reorient_paired_end_reads.sh",
         imageName: "pipecraft/reorient:1",
         serviceName: "reorient",
-        selected: false,
+        selected: "always",
         showExtra: false,
         extraInputs: [],
         Inputs: [
@@ -1636,7 +1689,7 @@ export default new Vuex.Store({
       {
         scriptName: "cut_primers_paired_end_reads.sh",
         imageName: "pipecraft/cutadapt:3.40",
-        serviceName: "cutadapt",
+        serviceName: "remove primers",
         selected: false,
         showExtra: false,
         extraInputs: [],
@@ -1710,8 +1763,8 @@ export default new Vuex.Store({
       {
         scriptName: "dada2-quality.R",
         imageName: "pipecraft/dada2:3.10",
-        serviceName: "filterAndTrim",
-        selected: false,
+        serviceName: "filter And Trim",
+        selected: "always",
         showExtra: false,
         extraInputs: [],
         Inputs: [
@@ -1769,8 +1822,8 @@ export default new Vuex.Store({
       {
         scriptName: "dada2-assemble.R",
         imageName: "pipecraft/dada2:3.10",
-        serviceName: "mergePairs",
-        selected: false,
+        serviceName: "merge Pairs",
+        selected: "always",
         showExtra: false,
         extraInputs: [],
         Inputs: [
@@ -1799,8 +1852,8 @@ export default new Vuex.Store({
       {
         scriptName: "dada2-chimera.R",
         imageName: "pipecraft/dada2:3.10",
-        serviceName: "removeBimeraDenovo",
-        selected: false,
+        serviceName: "remove Bimera Denovo",
+        selected: "always",
         showExtra: false,
         extraInputs: [],
         Inputs: [
@@ -1818,8 +1871,8 @@ export default new Vuex.Store({
       {
         scriptName: "dada2-classifier.R",
         imageName: "pipecraft/dada2:3.10",
-        serviceName: "assignTaxonomy",
-        selected: false,
+        serviceName: "assign Taxonomy",
+        selected: "always",
         showExtra: false,
         extraInputs: [],
         Inputs: [
@@ -1847,6 +1900,13 @@ export default new Vuex.Store({
         ],
       },
     ],
+    customWorkflowInfo: {
+      OTU_Miseq: { info: "placeholder", link: "placeholder" },
+      DADA2_Miseq: {
+        info: "This workflow is based on DADA2 Pipeline tutorial",
+        link: "https://benjjneb.github.io/dada2/tutorial.html",
+      },
+    },
   },
   getters: {},
   mutations: {
@@ -1935,6 +1995,10 @@ export default new Vuex.Store({
           ].selected = false;
         }
       }
+    },
+    checkCustomService(state, payload) {
+      console.log(state[payload.name][payload.serviceIndex]);
+      state[payload.name][payload.serviceIndex].selected = payload.selected;
     },
   },
   actions: {},

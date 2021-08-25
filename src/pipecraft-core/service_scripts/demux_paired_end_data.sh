@@ -26,7 +26,7 @@
 extension=$fileFormat
 indexes_file=$"oligos_paired.txt"
 error_rate="-e ${max_error_rate}"
-
+ls
 if [ "$no_indels" = true ] ; then
     echo 'Be careful not to fall off!'
     no_indels=$"--no-indels"

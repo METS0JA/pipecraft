@@ -2,11 +2,6 @@
   <v-list dense rounded>
     <v-list-item>
       <v-list-item-content>
-        <RunButton />
-      </v-list-item-content>
-    </v-list-item>
-    <v-list-item>
-      <v-list-item-content>
         <v-btn block color="grey" @click="folderSelect">
           Select workDir
         </v-btn>
@@ -33,6 +28,11 @@
     <v-list-item>
       <v-list-item-content>
         <AddMenu />
+      </v-list-item-content>
+    </v-list-item>
+    <v-list-item>
+      <v-list-item-content>
+        <RunButton />
       </v-list-item-content>
     </v-list-item>
     <v-divider></v-divider>

@@ -1,7 +1,8 @@
 <template>
   <v-btn
     block
-    color="grey"
+    outlined
+    color="white"
     @click="
       $route.params.workflowName
         ? runCustomWorkFlow($route.params.workflowName)
@@ -40,86 +41,95 @@ export default {
       console.log(name);
       this.$store.commit("addWorkingDir", "/input");
       for (let index of this.$store.state[name].entries()) {
-        console.log(`Startin step ${index[0] + 1}: ${index[1].serviceName}`);
-        let scriptName = this.$store.state[name][index[0]].scriptName;
-        let imageName = this.$store.state[name][index[0]].imageName;
-        let Input = this.$store.state.inputDir;
-        let WorkingDir = this.$store.state.workingDir;
-        let envVariables;
-        envVariables = this.createCustomVariableObj(name, index[0]);
-        let gotImg = await imageExists(dockerode, imageName);
-        if (gotImg === false) {
-          console.log(`Pulling image ${imageName}`);
-          let output = await pullImageAsync(dockerode, imageName);
-          console.log(output);
-          console.log(`Pull complete`);
-        }
-        console.log(
-          `SCRIPT: ${scriptName}`,
-          "\n",
-          `IMAGE: ${imageName}`,
-          "\n",
-          `INPUT: ${Input}`,
-          "\n",
-          `WORKDIR: ${WorkingDir}`,
-        );
-        console.log(envVariables);
-        let result = await dockerode
-          .run(
-            imageName,
-            ["sh", "-c", `/scripts/${scriptName}`],
-            [stdout, stderr],
-            {
-              Tty: false,
-              WorkingDir: WorkingDir,
-              Volumes: {},
-              HostConfig: {
-                Binds: [
-                  `${process.cwd()}/src/pipecraft-core/service_scripts:/scripts`, // Edit path for build
-                  `${Input}:/input`,
-                ],
-              },
-              Env: envVariables,
-            },
-          )
-          .then(async ([res, container]) => {
-            console.log(stdout.toString());
-            let resObj = {};
-            resObj.statusCode = res.StatusCode;
-            container.remove();
-            if (res.StatusCode === 0) {
-              resObj.log = stdout.toString();
+        if (
+          this.$store.state[name][index[0]].selected == true ||
+          this.$store.state[name][index[0]].selected == "always"
+        ) {
+          console.log(`Startin step ${index[0] + 1}: ${index[1].serviceName}`);
+          let scriptName = this.$store.state[name][index[0]].scriptName;
+          let imageName = this.$store.state[name][index[0]].imageName;
+          let Input = this.$store.state.inputDir;
+          let WorkingDir = this.$store.state.workingDir;
+          let envVariables;
+          envVariables = this.createCustomVariableObj(name, index[0]);
+          let gotImg = await imageExists(dockerode, imageName);
+          if (gotImg === false) {
+            console.log(`Pulling image ${imageName}`);
+            let output = await pullImageAsync(dockerode, imageName);
+            console.log(output);
+            console.log(`Pull complete`);
+          }
+          console.log(
+            `SCRIPT: ${scriptName}`,
+            "\n",
+            `IMAGE: ${imageName}`,
+            "\n",
+            `INPUT: ${Input}`,
+            "\n",
+            `WORKDIR: ${WorkingDir}`
+          );
+          console.log(envVariables);
+          let result = await dockerode
+            .run(
+              imageName,
+              ["sh", "-c", `/scripts/${scriptName}`],
+              [stdout, stderr],
+              {
+                Tty: false,
+                WorkingDir: WorkingDir,
+                Volumes: {},
+                HostConfig: {
+                  Binds: [
+                    `${process.cwd()}/src/pipecraft-core/service_scripts:/scripts`, // dev path
+                    // `${process.cwd()}/resources/src/pipecraft-core/service_scripts:/scripts`, // build path
+                    `${Input}:/input`,
+                  ],
+                },
+                Env: envVariables,
+              }
+            )
+            .then(async ([res, container]) => {
+              console.log(stdout.toString());
+              let resObj = {};
+              resObj.statusCode = res.StatusCode;
+              container.remove();
+              if (res.StatusCode === 0) {
+                resObj.log = stdout.toString();
+                return resObj;
+              } else {
+                resObj.log = stderr.toString();
+                return resObj;
+              }
+            })
+            .catch((err) => {
+              let resObj = {};
+              resObj.statusCode = err.statusCode;
+              resObj.log = err.json.message;
               return resObj;
-            } else {
-              resObj.log = stderr.toString();
-              return resObj;
-            }
-          })
-          .catch((err) => {
-            let resObj = {};
-            resObj.statusCode = err.statusCode;
-            resObj.log = err.json.message;
-            return resObj;
-          });
-        console.log(result);
-        if (result.statusCode == 0) {
-          let newWorkingDir = this.getVariableFromLog(result.log, "workingDir");
-          let newDataInfo = {
-            dataFormat: this.getVariableFromLog(result.log, "dataFormat"),
-            fileFormat: this.getVariableFromLog(result.log, "fileFormat"),
-            readType: this.getVariableFromLog(result.log, "readType"),
-          };
-          this.$store.commit("addInputInfo", newDataInfo);
-          this.$store.commit("addWorkingDir", newWorkingDir);
-        } else {
-          Swal.fire(result.log);
+            });
+          console.log(result);
+          if (result.statusCode == 0) {
+            let newWorkingDir = this.getVariableFromLog(
+              result.log,
+              "workingDir"
+            );
+            let newDataInfo = {
+              dataFormat: this.getVariableFromLog(result.log, "dataFormat"),
+              fileFormat: this.getVariableFromLog(result.log, "fileFormat"),
+              readType: this.getVariableFromLog(result.log, "readType"),
+            };
+            this.$store.commit("addInputInfo", newDataInfo);
+            this.$store.commit("addWorkingDir", newWorkingDir);
+          } else {
+            Swal.fire(result.log);
+            stdout = new streams.WritableStream();
+            stderr = new streams.WritableStream();
+            break;
+          }
           stdout = new streams.WritableStream();
           stderr = new streams.WritableStream();
-          break;
+          console.log(`Finished step ${index[0] + 1}: ${index[1].serviceName}`);
         }
-        stdout = new streams.WritableStream();
-        stderr = new streams.WritableStream();
-        console.log(`Finished step ${index[0] + 1}: ${index[1].serviceName}`);
       }
     },
     async runWorkFlow() {
@@ -155,12 +165,13 @@ export default {
               Volumes: {},
               HostConfig: {
                 Binds: [
-                  `${process.cwd()}/src/pipecraft-core/service_scripts:/scripts`, // Edit path for build
+                  `${process.cwd()}/src/pipecraft-core/service_scripts:/scripts`, // dev path
+                  // `${process.cwd()}/resources/src/pipecraft-core/service_scripts:/scripts`, // build path
                   `${Input}:/input`,
                 ],
               },
               Env: envVariables,
-            },
+            }
           )
           .then(async ([res, container]) => {
             console.log(stdout.toString());
@@ -216,7 +227,7 @@ export default {
           let varObj = {};
           varObj[input.name] = input.value;
           envVariables.push(stringify(varObj).replace(/(\r\n|\n|\r)/gm, ""));
-        },
+        }
       );
       let dataInfo = {
         workingDir: this.$store.state.workingDir,
@@ -260,7 +271,7 @@ export default {
     findSelectedService(i) {
       let result;
       this.selectedSteps[i].services.forEach((input, index) => {
-        if (input.selected === true) {
+        if (input.selected === true || input.selected == "always") {
           result = index;
         }
       });
@@ -272,7 +283,7 @@ export default {
         imageName,
         scriptName,
         envVariables,
-        this.$store.state.workingDir,
+        this.$store.state.workingDir
       );
       return result;
     },

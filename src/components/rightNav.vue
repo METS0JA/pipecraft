@@ -37,7 +37,7 @@
     <v-list-item class="mt-5" ripple link>
       <v-tooltip left nudge-left="10">
         <template v-slot:activator="{ on }">
-          <v-list-item-content v-on="on" @click="push2premade('dada2Miseq')">
+          <v-list-item-content v-on="on" @click="push2premade('DADA2_Miseq')">
             <v-icon
               :style="
                 `/premade/dada2Miseq` == $route.path

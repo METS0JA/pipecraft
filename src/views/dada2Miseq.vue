@@ -13,7 +13,7 @@
           <v-card-title
             v-on="on"
             style="justify-content:center; padding:10px 0px;"
-            >DADA2 MiSeq workflow</v-card-title
+            >{{ $route.params.workflowName.replace(/_/g, " ") }}</v-card-title
           >
         </template>
         <span>tip me please</span>
@@ -21,9 +21,19 @@
       <v-card-text
         class="pr-15 pl-15 text-center"
         style="justify-content:center;"
-        >This workflow is based on DADA2 Pipeline tutorial
-        <a href="https://benjjneb.github.io/dada2/tutorial.html" target="_blank"
-          >https://benjjneb.github.io/dada2/tutorial.html</a
+        >{{
+          this.$store.state.customWorkflowInfo[$route.params.workflowName].info
+        }}<br />
+        <a
+          :href="
+            this.$store.state.customWorkflowInfo[$route.params.workflowName]
+              .link
+          "
+          target="_blank"
+          >{{
+            this.$store.state.customWorkflowInfo[$route.params.workflowName]
+              .link
+          }}</a
         ></v-card-text
       >
     </v-card>
@@ -44,7 +54,15 @@
       </v-overlay>
       <v-expansion-panel v-for="(service, index) in services" :key="index">
         <v-expansion-panel-header style="justify-content:center">
-          {{ service.serviceName }}
+          {{ service.serviceName.toUpperCase() }}
+          <v-checkbox
+            v-if="service.selected != 'always'"
+            hide-details="true"
+            @change="check_one($event, index)"
+            @click.stop
+            v-model="service.selected"
+            style="max-width:34px; padding-left:10px; padding-top:0; margin:0"
+          ></v-checkbox>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <v-row>
@@ -233,6 +251,13 @@ export default {
       this.$store.commit("toggleExtraCustomWorkflow", {
         workflowName: this.$route.params.workflowName,
         serviceIndex: index,
+      });
+    },
+    check_one(value, index) {
+      this.$store.commit("checkCustomService", {
+        serviceIndex: index,
+        selected: value,
+        name: this.$route.params.workflowName,
       });
     },
   },
