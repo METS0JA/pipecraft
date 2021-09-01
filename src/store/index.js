@@ -1016,7 +1016,7 @@ export default new Vuex.Store({
         scriptName: "reorient_paired_end_reads.sh",
         imageName: "pipecraft/reorient:1",
         serviceName: "reorient",
-        selected: "always",
+        selected: false,
         showExtra: false,
         extraInputs: [],
         Inputs: [
@@ -1649,7 +1649,7 @@ export default new Vuex.Store({
         scriptName: "reorient_paired_end_reads.sh",
         imageName: "pipecraft/reorient:1",
         serviceName: "reorient",
-        selected: "always",
+        selected: false,
         showExtra: false,
         extraInputs: [],
         Inputs: [

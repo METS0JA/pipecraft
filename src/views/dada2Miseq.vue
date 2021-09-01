@@ -53,16 +53,19 @@
         >
       </v-overlay>
       <v-expansion-panel v-for="(service, index) in services" :key="index">
-        <v-expansion-panel-header style="justify-content:center">
-          {{ service.serviceName.toUpperCase() }}
+        <v-expansion-panel-header
+          style="justify-content:center;"
+          :class="[service.selected]"
+        >
           <v-checkbox
             v-if="service.selected != 'always'"
             hide-details="true"
             @change="check_one($event, index)"
             @click.stop
             v-model="service.selected"
-            style="max-width:34px; padding-left:10px; padding-top:0; margin:0"
+            style="max-width:34px; padding-top:0; margin:0"
           ></v-checkbox>
+          {{ service.serviceName.toUpperCase() }}
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <v-row>
@@ -276,5 +279,8 @@ span {
 }
 .container {
   padding: 0;
+}
+.always {
+  padding-left: 58px;
 }
 </style>
