@@ -118,6 +118,7 @@ export default {
               dataFormat: result.value[2],
               fileFormat: result.value[1].replace("_", "."),
             });
+            this.$store.commit("toggle_PE_SE_scripts", result.value[2]);
             dialog
               .showOpenDialog({
                 title: "Select the folder containing your sequnece files",

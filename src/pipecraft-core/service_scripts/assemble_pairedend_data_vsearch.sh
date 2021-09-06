@@ -17,7 +17,7 @@
 ###############################
 ###############################
 #These variables are for testing (DELETE when implementing to PipeCraft)
-extension=$"fq"
+extension=$"fastq"
 #mandatory options
 fastq_minoverlen=$"--fastq_minovlen 10"
 fastq_minmergelen=$"--fastq_minmergelen 32"
@@ -40,7 +40,7 @@ start=$(date +%s)
 source /scripts/framework.functions.sh
 
 #output dir
-output_dir=$"assembled_out"
+output_dir=$"/input/assembled_out"
 ### Check if files with specified extension exist in the dir
 first_file_check
 ### Prepare working env and check paired-end data
@@ -136,7 +136,7 @@ runtime=$((end-start))
 printf "Total time: $runtime sec.\n\n"
 
 #variables for all services
-echo "workingDir=/$output_dir"
+echo "workingDir=$output_dir"
 echo "fileFormat=$newextension"
 echo "dataFormat=$dataFormat"
 echo "readType=single-end"

@@ -23,7 +23,7 @@
 ###############################
 ###############################
 #These variables are for testing (DELETE when implementing to PipeCraft)
-extension=$"fq"
+extension=$"fastq"
 #mandatory options
 id=$"--id 0.97"                    # float (0-1)
 minuniquesize=$"--minuniquesize 1" #pos int

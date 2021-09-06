@@ -24,54 +24,57 @@ export default new Vuex.Store({
         stepName: "demultiplex",
         services: [
           {
-            scriptName: "demultiplex.sh",
-            imageName: "mothur:1.43",
+            scriptName: "demux_paired_end_data.sh",
+            imageName: "pipecraft/demux:0.1",
             serviceName: "demultiplex",
             selected: false,
             showExtra: false,
             extraInputs: [],
             Inputs: [
               {
-                name: "add a barcodes file",
-                btnName: "select file",
-                value: "No file selected",
+                name: "barcodes_file",
+                value: "undefined",
+                btnName: "select fast(a/q)",
                 tooltip:
-                  "Add a file that can contain the sequences of the forward and reverse primers and barcodes and their sample identfiers.",
+                  "a file in a fasta format where the headers are sample ids and sequences are barcodes for samples",
                 type: "file",
               },
               {
-                name: "bdiffs",
+                name: "max_error_rate",
                 value: 1,
-                tooltip:
-                  "Maximum number of differences to the barcode sequence.",
+                tooltip: "number of allowed mismatches in the index sequence",
                 type: "numeric",
               },
               {
-                name: "pdiffs",
-                value: 2,
+                name: "overlap",
+                value: 12,
                 tooltip:
-                  "Maximum number of differences to the primer sequence.",
+                  "number of overlap bases with the index. Recommended overlap is the max length of the index for confident sequence assignments to samples in the indexes file.",
                 type: "numeric",
               },
               {
-                name: "tdiffs",
+                name: "cores",
                 value: 2,
-                tooltip:
-                  "Maximum total number of differences to the barcode and primer.",
+                tooltip: "number of cores to use",
                 type: "numeric",
               },
               {
-                name: "min_unique_size",
-                value: 2,
-                tooltip:
-                  "Discard sequences with an abundance value smaller than set value",
+                name: "min_seq_length",
+                value: 10,
+                tooltip: "minimum length of the output sequence",
                 type: "numeric",
+              },
+              {
+                name: "no_indels",
+                value: true,
+                tooltip: "do not allow insertions or deletions",
+                type: "bool",
               },
             ],
           },
           {
-            scriptName: "",
-            imageName: "",
+            scriptName: "exampleScript.sh",
+            imageName: "exmaple:image",
             serviceName: "example inputs",
             selected: false,
             showExtra: false,
@@ -156,10 +159,18 @@ export default new Vuex.Store({
               {
                 name: "mismatches",
                 value: 2,
-                tooltip: "???????????",
+                tooltip:
+                  "allowed mismatches in primer search. By default, 2 mismatches are allowed per primer.",
                 type: "numeric",
               },
-
+              {
+                name: "paired-end_tags",
+                value: ["R1", "R2"],
+                tooltip: "Define a tag for fwd and rev reads",
+                type: "chip",
+                iupac: false,
+                rules: [(v) => v.length <= 2 || "TOO MANY TAGS"],
+              },
               {
                 name: "forward_primers",
                 value: [],
@@ -185,64 +196,12 @@ export default new Vuex.Store({
         services: [
           {
             scriptName: "cut_primers_paired_end_reads.sh",
-            imageName: "pipecraft/cutadapt:2.10",
+            imageName: "pipecraft/cutadapt:3.10",
             serviceName: "cutadapt",
             selected: false,
             showExtra: false,
             extraInputs: [],
             Inputs: [
-              {
-                name: "mismatches",
-                value: 1,
-                max: 99,
-                min: 0,
-                step: 1,
-                tooltip:
-                  "Allowed error rate in primer search. By default, error rate is 0.1, which means that in e.g. 1 error is allowd in a 10 bp primer (10% error rate).",
-                type: "slide",
-              },
-              {
-                name: "min_seq_length",
-                value: 10,
-                tooltip: "minimum length of the output sequence",
-                type: "numeric",
-              },
-              {
-                name: "cores",
-                value: 1,
-                tooltip:
-                  "number of cores to use. For paired-end dta in fasta format, set to 1 [default]. For fastq formats you may set the value to 0 to use all cores.",
-                type: "numeric",
-              },
-              {
-                name: "revcomp",
-                value: true,
-                tooltip:
-                  "search also revere complementary matches for barcodes",
-                type: "bool",
-              },
-              {
-                name: "no_indels",
-                value: false,
-                tooltip:
-                  "do not allow insertions or deletions is primer search. Mismatches are the only type of errprs accounted in the error rate parameter. ",
-                type: "bool",
-              },
-              {
-                name: "discard_untrimmed",
-                value: true,
-                tooltip:
-                  "Discard sequences where specified primers were not found.",
-                type: "bool",
-              },
-              {
-                name: "seqs_to_keep",
-                items: ["keep_all", "keep_only_linked"],
-                value: "keep_all",
-                tooltip:
-                  "Keep seqs with primers found in both ends(linked), or keeps seqs with primer found atlest in one end(all)",
-                type: "select",
-              },
               {
                 name: "forward_primers",
                 value: [],
@@ -258,6 +217,62 @@ export default new Vuex.Store({
                 type: "chip",
                 iupac: true,
                 rules: [(v) => v.length <= 13 || "TOO MANY PRIMERS"],
+              },
+              {
+                name: "mismatches",
+                value: 2,
+                tooltip:
+                  "allowed mismatches in primer search. By default, 2 mismatches are allowed per primer.",
+                type: "numeric",
+              },
+              {
+                name: "min_overlap",
+                value: 15,
+                tooltip:
+                  "the number of minimum overlap bases with the primer sequence.",
+                type: "numeric",
+              },
+              {
+                name: "seqs_to_keep",
+                items: ["keep_all", "keep_only_linked"],
+                value: "keep_all",
+                tooltip:
+                  "Keep seqs with primers found in both ends(linked), or keeps seqs with primer found atlest in one end(all)",
+                type: "select",
+              },
+              {
+                name: "cores",
+                value: 1,
+                tooltip:
+                  "number of cores to use. For paired-end dta in fasta format, set to 1 [default]. For fastq formats you may set the value to 0 to use all cores.",
+                type: "numeric",
+              },
+              {
+                name: "min_seq_length",
+                value: 32,
+                tooltip: "minimum length of the output sequence.",
+                type: "numeric",
+              },
+              {
+                name: "overlap",
+                value: 16,
+                tooltip:
+                  "number of overlap bases with the primer sequence. Partial matches are allowed, but short matches may occur by chance, leading to erroneously clipped bases. Specifying higher overlap than the length of primer sequnce will still clip the primer (e.g. primer length is 22 bp, but overlap is specified as 25 - this does not affect the identification and clipping of the primer as long as the match is in the specified error range).",
+                type: "numeric",
+              },
+              {
+                name: "no_indels",
+                value: true,
+                tooltip:
+                  "do not allow insertions or deletions is primer search. Mismatches are the only type of errprs accounted in the error rate parameter. ",
+                type: "bool",
+              },
+              {
+                name: "discard_untrimmed",
+                value: true,
+                tooltip:
+                  "Discard sequences where specified primers were not found.",
+                type: "bool",
               },
             ],
           },
@@ -505,7 +520,7 @@ export default new Vuex.Store({
             ],
           },
           {
-            scriptName: "trimmomatic-quality.sh",
+            scriptName: "quality_filtering_paired_end_trimmomatic.sh",
             imageName: "pipecraft/trimmomatic:0.39",
             serviceName: "trimmomatic",
             selected: false,
@@ -513,45 +528,52 @@ export default new Vuex.Store({
             extraInputs: [],
             Inputs: [
               {
-                name: "windowSize",
-                value: 1,
+                name: "window size",
+                value: 5,
                 tooltip:
-                  "Perform a sliding window trimming, cutting once the average quality within the window falls below a treshold",
+                  "the number of bases to average base qualities. Starts scanning at the 5'-end of a sequence and trimms the read once the average required quality (required_qual) within the window size falls below the threshold.",
                 type: "numeric",
               },
               {
-                name: "requiredQuality",
+                name: "required quality",
+                value: 27,
+                tooltip:
+                  "the average quality required for selected window size",
+                type: "numeric",
+              },
+              {
+                name: "min length",
+                value: 32,
+                tooltip: "minimum length of the filtered sequence",
+                type: "numeric",
+              },
+              {
+                name: "leading qual threshold",
+                value: null,
+                tooltip:
+                  "quality score threshold to remove low quality bases from the beginning of the read. As long as a base has a value below this threshold the base is removed and the next base will be investigated.",
+                type: "numeric",
+              },
+              {
+                name: "trailing qual threshold",
+                value: null,
+                tooltip:
+                  "quality score threshold to remove low quality bases from the end of the read. As long as a base has a value below this threshold the base is removed and the next base will be investigated.",
+                type: "numeric",
+              },
+              {
+                name: "cores",
+                value: 4,
+                tooltip: "number of cores to use",
+                type: "numeric",
+              },
+              {
+                name: "phred",
+                items: [33, 64],
                 value: 0,
                 tooltip:
-                  "Perform a sliding window trimming, cutting once the average quality within the window falls below a treshold",
-                type: "numeric",
-              },
-              {
-                name: "LEADING",
-                value: null,
-                tooltip:
-                  "Cut bases off the start of a read, if below a threshold quality",
-                type: "numeric",
-              },
-              {
-                name: "TRAILING",
-                value: null,
-                tooltip:
-                  "Cut bases off the end of a read, if below a threshold quality",
-                type: "numeric",
-              },
-              {
-                name: "MINLEN",
-                value: null,
-                tooltip: "Drop the read if it is below a specified length",
-                type: "numeric",
-              },
-              {
-                name: "AVGQAUL",
-                value: null,
-                tooltip:
-                  "Drop the read if the average quality is below the specified level",
-                type: "numeric",
+                  "phred quality scored encoding. Default is phred33. Use phred64 if working with data from older Illumina (Solexa) machines. ",
+                type: "select",
               },
             ],
           },
@@ -692,38 +714,72 @@ export default new Vuex.Store({
             ],
           },
           {
-            scriptName: "vsearch-assemble.sh",
-            imageName: "pipecraft/vsearch:2.15.0",
+            scriptName: "assemble_pairedend_data_vsearch.sh",
+            imageName: "pipecraft/mothur:1.43",
             serviceName: "vsearch",
             selected: false,
             showExtra: false,
             extraInputs: [],
             Inputs: [
               {
-                name: "--fastq_minmergelen",
-                value: 1,
-                tooltip: "Specify the minimum length of the merged sequence",
+                name: "min overlength",
+                value: 10,
+                tooltip: "minimum overlap between the merged reads",
                 type: "numeric",
               },
               {
-                name: "--fastq_maxdiffs",
-                value: 1,
-                tooltip:
-                  "Specify the maximum number of non-matching nucleotides allowed in the overlap region.",
+                name: "min lenght",
+                value: 32,
+                tooltip: "minimum length of the merged sequence",
                 type: "numeric",
               },
               {
-                name: "--fastq_minovlen",
-                value: 1,
-                tooltip: "Specify the minimum overlap between the mergedreads.",
-                type: "numeric",
-              },
-              {
-                name: "allowmergestagger",
+                name: "allow merge stagger",
                 value: true,
                 tooltip:
-                  "Allow to merge staggered read pairs.(--fastq_allowmergestagger) Staggered pairsare pairs where the 3’ end of the reverse read has an overhang to the left of the 5’ end of the forward read",
+                  "allow to merge staggered read pairs. Staggered pairs are pairs where the 3’ end of the reverse read has an overhang to the left of the 5’ end of the forward read. This situation can occur when a very short fragment is sequenced.",
                 type: "bool",
+              },
+              {
+                name: "include only R1",
+                value: false,
+                tooltip:
+                  "include unassembled R1 reads to the set of assembled reads per sample. This may be relevant when working with e.g. ITS2 sequences, because the ITS2 region in some taxa is too long for assembly, therefore discarded completely after assembly process. Thus, including also unassembled R1 reads, partial ITS2 sequences for these taxa will be represented in the final output. If this option = TRUE, then other specified options (lenght, max error rate etc.) have not been applied to R1 reads in the 'assembled' file. Thus, additional quality filtering (if this was done before assembling) should be run on the 'assembled' data.",
+                type: "bool",
+              },
+              {
+                name: "max diffs",
+                value: 20,
+                tooltip:
+                  "the maximum number of non-matching nucleotides allowed in the overlap region",
+                type: "numeric",
+              },
+              {
+                name: "max Ns",
+                value: 0,
+                tooltip:
+                  "discard sequences with more than the specified number of N’s",
+                type: "numeric",
+              },
+              {
+                name: "max len",
+                value: 600,
+                tooltip: "maximum length of the merged sequence",
+                type: "numeric",
+              },
+              {
+                name: "keep disjointed",
+                value: false,
+                tooltip:
+                  "output reads that were not merged into separate FASTQ files",
+                type: "bool",
+              },
+              {
+                name: "fastq qmax",
+                value: 41,
+                tooltip:
+                  "maximum quality score accepted when reading FASTQ files. The default is 41, which is usual for recent Sanger/Illumina 1.8+ files.",
+                type: "numeric",
               },
             ],
           },
@@ -1054,8 +1110,8 @@ export default new Vuex.Store({
         ],
       },
       {
-        scriptName: "cut.sh",
-        imageName: "pipecraft/cutadapt",
+        scriptName: "cut_primers_paired_end_reads.sh",
+        imageName: "pipecraft/cutadapt:3.40",
         serviceName: "remove primers",
         selected: false,
         showExtra: false,
@@ -1068,7 +1124,7 @@ export default new Vuex.Store({
             type: "numeric",
           },
           {
-            name: "min seq lenght",
+            name: "min_seq_length",
             value: 32,
             tooltip: "minimum length of the output sequence.",
             type: "numeric",
@@ -1081,14 +1137,14 @@ export default new Vuex.Store({
             type: "numeric",
           },
           {
-            name: "no indels",
+            name: "no_indels",
             value: true,
             tooltip:
               "do not allow insertions or deletions is primer search. Mismatches are the only type of errprs accounted in the error rate parameter. ",
             type: "bool",
           },
           {
-            name: "discard untrimmed",
+            name: "discard_untrimmed",
             value: true,
             tooltip:
               "Discard sequences where specified primers were not found.",
@@ -1120,7 +1176,7 @@ export default new Vuex.Store({
             type: "numeric",
           },
           {
-            name: "min overlap",
+            name: "min_overlap",
             value: 15,
             tooltip:
               "the number of minimum overlap bases with the primer sequence.",
@@ -1137,8 +1193,8 @@ export default new Vuex.Store({
         ],
       },
       {
-        scriptName: "mergepaired.sh",
-        imageName: "pipecraft/vsearch",
+        scriptName: "assemble_pairedend_data_vsearch.sh",
+        imageName: "pipecraft/mothur:1.43",
         serviceName: "merge reads",
         selected: "always",
         showExtra: false,
@@ -1208,7 +1264,7 @@ export default new Vuex.Store({
         ],
       },
       {
-        scriptName: "reorient_paired_end_reads.sh",
+        scriptName: "quality_filtering_paired_end_trimmomatic.sh",
         imageName: "pipecraft/reorient:1",
         serviceName: "quality filter",
         selected: "always",
@@ -1692,21 +1748,7 @@ export default new Vuex.Store({
         serviceName: "remove primers",
         selected: false,
         showExtra: false,
-        extraInputs: [],
-        Inputs: [
-          {
-            name: "error_rate",
-            value: 0.15,
-            tooltip:
-              "Allowed error rate in primer search. By default, error rate is 0.1, which means that in e.g. 1 error is allowd in a 10 bp primer (10% error rate).",
-            type: "numeric",
-          },
-          {
-            name: "min_seq_length",
-            value: 10,
-            tooltip: "minimum length of the output sequence",
-            type: "numeric",
-          },
+        extraInputs: [
           {
             name: "cores",
             value: 1,
@@ -1715,14 +1757,21 @@ export default new Vuex.Store({
             type: "numeric",
           },
           {
-            name: "revcomp",
-            value: true,
-            tooltip: "search also revere complementary matches for barcodes",
-            type: "bool",
+            name: "min_seq_length",
+            value: 32,
+            tooltip: "minimum length of the output sequence.",
+            type: "numeric",
+          },
+          {
+            name: "overlap",
+            value: 16,
+            tooltip:
+              "number of overlap bases with the primer sequence. Partial matches are allowed, but short matches may occur by chance, leading to erroneously clipped bases. Specifying higher overlap than the length of primer sequnce will still clip the primer (e.g. primer length is 22 bp, but overlap is specified as 25 - this does not affect the identification and clipping of the primer as long as the match is in the specified error range).",
+            type: "numeric",
           },
           {
             name: "no_indels",
-            value: false,
+            value: true,
             tooltip:
               "do not allow insertions or deletions is primer search. Mismatches are the only type of errprs accounted in the error rate parameter. ",
             type: "bool",
@@ -1734,14 +1783,8 @@ export default new Vuex.Store({
               "Discard sequences where specified primers were not found.",
             type: "bool",
           },
-          {
-            name: "seqs_to_keep",
-            items: ["keep_all", "keep_only_linked"],
-            value: "keep_all",
-            tooltip:
-              "Keep seqs with primers found in both ends(linked), or keeps seqs with primer found atlest in one end(all)",
-            type: "select",
-          },
+        ],
+        Inputs: [
           {
             name: "forward_primers",
             value: [],
@@ -1757,6 +1800,28 @@ export default new Vuex.Store({
             type: "chip",
             iupac: true,
             rules: [(v) => v.length <= 13 || "TOO MANY PRIMERS"],
+          },
+          {
+            name: "mismatches",
+            value: 2,
+            tooltip:
+              "allowed mismatches in primer search. By default, 2 mismatches are allowed per primer.",
+            type: "numeric",
+          },
+          {
+            name: "min_overlap",
+            value: 15,
+            tooltip:
+              "the number of minimum overlap bases with the primer sequence.",
+            type: "numeric",
+          },
+          {
+            name: "seqs_to_keep",
+            items: ["keep_all", "keep_only_linked"],
+            value: "keep_all",
+            tooltip:
+              "Keep seqs with primers found in both ends(linked), or keeps seqs with primer found atlest in one end(all)",
+            type: "select",
           },
         ],
       },
@@ -1910,6 +1975,39 @@ export default new Vuex.Store({
   },
   getters: {},
   mutations: {
+    toggle_PE_SE_scripts(state, payload) {
+      for (const [key] of Object.entries(state.customWorkflowInfo)) {
+        for (let i = 0; i < state[key].length; i++) {
+          if (payload == "paired_end") {
+            state[key][i].scriptName = state[key][i].scriptName.replace(
+              "single_end",
+              "paired_end",
+            );
+          }
+          if (payload == "single_end") {
+            state[key][i].scriptName = state[key][i].scriptName.replace(
+              "paired_end",
+              "single_end",
+            );
+          }
+        }
+      }
+      for (let i = 0; i < state.steps.length; i++) {
+        for (let j = 0; j < state.steps[i].services.length; j++) {
+          if (payload == "paired_end") {
+            state.steps[i].services[j].scriptName = state.steps[i].services[
+              j
+            ].scriptName.replace("single_end", "paired_end");
+          }
+          if (payload == "single_end") {
+            state.steps[i].services[j].scriptName = state.steps[i].services[
+              j
+            ].scriptName.replace("paired_end", "single_end");
+          }
+          console.log(state.steps[i].services[j].scriptName);
+        }
+      }
+    },
     loadWorkflow(state, payload) {
       state.selectedSteps = payload;
     },

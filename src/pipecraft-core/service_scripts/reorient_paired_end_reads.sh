@@ -21,10 +21,11 @@
 
 ###############################
 #These variables are for testing (DELETE when implementing to PipeCraft)
-extension=$"fq.gz"
-mismatches=$"2"
-fwd_tempprimer=$"ATGCGTTGGAGAGARCGTTTC"
-rev_tempprimer=$"GATCACCTTCTAATTTACCWACAACTG"
+
+extension=$fileFormat
+mismatches=$mismatches
+fwd_tempprimer=$forward_primers
+rev_tempprimer=$reverse_primers
 ###############################
 ###############################
 
@@ -32,11 +33,12 @@ rev_tempprimer=$"GATCACCTTCTAATTTACCWACAACTG"
 ### Start of the workflow ###
 #############################
 start=$(date +%s)
+ls
 # Source for functions
 source /scripts/framework.functions.sh
 
 #output dir
-output_dir=$"reoriented_out"
+output_dir=$"/input/reoriented_out"
 ### Check if files with specified extension exist in the dir
 first_file_check
 ### Prepare working env and check paired-end data
@@ -183,7 +185,7 @@ runtime=$((end-start))
 printf "Total time: $runtime sec.\n\n"
 
 #variables for all services
-echo "workingDir=/$output_dir"
+echo "workingDir=$output_dir"
 echo "fileFormat=$newextension"
 echo "dataFormat=demultiplexed"
 echo "readType=paired-end"

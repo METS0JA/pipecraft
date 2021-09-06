@@ -26,7 +26,6 @@
 extension=$fileFormat
 indexes_file=$"oligos_paired.txt"
 error_rate="-e ${max_error_rate}"
-ls
 if [ "$no_indels" = true ] ; then
     echo 'Be careful not to fall off!'
     no_indels=$"--no-indels"
@@ -37,7 +36,7 @@ fi
 minlen=$"--minimum-length ${min_seq_length}"
 cores=$"--cores ${cores}"
 overlap=$"--overlap ${overlap}"
-printf '%s\n%s' "$overlap"
+printf '%s\n%s' "$overlap $extension"
 printf '%s\n%s' "$extension"
 printf '%s\n%s' "$indexes_file"
 printf '%s\n%s' "$error_rate"
@@ -58,7 +57,7 @@ source /scripts/framework.functions.sh
 
 
 #output dir
-output_dir=$"demultiplex_out"
+output_dir=$"/input/demultiplex_out"
 ### Check if files with specified extension exist in the dir
 first_file_check
 ### Prepare working env and check paired-end data
@@ -216,7 +215,7 @@ runtime=$((end-start))
 printf "Total time: $runtime sec.\n\n"
 
 #variables for all services
-echo "workingDir=/$output_dir"
+echo "workingDir=$output_dir"
 echo "fileFormat=$newextension"
 echo "dataFormat=demultiplexed"
 echo "readType=paired-end"
