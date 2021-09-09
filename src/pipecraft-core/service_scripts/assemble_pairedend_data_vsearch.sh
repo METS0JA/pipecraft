@@ -17,18 +17,18 @@
 ###############################
 ###############################
 #These variables are for testing (DELETE when implementing to PipeCraft)
-extension=$"fastq"
+extension=$fileFormat
 #mandatory options
-fastq_minoverlen=$"--fastq_minovlen 10"
-fastq_minmergelen=$"--fastq_minmergelen 32"
-fastq_allowmergestagger=$"TRUE"
-include_R1="FALSE"
+fastq_minoverlen=$"--fastq_minovlen ${min_overlap}"
+fastq_minmergelen=$"--fastq_minmergelen ${min_lenght}"
+fastq_allowmergestagger=$allow_merge_stagger
+include_R1=$include_only_R1
 #additional options
-fastq_maxdiffs=$"--fastq_maxdiffs 20"
-fastq_maxns=$"--fastq_maxns 0"
-fastq_maxmergelen="--fastq_maxmergelen 600"
-fastq_qmax="41" #this applies to --fastq_qmax and --fastq_qmaxout option in vsearch --fastq_mergepairs
-notmerged_files="FALSE"
+fastq_maxdiffs=$"--fastq_maxdiffs ${max_diffs}"
+fastq_maxns=$"--fastq_maxns ${max_Ns}"
+fastq_maxmergelen="--fastq_maxmergelen ${max_len}"
+fastq_qmax=$fastq_qmax #this applies to --fastq_qmax and --fastq_qmaxout option in vsearch --fastq_mergepairs
+notmerged_files=$keep_disjointed
 ###############################
 ###############################
 
@@ -139,4 +139,4 @@ printf "Total time: $runtime sec.\n\n"
 echo "workingDir=$output_dir"
 echo "fileFormat=$newextension"
 echo "dataFormat=$dataFormat"
-echo "readType=single-end"
+echo "readType=single_end"

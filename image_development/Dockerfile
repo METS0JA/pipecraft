@@ -1,19 +1,4 @@
 FROM ubuntu:20.10
-# ARG DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update -y
-RUN apt-get install bc -y
-RUN apt-get install build-essential -y
-RUN apt-get install python3-dev -y
-RUN apt-get install curl -y
-RUN apt-get install pigz -y
-RUN apt-get install wget -y
-RUN wget https://github.com/shenwei356/seqkit/releases/download/v0.15.0/seqkit_linux_amd64.tar.gz -O /tmp/seqkit.tar.gz && \
- 	tar zxvf /tmp/seqkit.tar.gz -C /usr/bin/ && rm /tmp/seqkit.tar.gz
-RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-RUN python3 get-pip.py
-RUN python3 -m pip install cutadapt
-RUN wget https://github.com/shenwei356/seqkit/releases/download/v0.15.0/seqkit_linux_amd64.tar.gz -O /tmp/seqkit.tar.gz && \
-	tar zxvf /tmp/seqkit.tar.gz -C /usr/bin/ && rm /tmp/seqkit.tar.gz
-RUN apt-get remove wget -y curl -y
-
+RUN apt-get install zlib1g bzip2 pigz -y
+RUN apt-get install vsearch -y

@@ -80,7 +80,7 @@ export default {
           {
             title: "Sequencing data format",
             inputOptions: {
-              demulitplexed: "demulitplexed",
+              demultiplexed: "demultiplexed",
               multiplexed: "multiplexed",
             },
           },

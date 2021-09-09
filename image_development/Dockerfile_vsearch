@@ -1,0 +1,4 @@
+FROM ubuntu:20.10
+RUN apt-get update -y
+RUN apt-get install zlib1g bzip2 pigz -y
+RUN apt-get install vsearch -y

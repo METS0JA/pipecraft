@@ -128,6 +128,10 @@ export default {
                   fileFormat: this.getVariableFromLog(result.log, "fileFormat"),
                   readType: this.getVariableFromLog(result.log, "readType"),
                 };
+                this.$store.commit(
+                  "toggle_PE_SE_scripts",
+                  newDataInfo.readType,
+                );
                 this.$store.commit("addInputInfo", newDataInfo);
                 this.$store.commit("addWorkingDir", newWorkingDir);
               } else {

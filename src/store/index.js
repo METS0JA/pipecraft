@@ -528,34 +528,34 @@ export default new Vuex.Store({
             extraInputs: [],
             Inputs: [
               {
-                name: "window size",
+                name: "window_size",
                 value: 5,
                 tooltip:
                   "the number of bases to average base qualities. Starts scanning at the 5'-end of a sequence and trimms the read once the average required quality (required_qual) within the window size falls below the threshold.",
                 type: "numeric",
               },
               {
-                name: "required quality",
+                name: "required_quality",
                 value: 27,
                 tooltip:
                   "the average quality required for selected window size",
                 type: "numeric",
               },
               {
-                name: "min length",
+                name: "min_length",
                 value: 32,
                 tooltip: "minimum length of the filtered sequence",
                 type: "numeric",
               },
               {
-                name: "leading qual threshold",
+                name: "leading_qual_threshold",
                 value: null,
                 tooltip:
                   "quality score threshold to remove low quality bases from the beginning of the read. As long as a base has a value below this threshold the base is removed and the next base will be investigated.",
                 type: "numeric",
               },
               {
-                name: "trailing qual threshold",
+                name: "trailing_qual_threshold",
                 value: null,
                 tooltip:
                   "quality score threshold to remove low quality bases from the end of the read. As long as a base has a value below this threshold the base is removed and the next base will be investigated.",
@@ -1070,7 +1070,7 @@ export default new Vuex.Store({
       },
       {
         scriptName: "reorient_paired_end_reads.sh",
-        imageName: "pipecraft/reorient:1",
+        imageName: "pipecraft/reorient:2",
         serviceName: "reorient",
         selected: false,
         showExtra: false,
@@ -1111,7 +1111,7 @@ export default new Vuex.Store({
       },
       {
         scriptName: "cut_primers_paired_end_reads.sh",
-        imageName: "pipecraft/cutadapt:3.40",
+        imageName: "pipecraft/reorient:2",
         serviceName: "remove primers",
         selected: false,
         showExtra: false,
@@ -1194,40 +1194,40 @@ export default new Vuex.Store({
       },
       {
         scriptName: "assemble_pairedend_data_vsearch.sh",
-        imageName: "pipecraft/mothur:1.43",
+        imageName: "pipecraft/vsearch:2.18",
         serviceName: "merge reads",
         selected: "always",
         showExtra: false,
         extraInputs: [
           {
-            name: "max diffs",
+            name: "max_diffs",
             value: 20,
             tooltip:
               "the maximum number of non-matching nucleotides allowed in the overlap region",
             type: "numeric",
           },
           {
-            name: "max Ns",
+            name: "max_Ns",
             value: 0,
             tooltip:
               "discard sequences with more than the specified number of N’s",
             type: "numeric",
           },
           {
-            name: "max len",
+            name: "max_len",
             value: 600,
             tooltip: "maximum length of the merged sequence",
             type: "numeric",
           },
           {
-            name: "keep disjointed",
+            name: "keep_disjointed",
             value: false,
             tooltip:
               "output reads that were not merged into separate FASTQ files",
             type: "bool",
           },
           {
-            name: "fastq qmax",
+            name: "fastq_qmax",
             value: 41,
             tooltip:
               "maximum quality score accepted when reading FASTQ files. The default is 41, which is usual for recent Sanger/Illumina 1.8+ files.",
@@ -1236,26 +1236,26 @@ export default new Vuex.Store({
         ],
         Inputs: [
           {
-            name: "min overlength",
+            name: "min_overlap",
             value: 10,
             tooltip: "minimum overlap between the merged reads",
             type: "numeric",
           },
           {
-            name: "min lenght",
+            name: "min_lenght",
             value: 32,
             tooltip: "minimum length of the merged sequence",
             type: "numeric",
           },
           {
-            name: "allow merge stagger",
+            name: "allow_merge_stagger",
             value: true,
             tooltip:
               "allow to merge staggered read pairs. Staggered pairs are pairs where the 3’ end of the reverse read has an overhang to the left of the 5’ end of the forward read. This situation can occur when a very short fragment is sequenced.",
             type: "bool",
           },
           {
-            name: "include only R1",
+            name: "include_only_R1",
             value: false,
             tooltip:
               "include unassembled R1 reads to the set of assembled reads per sample. This may be relevant when working with e.g. ITS2 sequences, because the ITS2 region in some taxa is too long for assembly, therefore discarded completely after assembly process. Thus, including also unassembled R1 reads, partial ITS2 sequences for these taxa will be represented in the final output. If this option = TRUE, then other specified options (lenght, max error rate etc.) have not been applied to R1 reads in the 'assembled' file. Thus, additional quality filtering (if this was done before assembling) should be run on the 'assembled' data.",
@@ -1265,7 +1265,7 @@ export default new Vuex.Store({
       },
       {
         scriptName: "quality_filtering_paired_end_trimmomatic.sh",
-        imageName: "pipecraft/reorient:1",
+        imageName: "pipecraft/trimmomatic:0.39",
         serviceName: "quality filter",
         selected: "always",
         showExtra: false,
@@ -1322,7 +1322,7 @@ export default new Vuex.Store({
         ],
       },
       {
-        scriptName: "reorient_paired_end_reads.sh",
+        scriptName: "chimera_filtering_vsearch.sh",
         imageName: "pipecraft/reorient:1",
         serviceName: "chimera filter",
         selected: "always",
@@ -1335,14 +1335,14 @@ export default new Vuex.Store({
             type: "numeric",
           },
           {
-            name: "abundance skew",
+            name: "abundance_skew",
             value: 2,
             tooltip:
               "the abundance skew is used to distinguish in a threeway alignment which sequence is the chimera and which are the parents. The assumption is that chimeras appear later in the PCR amplification process and are therefore less abundant than their parents. The default value is 2.0, which means that the parents should be at least 2 times more abundant than their chimera. Any positive value equal or greater than 1.0 can be used.",
             type: "numeric",
           },
           {
-            name: "min-h",
+            name: "min_h",
             value: 0.28,
             tooltip:
               "minimum score (h). Increasing this value tends to reduce the number of false positives and to decrease sensitivity. Default value is 0.28, and values ranging from 0.0 to 1.0 included are accepted.",
@@ -1354,7 +1354,7 @@ export default new Vuex.Store({
         ],
         Inputs: [
           {
-            name: "pre-cluster",
+            name: "pre_cluster",
             value: 0.98,
             tooltip:
               "identity percentage when performing 'pre-clustering' with --cluster_size for denovo chimera filtering with --uchime_denovo",
@@ -1364,7 +1364,7 @@ export default new Vuex.Store({
             type: "slide",
           },
           {
-            name: "min unique size",
+            name: "min_unique_size",
             value: 1,
             tooltip:
               "minimum amount of a unique sequences in a fasta file. If value = 1, then no sequences are discarded after dereplication; if value = 2, then sequences, which are represented only once in a given file are discarded; and so on.",
@@ -2004,7 +2004,6 @@ export default new Vuex.Store({
               j
             ].scriptName.replace("paired_end", "single_end");
           }
-          console.log(state.steps[i].services[j].scriptName);
         }
       }
     },

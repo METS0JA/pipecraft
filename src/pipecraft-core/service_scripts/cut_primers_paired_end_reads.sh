@@ -26,7 +26,7 @@ extension=$fileFormat
 mismatches=$"-e ${mismatches}"
 min_length=$"--minimum-length ${min_seq_length}"
 overlap=$"--overlap ${min_overlap}"
-cores=$"--cores 0"
+cores=$"--cores ${cores}"
 no_indels=$no_indels
 discard_untrimmed=$discard_untrimmed
 seqs_to_keep=$seqs_to_keep #keep_all/keep_only_linked
@@ -234,4 +234,4 @@ printf "Total time: $runtime sec.\n\n"
 echo "workingDir=$output_dir"
 echo "fileFormat=$newextension"
 echo "dataFormat=$dataFormat"
-echo "readType=paired-end"
+echo "readType=paired_end"

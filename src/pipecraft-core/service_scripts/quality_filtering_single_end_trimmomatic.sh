@@ -21,16 +21,16 @@
 ###############################
 ###############################
 #These variables are for testing (DELETE when implementing to PipeCraft)
-extension=$"fastq"
+extension=$fileFormat
 #mandatory options
-window_size=$"5"
-required_qual=$"27"
-min_length=$"32"
+window_size=$window_size
+required_qual=$required_quality
+min_length=$min_length
 #additional options
-threads=$"4"
-phred="33"
-leading_qual_threshold=$"11" #or 'undefined', if selection is not active
-trailing_qual_threshold=$"11" #or 'undefined', if selection is not active
+threads=$cores
+phred=$phred
+leading_qual_threshold=$leading_qual_threshold #or 'undefined', if selection is not active
+trailing_qual_threshold=$trailing_qual_threshold #or 'undefined', if selection is not active
 ###############################
 ###############################
 
@@ -54,7 +54,7 @@ start=$(date +%s)
 source /scripts/framework.functions.sh
 
 #output dir
-output_dir=$"qualFiltered_out"
+output_dir=$"/input/qualFiltered_out"
 ### Check if files with specified extension exist in the dir
 first_file_check
 ### Prepare working env and check paired-end data
@@ -75,7 +75,7 @@ for file in *.$extension; do
     ###############################
     ### Start quality filtering ###
     ###############################
-    checkerror=$(trimmomatic SE \
+    checkerror=$(java -jar /Trimmomatic-0.39/trimmomatic-0.39.jar SE \
     $input.$newextension \
     $output_dir/$input.qualFilt.$newextension \
     -phred$phred \
@@ -119,7 +119,7 @@ runtime=$((end-start))
 printf "Total time: $runtime sec.\n\n"
 
 #variables for all services
-echo "workingDir=/$output_dir"
+echo "workingDir=$output_dir"
 echo "fileFormat=$newextension"
 echo "dataFormat=$dataFormat"
 echo "readType=single-end"

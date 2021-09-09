@@ -22,18 +22,17 @@
 ###############################
 ###############################
 #These variables are for testing (DELETE when implementing to PipeCraft)
-extension=$"fastq"
-mismatches=$"-e 2"
-min_length=$"--minimum-length 19"
-overlap=$"--overlap 15"
-cores=$"--cores 0"
-no_indels=$"TRUE"
-discard_untrimmed=$"TRUE" #TRUE/FALSE
-seqs_to_keep=$"keep_only_linked" #keep_all/keep_only_linked
+extension=$fileFormat
+mismatches=$"-e ${mismatches}"
+min_length=$"--minimum-length ${min_seq_length}"
+overlap=$"--overlap ${min_overlap}"
+cores=$"--cores ${cores}"
+no_indels=$no_indels
+discard_untrimmed=$discard_untrimmed
+seqs_to_keep=$seqs_to_keep
 
-fwd_tempprimer=$"ACCTGCTAGGCTAGATGC"
-rev_tempprimer=$"GGGATCCATCGATTTAAC"
-
+fwd_tempprimer=$forward_primers
+rev_tempprimer=$reverse_primers
 ###############################
 ###############################
 
@@ -45,7 +44,7 @@ start=$(date +%s)
 source /scripts/framework.functions.sh
 
 #output dir
-output_dir=$"primersCut_out"
+output_dir=$"/input/primersCut_out"
 ### Check if files with specified extension exist in the dir
 first_file_check
 ### Prepare working env and check single-end data

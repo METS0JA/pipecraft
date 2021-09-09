@@ -27,7 +27,6 @@ extension=$fileFormat
 indexes_file=$"oligos_paired.txt"
 error_rate="-e ${max_error_rate}"
 if [ "$no_indels" = true ] ; then
-    echo 'Be careful not to fall off!'
     no_indels=$"--no-indels"
 else
     no_indels=''
@@ -36,12 +35,6 @@ fi
 minlen=$"--minimum-length ${min_seq_length}"
 cores=$"--cores ${cores}"
 overlap=$"--overlap ${overlap}"
-printf '%s\n%s' "$overlap $extension"
-printf '%s\n%s' "$extension"
-printf '%s\n%s' "$indexes_file"
-printf '%s\n%s' "$error_rate"
-printf '%s\n%s' "$no_indels"
-printf '%s\n%s' "$minlen"
 
 
 
@@ -218,4 +211,4 @@ printf "Total time: $runtime sec.\n\n"
 echo "workingDir=$output_dir"
 echo "fileFormat=$newextension"
 echo "dataFormat=demultiplexed"
-echo "readType=paired-end"
+echo "readType=paired_end"

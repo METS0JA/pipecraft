@@ -23,14 +23,14 @@
 ###############################
 ###############################
 #These variables are for testing (DELETE when implementing to PipeCraft)
-extension=$"fastq"
+extension=$fileFormat
 #mandatory options
-id=$"--id 0.97"                    # float (0-1)
-minuniquesize=$"--minuniquesize 1" #pos int
+id=$"--id ${pre_cluster}"                    # float (0-1)
+minuniquesize=$"--minuniquesize ${min_unique_size}" #pos int
 #additional options
-cores=$"--threads 4"               # pos int
-abskew=$"--abskew 2"               # pos int
-minh=$"--minh 0.28"                # float (0-1)
+cores=$"--threads ${cores}"               # pos int
+abskew=$"--abskew ${abundance_skew}"               # pos int
+minh=$"--minh ${min_h}"                # float (0-1)
 
 #reference_based=$"undefined"
 denovo=$"TRUE"                #undefined or TRUE
