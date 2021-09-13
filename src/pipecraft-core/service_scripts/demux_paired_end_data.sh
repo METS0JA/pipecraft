@@ -23,8 +23,10 @@
 ###############################
 ###############################
 #These variables are for testing (DELETE when implementing to PipeCraft)
+regex='[^\\]*$'
+oligos_file = echo $barcodes_file | grep -oP "$regex" 
 extension=$fileFormat
-indexes_file=$"oligos_paired.txt"
+indexes_file="/extraFiles/${oligos_file}"
 error_rate="-e ${max_error_rate}"
 if [ "$no_indels" = true ] ; then
     no_indels=$"--no-indels"

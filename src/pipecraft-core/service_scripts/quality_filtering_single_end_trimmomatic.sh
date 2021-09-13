@@ -38,12 +38,12 @@ trailing_qual_threshold=$trailing_qual_threshold #or 'undefined', if selection i
 ### Start of the workflow ###
 #############################
 #additional options, if selection != undefined
-if [[ $leading_qual_threshold == "undefined" ]]; then
+if [[ $leading_qual_threshold == null ]]; then
     :
 else
     LEADING=$"LEADING:$leading_qual_threshold"
 fi
-if [[ $trailing_qual_threshold == "undefined" ]]; then
+if [[ $trailing_qual_threshold == null ]]; then
     :
 else
     TRAILING=$"TRAILING:$trailing_qual_threshold"

@@ -570,7 +570,7 @@ export default new Vuex.Store({
               {
                 name: "phred",
                 items: [33, 64],
-                value: 0,
+                value: 33,
                 tooltip:
                   "phred quality scored encoding. Default is phred33. Use phred64 if working with data from older Illumina (Solexa) machines. ",
                 type: "select",
@@ -1111,7 +1111,7 @@ export default new Vuex.Store({
       },
       {
         scriptName: "cut_primers_paired_end_reads.sh",
-        imageName: "pipecraft/reorient:2",
+        imageName: "pipecraft/demux:0.1",
         serviceName: "remove primers",
         selected: false,
         showExtra: false,
@@ -1271,14 +1271,14 @@ export default new Vuex.Store({
         showExtra: false,
         extraInputs: [
           {
-            name: "leading qual threshold",
+            name: "leading_qual_threshold",
             value: null,
             tooltip:
               "quality score threshold to remove low quality bases from the beginning of the read. As long as a base has a value below this threshold the base is removed and the next base will be investigated.",
             type: "numeric",
           },
           {
-            name: "trailing qual threshold",
+            name: "trailing_qual_threshold",
             value: null,
             tooltip:
               "quality score threshold to remove low quality bases from the end of the read. As long as a base has a value below this threshold the base is removed and the next base will be investigated.",
@@ -1293,7 +1293,7 @@ export default new Vuex.Store({
           {
             name: "phred",
             items: [33, 64],
-            value: 0,
+            value: 33,
             tooltip:
               "phred quality scored encoding. Default is phred33. Use phred64 if working with data from older Illumina (Solexa) machines. ",
             type: "select",
@@ -1301,20 +1301,20 @@ export default new Vuex.Store({
         ],
         Inputs: [
           {
-            name: "window size",
+            name: "window_size",
             value: 5,
             tooltip:
               "the number of bases to average base qualities. Starts scanning at the 5'-end of a sequence and trimms the read once the average required quality (required_qual) within the window size falls below the threshold.",
             type: "numeric",
           },
           {
-            name: "required quality",
+            name: "required_quality",
             value: 27,
             tooltip: "the average quality required for selected window size",
             type: "numeric",
           },
           {
-            name: "min length",
+            name: "min_length",
             value: 32,
             tooltip: "minimum length of the filtered sequence",
             type: "numeric",
@@ -1323,7 +1323,7 @@ export default new Vuex.Store({
       },
       {
         scriptName: "chimera_filtering_vsearch.sh",
-        imageName: "pipecraft/reorient:1",
+        imageName: "pipecraft/vsearch",
         serviceName: "chimera filter",
         selected: "always",
         showExtra: false,
@@ -1744,7 +1744,7 @@ export default new Vuex.Store({
       },
       {
         scriptName: "cut_primers_paired_end_reads.sh",
-        imageName: "pipecraft/cutadapt:3.40",
+        imageName: "pipecraft/demux:0.1",
         serviceName: "remove primers",
         selected: false,
         showExtra: false,
@@ -2094,7 +2094,6 @@ export default new Vuex.Store({
       }
     },
     checkCustomService(state, payload) {
-      console.log(state[payload.name][payload.serviceIndex]);
       state[payload.name][payload.serviceIndex].selected = payload.selected;
     },
   },

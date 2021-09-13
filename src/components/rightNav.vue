@@ -96,8 +96,8 @@ export default {
           action: this.loadWorkFlow,
         },
         {
-          title: "Exper",
-          icon: "mdi-iframe",
+          title: "Expert",
+          icon: "mdi-puzzle-edit",
           tooltip: "expert mode",
           action: "",
         },

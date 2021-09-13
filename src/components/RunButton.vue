@@ -62,6 +62,7 @@ export default {
               let WorkingDir = this.$store.state.workingDir;
               let envVariables;
               envVariables = this.createCustomVariableObj(name, index[0]);
+              let Binds = this.createCustomBinds(name, index[0], Input);
               let gotImg = await imageExists(dockerode, imageName);
               if (gotImg === false) {
                 console.log(`Pulling image ${imageName}`);
@@ -89,11 +90,7 @@ export default {
                     WorkingDir: WorkingDir,
                     Volumes: {},
                     HostConfig: {
-                      Binds: [
-                        `${process.cwd()}/src/pipecraft-core/service_scripts:/scripts`, // dev path
-                        // `${process.cwd()}/resources/src/pipecraft-core/service_scripts:/scripts`, // build path
-                        `${Input}:/input`,
-                      ],
+                      Binds: Binds,
                     },
                     Env: envVariables,
                   },
@@ -284,6 +281,26 @@ export default {
         envVariables.push(stringify(varObj).replace(/(\r\n|\n|\r)/gm, ""));
       });
       return envVariables;
+    },
+    createCustomBinds(name, index, Input) {
+      let Binds = [
+        `${process.cwd()}/src/pipecraft-core/service_scripts:/scripts`, // dev path
+        // `${process.cwd()}/resources/src/pipecraft-core/service_scripts:/scripts`, // build path
+        `${Input}:/input`,
+      ];
+      this.$store.state[name][index].Inputs.forEach((input) => {
+        if (input.type == "file" || input.type == "boolFile") {
+          let bind = `${input.value}:/extraFiles`;
+          Binds.push(bind);
+        }
+      });
+      this.$store.state[name][index].extraInputs.forEach((input) => {
+        if (input.type == "file" || input.type == "boolfile") {
+          let bind = `${input.value}:/extraFiles`;
+          Binds.push(bind);
+        }
+      });
+      return Binds;
     },
 
     findSelectedService(i) {
