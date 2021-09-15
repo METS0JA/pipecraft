@@ -1,5 +1,6 @@
 <template>
   <v-card
+    :disabled="Object.values(this.$store.state.data).includes(input.disabled)"
     light
     elevation="2"
     style="height: fit-content; resize:auto; min-height: 145px"

@@ -52,12 +52,18 @@
           >{{ `${this.$store.state.loader.index}%` }}</v-progress-circular
         >
       </v-overlay>
-      <v-expansion-panel v-for="(service, index) in services" :key="index">
+      <v-expansion-panel
+        v-for="(service, index) in services"
+        :key="index"
+        :disabled="Object.values(inputData).includes(service.disabled)"
+      >
         <v-expansion-panel-header
-          style="justify-content:center;"
+          style="justify-content:left;"
           :class="[service.selected]"
+          :disabled="Object.values(inputData).includes(service.disabled)"
         >
           <v-checkbox
+            :disabled="Object.values(inputData).includes(service.disabled)"
             v-if="service.selected != 'always'"
             hide-details="true"
             @change="check_one($event, index)"
@@ -247,6 +253,9 @@ export default {
   computed: {
     services() {
       return this.$store.state[this.$route.params.workflowName];
+    },
+    inputData() {
+      return this.$store.state.data;
     },
   },
   methods: {

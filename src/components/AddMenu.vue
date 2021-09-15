@@ -9,6 +9,7 @@
       <v-list dark>
         <v-list-item
           link
+          :disabled="Object.values(inputData).includes(item.disabled)"
           v-for="item in items"
           v-bind:key="item.stepName"
           @click="addStep(item, nrOfSelectedSteps)"
@@ -26,11 +27,9 @@ import { mapState } from "vuex";
 
 export default {
   name: "AddMenu",
-  data: () => ({
-    items2: [],
-  }),
   computed: mapState({
     // arrow functions can make the code very succinct!
+    inputData: (state) => state.data,
     items: (state) => state.steps,
     nrOfSelectedSteps: (state) => state.selectedSteps.length + 1,
   }),

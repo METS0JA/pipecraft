@@ -22,6 +22,7 @@ export default new Vuex.Store({
     steps: [
       {
         stepName: "demultiplex",
+        disabled: "demultiplexed",
         services: [
           {
             scriptName: "demux_paired_end_data.sh",
@@ -35,6 +36,7 @@ export default new Vuex.Store({
                 name: "barcodes_file",
                 value: "undefined",
                 btnName: "select fast(a/q)",
+                disabled: "never",
                 tooltip:
                   "a file in a fasta format where the headers are sample ids and sequences are barcodes for samples",
                 type: "file",
@@ -42,12 +44,14 @@ export default new Vuex.Store({
               {
                 name: "max_error_rate",
                 value: 1,
+                disabled: "never",
                 tooltip: "number of allowed mismatches in the index sequence",
                 type: "numeric",
               },
               {
                 name: "overlap",
                 value: 12,
+                disabled: "never",
                 tooltip:
                   "number of overlap bases with the index. Recommended overlap is the max length of the index for confident sequence assignments to samples in the indexes file.",
                 type: "numeric",
@@ -55,18 +59,21 @@ export default new Vuex.Store({
               {
                 name: "cores",
                 value: 2,
+                disabled: "never",
                 tooltip: "number of cores to use",
                 type: "numeric",
               },
               {
                 name: "min_seq_length",
                 value: 10,
+                disabled: "never",
                 tooltip: "minimum length of the output sequence",
                 type: "numeric",
               },
               {
                 name: "no_indels",
                 value: true,
+                disabled: "never",
                 tooltip: "do not allow insertions or deletions",
                 type: "bool",
               },
@@ -83,14 +90,22 @@ export default new Vuex.Store({
               {
                 name: "param1",
                 value: 2,
+                disabled: "never",
                 tooltip: "numeric",
                 type: "numeric",
               },
-              { name: "param2", value: true, tooltip: "boolean", type: "bool" },
+              {
+                name: "param2",
+                value: true,
+                disabled: "never",
+                tooltip: "boolean",
+                type: "bool",
+              },
               {
                 name: "select 1",
                 items: ["16S", "ITS", "18S"],
                 value: "16S",
+                disabled: "never",
                 tooltip: "selection",
                 type: "select",
               },
@@ -98,6 +113,7 @@ export default new Vuex.Store({
                 name: "file 1",
                 btnName: "select file",
                 value: "undefined",
+                disabled: "never",
                 tooltip: "file select",
                 type: "file",
               },
@@ -105,6 +121,7 @@ export default new Vuex.Store({
                 name: "file 2",
                 btnName: "select file",
                 value: "undefined",
+                disabled: "never",
                 tooltip: "boolean file select",
                 active: false,
                 type: "boolfile",
@@ -112,6 +129,7 @@ export default new Vuex.Store({
               {
                 name: "select 2",
                 items: ["16S", "ITS", "18S"],
+                disabled: "never",
                 tooltip: "boolean select",
                 value: "undefined",
                 active: true,
@@ -120,6 +138,7 @@ export default new Vuex.Store({
               {
                 name: "chips",
                 value: ["ACCTTGG", "GCGTAAA", "YNAAGGCCTT"],
+                disabled: "never",
                 tooltip: "IUPAC primers",
                 type: "chip",
                 iupac: true,
@@ -128,6 +147,7 @@ export default new Vuex.Store({
               {
                 name: "slide",
                 value: 0,
+                disabled: "never",
                 tooltip: "slide 4 life",
                 max: 1,
                 min: 0,
@@ -138,6 +158,7 @@ export default new Vuex.Store({
                 name: "combobox",
                 items: ["nii", "palju", "asju", "mida", "valida"],
                 value: [],
+                disabled: "never",
                 tooltip: "combobreaker",
                 type: "combobox",
               },
@@ -147,6 +168,7 @@ export default new Vuex.Store({
       },
       {
         stepName: "reorient",
+        disabled: "never",
         services: [
           {
             scriptName: "reorient_paired_end_reads.sh",
@@ -159,13 +181,15 @@ export default new Vuex.Store({
               {
                 name: "mismatches",
                 value: 2,
+                disabled: "never",
                 tooltip:
                   "allowed mismatches in primer search. By default, 2 mismatches are allowed per primer.",
                 type: "numeric",
               },
               {
-                name: "paired-end_tags",
+                name: "paired_end_tags",
                 value: ["R1", "R2"],
+                disabled: "single_end",
                 tooltip: "Define a tag for fwd and rev reads",
                 type: "chip",
                 iupac: false,
@@ -174,6 +198,7 @@ export default new Vuex.Store({
               {
                 name: "forward_primers",
                 value: [],
+                disabled: "never",
                 tooltip: "manually define up to 13 primers",
                 type: "chip",
                 iupac: true,
@@ -182,6 +207,7 @@ export default new Vuex.Store({
               {
                 name: "reverse_primers",
                 value: [],
+                disabled: "never",
                 tooltip: "manually define up to 13 primers",
                 type: "chip",
                 iupac: true,
@@ -193,6 +219,7 @@ export default new Vuex.Store({
       },
       {
         stepName: "trim adapters/primers",
+        disabled: "never",
         services: [
           {
             scriptName: "cut_primers_paired_end_reads.sh",
@@ -205,6 +232,7 @@ export default new Vuex.Store({
               {
                 name: "forward_primers",
                 value: [],
+                disabled: "never",
                 tooltip: "Add up to 13 PCR primers",
                 type: "chip",
                 iupac: true,
@@ -213,6 +241,7 @@ export default new Vuex.Store({
               {
                 name: "reverse_primers",
                 value: [],
+                disabled: "never",
                 tooltip: "Add up to 13 PCR primers",
                 type: "chip",
                 iupac: true,
@@ -221,6 +250,7 @@ export default new Vuex.Store({
               {
                 name: "mismatches",
                 value: 2,
+                disabled: "never",
                 tooltip:
                   "allowed mismatches in primer search. By default, 2 mismatches are allowed per primer.",
                 type: "numeric",
@@ -228,6 +258,7 @@ export default new Vuex.Store({
               {
                 name: "min_overlap",
                 value: 15,
+                disabled: "never",
                 tooltip:
                   "the number of minimum overlap bases with the primer sequence.",
                 type: "numeric",
@@ -236,6 +267,7 @@ export default new Vuex.Store({
                 name: "seqs_to_keep",
                 items: ["keep_all", "keep_only_linked"],
                 value: "keep_all",
+                disabled: "never",
                 tooltip:
                   "Keep seqs with primers found in both ends(linked), or keeps seqs with primer found atlest in one end(all)",
                 type: "select",
@@ -243,6 +275,7 @@ export default new Vuex.Store({
               {
                 name: "cores",
                 value: 1,
+                disabled: "never",
                 tooltip:
                   "number of cores to use. For paired-end dta in fasta format, set to 1 [default]. For fastq formats you may set the value to 0 to use all cores.",
                 type: "numeric",
@@ -250,12 +283,14 @@ export default new Vuex.Store({
               {
                 name: "min_seq_length",
                 value: 32,
+                disabled: "never",
                 tooltip: "minimum length of the output sequence.",
                 type: "numeric",
               },
               {
                 name: "overlap",
                 value: 16,
+                disabled: "never",
                 tooltip:
                   "number of overlap bases with the primer sequence. Partial matches are allowed, but short matches may occur by chance, leading to erroneously clipped bases. Specifying higher overlap than the length of primer sequnce will still clip the primer (e.g. primer length is 22 bp, but overlap is specified as 25 - this does not affect the identification and clipping of the primer as long as the match is in the specified error range).",
                 type: "numeric",
@@ -263,6 +298,7 @@ export default new Vuex.Store({
               {
                 name: "no_indels",
                 value: true,
+                disabled: "never",
                 tooltip:
                   "do not allow insertions or deletions is primer search. Mismatches are the only type of errprs accounted in the error rate parameter. ",
                 type: "bool",
@@ -270,6 +306,7 @@ export default new Vuex.Store({
               {
                 name: "discard_untrimmed",
                 value: true,
+                disabled: "never",
                 tooltip:
                   "Discard sequences where specified primers were not found.",
                 type: "bool",
@@ -298,6 +335,7 @@ export default new Vuex.Store({
       },
       {
         stepName: "quality filter",
+        disabled: "never",
         services: [
           {
             scriptName: "vsearch-quality.sh",
@@ -309,6 +347,7 @@ export default new Vuex.Store({
               {
                 name: "fastq_maxlen",
                 value: null,
+                disabled: "never",
                 tooltip:
                   "Discard sequences with more than the specified number of bases",
                 type: "numeric",
@@ -316,6 +355,7 @@ export default new Vuex.Store({
               {
                 name: "fastq_truncqual",
                 value: 0,
+                disabled: "never",
                 tooltip:
                   "Truncate sequences starting from the first basewith the specified base quality score value or lower",
                 type: "numeric",
@@ -323,6 +363,7 @@ export default new Vuex.Store({
               {
                 name: "fastq_maxee_rate",
                 value: null,
+                disabled: "never",
                 tooltip:
                   "Discard sequences with more than the specified number of expected errors per base",
                 type: "numeric",
@@ -330,6 +371,7 @@ export default new Vuex.Store({
               {
                 name: "fastq_qmin",
                 value: 0,
+                disabled: "never",
                 tooltip:
                   "Specify the minimum quality score accepted for FASTQ files",
                 type: "numeric",
@@ -339,6 +381,7 @@ export default new Vuex.Store({
               {
                 name: "fastq_maxee",
                 value: 1,
+                disabled: "never",
                 tooltip:
                   "Discard sequences with more than the specified number of expected error",
                 type: "numeric",
@@ -346,6 +389,7 @@ export default new Vuex.Store({
               {
                 name: "fastq_maxns",
                 value: 0,
+                disabled: "never",
                 tooltip:
                   "Discard sequences with more than the specified number of N’s",
                 type: "numeric",
@@ -353,6 +397,7 @@ export default new Vuex.Store({
               {
                 name: "fastq_minlen",
                 value: 1,
+                disabled: "never",
                 tooltip:
                   "Discard sequences with less than the specified number of bases",
                 type: "numeric",
@@ -370,6 +415,7 @@ export default new Vuex.Store({
               {
                 name: "qwindowaverage",
                 value: 30,
+                disabled: "never",
                 tooltip:
                   "Set the minimum average quality score allowed over a window",
                 type: "numeric",
@@ -377,18 +423,21 @@ export default new Vuex.Store({
               {
                 name: "qwindowsize",
                 value: 32,
+                disabled: "never",
                 tooltip: "Set the number of bases in a window",
                 type: "numeric",
               },
               {
                 name: "maxambig",
                 value: 0,
+                disabled: "never",
                 tooltip: "Set the number of allowed ambiguous base calls",
                 type: "numeric",
               },
               {
                 name: "qthreshold",
                 value: null,
+                disabled: "never",
                 tooltip:
                   "Discard sequences with a basecall below set quality value",
                 type: "numeric",
@@ -396,6 +445,7 @@ export default new Vuex.Store({
               {
                 name: "minlength",
                 value: null,
+                disabled: "never",
                 tooltip:
                   "Discard sequences with less than the specified number of bases",
                 type: "numeric",
@@ -403,6 +453,7 @@ export default new Vuex.Store({
               {
                 name: "maxlength",
                 value: null,
+                disabled: "never",
                 tooltip:
                   "Discard sequences with more than the specified number of bases",
                 type: "numeric",
@@ -420,6 +471,7 @@ export default new Vuex.Store({
               {
                 name: "maxEE",
                 value: 1,
+                disabled: "never",
                 tooltip:
                   "Discard sequences with more than the specified number of expected errors",
                 type: "numeric",
@@ -427,6 +479,7 @@ export default new Vuex.Store({
               {
                 name: "maxN",
                 value: 0,
+                disabled: "never",
                 tooltip:
                   "Discard sequences with more than the specified number of N’s",
                 type: "numeric",
@@ -434,6 +487,7 @@ export default new Vuex.Store({
               {
                 name: "minLen",
                 value: 20,
+                disabled: "never",
                 tooltip:
                   "Remove reads with length less than minLen. minLen is enforced after all other trimming and truncation",
                 type: "numeric",
@@ -441,6 +495,7 @@ export default new Vuex.Store({
               {
                 name: "truncQ",
                 value: null,
+                disabled: "never",
                 tooltip:
                   "Truncate reads at the first instance of a quality score less than or equal to truncQ",
                 type: "numeric",
@@ -448,6 +503,7 @@ export default new Vuex.Store({
               {
                 name: "truncLen",
                 value: 0,
+                disabled: "never",
                 tooltip:
                   "Truncate reads after truncLen bases. Reads shorter than this are discarded",
                 type: "numeric",
@@ -455,6 +511,7 @@ export default new Vuex.Store({
               {
                 name: "maxLen",
                 value: null,
+                disabled: "never",
                 tooltip:
                   "Remove reads with length greater than maxLen. maxLen is enforced on the raw reads",
                 type: "numeric",
@@ -462,6 +519,7 @@ export default new Vuex.Store({
               {
                 name: "minQ",
                 value: 0,
+                disabled: "never",
                 tooltip:
                   "After truncation, reads contain a quality score below minQ will be discarded",
                 type: "numeric",
@@ -479,6 +537,7 @@ export default new Vuex.Store({
               {
                 name: "fastq_maxee",
                 value: null,
+                disabled: "never",
                 tooltip:
                   "Discard sequences with more than the specified number of expected errors for all bases in the read (is used after any truncation options have been applied).",
                 type: "numeric",
@@ -486,6 +545,7 @@ export default new Vuex.Store({
               {
                 name: "fastq_maxns",
                 value: null,
+                disabled: "never",
                 tooltip:
                   "Discard sequences with more than the specified number of N’s",
                 type: "numeric",
@@ -493,6 +553,7 @@ export default new Vuex.Store({
               {
                 name: "fastq_minlen",
                 value: null,
+                disabled: "never",
                 tooltip:
                   "Discard sequences with less than the specified number of bases",
                 type: "numeric",
@@ -500,12 +561,14 @@ export default new Vuex.Store({
               {
                 name: "fastq_stripleft",
                 value: null,
+                disabled: "never",
                 tooltip: "Delete the first N bases in the read",
                 type: "numeric",
               },
               {
                 name: "fastq_truncqual",
                 value: null,
+                disabled: "never",
                 tooltip:
                   "Truncate sequences starting from the first basewith the specified base quality score value or lower",
                 type: "numeric",
@@ -513,6 +576,7 @@ export default new Vuex.Store({
               {
                 name: "fastq_maxee_rate",
                 value: null,
+                disabled: "never",
                 tooltip:
                   "Discard sequences with more than the specified number of expected errors per base",
                 type: "numeric",
@@ -530,6 +594,7 @@ export default new Vuex.Store({
               {
                 name: "window_size",
                 value: 5,
+                disabled: "never",
                 tooltip:
                   "the number of bases to average base qualities. Starts scanning at the 5'-end of a sequence and trimms the read once the average required quality (required_qual) within the window size falls below the threshold.",
                 type: "numeric",
@@ -537,6 +602,7 @@ export default new Vuex.Store({
               {
                 name: "required_quality",
                 value: 27,
+                disabled: "never",
                 tooltip:
                   "the average quality required for selected window size",
                 type: "numeric",
@@ -544,12 +610,14 @@ export default new Vuex.Store({
               {
                 name: "min_length",
                 value: 32,
+                disabled: "never",
                 tooltip: "minimum length of the filtered sequence",
                 type: "numeric",
               },
               {
                 name: "leading_qual_threshold",
                 value: null,
+                disabled: "never",
                 tooltip:
                   "quality score threshold to remove low quality bases from the beginning of the read. As long as a base has a value below this threshold the base is removed and the next base will be investigated.",
                 type: "numeric",
@@ -557,6 +625,7 @@ export default new Vuex.Store({
               {
                 name: "trailing_qual_threshold",
                 value: null,
+                disabled: "never",
                 tooltip:
                   "quality score threshold to remove low quality bases from the end of the read. As long as a base has a value below this threshold the base is removed and the next base will be investigated.",
                 type: "numeric",
@@ -564,6 +633,7 @@ export default new Vuex.Store({
               {
                 name: "cores",
                 value: 4,
+                disabled: "never",
                 tooltip: "number of cores to use",
                 type: "numeric",
               },
@@ -571,6 +641,7 @@ export default new Vuex.Store({
                 name: "phred",
                 items: [33, 64],
                 value: 33,
+                disabled: "never",
                 tooltip:
                   "phred quality scored encoding. Default is phred33. Use phred64 if working with data from older Illumina (Solexa) machines. ",
                 type: "select",
@@ -581,6 +652,7 @@ export default new Vuex.Store({
       },
       {
         stepName: "assemble paired-end",
+        disabled: "single_end",
         services: [
           {
             scriptName: "dada2-assemble.R",
@@ -593,6 +665,7 @@ export default new Vuex.Store({
               {
                 name: "minOverlap",
                 value: 12,
+                disabled: "never",
                 tooltip:
                   "The minimum length of the overlap required for mergingthe forward and reverse reads.",
                 type: "numeric",
@@ -600,12 +673,14 @@ export default new Vuex.Store({
               {
                 name: "maxMismatch",
                 value: 0,
+                disabled: "never",
                 tooltip: "The maximum mismatches allowed in the overlap region",
                 type: "numeric",
               },
               {
                 name: "returnRejects",
                 value: false,
+                disabled: "never",
                 tooltip:
                   "Return and retain, the pairs that that were rejected based on mismatches in the overlap region",
                 type: "bool",
@@ -623,6 +698,7 @@ export default new Vuex.Store({
               {
                 name: "minoverlap -o",
                 value: 1,
+                disabled: "never",
                 tooltip:
                   "Sets the minimum overlap between forward and reverse reads.",
                 type: "numeric",
@@ -630,6 +706,7 @@ export default new Vuex.Store({
               {
                 name: "minlen -l",
                 value: 1,
+                disabled: "never",
                 tooltip:
                   "Sets the minimum length for a sequence before assembly",
                 type: "numeric",
@@ -637,6 +714,7 @@ export default new Vuex.Store({
               {
                 name: "maxoverlap -O",
                 value: 1,
+                disabled: "never",
                 tooltip:
                   "Sets the maximum overlap between forward and reverse reads.",
                 type: "numeric",
@@ -644,12 +722,14 @@ export default new Vuex.Store({
               {
                 name: "maxlen -L",
                 value: 1,
+                disabled: "never",
                 tooltip: "Sets maximum length for a sequence before assembly.",
                 type: "numeric",
               },
               {
                 name: "write unpaired",
                 value: false,
+                disabled: "never",
                 tooltip:
                   "Write sequences for which the optimal alignment cannot be computed to a file as concatenated pairs.",
                 type: "bool",
@@ -667,6 +747,7 @@ export default new Vuex.Store({
               {
                 name: "min overlap -m",
                 value: 100,
+                disabled: "never",
                 tooltip:
                   "Set the minimum required overlap length between two reads to provide a confident overlap.",
                 type: "numeric",
@@ -674,6 +755,7 @@ export default new Vuex.Store({
               {
                 name: "mismatch ratio -x",
                 value: 0.25,
+                disabled: "never",
                 tooltip:
                   "Set the maximum allowed ratio of the number of mismatches at the overlap length.",
                 type: "numeric",
@@ -681,6 +763,7 @@ export default new Vuex.Store({
               {
                 name: "max overlap -M",
                 value: null,
+                disabled: "never",
                 tooltip:
                   "Set the maximum overlap length expected in approximately 90% of read pairs.",
                 type: "numeric",
@@ -688,18 +771,21 @@ export default new Vuex.Store({
               {
                 name: "read length -r",
                 value: 1,
+                disabled: "never",
                 tooltip: "Average read length.",
                 type: "numeric",
               },
               {
                 name: "fragment length -f",
                 value: 1,
+                disabled: "never",
                 tooltip: "Average fragment length",
                 type: "numeric",
               },
               {
                 name: "σ fragment lengths -s",
                 value: 1,
+                disabled: "never",
                 tooltip:
                   "if you do not know standard deviation of the fragment library, you can probably assume that the standard deviation is 10% of the average fragment length",
                 type: "numeric",
@@ -707,6 +793,7 @@ export default new Vuex.Store({
               {
                 name: "phredOffset -p",
                 value: 1,
+                disabled: "never",
                 tooltip:
                   "Set the smallest ASCII value of the characters used to represent quality values of bases in fastq files. 33 for latest Illumina and Sanger or 64 for earlier Illumina.",
                 type: "numeric",
@@ -717,6 +804,7 @@ export default new Vuex.Store({
             scriptName: "assemble_pairedend_data_vsearch.sh",
             imageName: "pipecraft/mothur:1.43",
             serviceName: "vsearch",
+            disabled: "single_end",
             selected: false,
             showExtra: false,
             extraInputs: [],
@@ -724,18 +812,21 @@ export default new Vuex.Store({
               {
                 name: "min overlength",
                 value: 10,
+                disabled: "never",
                 tooltip: "minimum overlap between the merged reads",
                 type: "numeric",
               },
               {
                 name: "min lenght",
                 value: 32,
+                disabled: "never",
                 tooltip: "minimum length of the merged sequence",
                 type: "numeric",
               },
               {
                 name: "allow merge stagger",
                 value: true,
+                disabled: "never",
                 tooltip:
                   "allow to merge staggered read pairs. Staggered pairs are pairs where the 3’ end of the reverse read has an overhang to the left of the 5’ end of the forward read. This situation can occur when a very short fragment is sequenced.",
                 type: "bool",
@@ -743,6 +834,7 @@ export default new Vuex.Store({
               {
                 name: "include only R1",
                 value: false,
+                disabled: "never",
                 tooltip:
                   "include unassembled R1 reads to the set of assembled reads per sample. This may be relevant when working with e.g. ITS2 sequences, because the ITS2 region in some taxa is too long for assembly, therefore discarded completely after assembly process. Thus, including also unassembled R1 reads, partial ITS2 sequences for these taxa will be represented in the final output. If this option = TRUE, then other specified options (lenght, max error rate etc.) have not been applied to R1 reads in the 'assembled' file. Thus, additional quality filtering (if this was done before assembling) should be run on the 'assembled' data.",
                 type: "bool",
@@ -750,6 +842,7 @@ export default new Vuex.Store({
               {
                 name: "max diffs",
                 value: 20,
+                disabled: "never",
                 tooltip:
                   "the maximum number of non-matching nucleotides allowed in the overlap region",
                 type: "numeric",
@@ -757,6 +850,7 @@ export default new Vuex.Store({
               {
                 name: "max Ns",
                 value: 0,
+                disabled: "never",
                 tooltip:
                   "discard sequences with more than the specified number of N’s",
                 type: "numeric",
@@ -764,12 +858,14 @@ export default new Vuex.Store({
               {
                 name: "max len",
                 value: 600,
+                disabled: "never",
                 tooltip: "maximum length of the merged sequence",
                 type: "numeric",
               },
               {
                 name: "keep disjointed",
                 value: false,
+                disabled: "never",
                 tooltip:
                   "output reads that were not merged into separate FASTQ files",
                 type: "bool",
@@ -777,6 +873,7 @@ export default new Vuex.Store({
               {
                 name: "fastq qmax",
                 value: 41,
+                disabled: "never",
                 tooltip:
                   "maximum quality score accepted when reading FASTQ files. The default is 41, which is usual for recent Sanger/Illumina 1.8+ files.",
                 type: "numeric",
@@ -787,6 +884,7 @@ export default new Vuex.Store({
       },
       {
         stepName: "remove chimeras",
+        disabled: "never",
         services: [
           {
             scriptName: "dada2-chimera.R",
@@ -800,6 +898,7 @@ export default new Vuex.Store({
                 name: "method",
                 items: ["consensus", "pooled", "per-sample"],
                 value: "consensus",
+                disabled: "never",
                 tooltip:
                   "If 'pooled': The samples in the sequence table are all pooled together for bimera identification, If 'consensus': The samples in a sequence table are independently checked for bimeras, If 'per-sample': The samples in a sequence table are independently checked for bimeras",
                 type: "select",
@@ -817,18 +916,21 @@ export default new Vuex.Store({
               {
                 name: "abskew",
                 value: 1,
+                disabled: "never",
                 tooltip: "zzzZZzzZZZzzz",
                 type: "numeric",
               },
               {
                 name: "abundace annotation",
                 value: 1,
+                disabled: "never",
                 tooltip: "zzzZZzzZZZzzz",
                 type: "numeric",
               },
               {
                 name: "denovno",
                 value: false,
+                disabled: "never",
                 tooltip: "zzzZZzzZZZzzz",
                 type: "bool",
               },
@@ -837,6 +939,7 @@ export default new Vuex.Store({
                 active: false,
                 btnName: "select file",
                 value: "undefined",
+                disabled: "never",
                 tooltip: "zzzZZzzZZZzzz",
                 type: "boolfile",
               },
@@ -853,18 +956,21 @@ export default new Vuex.Store({
               {
                 name: "abskew",
                 value: 1,
+                disabled: "never",
                 tooltip: "zzzZZzzZZZzzz",
                 type: "numeric",
               },
               {
                 name: "abundance annotation",
                 value: 1,
+                disabled: "never",
                 tooltip: "zzzZZzzZZZzzz",
                 type: "numeric",
               },
               {
                 name: "denovo",
                 value: false,
+                disabled: "never",
                 tooltip: "zzzZZzzZZZzzz",
                 type: "bool",
               },
@@ -873,6 +979,7 @@ export default new Vuex.Store({
                 active: false,
                 btnName: "select file",
                 value: "undefined",
+                disabled: "never",
                 tooltip: "zzZZzz",
                 type: "boolfile",
               },
@@ -882,6 +989,7 @@ export default new Vuex.Store({
       },
       {
         stepName: "gene extraction",
+        disabled: "never",
         services: [
           {
             scriptName: "itsx-extraction.sh",
@@ -914,6 +1022,7 @@ export default new Vuex.Store({
       },
       {
         stepName: "cluster | ASV",
+        disabled: "never",
         services: [
           {
             scriptName: "mothur-cluster.sh",
@@ -964,6 +1073,7 @@ export default new Vuex.Store({
       },
       {
         stepName: "assing taxonomy",
+        disabled: "never",
         services: [
           {
             scriptName: "",
@@ -986,12 +1096,14 @@ export default new Vuex.Store({
                 name: "refFasta",
                 btnName: "select file",
                 value: "undefined",
+                disabled: "never",
                 tooltip: "Select a reference fasta file",
                 type: "file",
               },
               {
                 name: "minBoot",
                 value: 50,
+                disabled: "never",
                 tooltip:
                   "The minimum bootstrap confidence for assigning a taxonomic level.",
                 type: "numeric",
@@ -999,6 +1111,7 @@ export default new Vuex.Store({
               {
                 name: "tryRC",
                 value: false,
+                disabled: "never",
                 tooltip:
                   "the reverse-complement of each sequences will be used for classification if it is a better match to the reference sequences than the forward sequence.",
                 type: "bool",
@@ -1022,24 +1135,28 @@ export default new Vuex.Store({
         scriptName: "demux_paired_end_data.sh",
         imageName: "pipecraft/demux:0.1",
         serviceName: "demultiplex",
+        disabled: "demultiplexed",
         selected: false,
         showExtra: false,
         extraInputs: [
           {
             name: "cores",
             value: 2,
+            disabled: "never",
             tooltip: "number of cores to use",
             type: "numeric",
           },
           {
             name: "min_seq_length",
             value: 10,
+            disabled: "never",
             tooltip: "minimum length of the output sequence",
             type: "numeric",
           },
           {
             name: "no_indels",
             value: true,
+            disabled: "never",
             tooltip: "do not allow insertions or deletions",
             type: "bool",
           },
@@ -1049,6 +1166,7 @@ export default new Vuex.Store({
             name: "barcodes_file",
             value: "undefined",
             btnName: "select fast(a/q)",
+            disabled: "never",
             tooltip:
               "a file in a fasta format where the headers are sample ids and sequences are barcodes for samples",
             type: "file",
@@ -1056,12 +1174,14 @@ export default new Vuex.Store({
           {
             name: "max_error_rate",
             value: 1,
+            disabled: "never",
             tooltip: "number of allowed mismatches in the index sequence",
             type: "numeric",
           },
           {
             name: "overlap",
             value: 12,
+            disabled: "never",
             tooltip:
               "number of overlap bases with the index. Recommended overlap is the max length of the index for confident sequence assignments to samples in the indexes file.",
             type: "numeric",
@@ -1079,13 +1199,15 @@ export default new Vuex.Store({
           {
             name: "mismatches",
             value: 2,
+            disabled: "never",
             tooltip:
               "allowed mismatches in primer search. By default, 2 mismatches are allowed per primer.",
             type: "numeric",
           },
           {
-            name: "paired-end_tags",
+            name: "paired_end_tags",
             value: ["R1", "R2"],
+            disabled: "single_end",
             tooltip: "Define a tag for fwd and rev reads",
             type: "chip",
             iupac: false,
@@ -1094,6 +1216,7 @@ export default new Vuex.Store({
           {
             name: "forward_primers",
             value: [],
+            disabled: "never",
             tooltip: "manually define up to 13 primers",
             type: "chip",
             iupac: true,
@@ -1102,6 +1225,7 @@ export default new Vuex.Store({
           {
             name: "reverse_primers",
             value: [],
+            disabled: "never",
             tooltip: "manually define up to 13 primers",
             type: "chip",
             iupac: true,
@@ -1119,6 +1243,7 @@ export default new Vuex.Store({
           {
             name: "cores",
             value: 1,
+            disabled: "never",
             tooltip:
               "number of cores to use. For paired-end dta in fasta format, set to 1 [default]. For fastq formats you may set the value to 0 to use all cores.",
             type: "numeric",
@@ -1126,12 +1251,14 @@ export default new Vuex.Store({
           {
             name: "min_seq_length",
             value: 32,
+            disabled: "never",
             tooltip: "minimum length of the output sequence.",
             type: "numeric",
           },
           {
             name: "overlap",
             value: 16,
+            disabled: "never",
             tooltip:
               "number of overlap bases with the primer sequence. Partial matches are allowed, but short matches may occur by chance, leading to erroneously clipped bases. Specifying higher overlap than the length of primer sequnce will still clip the primer (e.g. primer length is 22 bp, but overlap is specified as 25 - this does not affect the identification and clipping of the primer as long as the match is in the specified error range).",
             type: "numeric",
@@ -1139,6 +1266,7 @@ export default new Vuex.Store({
           {
             name: "no_indels",
             value: true,
+            disabled: "never",
             tooltip:
               "do not allow insertions or deletions is primer search. Mismatches are the only type of errprs accounted in the error rate parameter. ",
             type: "bool",
@@ -1146,6 +1274,7 @@ export default new Vuex.Store({
           {
             name: "discard_untrimmed",
             value: true,
+            disabled: "never",
             tooltip:
               "Discard sequences where specified primers were not found.",
             type: "bool",
@@ -1155,6 +1284,7 @@ export default new Vuex.Store({
           {
             name: "forward_primers",
             value: [],
+            disabled: "never",
             tooltip: "Add up to 13 PCR primers",
             type: "chip",
             iupac: true,
@@ -1163,6 +1293,7 @@ export default new Vuex.Store({
           {
             name: "reverse_primers",
             value: [],
+            disabled: "never",
             tooltip: "Add up to 13 PCR primers",
             type: "chip",
             iupac: true,
@@ -1171,6 +1302,7 @@ export default new Vuex.Store({
           {
             name: "mismatches",
             value: 2,
+            disabled: "never",
             tooltip:
               "allowed mismatches in primer search. By default, 2 mismatches are allowed per primer.",
             type: "numeric",
@@ -1178,6 +1310,7 @@ export default new Vuex.Store({
           {
             name: "min_overlap",
             value: 15,
+            disabled: "never",
             tooltip:
               "the number of minimum overlap bases with the primer sequence.",
             type: "numeric",
@@ -1186,6 +1319,7 @@ export default new Vuex.Store({
             name: "seqs_to_keep",
             items: ["keep_all", "keep_only_linked"],
             value: "keep_all",
+            disabled: "never",
             tooltip:
               "Keep seqs with primers found in both ends(linked), or keeps seqs with primer found atlest in one end(all)",
             type: "select",
@@ -1197,11 +1331,13 @@ export default new Vuex.Store({
         imageName: "pipecraft/vsearch:2.18",
         serviceName: "merge reads",
         selected: "always",
+        disabled: "single_end",
         showExtra: false,
         extraInputs: [
           {
             name: "max_diffs",
             value: 20,
+            disabled: "never",
             tooltip:
               "the maximum number of non-matching nucleotides allowed in the overlap region",
             type: "numeric",
@@ -1209,6 +1345,7 @@ export default new Vuex.Store({
           {
             name: "max_Ns",
             value: 0,
+            disabled: "never",
             tooltip:
               "discard sequences with more than the specified number of N’s",
             type: "numeric",
@@ -1216,12 +1353,14 @@ export default new Vuex.Store({
           {
             name: "max_len",
             value: 600,
+            disabled: "never",
             tooltip: "maximum length of the merged sequence",
             type: "numeric",
           },
           {
             name: "keep_disjointed",
             value: false,
+            disabled: "never",
             tooltip:
               "output reads that were not merged into separate FASTQ files",
             type: "bool",
@@ -1229,6 +1368,7 @@ export default new Vuex.Store({
           {
             name: "fastq_qmax",
             value: 41,
+            disabled: "never",
             tooltip:
               "maximum quality score accepted when reading FASTQ files. The default is 41, which is usual for recent Sanger/Illumina 1.8+ files.",
             type: "numeric",
@@ -1238,18 +1378,21 @@ export default new Vuex.Store({
           {
             name: "min_overlap",
             value: 10,
+            disabled: "never",
             tooltip: "minimum overlap between the merged reads",
             type: "numeric",
           },
           {
             name: "min_lenght",
             value: 32,
+            disabled: "never",
             tooltip: "minimum length of the merged sequence",
             type: "numeric",
           },
           {
             name: "allow_merge_stagger",
             value: true,
+            disabled: "never",
             tooltip:
               "allow to merge staggered read pairs. Staggered pairs are pairs where the 3’ end of the reverse read has an overhang to the left of the 5’ end of the forward read. This situation can occur when a very short fragment is sequenced.",
             type: "bool",
@@ -1257,6 +1400,7 @@ export default new Vuex.Store({
           {
             name: "include_only_R1",
             value: false,
+            disabled: "never",
             tooltip:
               "include unassembled R1 reads to the set of assembled reads per sample. This may be relevant when working with e.g. ITS2 sequences, because the ITS2 region in some taxa is too long for assembly, therefore discarded completely after assembly process. Thus, including also unassembled R1 reads, partial ITS2 sequences for these taxa will be represented in the final output. If this option = TRUE, then other specified options (lenght, max error rate etc.) have not been applied to R1 reads in the 'assembled' file. Thus, additional quality filtering (if this was done before assembling) should be run on the 'assembled' data.",
             type: "bool",
@@ -1273,6 +1417,7 @@ export default new Vuex.Store({
           {
             name: "leading_qual_threshold",
             value: null,
+            disabled: "never",
             tooltip:
               "quality score threshold to remove low quality bases from the beginning of the read. As long as a base has a value below this threshold the base is removed and the next base will be investigated.",
             type: "numeric",
@@ -1280,6 +1425,7 @@ export default new Vuex.Store({
           {
             name: "trailing_qual_threshold",
             value: null,
+            disabled: "never",
             tooltip:
               "quality score threshold to remove low quality bases from the end of the read. As long as a base has a value below this threshold the base is removed and the next base will be investigated.",
             type: "numeric",
@@ -1287,6 +1433,7 @@ export default new Vuex.Store({
           {
             name: "cores",
             value: 4,
+            disabled: "never",
             tooltip: "number of cores to use",
             type: "numeric",
           },
@@ -1294,6 +1441,7 @@ export default new Vuex.Store({
             name: "phred",
             items: [33, 64],
             value: 33,
+            disabled: "never",
             tooltip:
               "phred quality scored encoding. Default is phred33. Use phred64 if working with data from older Illumina (Solexa) machines. ",
             type: "select",
@@ -1303,6 +1451,7 @@ export default new Vuex.Store({
           {
             name: "window_size",
             value: 5,
+            disabled: "never",
             tooltip:
               "the number of bases to average base qualities. Starts scanning at the 5'-end of a sequence and trimms the read once the average required quality (required_qual) within the window size falls below the threshold.",
             type: "numeric",
@@ -1310,12 +1459,14 @@ export default new Vuex.Store({
           {
             name: "required_quality",
             value: 27,
+            disabled: "never",
             tooltip: "the average quality required for selected window size",
             type: "numeric",
           },
           {
             name: "min_length",
             value: 32,
+            disabled: "never",
             tooltip: "minimum length of the filtered sequence",
             type: "numeric",
           },
@@ -1331,12 +1482,14 @@ export default new Vuex.Store({
           {
             name: "cores",
             value: 4,
+            disabled: "never",
             tooltip: "number of cores to use",
             type: "numeric",
           },
           {
             name: "abundance_skew",
             value: 2,
+            disabled: "never",
             tooltip:
               "the abundance skew is used to distinguish in a threeway alignment which sequence is the chimera and which are the parents. The assumption is that chimeras appear later in the PCR amplification process and are therefore less abundant than their parents. The default value is 2.0, which means that the parents should be at least 2 times more abundant than their chimera. Any positive value equal or greater than 1.0 can be used.",
             type: "numeric",
@@ -1344,6 +1497,7 @@ export default new Vuex.Store({
           {
             name: "min_h",
             value: 0.28,
+            disabled: "never",
             tooltip:
               "minimum score (h). Increasing this value tends to reduce the number of false positives and to decrease sensitivity. Default value is 0.28, and values ranging from 0.0 to 1.0 included are accepted.",
             max: 1,
@@ -1356,6 +1510,7 @@ export default new Vuex.Store({
           {
             name: "pre_cluster",
             value: 0.98,
+            disabled: "never",
             tooltip:
               "identity percentage when performing 'pre-clustering' with --cluster_size for denovo chimera filtering with --uchime_denovo",
             max: 1,
@@ -1366,6 +1521,7 @@ export default new Vuex.Store({
           {
             name: "min_unique_size",
             value: 1,
+            disabled: "never",
             tooltip:
               "minimum amount of a unique sequences in a fasta file. If value = 1, then no sequences are discarded after dereplication; if value = 2, then sequences, which are represented only once in a given file are discarded; and so on.",
             type: "numeric",
@@ -1382,12 +1538,14 @@ export default new Vuex.Store({
           {
             name: "cores",
             value: 4,
+            disabled: "never",
             tooltip: "number of cores to use",
             type: "numeric",
           },
           {
             name: "e-value",
             value: (0.00001).toExponential(),
+            disabled: "never",
             tooltip:
               "domain E-value cutoff a sequence must obtain in the HMMER-based step to be included in the output",
             type: "numeric",
@@ -1395,6 +1553,7 @@ export default new Vuex.Store({
           {
             name: "scores",
             value: 0,
+            disabled: "never",
             tooltip:
               "domain score cutoff that a sequence must obtain in the HMMER-based step to be included in the output",
             type: "numeric",
@@ -1402,6 +1561,7 @@ export default new Vuex.Store({
           {
             name: "domains",
             value: 2,
+            disabled: "never",
             tooltip:
               "the minimum number of domains (different HMM gene profiles) that must match a sequence for it to be included in the output (detected as an ITS sequence). Setting the value lower than two will increase the number of false positives, while increasing it above two will decrease ITSx detection abilities on fragmentary data",
             type: "numeric",
@@ -1409,6 +1569,7 @@ export default new Vuex.Store({
           {
             name: "complement",
             value: true,
+            disabled: "never",
             tooltip:
               "If on, ITSx checks both DNA strands for matches to HMM-profiles",
             type: "bool",
@@ -1416,6 +1577,7 @@ export default new Vuex.Store({
           {
             name: "only full",
             value: false,
+            disabled: "never",
             tooltip:
               "If true, the output is limited to full-length ITS1 and ITS2 regions only",
             type: "bool",
@@ -1423,6 +1585,7 @@ export default new Vuex.Store({
           {
             name: "truncate",
             value: true,
+            disabled: "never",
             tooltip:
               "removes ends of ITS sequences if they are outside of the ITS region. If off, the whole input sequence is saved",
             type: "bool",
@@ -1454,6 +1617,7 @@ export default new Vuex.Store({
               "Parabasalia",
             ],
             value: [],
+            disabled: "never",
             tooltip:
               "set of profiles to use for the search. Can be used to restrict the search to only a few organism groups types to save time, if one or more of the origins are not relevant to the dataset under study",
             type: "combobox",
@@ -1462,6 +1626,7 @@ export default new Vuex.Store({
             name: "Regions",
             items: ["SSU", "ITS1", "5.8S", "ITS2", "LSU"],
             value: [],
+            disabled: "never",
             tooltip:
               "ITS regions to output (note that all will output also full ITS region [ITS1-5.8S-ITS2])",
             type: "combobox",
@@ -1469,6 +1634,7 @@ export default new Vuex.Store({
           {
             name: "partial",
             value: 50,
+            disabled: "never",
             tooltip:
               "if larger than 0, ITSx will save additional FASTA-files for full and partial ITS sequences longer than the specified cutoff value. If his setting is left to 0 (zero), it means OFF.",
             type: "numeric",
@@ -1486,6 +1652,7 @@ export default new Vuex.Store({
             name: "similarity type",
             items: ["0", "1", "2", "3", "4"],
             value: "2",
+            disabled: "never",
             tooltip:
               "pairwise sequence identity definition. Default = --iddef 2 [(matching columns) / (alignment length - terminal gaps)]",
             type: "select",
@@ -1494,6 +1661,7 @@ export default new Vuex.Store({
             name: "sequence sorting",
             items: ["cluster_fast", "cluster_size", "cluster_smallmem"],
             value: "cluster_size",
+            disabled: "never",
             tooltip:
               'size = sort the sequences by decreasing abundance; "length" = sort the sequences by decreasing length (--cluster_fast); "no" = do not sort sequences (--cluster_smallmem --usersort)',
             type: "select",
@@ -1502,6 +1670,7 @@ export default new Vuex.Store({
             name: "centroid type",
             items: ["similarity", "abundance"],
             value: "similarity",
+            disabled: "never",
             tooltip:
               '"similarity" = assign representative sequence to the closest (most similar) centroid (distance-based greedy clustering); "abundance" = assign representative sequence to the most abundant centroid (abundance-based greedy clustering; --sizeorder), --maxaccepts should be > 1',
             type: "select",
@@ -1509,6 +1678,7 @@ export default new Vuex.Store({
           {
             name: "max hits",
             value: 1,
+            disabled: "never",
             tooltip:
               "maximum number of hits to accept before stopping the search (should be > 1 for abundance-based selection of centroids [centroid type])",
             type: "numeric",
@@ -1517,6 +1687,7 @@ export default new Vuex.Store({
             name: "relabel",
             items: ["none", "md5m", "sha1"],
             value: "sha1",
+            disabled: "never",
             tooltip: "relabel sequence identifiers (none = do not relabel)",
             type: "select",
           },
@@ -1524,6 +1695,7 @@ export default new Vuex.Store({
             name: "mask",
             items: ["dust", "none"],
             value: "dust",
+            disabled: "never",
             tooltip:
               'mask regions in sequences using the "dust" method, or do not mask ("none").',
             type: "select",
@@ -1532,6 +1704,7 @@ export default new Vuex.Store({
             name: "dbmask",
             items: ["dust", "none"],
             value: "dust",
+            disabled: "never",
             tooltip:
               'prior the OTU table creation, mask regions in sequences using the "dust" method, or do not mask ("none").',
             type: "select",
@@ -1539,6 +1712,7 @@ export default new Vuex.Store({
           {
             name: "output UC",
             value: false,
+            disabled: "never",
             tooltip:
               "output clustering results in tab-separated UCLAST-like format",
             type: "bool",
@@ -1548,6 +1722,7 @@ export default new Vuex.Store({
           {
             name: "OTU type",
             items: ["centroid", "consensus"],
+            disabled: "never",
             tooltip:
               '"centroid" = output centroid sequences; "consensus" = output consensus sequences',
             value: "centroid",
@@ -1556,6 +1731,7 @@ export default new Vuex.Store({
           {
             name: "similarity threshold",
             value: 0.97,
+            disabled: "never",
             tooltip:
               "define OTUs based on the sequence similarity threshold; 0.97 = 97% similarity threshold",
             max: 1,
@@ -1566,6 +1742,7 @@ export default new Vuex.Store({
           {
             name: "strands",
             items: ["both", "plus"],
+            disabled: "never",
             tooltip:
               "when comparing sequences with the cluster seed, check both strands (forward and reverse complementary) or the plus strand only",
             value: "both",
@@ -1574,6 +1751,7 @@ export default new Vuex.Store({
           {
             name: "min OTU size",
             value: 2,
+            disabled: "never",
             tooltip:
               "minimum read count per output OTU (e.g., if value = 2, then singleton OTUs will be discarded [OTUs with only one sequence])",
             type: "numeric",
@@ -1590,36 +1768,42 @@ export default new Vuex.Store({
           {
             name: "e-value",
             value: 10,
+            disabled: "never",
             tooltip: "",
             type: "numeric",
           },
           {
             name: "word size",
             value: 11,
+            disabled: "never",
             tooltip: "",
             type: "numeric",
           },
           {
             name: "reward",
             value: 2,
+            disabled: "never",
             tooltip: "",
             type: "numeric",
           },
           {
             name: "peanlty",
             value: -3,
+            disabled: "never",
             tooltip: "",
             type: "numeric",
           },
           {
             name: "gap open",
             value: 5,
+            disabled: "never",
             tooltip: "",
             type: "numeric",
           },
           {
             name: "gap extend",
             value: 2,
+            disabled: "never",
             tooltip: "",
             type: "numeric",
           },
@@ -1629,6 +1813,7 @@ export default new Vuex.Store({
             name: "database file(s)",
             btnName: "select file",
             value: "undefined",
+            disabled: "never",
             tooltip:
               "database files, up to 5 files (may be fasta formated - automatically will convert to BLAST database format)",
             type: "file",
@@ -1637,6 +1822,7 @@ export default new Vuex.Store({
             name: "task",
             items: ["blastn", "megablast"],
             value: "blastn",
+            disabled: "never",
             tooltip: "",
             type: "select",
           },
@@ -1644,6 +1830,7 @@ export default new Vuex.Store({
             name: "strand",
             items: ["plus", "both"],
             value: "both",
+            disabled: "never",
             tooltip: "",
             type: "select",
           },
@@ -1655,24 +1842,28 @@ export default new Vuex.Store({
         scriptName: "demux_paired_end_data.sh",
         imageName: "pipecraft/demux:0.1",
         serviceName: "demultiplex",
+        disabled: "demultiplexed",
         selected: false,
         showExtra: false,
         extraInputs: [
           {
             name: "cores",
             value: 2,
+            disabled: "never",
             tooltip: "number of cores to use",
             type: "numeric",
           },
           {
             name: "min_seq_length",
             value: 10,
+            disabled: "never",
             tooltip: "minimum length of the output sequence",
             type: "numeric",
           },
           {
             name: "no_indels",
             value: true,
+            disabled: "never",
             tooltip: "do not allow insertions or deletions",
             type: "bool",
           },
@@ -1682,6 +1873,7 @@ export default new Vuex.Store({
             name: "barcodes_file",
             value: "undefined",
             btnName: "select fast(a/q)",
+            disabled: "never",
             tooltip:
               "a file in a fasta format where the headers are sample ids and sequences are barcodes for samples",
             type: "file",
@@ -1689,12 +1881,14 @@ export default new Vuex.Store({
           {
             name: "max_error_rate",
             value: 1,
+            disabled: "never",
             tooltip: "number of allowed mismatches in the index sequence",
             type: "numeric",
           },
           {
             name: "overlap",
             value: 12,
+            disabled: "never",
             tooltip:
               "number of overlap bases with the index. Recommended overlap is the max length of the index for confident sequence assignments to samples in the indexes file.",
             type: "numeric",
@@ -1712,13 +1906,15 @@ export default new Vuex.Store({
           {
             name: "mismatches",
             value: 2,
+            disabled: "never",
             tooltip:
               "allowed mismatches in primer search. By default, 2 mismatches are allowed per primer.",
             type: "numeric",
           },
           {
-            name: "paired-end_tags",
+            name: "paired_end_tags",
             value: ["R1", "R2"],
+            disabled: "single_end",
             tooltip: "Define a tag for fwd and rev reads",
             type: "chip",
             iupac: false,
@@ -1727,6 +1923,7 @@ export default new Vuex.Store({
           {
             name: "forward_primers",
             value: [],
+            disabled: "never",
             tooltip: "manually define up to 13 primers",
             type: "chip",
             iupac: true,
@@ -1735,6 +1932,7 @@ export default new Vuex.Store({
           {
             name: "reverse_primers",
             value: [],
+            disabled: "never",
             tooltip: "manually define up to 13 primers",
             type: "chip",
             iupac: true,
@@ -1752,6 +1950,7 @@ export default new Vuex.Store({
           {
             name: "cores",
             value: 1,
+            disabled: "never",
             tooltip:
               "number of cores to use. For paired-end dta in fasta format, set to 1 [default]. For fastq formats you may set the value to 0 to use all cores.",
             type: "numeric",
@@ -1759,12 +1958,14 @@ export default new Vuex.Store({
           {
             name: "min_seq_length",
             value: 32,
+            disabled: "never",
             tooltip: "minimum length of the output sequence.",
             type: "numeric",
           },
           {
             name: "overlap",
             value: 16,
+            disabled: "never",
             tooltip:
               "number of overlap bases with the primer sequence. Partial matches are allowed, but short matches may occur by chance, leading to erroneously clipped bases. Specifying higher overlap than the length of primer sequnce will still clip the primer (e.g. primer length is 22 bp, but overlap is specified as 25 - this does not affect the identification and clipping of the primer as long as the match is in the specified error range).",
             type: "numeric",
@@ -1772,6 +1973,7 @@ export default new Vuex.Store({
           {
             name: "no_indels",
             value: true,
+            disabled: "never",
             tooltip:
               "do not allow insertions or deletions is primer search. Mismatches are the only type of errprs accounted in the error rate parameter. ",
             type: "bool",
@@ -1779,6 +1981,7 @@ export default new Vuex.Store({
           {
             name: "discard_untrimmed",
             value: true,
+            disabled: "never",
             tooltip:
               "Discard sequences where specified primers were not found.",
             type: "bool",
@@ -1788,6 +1991,7 @@ export default new Vuex.Store({
           {
             name: "forward_primers",
             value: [],
+            disabled: "never",
             tooltip: "Add up to 13 PCR primers",
             type: "chip",
             iupac: true,
@@ -1796,6 +2000,7 @@ export default new Vuex.Store({
           {
             name: "reverse_primers",
             value: [],
+            disabled: "never",
             tooltip: "Add up to 13 PCR primers",
             type: "chip",
             iupac: true,
@@ -1804,6 +2009,7 @@ export default new Vuex.Store({
           {
             name: "mismatches",
             value: 2,
+            disabled: "never",
             tooltip:
               "allowed mismatches in primer search. By default, 2 mismatches are allowed per primer.",
             type: "numeric",
@@ -1811,6 +2017,7 @@ export default new Vuex.Store({
           {
             name: "min_overlap",
             value: 15,
+            disabled: "never",
             tooltip:
               "the number of minimum overlap bases with the primer sequence.",
             type: "numeric",
@@ -1819,6 +2026,7 @@ export default new Vuex.Store({
             name: "seqs_to_keep",
             items: ["keep_all", "keep_only_linked"],
             value: "keep_all",
+            disabled: "never",
             tooltip:
               "Keep seqs with primers found in both ends(linked), or keeps seqs with primer found atlest in one end(all)",
             type: "select",
@@ -1836,6 +2044,7 @@ export default new Vuex.Store({
           {
             name: "maxEE",
             value: 1,
+            disabled: "never",
             tooltip:
               "Discard sequences with more than the specified number of expected errors",
             type: "numeric",
@@ -1843,6 +2052,7 @@ export default new Vuex.Store({
           {
             name: "maxN",
             value: 0,
+            disabled: "never",
             tooltip:
               "Discard sequences with more than the specified number of N’s",
             type: "numeric",
@@ -1850,6 +2060,7 @@ export default new Vuex.Store({
           {
             name: "minLen",
             value: 20,
+            disabled: "never",
             tooltip:
               "Remove reads with length less than minLen. minLen is enforced after all other trimming and truncation",
             type: "numeric",
@@ -1857,6 +2068,7 @@ export default new Vuex.Store({
           {
             name: "truncQ",
             value: null,
+            disabled: "never",
             tooltip:
               "Truncate reads at the first instance of a quality score less than or equal to truncQ",
             type: "numeric",
@@ -1864,6 +2076,7 @@ export default new Vuex.Store({
           {
             name: "truncLen",
             value: 0,
+            disabled: "never",
             tooltip:
               "Truncate reads after truncLen bases. Reads shorter than this are discarded",
             type: "numeric",
@@ -1871,6 +2084,7 @@ export default new Vuex.Store({
           {
             name: "maxLen",
             value: null,
+            disabled: "never",
             tooltip:
               "Remove reads with length greater than maxLen. maxLen is enforced on the raw reads",
             type: "numeric",
@@ -1878,6 +2092,7 @@ export default new Vuex.Store({
           {
             name: "minQ",
             value: 0,
+            disabled: "never",
             tooltip:
               "After truncation, reads contain a quality score below minQ will be discarded",
             type: "numeric",
@@ -1889,12 +2104,14 @@ export default new Vuex.Store({
         imageName: "pipecraft/dada2:3.10",
         serviceName: "merge Pairs",
         selected: "always",
+        disabled: "single_end",
         showExtra: false,
         extraInputs: [],
         Inputs: [
           {
             name: "minOverlap",
             value: 12,
+            disabled: "never",
             tooltip:
               "The minimum length of the overlap required for mergingthe forward and reverse reads.",
             type: "numeric",
@@ -1902,12 +2119,14 @@ export default new Vuex.Store({
           {
             name: "maxMismatch",
             value: 0,
+            disabled: "never",
             tooltip: "The maximum mismatches allowed in the overlap region",
             type: "numeric",
           },
           {
             name: "returnRejects",
             value: false,
+            disabled: "never",
             tooltip:
               "Return and retain, the pairs that that were rejected based on mismatches in the overlap region",
             type: "bool",
@@ -1926,6 +2145,7 @@ export default new Vuex.Store({
             name: "method",
             items: ["consensus", "pooled", "per-sample"],
             value: "consensus",
+            disabled: "never",
             tooltip:
               "If 'pooled': The samples in the sequence table are all pooled together for bimera identification, If 'consensus': The samples in a sequence table are independently checked for bimeras, If 'per-sample': The samples in a sequence table are independently checked for bimeras",
             type: "select",
@@ -1945,12 +2165,14 @@ export default new Vuex.Store({
             name: "refFasta",
             btnName: "select file",
             value: "undefined",
+            disabled: "never",
             tooltip: "Select a reference fasta file",
             type: "file",
           },
           {
             name: "minBoot",
             value: 50,
+            disabled: "never",
             tooltip:
               "The minimum bootstrap confidence for assigning a taxonomic level.",
             type: "numeric",
@@ -1958,6 +2180,7 @@ export default new Vuex.Store({
           {
             name: "tryRC",
             value: false,
+            disabled: "never",
             tooltip:
               "the reverse-complement of each sequences will be used for classification if it is a better match to the reference sequences than the forward sequence.",
             type: "bool",
