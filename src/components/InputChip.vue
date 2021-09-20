@@ -1,39 +1,40 @@
 <template>
-  <v-card
-    :disabled="Object.values(this.$store.state.data).includes(input.disabled)"
-    light
-    elevation="2"
-    style="height: fit-content; resize:auto; min-height: 145px"
-  >
-    <v-tooltip top>
-      <template v-slot:activator="{ on }">
-        <v-card-title
-          v-on="on"
-          style="justify-content:center; padding:10px 0px; "
-          >{{ input.name.replace(/_/g, " ") }}</v-card-title
+  <v-tooltip top>
+    <template v-slot:activator="{ on }">
+      <div v-on="on">
+        <v-card
+          :disabled="Object.values(inputData).includes(input.disabled)"
+          light
+          elevation="2"
+          style="height: fit-content; resize:auto; min-height: 145px"
         >
-      </template>
-      <span>{{ input.tooltip }}</span>
-    </v-tooltip>
-    <v-card-actions style="justify-content:center; ">
-      <v-row style="height: fit-content; resize:auto;"
-        ><v-col style="padding:0;" cols="10" offset="1">
-          <v-combobox
-            type="text"
-            @change="inputUpdate(input.value)"
-            append-icon=""
-            deletable-chips
-            small-chips
-            multiple
-            :rules="input.rules"
-            style="text-transform: uppercase"
-            @keydown="input.iupac ? IUPAC($event) : void 0"
-            v-model="input.value"
-          ></v-combobox>
-        </v-col>
-      </v-row>
-    </v-card-actions>
-  </v-card>
+          <v-card-title style="justify-content:center; padding:10px 0px; ">{{
+            input.name.replace(/_/g, " ")
+          }}</v-card-title>
+
+          <v-card-actions style="justify-content:center; ">
+            <v-row style="height: fit-content; resize:auto;"
+              ><v-col style="padding:0;" cols="10" offset="1">
+                <v-combobox
+                  type="text"
+                  @change="inputUpdate(input.value)"
+                  append-icon=""
+                  deletable-chips
+                  small-chips
+                  multiple
+                  :rules="input.rules"
+                  style="text-transform: uppercase"
+                  @keydown="input.iupac ? IUPAC($event) : void 0"
+                  v-model="input.value"
+                ></v-combobox>
+              </v-col>
+            </v-row>
+          </v-card-actions>
+        </v-card>
+      </div>
+    </template>
+    <span>{{ input.tooltip }}</span>
+  </v-tooltip>
 </template>
 
 <script>
@@ -50,6 +51,9 @@ export default {
           this.$attrs.inputIndex
         ];
       }
+    },
+    inputData() {
+      return this.$store.state.data;
     },
   },
   methods: {

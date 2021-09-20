@@ -14,6 +14,8 @@
 </template>
 
 <script>
+const path = require("path");
+const slash = require("slash");
 const Swal = require("sweetalert2");
 import * as Dockerode from "dockerode";
 var dockerode = new Dockerode({ socketPath: "//./pipe/docker_engine" });
@@ -63,6 +65,7 @@ export default {
               let envVariables;
               envVariables = this.createCustomVariableObj(name, index[0]);
               let Binds = this.createCustomBinds(name, index[0], Input);
+              console.log(Binds);
               let gotImg = await imageExists(dockerode, imageName);
               if (gotImg === false) {
                 console.log(`Pulling image ${imageName}`);
@@ -290,13 +293,17 @@ export default {
       ];
       this.$store.state[name][index].Inputs.forEach((input) => {
         if (input.type == "file" || input.type == "boolFile") {
-          let bind = `${input.value}:/extraFiles`;
+          let correctedPath = path.dirname(slash(input.value));
+          // let fileName = path.parse(correctedPath).base;
+          let bind = `${correctedPath}:/extraFiles`;
           Binds.push(bind);
         }
       });
       this.$store.state[name][index].extraInputs.forEach((input) => {
         if (input.type == "file" || input.type == "boolfile") {
-          let bind = `${input.value}:/extraFiles`;
+          let correctedPath = path.dirname(slash(input.value));
+          // let fileName = path.parse(correctedPath).base;
+          let bind = `${correctedPath}:/extraFiles`;
           Binds.push(bind);
         }
       });

@@ -26,13 +26,16 @@
 regex='[^\\]*$'
 oligos_file = echo $barcodes_file | grep -oP "$regex" 
 extension=$fileFormat
-indexes_file="/extraFiles/${oligos_file}"
+indexes_file="/extraFiles/oligos_paired.txt"
 error_rate="-e ${max_error_rate}"
 if [ "$no_indels" = true ] ; then
     no_indels=$"--no-indels"
 else
     no_indels=''
 fi
+ls
+ls /extraFiles
+more /extraFiles/oligos_paired.txt
 
 minlen=$"--minimum-length ${min_seq_length}"
 cores=$"--cores ${cores}"
