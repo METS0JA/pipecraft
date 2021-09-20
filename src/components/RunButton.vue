@@ -14,6 +14,8 @@
 </template>
 
 <script>
+const path = require("path");
+const slash = require("slash");
 const Swal = require("sweetalert2");
 import * as Dockerode from "dockerode";
 var dockerode = new Dockerode({ socketPath: "//./pipe/docker_engine" });
@@ -62,6 +64,8 @@ export default {
               let WorkingDir = this.$store.state.workingDir;
               let envVariables;
               envVariables = this.createCustomVariableObj(name, index[0]);
+              let Binds = this.createCustomBinds(name, index[0], Input);
+              console.log(Binds);
               let gotImg = await imageExists(dockerode, imageName);
               if (gotImg === false) {
                 console.log(`Pulling image ${imageName}`);
@@ -89,11 +93,7 @@ export default {
                     WorkingDir: WorkingDir,
                     Volumes: {},
                     HostConfig: {
-                      Binds: [
-                        `${process.cwd()}/src/pipecraft-core/service_scripts:/scripts`, // dev path
-                        // `${process.cwd()}/resources/src/pipecraft-core/service_scripts:/scripts`, // build path
-                        `${Input}:/input`,
-                      ],
+                      Binds: Binds,
                     },
                     Env: envVariables,
                   },
@@ -128,6 +128,10 @@ export default {
                   fileFormat: this.getVariableFromLog(result.log, "fileFormat"),
                   readType: this.getVariableFromLog(result.log, "readType"),
                 };
+                this.$store.commit(
+                  "toggle_PE_SE_scripts",
+                  newDataInfo.readType,
+                );
                 this.$store.commit("addInputInfo", newDataInfo);
                 this.$store.commit("addWorkingDir", newWorkingDir);
               } else {
@@ -280,6 +284,30 @@ export default {
         envVariables.push(stringify(varObj).replace(/(\r\n|\n|\r)/gm, ""));
       });
       return envVariables;
+    },
+    createCustomBinds(name, index, Input) {
+      let Binds = [
+        `${process.cwd()}/src/pipecraft-core/service_scripts:/scripts`, // dev path
+        // `${process.cwd()}/resources/src/pipecraft-core/service_scripts:/scripts`, // build path
+        `${Input}:/input`,
+      ];
+      this.$store.state[name][index].Inputs.forEach((input) => {
+        if (input.type == "file" || input.type == "boolFile") {
+          let correctedPath = path.dirname(slash(input.value));
+          // let fileName = path.parse(correctedPath).base;
+          let bind = `${correctedPath}:/extraFiles`;
+          Binds.push(bind);
+        }
+      });
+      this.$store.state[name][index].extraInputs.forEach((input) => {
+        if (input.type == "file" || input.type == "boolfile") {
+          let correctedPath = path.dirname(slash(input.value));
+          // let fileName = path.parse(correctedPath).base;
+          let bind = `${correctedPath}:/extraFiles`;
+          Binds.push(bind);
+        }
+      });
+      return Binds;
     },
 
     findSelectedService(i) {

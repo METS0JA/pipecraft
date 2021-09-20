@@ -23,13 +23,21 @@
 ###############################
 ###############################
 #These variables are for testing (DELETE when implementing to PipeCraft)
-extension=$"fastq"
-indexes_file=$"barcodes_paired.txt"
-error_rate="-e 1"
-no_indels=$"--no-indels"
-minlen=$"--minimum-length 10"
-cores=$"--cores 1"
-overlap=$"--overlap 8"
+regex='[^\\]*$'
+oligos_file = echo $barcodes_file | grep -oP "$regex" 
+extension=$fileFormat
+indexes_file="/extraFiles/${oligos_file}"
+error_rate="-e ${max_error_rate}"
+if [ "$no_indels" = true ] ; then
+    echo 'Be careful not to fall off!'
+    no_indels=$"--no-indels"
+else
+    no_indels=''
+minlen=$"--minimum-length ${min_seq_length}"
+cores=$"--cores ${cores}"
+overlap=$"--overlap ${overlap}"
+
+
 ###############################
 ###############################
 set -e
@@ -41,7 +49,7 @@ start=$(date +%s)
 source /scripts/framework.functions.sh
 
 #output dir
-output_dir=$"demultiplex_out"
+output_dir=$"/input/demultiplex_out"
 ### Check if files with specified extension exist in the dir
 first_file_check
 ### Prepare working env and check paired-end data
@@ -166,4 +174,4 @@ printf "Total time: $runtime sec.\n\n"
 echo "workingDir=/$output_dir"
 echo "fileFormat=$newextension"
 echo "dataFormat=demultiplexed"
-echo "readType=single-end"
+echo "readType=single_end"

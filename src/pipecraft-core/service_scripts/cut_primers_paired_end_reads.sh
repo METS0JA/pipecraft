@@ -22,17 +22,17 @@
 ###############################
 ###############################
 #These variables are for testing (DELETE when implementing to PipeCraft)
-extension=$"fq"
-mismatches=$"-e 2"
-min_length=$"--minimum-length 19"
-overlap=$"--overlap 15"
-cores=$"--cores 0"
-no_indels=$"TRUE"
-discard_untrimmed=$"TRUE"
-seqs_to_keep=$"keep_only_linked" #keep_all/keep_only_linked
+extension=$fileFormat
+mismatches=$"-e ${mismatches}"
+min_length=$"--minimum-length ${min_seq_length}"
+overlap=$"--overlap ${min_overlap}"
+cores=$"--cores ${cores}"
+no_indels=$no_indels
+discard_untrimmed=$discard_untrimmed
+seqs_to_keep=$seqs_to_keep #keep_all/keep_only_linked
 
-fwd_tempprimer=$"ACCTGCTAGGCTAGATGC,GCTAGCTAGCTAGCTGATGC,ATCGATGCTAGCTAGCTAGCTGA"
-rev_tempprimer=$"GGGATCCATCGATTTAAC,GCTAGCTAGCTAGCTAGCTAGC"
+fwd_tempprimer=$forward_primers
+rev_tempprimer=$reverse_primers
 
 ###############################
 ###############################
@@ -45,7 +45,7 @@ start=$(date +%s)
 source /scripts/framework.functions.sh
 
 #output dir
-output_dir=$"primersCut_out"
+output_dir=$"/input/primersCut_out"
 ### Check if files with specified extension exist in the dir
 first_file_check
 ### Prepare working env and check paired-end data
@@ -141,7 +141,7 @@ while read LINE; do
 
     #If discard_untrimmed = TRUE, then assigns outputs and make outdir
     if [[ $discard_untrimmed == "TRUE" ]]; then
-        mkdir -p $output_dir/untrimmed
+        mkdir -r -p $output_dir/untrimmed
         untrimmed_output=$"--untrimmed-output $output_dir/untrimmed/$inputR1.untrimmed.$newextension"
         untrimmed_paired_output=$"--untrimmed-paired-output $output_dir/untrimmed/$inputR2.untrimmed.$newextension"
     fi
@@ -231,7 +231,7 @@ runtime=$((end-start))
 printf "Total time: $runtime sec.\n\n"
 
 #variables for all services
-echo "workingDir=/$output_dir"
+echo "workingDir=$output_dir"
 echo "fileFormat=$newextension"
 echo "dataFormat=$dataFormat"
-echo "readType=paired-end"
+echo "readType=paired_end"
