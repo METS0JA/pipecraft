@@ -1997,7 +1997,6 @@ export default new Vuex.Store({
       }
     },
     checkCustomService(state, payload) {
-      console.log(state[payload.name][payload.serviceIndex]);
       state[payload.name][payload.serviceIndex].selected = payload.selected;
     },
   },

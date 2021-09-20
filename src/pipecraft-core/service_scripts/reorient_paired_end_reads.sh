@@ -18,13 +18,13 @@
     #https://github.com/indraniel/fqgrep
 #pigz v2.4
 ##########################################################
-
 ###############################
 #These variables are for testing (DELETE when implementing to PipeCraft)
-extension=$"fq.gz"
-mismatches=$"2"
-fwd_tempprimer=$"ATGCGTTGGAGAGARCGTTTC"
-rev_tempprimer=$"GATCACCTTCTAATTTACCWACAACTG"
+ls
+extension=$fileFormat
+mismatches=$mismatches
+fwd_tempprimer=$forward_primers
+rev_tempprimer=$reverse_primers
 ###############################
 ###############################
 
