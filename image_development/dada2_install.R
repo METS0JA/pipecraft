@@ -1,3 +1,4 @@
+#!/usr/bin/env Rscript
 install.packages("Rcpp" ,repos = "http://cran.us.r-project.org")
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager" ,repos = "http://cran.us.r-project.org")

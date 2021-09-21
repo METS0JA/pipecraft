@@ -1,5 +1,6 @@
 {
   "name": "Pipecraft",
+  "productName": "pipecraft",
   "version": "0.2.0beta",
   "private": true,
   "scripts": {

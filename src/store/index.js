@@ -223,7 +223,7 @@ export default new Vuex.Store({
         services: [
           {
             scriptName: "cut_primers_paired_end_reads.sh",
-            imageName: "pipecraft/cutadapt:3.10",
+            imageName: "pipecraft/demux:0.1",
             serviceName: "cutadapt",
             selected: false,
             showExtra: false,
