@@ -71,14 +71,6 @@ write(asv_fasta, file.path(path_ASVs, "ASVs.fasta"))
 #write ASVs table to path_ASVs
 write.csv(ASV_tab.nochim, file.path(path_ASVs, "ASVs_table.csv"))
 
-
-### sample 84 counts in ASV table is 2 reads more than in statistics mode
-
-
-
-
-
-
 #Loop through each sample in the table and write per-sample fasta files containin non-chimeric ASVs
 for (i in 2:length(colnames(ASV_tab.nochim))){
     sample_name = colnames(ASV_tab.nochim)[i]
@@ -115,10 +107,12 @@ row.names(ASV_tab) = sub(">", "", asv_headers)
 asv_fasta <- c(rbind(asv_headers, asv_seqs))
 write(asv_fasta, file.path(path_results, "ASVs.nonChimFilt.fasta"))
 #run external script (for seqkit) to paste out chimeric ASVs
-# base::system("./paste_dada2_chimeras")
+base::system("./paste_dada2_chimeras")
 
 #remove ASVs.nonChimFilt.fasta
 file.remove(file.path(path_results, "ASVs.nonChimFilt.fasta"))
+
+#DONE 
 
 print('workingDir=/input/chimeraFiltered_out.dada2')
 print('fileFormat=seqtab')

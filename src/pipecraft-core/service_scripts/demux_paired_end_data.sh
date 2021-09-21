@@ -28,11 +28,15 @@ oligos_file = echo $index_file | grep -oP "$regex"
 extension=$fileFormat
 indexes_file="/extraFiles/${oligos_file}"
 error_rate="-e ${index_mismatch}"
+
 if [ "$no_indels" = true ] ; then
     no_indels=$"--no-indels"
 else
     no_indels=''
 fi
+ls
+ls /extraFiles
+more /extraFiles/oligos_paired.txt
 
 minlen=$"--minimum-length ${min_seq_length}"
 cores=$"--cores ${cores}"

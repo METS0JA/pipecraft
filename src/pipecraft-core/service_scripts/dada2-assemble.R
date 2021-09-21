@@ -159,6 +159,8 @@ if (pool == ""){
     file.remove(file.path(path_results, "derepRs.rds"))
 }
 
+#DONE 
+
 print('workingDir=/input/denoised_assembled.dada2')
 print('fileFormat=fasta')
 print('dataFormat=demultiplexed')

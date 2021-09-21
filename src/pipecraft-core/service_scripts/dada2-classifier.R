@@ -22,6 +22,9 @@ dir.create(path_results)
 #load environment variables
 database = Sys.getenv('dada2_database')
 database = gsub("\\\\", "/", database) #replace backslashes \ in the database path
+print(database)
+
+
 minBoot = Sys.getenv('minBoot')
 tryRC = Sys.getenv('tryRC')
 
@@ -54,14 +57,7 @@ row.names(tax2) = sub(">", "", asv_headers)
 #write taxonomy to csv
 write.table(tax2, file.path(path_results, "taxonomy.csv"), sep = "\t", quote=F, col.names = NA)
 
-
-#seq count summary
-# getN <- function(x) sum(getUniques(x))
-# seq_count <- cbind(qfilt, sapply(dadaFs, getN), sapply(dadaRs, getN), sapply(merge, getN), rowSums(ASV_tab.nochim))
-# colnames(seq_count) <- c("input", "qualFiltered", "denoised_R1", "denoised_R2", "merged", "chimeraFiltered")
-# rownames(seq_count) <- sample.names
-# write.csv(seq_count, file.path(path_results, "seq_count_summary.csv"), row.names = TRUE)
-
+#DONE
 
 print('workingDir=/input/taxonomy_out.dada2')
 print('fileFormat=taxtab')
