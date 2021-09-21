@@ -19,14 +19,12 @@
 #pigz v2.4
 ##########################################################
 
+# Load variables from interface
 ###############################
-#These variables are for testing (DELETE when implementing to PipeCraft)
-
 extension=$fileFormat
 mismatches=$mismatches
 fwd_tempprimer=$forward_primers
 rev_tempprimer=$reverse_primers
-###############################
 ###############################
 
 #############################

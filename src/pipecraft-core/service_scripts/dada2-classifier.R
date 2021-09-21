@@ -1,26 +1,69 @@
 #!/usr/bin/env Rscript
+
+#DADA2 sequence classifier.
+
 #load dada2
 library("dada2")
 
-#check for lingering output dir and delete if needed
-if (dir.exists("/input/dada2-classifier-output")) {
-    unlink("/input/dada2-classifier-output", recursive=TRUE)
-}
+#load env variables
+readType = Sys.getenv('readType')
+fileFormat = Sys.getenv('fileFormat')
+dataFormat = Sys.getenv('dataFormat')
+workingDir = Sys.getenv('workingDir')
 
-#create new output dir
-dir.create('/input/dada2-classifier-output')
+#check for output dir and delete if needed
+if (dir.exists("/input/taxonomy_out.dada2")) {
+    unlink("/input/taxonomy_out.dada2", recursive=TRUE)
+}
+#create output dir
+path_results = "/input/taxonomy_out.dada2"
+dir.create(path_results)
 
 #load environment variables
-database = Sys.getenv('database')
+database = Sys.getenv('dada2_database')
+database = gsub("\\\\", "/", database) #replace backslashes \ in the database path
+minBoot = Sys.getenv('minBoot')
+tryRC = Sys.getenv('tryRC')
+
+#"FALSE" or "TRUE" to FALSE or TRUE for dada2
+if (tryRC == "false" || tryRC == "FALSE"){
+    tryRC = FALSE
+}
+if (tryRC == "true" || tryRC == "TRUE"){
+    tryRC = TRUE
+}
+
+#load data
+ASV_tab.nochim = readRDS(file.path(workingDir, "ASVs_table.denoised-merged.nochim.rds"))
+
+#assign taxonomy
+tax <- assignTaxonomy(ASV_tab.nochim , database, multithread = TRUE, minBoot = minBoot, tryRC = tryRC, outputBootstraps = TRUE)
+
+###format and save taxonomy results
+#sequence headers
+asv_headers = vector(dim(ASV_tab.nochim)[2], mode="character")
+for (i in 1:dim(ASV_tab.nochim)[2]) {
+asv_headers[i] = paste(">ASV", i, sep="_")
+}
+#add sequences to 1st column
+tax2 = cbind(row.names(tax$tax), tax$tax,tax$boot)
+colnames(tax2)[1] = "Sequence"
+#row names as sequence headers
+row.names(tax2) = sub(">", "", asv_headers)
+
+#write taxonomy to csv
+write.table(tax2, file.path(path_results, "taxonomy.csv"), sep = "\t", quote=F, col.names = NA)
 
 
-#define input and output file paths
-unite.ref <- "/scripts/sh_general_release_04.02.2020.fasta"  # CHANGE ME to location on your machine
-seqtab.nochim <- readRDS("seqtab.nochim.rds")
-taxa <- assignTaxonomy(seqtab.nochim, unite.ref, multithread = TRUE, tryRC = TRUE)
-write.csv(taxa, file="taxa.csv")
+#seq count summary
+# getN <- function(x) sum(getUniques(x))
+# seq_count <- cbind(qfilt, sapply(dadaFs, getN), sapply(dadaRs, getN), sapply(merge, getN), rowSums(ASV_tab.nochim))
+# colnames(seq_count) <- c("input", "qualFiltered", "denoised_R1", "denoised_R2", "merged", "chimeraFiltered")
+# rownames(seq_count) <- sample.names
+# write.csv(seq_count, file.path(path_results, "seq_count_summary.csv"), row.names = TRUE)
 
-print('workingDir=/input/dada2-classifier-output')
+
+print('workingDir=/input/taxonomy_out.dada2')
 print('fileFormat=taxtab')
 print('dataFormat=demultiplexed')
-print('readType=paired-end')
+print('readType=single-end')
