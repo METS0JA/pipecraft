@@ -24,6 +24,7 @@
 ###############################
 #These variables are for testing (DELETE when implementing to PipeCraft)
 regex='[^\\]*$'
+echo $index_file | grep -oP "$regex"
 oligos_file = echo $index_file | grep -oP "$regex" 
 extension=$fileFormat
 indexes_file="/extraFiles/${oligos_file}"

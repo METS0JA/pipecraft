@@ -56,6 +56,7 @@
         v-for="(service, index) in services"
         :key="index"
         :disabled="Object.values(inputData).includes(service.disabled)"
+        :class="Object.values(inputData).includes(service.disabled) && hide"
       >
         <v-expansion-panel-header
           style="justify-content:left;"
@@ -251,6 +252,9 @@ export default {
     InputCombo,
   },
   computed: {
+    hide() {
+      return "display_none";
+    },
     services() {
       return this.$store.state[this.$route.params.workflowName];
     },
@@ -291,5 +295,8 @@ span {
 }
 .always {
   padding-left: 58px;
+}
+.display_none {
+  display: none;
 }
 </style>
