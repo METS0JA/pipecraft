@@ -1194,6 +1194,7 @@ export default new Vuex.Store({
         scriptName: "reorient_paired_end_reads.sh",
         imageName: "pipecraft/reorient:2",
         serviceName: "reorient",
+        disabled: "never",
         selected: false,
         showExtra: false,
         extraInputs: [],
@@ -1239,6 +1240,7 @@ export default new Vuex.Store({
         scriptName: "cut_primers_paired_end_reads.sh",
         imageName: "pipecraft/demux:0.1",
         serviceName: "remove primers",
+        disabled: "never",
         selected: false,
         showExtra: false,
         extraInputs: [
@@ -1413,6 +1415,7 @@ export default new Vuex.Store({
         scriptName: "quality_filtering_paired_end_trimmomatic.sh",
         imageName: "pipecraft/trimmomatic:0.39",
         serviceName: "quality filter",
+        disabled: "never",
         selected: "always",
         showExtra: false,
         extraInputs: [
@@ -1478,6 +1481,7 @@ export default new Vuex.Store({
         scriptName: "chimera_filtering_vsearch.sh",
         imageName: "pipecraft/vsearch:2.15.0",
         serviceName: "chimera filter",
+        disabled: "never",
         selected: "always",
         showExtra: false,
         extraInputs: [
@@ -1534,6 +1538,7 @@ export default new Vuex.Store({
         scriptName: "reorient_paired_end_reads.sh",
         imageName: "pipecraft/reorient:1",
         serviceName: "gene extraction",
+        disabled: "never",
         selected: "always",
         showExtra: false,
         extraInputs: [
@@ -1647,6 +1652,7 @@ export default new Vuex.Store({
         scriptName: "cluster.sh",
         imageName: "ppiecraft/",
         serviceName: "clustering",
+        disabled: "never",
         selected: "always",
         showExtra: false,
         extraInputs: [
@@ -1764,6 +1770,7 @@ export default new Vuex.Store({
         scriptName: "reorient_paired_end_reads.sh",
         imageName: "pipecraft/reorient:1",
         serviceName: "assign taxonomy",
+        disabled: "never",
         selected: "always",
         showExtra: false,
         extraInputs: [
@@ -1902,6 +1909,7 @@ export default new Vuex.Store({
         scriptName: "reorient_paired_end_reads.sh",
         imageName: "pipecraft/reorient:1",
         serviceName: "reorient",
+        disabled: "never",
         selected: false,
         showExtra: false,
         extraInputs: [],
@@ -1946,6 +1954,7 @@ export default new Vuex.Store({
         scriptName: "cut_primers_paired_end_reads.sh",
         imageName: "pipecraft/demux:0.1",
         serviceName: "remove primers",
+        disabled: "never",
         selected: false,
         showExtra: false,
         extraInputs: [
@@ -2031,6 +2040,7 @@ export default new Vuex.Store({
         scriptName: "dada2-quality.R",
         imageName: "pipecraft/dada2:3.10",
         serviceName: "quality filter",
+        disabled: "never",
         selected: "always",
         showExtra: false,
         extraInputs: [],
@@ -2212,6 +2222,7 @@ export default new Vuex.Store({
         scriptName: "dada2-chimera.R",
         imageName: "pipecraft/dada2:3.10",
         serviceName: "remove chimeras",
+        disabled: "never",
         selected: "always",
         showExtra: false,
         extraInputs: [],
@@ -2232,6 +2243,7 @@ export default new Vuex.Store({
         scriptName: "dada2-classifier.R",
         imageName: "pipecraft/dada2:3.10",
         serviceName: "assign Taxonomy",
+        disabled: "never",
         selected: "always",
         showExtra: false,
         extraInputs: [],
@@ -2309,6 +2321,32 @@ export default new Vuex.Store({
               j
             ].scriptName.replace("paired_end", "single_end");
           }
+        }
+      }
+    },
+    toggle_demux_mux(state, payload) {
+      for (const [key] of Object.entries(state.customWorkflowInfo)) {
+        for (let i = 0; i < state[key].length; i++) {
+          if (
+            payload == "demultiplexed" &&
+            state[key][i].disabled == "demultiplexed"
+          ) {
+            console.log(state[key][i].disabled);
+            state[key][i].selected = false;
+          }
+          if (
+            payload == "multiplexed" &&
+            state[key][i].disabled == "demultiplexed"
+          ) {
+            state[key][i].selected = true;
+          }
+        }
+      }
+      for (let i = 0; i < state.selectedSteps.length; i++) {
+        if (payload == "demultiplexed") {
+          state.selectedSteps = state.selectedSteps.filter(
+            (item) => !(item.stepName == "demultiplex"),
+          );
         }
       }
     },
