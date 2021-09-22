@@ -38,17 +38,19 @@ saveRDS(ASV_tab.nochim, file.path(path_results, "ASVs_table.denoised-merged.noch
 
 
 #seq count summary
+qfilt = readRDS("/input/qualFiltered_out.dada2/quality_filtered.rds")
+sample_names = readRDS("/input/qualFiltered_out.dada2/sample_names.rds")
+
 no_of_ASVs_list = list() #add ASVs per sample count
 for (i in 1:nrow(ASV_tab.nochim)){
     no_of_ASVs = sum(ASV_tab.nochim[i,] > 0)
     no_of_ASVs_list = append(no_of_ASVs_list, no_of_ASVs, after = length(no_of_ASVs_list))
 }
 ASV_counts = data.frame(no_of_ASVs_list, check.names = FALSE, row.names = "")
-colnames(ASV_counts) = sample.names
-getN <- function(x) sum(getUniques(x))
-seq_count <- cbind(qfilt, sapply(dadaFs, getN), sapply(dadaRs, getN), sapply(merge, getN), rowSums(ASV_tab.nochim), t(ASV_counts))
-colnames(seq_count) <- c("input", "qualFiltered", "denoised_R1", "denoised_R2", "merged", "chimeraFiltered", "no.of ASVs")
-rownames(seq_count) <- sample.names
+colnames(ASV_counts) = sample_names
+seq_count <- cbind(rowSums(ASV_tab), rowSums(ASV_tab.nochim), t(ASV_counts))
+colnames(seq_count) <- c("input(merged)", "chimeraFiltered", "no.of ASVs")
+rownames(seq_count) <- sample_names
 write.csv(seq_count, file.path(path_results, "seq_count_summary.csv"), row.names = TRUE)
 
 ###format and save ASV table and ASVs.fasta

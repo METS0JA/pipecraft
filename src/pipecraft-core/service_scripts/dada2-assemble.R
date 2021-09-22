@@ -59,20 +59,20 @@ if (pool != ""){
     #filtered files path
     filtFs = readRDS(file.path(workingDir, "filtFs.rds"))
     filtRs = readRDS(file.path(workingDir, "filtRs.rds"))
-    sample.names = readRDS(file.path(workingDir, "sample_names.rds"))
-    print(sample.names)
+    sample_names = readRDS(file.path(workingDir, "sample_names.rds"))
+    print(sample_names)
 
     #Learn the error rates
     errF = learnErrors(filtFs, multithread=TRUE)
     errR = learnErrors(filtRs, multithread=TRUE)
 
-    #Error rate figures, NOT WORKING 
-    # pdf(file.path(path_results, "Error_rates_R1.pdf"))
-    # p = plotErrors(errF)
-    # dev.off()
-    # pdf(file.path(path_results, "Error_rates_R2.pdf"))
-    # p = plotErrors(errR)
-    # dev.off()
+    #Error rate figures
+    pdf(file.path(path_results, "Error_rates_R1.pdf"))
+      print( plotErrors(errF) )
+    dev.off()
+    pdf(file.path(path_results, "Error_rates_R2.pdf"))
+      print( plotErrors(errR) )
+    dev.off()
 
     #dereplicate
     derepFs = derepFastq(filtFs, qualityType = qualityType)
@@ -95,7 +95,8 @@ if (pool == ""){
     dadaRs = readRDS(file.path(path_results, "dadaRs.rds"))
     derepFs = readRDS(file.path(path_results, "derepFs.rds"))
     derepRs = readRDS(file.path(path_results, "derepRs.rds"))
-    sample.names = readRDS("/input/qualFiltered_out.dada2/sample_names.rds")
+    sample_names = readRDS("/input/qualFiltered_out.dada2/sample_names.rds")
+    qfilt = readRDS("/input/qualFiltered_out.dada2/quality_filtered.rds")
 
     #merge paired-end reads
     merge = mergePairs(dadaFs, derepFs, dadaRs, derepRs, 
@@ -146,17 +147,16 @@ if (pool == ""){
     getN <- function(x) sum(getUniques(x))
     seq_count <- cbind(qfilt, sapply(dadaFs, getN), sapply(dadaRs, getN), sapply(merge, getN))
     colnames(seq_count) <- c("input", "qualFiltered", "denoised_R1", "denoised_R2", "merged")
-    rownames(seq_count) <- sample.names
+    rownames(seq_count) <- sample_names
     write.csv(seq_count, file.path(path_results, "seq_count_summary.csv"), row.names = TRUE)
 
     #remove R objects
-    file.remove("/input/qualFiltered_out.dada2/filtFs.rds")
-    file.remove("/input/qualFiltered_out.dada2/filtRs.rds")
-    file.remove("/input/qualFiltered_out.dada2/sample_names.rds")
-    file.remove(file.path(path_results, "dadaFs.rds"))
-    file.remove(file.path(path_results, "dadaRs.rds"))
-    file.remove(file.path(path_results, "derepFs.rds"))
-    file.remove(file.path(path_results, "derepRs.rds"))
+    # if (file.exists("/input/qualFiltered_out.dada2/filtFs.rds"){file.remove("/input/qualFiltered_out.dada2/filtFs.rds")}
+    # if (file.exists("/input/qualFiltered_out.dada2/filtRs.rds"){file.remove("/input/qualFiltered_out.dada2/filtRs.rds")}
+    # if (file.exists(file.path(path_results, "dadaFs.rds"){file.remove(file.path(path_results, "dadaFs.rds"))}
+    # if (file.exists(file.path(path_results, "dadaRs.rds"){file.remove(file.path(path_results, "dadaRs.rds"))}
+    # if (file.exists(file.path(path_results, "derepFs.rds"){file.remove(file.path(path_results, "derepFs.rds"))}
+    # if (file.exists(file.remove(file.path(path_results, "derepRs.rds"){file.remove(file.path(path_results, "derepRs.rds"))}
 }
 
 #DONE 

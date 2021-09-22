@@ -1167,7 +1167,7 @@ export default new Vuex.Store({
           {
             name: "index_file",
             value: "undefined",
-            btnName: "select fast(a/q)",
+            btnName: "select fasta",
             disabled: "never",
             tooltip:
               "Select your fasta formatted file for demultiplexing where fasta headers = sample names and sequences = sample specific index or index combination",

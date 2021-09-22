@@ -22,10 +22,7 @@ dir.create(path_results)
 #load environment variables
 database = Sys.getenv('dada2_database')
 database = gsub("\\\\", "/", database) #replace backslashes \ in the database path
-database = paste('/extraFiles/', basename(database), sep='')
-print(database)
-
-
+database = paste("/extraFiles", basename(database), sep = "/")
 minBoot = Sys.getenv('minBoot')
 tryRC = Sys.getenv('tryRC')
 
