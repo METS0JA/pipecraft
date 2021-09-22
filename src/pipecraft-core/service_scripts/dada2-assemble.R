@@ -66,13 +66,13 @@ if (pool != ""){
     errF = learnErrors(filtFs, multithread=TRUE)
     errR = learnErrors(filtRs, multithread=TRUE)
 
-    #Error rate figures, NOT WORKING 
-    # pdf(file.path(path_results, "Error_rates_R1.pdf"))
-    # p = plotErrors(errF)
-    # dev.off()
-    # pdf(file.path(path_results, "Error_rates_R2.pdf"))
-    # p = plotErrors(errR)
-    # dev.off()
+    #Error rate figures
+    pdf(file.path(path_results, "Error_rates_R1.pdf"))
+      print( plotErrors(errF) )
+    dev.off()
+    pdf(file.path(path_results, "Error_rates_R2.pdf"))
+      print( plotErrors(errR) )
+    dev.off()
 
     #dereplicate
     derepFs = derepFastq(filtFs, qualityType = qualityType)
