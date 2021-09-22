@@ -19,14 +19,11 @@
 #pigz v2.4
 ##################################################################
 
-
-###############################
-###############################
-#These variables are for testing (DELETE when implementing to PipeCraft)
+#Load variables
 regex='[^\\]*$'
-oligos_file = echo $index_file | grep -oP "$regex" 
+oligos_file=$(echo $index_file | grep -oP "$regex")
+indexes_file=$(printf "/extraFiles/$oligos_file")
 extension=$fileFormat
-indexes_file="/extraFiles/${oligos_file}"
 error_rate="-e ${index_mismatch}"
 
 if [ "$no_indels" = true ] ; then
@@ -34,18 +31,17 @@ if [ "$no_indels" = true ] ; then
 else
     no_indels=''
 fi
-ls
-ls /extraFiles
-more /extraFiles/oligos_paired.txt
+
+#ls
+ls /extraFiles | grep
+#more /extraFiles/oligos_paired.txt
 
 minlen=$"--minimum-length ${min_seq_length}"
 cores=$"--cores ${cores}"
 overlap=$"--overlap ${overlap}"
-
-
-
-###############################
-###############################
+printf "minlen = $minlen\n"
+printf "cores = $cores\n"
+printf "overlap = $overlap\n"
 
 #############################
 ### Start of the workflow ###
@@ -53,7 +49,6 @@ overlap=$"--overlap ${overlap}"
 start=$(date +%s)
 # Source for functions
 source /scripts/framework.functions.sh
-
 
 #output dir
 output_dir=$"/input/demultiplex_out"
@@ -64,11 +59,9 @@ prepare_PE_env
 ### Check barcodes file
 check_indexes_file
 
-### Process file
-
+### Process files
 printf "Checking files ...\n"
 while read LINE; do
-
     #Write file name without extension
     inputR1=$(echo $LINE | sed -e "s/.$extension//")
     inputR2=$(echo $inputR1 | sed -e 's/R1/R2/')

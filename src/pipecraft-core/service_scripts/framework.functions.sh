@@ -281,7 +281,7 @@ outfile_check=$(ls $output_dir/*.$newextension 2>/dev/null | wc -l)
 if [ $outfile_check != 0 ]; then 
     for file in $output_dir/*.$newextension; do
         size=$(echo $(cat $file | wc -l) / 4 | bc)
-        filename=$(echo $file | sed -e "s/$output_dir\///")
+        filename=$(echo $file | sed -e "s/\/input\/demultiplex_out\///")
         printf "$filename\t$size\n" >> tempdir2/seq_count_after.txt
     done
 else 
@@ -300,7 +300,7 @@ while read LINE; do
     file1=$(echo $LINE | awk '{print $1}')
     count1=$(echo $LINE | awk '{print $2}')
     printf "$file1\t$count1\n" >> $output_dir/seq_count_summary.txt    
-done < tempdir2/seq_count_after.txt && rm -rf tempdir2
+done < tempdir2/seq_count_after.txt #&& rm -rf tempdir2
 #Delete decompressed files if original set of files were compressed
 if [[ $check_compress == "gz" ]] || [[ $check_compress == "zip" ]]; then
     rm *.$newextension
@@ -357,8 +357,9 @@ if [[ $newextension == "fasta" ]] || [[ $newextension == "fa" ]] || [[ $newexten
 	fi
 fi
 ### Compile a track reads summary file (seq_count_summary.txt)
+output_dir_for_sed=$(echo $output_dir | sed -e "s/\//\\\\\//g")
 sed -e "s/\.$outfile_addition//" < tempdir2/seq_count_after.txt | \
-sed -e "s/$output_dir\///" > tempdir2/seq_count_after.temp
+sed -e "s/$output_dir_for_sed\///" > tempdir2/seq_count_after.temp
 printf "File\tReads\tProcessed_reads\n" > $output_dir/seq_count_summary.txt
 while read LINE; do
     file1=$(echo $LINE | awk '{print $1}')
