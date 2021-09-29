@@ -1,8 +1,8 @@
 #!/bin/bash
 
-#Input = single-end fasta/fastq files. FASTQ files will be converted to FASTA files; output is only FASTA.
-
 # Chimera filtering
+
+#Input = single-end fasta/fastq files. FASTQ files will be converted to FASTA files; output is only FASTA.
 
 ##########################################################
 ###Third-party applications:
@@ -11,7 +11,7 @@
     #Copyright (C) 2014-2021, Torbjorn Rognes, Frederic Mahe and Tomas Flouri
     #Distributed under the GNU General Public License version 3 by the Free Software Foundation
     #https://github.com/torognes/vsearch
-#seqkit v0.15.0
+#seqkit v2.0.0
     #citation: Shen W, Le S, Li Y, Hu F (2016) SeqKit: A Cross-Platform and Ultrafast Toolkit for FASTA/Q File Manipulation. PLOS ONE 11(10): e0163962. https://doi.org/10.1371/journal.pone.0163962
     #Distributed under the MIT License
     #Copyright © 2016-2019 Wei Shen, 2019 Oxford Nanopore Technologies.
@@ -20,28 +20,21 @@
 #perl v5.32.0
 ##########################################################
 
-###############################
-###############################
-#These variables are for testing (DELETE when implementing to PipeCraft)
+#load variables
 extension=$fileFormat
 #mandatory options
-id=$"--id ${pre_cluster}"                    # float (0-1)
-minuniquesize=$"--minuniquesize ${min_unique_size}" #pos int
+id=$"--id ${pre_cluster}" 
+minuniquesize=$"--minuniquesize ${min_unique_size}" 
+denovo=${denovno} #undefined or TRUE
+#load path to the reference database, if specified
+regex='[^\\]*$'
+ref=$(echo $reference_based | grep -oP "$regex")
+reference_based=$(printf "/extraFiles/$ref")
 #additional options
-cores=$"--threads ${cores}"               # pos int
-abskew=$"--abskew ${abundance_skew}"               # pos int
-minh=$"--minh ${min_h}"                # float (0-1)
+cores=$"--threads ${cores}" # pos int
+abskew=$"--abskew ${abundance_skew}" # pos int
+minh=$"--minh ${min_h}" # float (0-1)
 
-#reference_based=$"undefined"
-denovo=$"TRUE"                #undefined or TRUE
-#reference_based=$"/home/sten/Downloads/uchime_reference_dataset_28.06.2017/ITS1_ITS2_datasets/uchime_reference_dataset_ITS2_28.06.2017.fasta" #or 'undefined', if selection is not active
-reference_based=$"undefined"
-###############################
-###############################
-
-#############################
-### Start of the workflow ###
-#############################
 #additional options, if selection != undefined
 if [[ $reference_based == "undefined" ]]; then
     :
@@ -54,12 +47,15 @@ else
     denovo_filt=$"TRUE"
 fi
 
+#############################
+### Start of the workflow ###
+#############################
 start=$(date +%s)
 # Source for functions
 source /scripts/framework.functions.sh
 
 #output dir
-output_dir=$"chimera_Filtered_out"
+output_dir=$"/input/chimera_Filtered_out"
 ### Check if files with specified extension exist in the dir
 first_file_check
 ### Prepare working env and check paired-end data

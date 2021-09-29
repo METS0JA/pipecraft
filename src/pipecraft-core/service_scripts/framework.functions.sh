@@ -281,7 +281,7 @@ outfile_check=$(ls $output_dir/*.$newextension 2>/dev/null | wc -l)
 if [ $outfile_check != 0 ]; then 
     for file in $output_dir/*.$newextension; do
         size=$(echo $(cat $file | wc -l) / 4 | bc)
-        filename=$(echo $file | sed -e "s/\/input\/demultiplex_out\///")
+        filename=$(echo $file | sed -e "s/\/input\/demultiplex_out\///;s/\/input\/assembled_out\///")
         printf "$filename\t$size\n" >> tempdir2/seq_count_after.txt
     done
 else 
@@ -300,7 +300,7 @@ while read LINE; do
     file1=$(echo $LINE | awk '{print $1}')
     count1=$(echo $LINE | awk '{print $2}')
     printf "$file1\t$count1\n" >> $output_dir/seq_count_summary.txt    
-done < tempdir2/seq_count_after.txt #&& rm -rf tempdir2
+done < tempdir2/seq_count_after.txt && rm -rf tempdir2
 #Delete decompressed files if original set of files were compressed
 if [[ $check_compress == "gz" ]] || [[ $check_compress == "zip" ]]; then
     rm *.$newextension
