@@ -114,11 +114,12 @@ export default {
         .then(async (result) => {
           if (result.value) {
             this.$store.commit("addInputInfo", {
-              readType: result.value[0],
-              dataFormat: result.value[2],
+              readType: result.value[2],
+              dataFormat: result.value[0],
               fileFormat: result.value[1].replace("_", "."),
             });
             this.$store.commit("toggle_PE_SE_scripts", result.value[2]);
+            this.$store.commit("toggle_demux_mux", result.value[0]);
             dialog
               .showOpenDialog({
                 title: "Select the folder containing your sequnece files",

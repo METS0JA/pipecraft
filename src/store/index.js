@@ -45,7 +45,8 @@ export default new Vuex.Store({
                 name: "index_mismatch",
                 value: 1,
                 disabled: "never",
-                tooltip: "Default = 0. Allowed mismatches during the index search",
+                tooltip:
+                  "Default = 0. Allowed mismatches during the index search",
                 type: "numeric",
               },
               {
@@ -186,16 +187,16 @@ export default new Vuex.Store({
                   "allowed mismatches in primer search. By default, 2 mismatches are allowed per primer.",
                 type: "numeric",
               },
-// paired-end tags not needed, because in reorienting PipeCraft needes 'R1' and 'R2' stings! Gives ERROR if 'R1' not found. 
-//              {
-//                name: "paired_end_tags",
-//                value: ["R1", "R2"],
-//                disabled: "single_end",
-//                tooltip: "Define a tag for fwd and rev reads",
-//                type: "chip",
-//                iupac: false,
-//                rules: [(v) => v.length <= 2 || "TOO MANY TAGS"],
-//              },
+              // paired-end tags not needed, because in reorienting PipeCraft needes 'R1' and 'R2' stings! Gives ERROR if 'R1' not found.
+              //              {
+              //                name: "paired_end_tags",
+              //                value: ["R1", "R2"],
+              //                disabled: "single_end",
+              //                tooltip: "Define a tag for fwd and rev reads",
+              //                type: "chip",
+              //                iupac: false,
+              //                rules: [(v) => v.length <= 2 || "TOO MANY TAGS"],
+              //              },
               {
                 name: "forward_primers",
                 value: [],
@@ -1198,6 +1199,7 @@ export default new Vuex.Store({
         scriptName: "reorient_paired_end_reads.sh",
         imageName: "pipecraft/reorient:2",
         serviceName: "reorient",
+        disabled: "never",
         selected: false,
         showExtra: false,
         extraInputs: [],
@@ -1210,15 +1212,15 @@ export default new Vuex.Store({
               "allowed mismatches in primer search. By default, 2 mismatches are allowed per primer.",
             type: "numeric",
           },
-//          {
-//            name: "paired_end_tags",
-//            value: ["R1", "R2"],
-//            disabled: "single_end",
-//            tooltip: "Define a tag for fwd and rev reads",
-//            type: "chip",
-//            iupac: false,
-//            rules: [(v) => v.length <= 2 || "TOO MANY TAGS"],
-//          },
+          //          {
+          //            name: "paired_end_tags",
+          //            value: ["R1", "R2"],
+          //            disabled: "single_end",
+          //            tooltip: "Define a tag for fwd and rev reads",
+          //            type: "chip",
+          //            iupac: false,
+          //            rules: [(v) => v.length <= 2 || "TOO MANY TAGS"],
+          //          },
           {
             name: "forward_primers",
             value: [],
@@ -1243,6 +1245,7 @@ export default new Vuex.Store({
         scriptName: "cut_primers_paired_end_reads.sh",
         imageName: "pipecraft/demux:0.1",
         serviceName: "remove primers",
+        disabled: "never",
         selected: false,
         showExtra: false,
         extraInputs: [
@@ -1417,6 +1420,7 @@ export default new Vuex.Store({
         scriptName: "quality_filtering_single_end_trimmomatic.sh",
         imageName: "pipecraft/trimmomatic:0.39",
         serviceName: "quality filter",
+        disabled: "never",
         selected: "always",
         showExtra: false,
         extraInputs: [
@@ -1482,6 +1486,7 @@ export default new Vuex.Store({
         scriptName: "chimera_filtering_vsearch.sh",
         imageName: "pipecraft/vsearch:2.18",
         serviceName: "chimera filter",
+        disabled: "never",
         selected: "always",
         showExtra: false,
         extraInputs: [
@@ -1554,6 +1559,7 @@ export default new Vuex.Store({
         scriptName: "reorient_paired_end_reads.sh",
         imageName: "pipecraft/reorient:1",
         serviceName: "gene extraction",
+        disabled: "never",
         selected: "always",
         showExtra: false,
         extraInputs: [
@@ -1667,6 +1673,7 @@ export default new Vuex.Store({
         scriptName: "cluster.sh",
         imageName: "ppiecraft/",
         serviceName: "clustering",
+        disabled: "never",
         selected: "always",
         showExtra: false,
         extraInputs: [
@@ -1784,6 +1791,7 @@ export default new Vuex.Store({
         scriptName: "reorient_paired_end_reads.sh",
         imageName: "pipecraft/reorient:1",
         serviceName: "assign taxonomy",
+        disabled: "never",
         selected: "always",
         showExtra: false,
         extraInputs: [
@@ -1886,7 +1894,8 @@ export default new Vuex.Store({
             name: "no_indels",
             value: true,
             disabled: "never",
-            tooltip: "Default = TRUE (green): do not allow insertions or deletions is primer search so that mismatches are the only type of errors accounted in the error rate parameter",
+            tooltip:
+              "Default = TRUE (green): do not allow insertions or deletions is primer search so that mismatches are the only type of errors accounted in the error rate parameter",
             type: "bool",
           },
         ],
@@ -1921,6 +1930,7 @@ export default new Vuex.Store({
         scriptName: "reorient_paired_end_reads.sh",
         imageName: "pipecraft/reorient:1",
         serviceName: "reorient",
+        disabled: "never",
         selected: false,
         showExtra: false,
         extraInputs: [],
@@ -1929,15 +1939,15 @@ export default new Vuex.Store({
             name: "mismatches",
             value: 2,
             disabled: "never",
-            tooltip:
-              "Default = 2. Allowed mismatches during the primer search",
+            tooltip: "Default = 2. Allowed mismatches during the primer search",
             type: "numeric",
           },
           {
             name: "forward_primers",
             value: [],
             disabled: "never",
-            tooltip: "Specify your forward primer sequences in 5'-3' orientation (press ENTER to add). Add up to 13 PCR primers. IUPAC coder are allowed",
+            tooltip:
+              "Specify your forward primer sequences in 5'-3' orientation (press ENTER to add). Add up to 13 PCR primers. IUPAC coder are allowed",
             type: "chip",
             iupac: true,
             rules: [(v) => v.length <= 13 || "TOO MANY PRIMERS"],
@@ -1946,24 +1956,26 @@ export default new Vuex.Store({
             name: "reverse_primers",
             value: [],
             disabled: "never",
-            tooltip: "Specify your reverse primer sequences in 3'-5' orientation (press ENTER to add). Add up to 13 PCR primers. IUPAC coder are allowed",
+            tooltip:
+              "Specify your reverse primer sequences in 3'-5' orientation (press ENTER to add). Add up to 13 PCR primers. IUPAC coder are allowed",
             type: "chip",
             iupac: true,
             rules: [(v) => v.length <= 13 || "TOO MANY PRIMERS"],
           },
-//          {
-//            name: "paired_end_tags",
-//            value: ["_R1", "_R2"],
-//            disabled: "single_end",
-//            tooltip: "note that R1 and R2 files MUST CONTAINT stings 'R1' and 'R2', respectively! No edits allowed. Change file names",
-//            type: "chip",
-//         },
+          //          {
+          //            name: "paired_end_tags",
+          //            value: ["_R1", "_R2"],
+          //            disabled: "single_end",
+          //            tooltip: "note that R1 and R2 files MUST CONTAINT stings 'R1' and 'R2', respectively! No edits allowed. Change file names",
+          //            type: "chip",
+          //         },
         ],
       },
       {
         scriptName: "cut_primers_paired_end_reads.sh",
         imageName: "pipecraft/demux:0.1",
         serviceName: "remove primers",
+        disabled: "never",
         selected: false,
         showExtra: false,
         extraInputs: [
@@ -1971,8 +1983,7 @@ export default new Vuex.Store({
             name: "cores",
             value: 0,
             disabled: "never",
-            tooltip:
-              "Default = 0 (use all cores). Number of cores to use",
+            tooltip: "Default = 0 (use all cores). Number of cores to use",
             type: "numeric",
           },
           {
@@ -2004,7 +2015,8 @@ export default new Vuex.Store({
             name: "forward_primers",
             value: [],
             disabled: "never",
-            tooltip: "Specify your forward primer sequences in 5'-3' orientation (press ENTER to add). Add up to 13 PCR primers. IUPAC coder are allowed",
+            tooltip:
+              "Specify your forward primer sequences in 5'-3' orientation (press ENTER to add). Add up to 13 PCR primers. IUPAC coder are allowed",
             type: "chip",
             iupac: true,
             rules: [(v) => v.length <= 13 || "TOO MANY PRIMERS"],
@@ -2013,7 +2025,8 @@ export default new Vuex.Store({
             name: "reverse_primers",
             value: [],
             disabled: "never",
-            tooltip: "Specify your reverse primer sequences in 3'-5' orientation (press ENTER to add). Add up to 13 PCR primers. IUPAC coder are allowed",
+            tooltip:
+              "Specify your reverse primer sequences in 3'-5' orientation (press ENTER to add). Add up to 13 PCR primers. IUPAC coder are allowed",
             type: "chip",
             iupac: true,
             rules: [(v) => v.length <= 13 || "TOO MANY PRIMERS"],
@@ -2022,8 +2035,7 @@ export default new Vuex.Store({
             name: "mismatches",
             value: 2,
             disabled: "never",
-            tooltip:
-              "Default = 2. Allowed mismatches during the primer search",
+            tooltip: "Default = 2. Allowed mismatches during the primer search",
             type: "numeric",
           },
           {
@@ -2049,6 +2061,7 @@ export default new Vuex.Store({
         scriptName: "dada2-quality.R",
         imageName: "pipecraft/dada2:3.10",
         serviceName: "quality filter",
+        disabled: "never",
         selected: "always",
         showExtra: false,
         extraInputs: [],
@@ -2057,7 +2070,8 @@ export default new Vuex.Store({
             name: "read_R1",
             value: ["_R1"],
             disabled: "single_end",
-            tooltip: "Identifyer string that is common for all R1 reads (default = '_R1'; i.e. all R1 files have '_R1' string)",
+            tooltip:
+              "Identifyer string that is common for all R1 reads (default = '_R1'; i.e. all R1 files have '_R1' string)",
             type: "chip",
             rules: [(v) => v.length <= 1 || "ADD ONLY ONE IDENTIFIER"],
           },
@@ -2065,7 +2079,8 @@ export default new Vuex.Store({
             name: "read_R2",
             value: ["_R2"],
             disabled: "single_end",
-            tooltip: "Identifyer string that is common for all R2 reads (default = '_R2'; i.e. all R2 files have '_R2' string)",
+            tooltip:
+              "Identifyer string that is common for all R2 reads (default = '_R2'; i.e. all R2 files have '_R2' string)",
             type: "chip",
             rules: [(v) => v.length <= 1 || "ADD ONLY ONE IDENTIFIER"],
           },
@@ -2073,7 +2088,8 @@ export default new Vuex.Store({
             name: "samp_ID",
             value: ["_"],
             disabled: "never",
-            tooltip: "Identifyer string that separates the sample name for redundant charachters (e.g. file name = sampl84_S73_L001_R1_001.fastq, then underscore '_' would be the 'identifier string' (sample name = sampl84))",
+            tooltip:
+              "Identifyer string that separates the sample name for redundant charachters (e.g. file name = sampl84_S73_L001_R1_001.fastq, then underscore '_' would be the 'identifier string' (sample name = sampl84))",
             type: "chip",
             rules: [(v) => v.length <= 1 || "ADD ONLY ONE IDENTIFIER"],
           },
@@ -2201,7 +2217,8 @@ export default new Vuex.Store({
             name: "maxMismatch",
             value: 0,
             disabled: "never",
-            tooltip: "Default = 0. The maximum mismatches allowed in the overlap region",
+            tooltip:
+              "Default = 0. The maximum mismatches allowed in the overlap region",
             type: "numeric",
           },
           {
@@ -2226,6 +2243,7 @@ export default new Vuex.Store({
         scriptName: "dada2-chimera.R",
         imageName: "pipecraft/dada2:3.10",
         serviceName: "remove chimeras",
+        disabled: "never",
         selected: "always",
         showExtra: false,
         extraInputs: [],
@@ -2246,6 +2264,7 @@ export default new Vuex.Store({
         scriptName: "dada2-classifier.R",
         imageName: "pipecraft/dada2:3.10",
         serviceName: "assign Taxonomy",
+        disabled: "never",
         selected: "always",
         showExtra: false,
         extraInputs: [],
@@ -2255,7 +2274,8 @@ export default new Vuex.Store({
             btnName: "select fasta",
             value: "undefined",
             disabled: "never",
-            tooltip: "Select a reference database fasta file for taxonomy annotation",
+            tooltip:
+              "Select a reference database fasta file for taxonomy annotation",
             type: "file",
           },
           {
@@ -2295,12 +2315,18 @@ export default new Vuex.Store({
               "single_end",
               "paired_end",
             );
+            if (state[key][i].disabled == "single_end") {
+              state[key][i].selected = "always";
+            }
           }
           if (payload == "single_end") {
             state[key][i].scriptName = state[key][i].scriptName.replace(
               "paired_end",
               "single_end",
             );
+            if (state[key][i].disabled == "single_end") {
+              state[key][i].selected = false;
+            }
           }
         }
       }
@@ -2316,6 +2342,32 @@ export default new Vuex.Store({
               j
             ].scriptName.replace("paired_end", "single_end");
           }
+        }
+      }
+    },
+    toggle_demux_mux(state, payload) {
+      for (const [key] of Object.entries(state.customWorkflowInfo)) {
+        for (let i = 0; i < state[key].length; i++) {
+          if (
+            payload == "demultiplexed" &&
+            state[key][i].disabled == "demultiplexed"
+          ) {
+            console.log(state[key][i].disabled);
+            state[key][i].selected = false;
+          }
+          if (
+            payload == "multiplexed" &&
+            state[key][i].disabled == "demultiplexed"
+          ) {
+            state[key][i].selected = true;
+          }
+        }
+      }
+      for (let i = 0; i < state.selectedSteps.length; i++) {
+        if (payload == "demultiplexed") {
+          state.selectedSteps = state.selectedSteps.filter(
+            (item) => !(item.stepName == "demultiplex"),
+          );
         }
       }
     },
