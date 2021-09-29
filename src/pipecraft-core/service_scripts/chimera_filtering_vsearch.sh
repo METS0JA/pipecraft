@@ -25,7 +25,7 @@ extension=$fileFormat
 #mandatory options
 id=$"--id ${pre_cluster}" 
 minuniquesize=$"--minuniquesize ${min_unique_size}" 
-denovo=${denovno} #undefined or TRUE
+denovo=${denovno} #FALSE or TRUE
 #load path to the reference database, if specified
 regex='[^\\]*$'
 ref=$(echo $reference_based | grep -oP "$regex")
@@ -40,11 +40,6 @@ if [[ $reference_based == "undefined" ]]; then
     :
 else
     database=$reference_based
-fi
-if [[ $denovo == "undefined" ]]; then
-    :
-else
-    denovo_filt=$"TRUE"
 fi
 
 #############################
