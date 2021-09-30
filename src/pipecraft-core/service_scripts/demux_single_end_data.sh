@@ -19,15 +19,12 @@
 #pigz v2.4
 ##################################################################
 
-
-###############################
-###############################
-#These variables are for testing (DELETE when implementing to PipeCraft)
+#Load variables
 regex='[^\\]*$'
-oligos_file = echo $barcodes_file | grep -oP "$regex" 
+oligos_file=$(echo $index_file | grep -oP "$regex")
+indexes_file=$(printf "/extraFiles/$oligos_file")
 extension=$fileFormat
-indexes_file="/extraFiles/${oligos_file}"
-error_rate="-e ${max_error_rate}"
+error_rate="-e ${index_mismatch}"
 if [ "$no_indels" = true ] ; then
     echo 'Be careful not to fall off!'
     no_indels=$"--no-indels"
@@ -36,11 +33,10 @@ else
 minlen=$"--minimum-length ${min_seq_length}"
 cores=$"--cores ${cores}"
 overlap=$"--overlap ${overlap}"
-
-
 ###############################
 ###############################
 set -e
+
 #############################
 ### Start of the workflow ###
 #############################

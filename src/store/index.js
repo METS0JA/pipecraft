@@ -33,19 +33,20 @@ export default new Vuex.Store({
             extraInputs: [],
             Inputs: [
               {
-                name: "barcodes_file",
+                name: "index_file",
                 value: "undefined",
-                btnName: "select fast(a/q)",
+                btnName: "select fasta",
                 disabled: "never",
                 tooltip:
-                  "a file in a fasta format where the headers are sample ids and sequences are barcodes for samples",
+                  "Select your fasta formatted file for demultiplexing where fasta headers = sample names and sequences = sample specific index or index combination",
                 type: "file",
               },
               {
-                name: "max_error_rate",
+                name: "index_mismatch",
                 value: 1,
                 disabled: "never",
-                tooltip: "number of allowed mismatches in the index sequence",
+                tooltip:
+                  "Default = 0. Allowed mismatches during the index search",
                 type: "numeric",
               },
               {
@@ -186,15 +187,16 @@ export default new Vuex.Store({
                   "allowed mismatches in primer search. By default, 2 mismatches are allowed per primer.",
                 type: "numeric",
               },
-              {
-                name: "paired_end_tags",
-                value: ["R1", "R2"],
-                disabled: "single_end",
-                tooltip: "Define a tag for fwd and rev reads",
-                type: "chip",
-                iupac: false,
-                rules: [(v) => v.length <= 2 || "TOO MANY TAGS"],
-              },
+              // paired-end tags not needed, because in reorienting PipeCraft needes 'R1' and 'R2' stings! Gives ERROR if 'R1' not found.
+              //              {
+              //                name: "paired_end_tags",
+              //                value: ["R1", "R2"],
+              //                disabled: "single_end",
+              //                tooltip: "Define a tag for fwd and rev reads",
+              //                type: "chip",
+              //                iupac: false,
+              //                rules: [(v) => v.length <= 2 || "TOO MANY TAGS"],
+              //              },
               {
                 name: "forward_primers",
                 value: [],
@@ -1163,19 +1165,19 @@ export default new Vuex.Store({
         ],
         Inputs: [
           {
-            name: "barcodes_file",
+            name: "index_file",
             value: "undefined",
-            btnName: "select fast(a/q)",
+            btnName: "select fasta",
             disabled: "never",
             tooltip:
-              "a file in a fasta format where the headers are sample ids and sequences are barcodes for samples",
+              "Select your fasta formatted file for demultiplexing where fasta headers = sample names and sequences = sample specific index or index combination",
             type: "file",
           },
           {
-            name: "max_error_rate",
+            name: "index_mismatch",
             value: 1,
             disabled: "never",
-            tooltip: "number of allowed mismatches in the index sequence",
+            tooltip: "Default = 0. Allowed mismatches during the index search",
             type: "numeric",
           },
           {
@@ -1192,6 +1194,7 @@ export default new Vuex.Store({
         scriptName: "reorient_paired_end_reads.sh",
         imageName: "pipecraft/reorient:2",
         serviceName: "reorient",
+        disabled: "never",
         selected: false,
         showExtra: false,
         extraInputs: [],
@@ -1204,15 +1207,15 @@ export default new Vuex.Store({
               "allowed mismatches in primer search. By default, 2 mismatches are allowed per primer.",
             type: "numeric",
           },
-          {
-            name: "paired_end_tags",
-            value: ["R1", "R2"],
-            disabled: "single_end",
-            tooltip: "Define a tag for fwd and rev reads",
-            type: "chip",
-            iupac: false,
-            rules: [(v) => v.length <= 2 || "TOO MANY TAGS"],
-          },
+          //          {
+          //            name: "paired_end_tags",
+          //            value: ["R1", "R2"],
+          //            disabled: "single_end",
+          //            tooltip: "Define a tag for fwd and rev reads",
+          //            type: "chip",
+          //            iupac: false,
+          //            rules: [(v) => v.length <= 2 || "TOO MANY TAGS"],
+          //          },
           {
             name: "forward_primers",
             value: [],
@@ -1237,6 +1240,7 @@ export default new Vuex.Store({
         scriptName: "cut_primers_paired_end_reads.sh",
         imageName: "pipecraft/demux:0.1",
         serviceName: "remove primers",
+        disabled: "never",
         selected: false,
         showExtra: false,
         extraInputs: [
@@ -1411,6 +1415,7 @@ export default new Vuex.Store({
         scriptName: "quality_filtering_paired_end_trimmomatic.sh",
         imageName: "pipecraft/trimmomatic:0.39",
         serviceName: "quality filter",
+        disabled: "never",
         selected: "always",
         showExtra: false,
         extraInputs: [
@@ -1476,6 +1481,7 @@ export default new Vuex.Store({
         scriptName: "chimera_filtering_vsearch.sh",
         imageName: "pipecraft/vsearch:2.15.0",
         serviceName: "chimera filter",
+        disabled: "never",
         selected: "always",
         showExtra: false,
         extraInputs: [
@@ -1532,6 +1538,7 @@ export default new Vuex.Store({
         scriptName: "reorient_paired_end_reads.sh",
         imageName: "pipecraft/reorient:1",
         serviceName: "gene extraction",
+        disabled: "never",
         selected: "always",
         showExtra: false,
         extraInputs: [
@@ -1645,6 +1652,7 @@ export default new Vuex.Store({
         scriptName: "cluster.sh",
         imageName: "ppiecraft/",
         serviceName: "clustering",
+        disabled: "never",
         selected: "always",
         showExtra: false,
         extraInputs: [
@@ -1762,6 +1770,7 @@ export default new Vuex.Store({
         scriptName: "reorient_paired_end_reads.sh",
         imageName: "pipecraft/reorient:1",
         serviceName: "assign taxonomy",
+        disabled: "never",
         selected: "always",
         showExtra: false,
         extraInputs: [
@@ -1848,41 +1857,42 @@ export default new Vuex.Store({
         extraInputs: [
           {
             name: "cores",
-            value: 2,
+            value: 0,
             disabled: "never",
-            tooltip: "number of cores to use",
+            tooltip: "Default = 0 (use all cores). Number of cores to use",
             type: "numeric",
           },
           {
             name: "min_seq_length",
-            value: 10,
+            value: 20,
             disabled: "never",
-            tooltip: "minimum length of the output sequence",
+            tooltip: "Default = 20. Minimum length of the output sequence",
             type: "numeric",
           },
           {
             name: "no_indels",
             value: true,
             disabled: "never",
-            tooltip: "do not allow insertions or deletions",
+            tooltip:
+              "Default = TRUE (green): do not allow insertions or deletions is primer search so that mismatches are the only type of errors accounted in the error rate parameter",
             type: "bool",
           },
         ],
         Inputs: [
           {
-            name: "barcodes_file",
+            name: "index_file",
             value: "undefined",
-            btnName: "select fast(a/q)",
+            btnName: "select fasta",
             disabled: "never",
             tooltip:
-              "a file in a fasta format where the headers are sample ids and sequences are barcodes for samples",
+              "Select your fasta formatted file for demultiplexing where fasta headers = sample names and sequences = sample specific index or index combination",
             type: "file",
           },
           {
-            name: "max_error_rate",
+            name: "index_mismatch",
             value: 1,
             disabled: "never",
-            tooltip: "number of allowed mismatches in the index sequence",
+            tooltip: "Default = 0. Allowed mismatches during the index search",
             type: "numeric",
           },
           {
@@ -1899,6 +1909,7 @@ export default new Vuex.Store({
         scriptName: "reorient_paired_end_reads.sh",
         imageName: "pipecraft/reorient:1",
         serviceName: "reorient",
+        disabled: "never",
         selected: false,
         showExtra: false,
         extraInputs: [],
@@ -1907,24 +1918,15 @@ export default new Vuex.Store({
             name: "mismatches",
             value: 2,
             disabled: "never",
-            tooltip:
-              "allowed mismatches in primer search. By default, 2 mismatches are allowed per primer.",
+            tooltip: "Default = 2. Allowed mismatches during the primer search",
             type: "numeric",
-          },
-          {
-            name: "paired_end_tags",
-            value: ["R1", "R2"],
-            disabled: "single_end",
-            tooltip: "Define a tag for fwd and rev reads",
-            type: "chip",
-            iupac: false,
-            rules: [(v) => v.length <= 2 || "TOO MANY TAGS"],
           },
           {
             name: "forward_primers",
             value: [],
             disabled: "never",
-            tooltip: "manually define up to 13 primers",
+            tooltip:
+              "Specify your forward primer sequences in 5'-3' orientation (press ENTER to add). Add up to 13 PCR primers. IUPAC coder are allowed",
             type: "chip",
             iupac: true,
             rules: [(v) => v.length <= 13 || "TOO MANY PRIMERS"],
@@ -1933,41 +1935,41 @@ export default new Vuex.Store({
             name: "reverse_primers",
             value: [],
             disabled: "never",
-            tooltip: "manually define up to 13 primers",
+            tooltip:
+              "Specify your reverse primer sequences in 3'-5' orientation (press ENTER to add). Add up to 13 PCR primers. IUPAC coder are allowed",
             type: "chip",
             iupac: true,
             rules: [(v) => v.length <= 13 || "TOO MANY PRIMERS"],
           },
+          //          {
+          //            name: "paired_end_tags",
+          //            value: ["_R1", "_R2"],
+          //            disabled: "single_end",
+          //            tooltip: "note that R1 and R2 files MUST CONTAINT stings 'R1' and 'R2', respectively! No edits allowed. Change file names",
+          //            type: "chip",
+          //         },
         ],
       },
       {
         scriptName: "cut_primers_paired_end_reads.sh",
         imageName: "pipecraft/demux:0.1",
         serviceName: "remove primers",
+        disabled: "never",
         selected: false,
         showExtra: false,
         extraInputs: [
           {
             name: "cores",
-            value: 1,
+            value: 0,
             disabled: "never",
-            tooltip:
-              "number of cores to use. For paired-end dta in fasta format, set to 1 [default]. For fastq formats you may set the value to 0 to use all cores.",
+            tooltip: "Default = 0 (use all cores). Number of cores to use",
             type: "numeric",
           },
           {
             name: "min_seq_length",
-            value: 32,
+            value: 20,
             disabled: "never",
-            tooltip: "minimum length of the output sequence.",
-            type: "numeric",
-          },
-          {
-            name: "overlap",
-            value: 16,
-            disabled: "never",
-            tooltip:
-              "number of overlap bases with the primer sequence. Partial matches are allowed, but short matches may occur by chance, leading to erroneously clipped bases. Specifying higher overlap than the length of primer sequnce will still clip the primer (e.g. primer length is 22 bp, but overlap is specified as 25 - this does not affect the identification and clipping of the primer as long as the match is in the specified error range).",
+            tooltip: "Default = 20. Minimum length of the output sequence",
             type: "numeric",
           },
           {
@@ -1975,7 +1977,7 @@ export default new Vuex.Store({
             value: true,
             disabled: "never",
             tooltip:
-              "do not allow insertions or deletions is primer search. Mismatches are the only type of errprs accounted in the error rate parameter. ",
+              "Default = TRUE (green): do not allow insertions or deletions is primer search so that mismatches are the only type of errors accounted in the error rate parameter",
             type: "bool",
           },
           {
@@ -1983,7 +1985,7 @@ export default new Vuex.Store({
             value: true,
             disabled: "never",
             tooltip:
-              "Discard sequences where specified primers were not found.",
+              "Default = TRUE (green): discard sequences where specified primers were not found",
             type: "bool",
           },
         ],
@@ -1992,7 +1994,8 @@ export default new Vuex.Store({
             name: "forward_primers",
             value: [],
             disabled: "never",
-            tooltip: "Add up to 13 PCR primers",
+            tooltip:
+              "Specify your forward primer sequences in 5'-3' orientation (press ENTER to add). Add up to 13 PCR primers. IUPAC coder are allowed",
             type: "chip",
             iupac: true,
             rules: [(v) => v.length <= 13 || "TOO MANY PRIMERS"],
@@ -2001,7 +2004,8 @@ export default new Vuex.Store({
             name: "reverse_primers",
             value: [],
             disabled: "never",
-            tooltip: "Add up to 13 PCR primers",
+            tooltip:
+              "Specify your reverse primer sequences in 3'-5' orientation (press ENTER to add). Add up to 13 PCR primers. IUPAC coder are allowed",
             type: "chip",
             iupac: true,
             rules: [(v) => v.length <= 13 || "TOO MANY PRIMERS"],
@@ -2010,16 +2014,15 @@ export default new Vuex.Store({
             name: "mismatches",
             value: 2,
             disabled: "never",
-            tooltip:
-              "allowed mismatches in primer search. By default, 2 mismatches are allowed per primer.",
+            tooltip: "Default = 2. Allowed mismatches during the primer search",
             type: "numeric",
           },
           {
             name: "min_overlap",
-            value: 15,
+            value: 16,
             disabled: "never",
             tooltip:
-              "the number of minimum overlap bases with the primer sequence.",
+              "Default = 16. The number of minimum overlap bases with the primer sequence. Check your primer length; if this is set to be too short, then random matches can occur",
             type: "numeric",
           },
           {
@@ -2028,7 +2031,7 @@ export default new Vuex.Store({
             value: "keep_all",
             disabled: "never",
             tooltip:
-              "Keep seqs with primers found in both ends(linked), or keeps seqs with primer found atlest in one end(all)",
+              "Default = 'keep all': keeps reads where at least one primer was found (keeps also partial amplicons). 'keep only linked' = keep only reads where forward and reverse primers were found (keeps only full amplicons)",
             type: "select",
           },
         ],
@@ -2036,17 +2039,45 @@ export default new Vuex.Store({
       {
         scriptName: "dada2-quality.R",
         imageName: "pipecraft/dada2:3.10",
-        serviceName: "filter And Trim",
+        serviceName: "quality filter",
+        disabled: "never",
         selected: "always",
         showExtra: false,
         extraInputs: [],
         Inputs: [
           {
-            name: "maxEE",
-            value: 1,
+            name: "read_R1",
+            value: ["_R1"],
+            disabled: "single_end",
+            tooltip:
+              "Identifyer string that is common for all R1 reads (default = '_R1'; i.e. all R1 files have '_R1' string)",
+            type: "chip",
+            rules: [(v) => v.length <= 1 || "ADD ONLY ONE IDENTIFIER"],
+          },
+          {
+            name: "read_R2",
+            value: ["_R2"],
+            disabled: "single_end",
+            tooltip:
+              "Identifyer string that is common for all R2 reads (default = '_R2'; i.e. all R2 files have '_R2' string)",
+            type: "chip",
+            rules: [(v) => v.length <= 1 || "ADD ONLY ONE IDENTIFIER"],
+          },
+          {
+            name: "samp_ID",
+            value: ["_"],
             disabled: "never",
             tooltip:
-              "Discard sequences with more than the specified number of expected errors",
+              "Identifyer string that separates the sample name for redundant charachters (e.g. file name = sampl84_S73_L001_R1_001.fastq, then underscore '_' would be the 'identifier string' (sample name = sampl84))",
+            type: "chip",
+            rules: [(v) => v.length <= 1 || "ADD ONLY ONE IDENTIFIER"],
+          },
+          {
+            name: "maxEE",
+            value: 2,
+            disabled: "never",
+            tooltip:
+              "Default = 2. Discard sequences with more than the specified number of expected errors",
             type: "numeric",
           },
           {
@@ -2054,7 +2085,7 @@ export default new Vuex.Store({
             value: 0,
             disabled: "never",
             tooltip:
-              "Discard sequences with more than the specified number of N’s",
+              "Default = 0. Discard sequences with more than the specified number of N’s (ambiguous bases)",
             type: "numeric",
           },
           {
@@ -2062,15 +2093,15 @@ export default new Vuex.Store({
             value: 20,
             disabled: "never",
             tooltip:
-              "Remove reads with length less than minLen. minLen is enforced after all other trimming and truncation",
+              "Default = 20. Remove reads with length less than minLen. minLen is enforced after all other trimming and truncation",
             type: "numeric",
           },
           {
             name: "truncQ",
-            value: null,
+            value: 2,
             disabled: "never",
             tooltip:
-              "Truncate reads at the first instance of a quality score less than or equal to truncQ",
+              "Default = 2. Truncate reads at the first instance of a quality score less than or equal to truncQ",
             type: "numeric",
           },
           {
@@ -2078,15 +2109,23 @@ export default new Vuex.Store({
             value: 0,
             disabled: "never",
             tooltip:
-              "Truncate reads after truncLen bases. Reads shorter than this are discarded",
+              "Default = 0 (no truncation). Truncate reads after truncLen bases (applies to R1 reads when working with paired-end data). Reads shorter than this are discarded. Explore quality profiles (with FastQC) see whether poor quality ends needs to truncated",
+            type: "numeric",
+          },
+          {
+            name: "truncLen_R2",
+            value: 0,
+            disabled: "single_end",
+            tooltip:
+              "Default = 0 (no truncation). Truncate R2 reads after truncLen bases. Reads shorter than this are discarded. Explore quality profiles (with FastQC) see whether poor quality ends needs to truncated",
             type: "numeric",
           },
           {
             name: "maxLen",
-            value: null,
+            value: 9999,
             disabled: "never",
             tooltip:
-              "Remove reads with length greater than maxLen. maxLen is enforced on the raw reads",
+              "Remove reads with length greater than maxLen. maxLen is enforced on the raw reads. In dada2, the default = Inf, but here set as 9999",
             type: "numeric",
           },
           {
@@ -2094,8 +2133,45 @@ export default new Vuex.Store({
             value: 0,
             disabled: "never",
             tooltip:
-              "After truncation, reads contain a quality score below minQ will be discarded",
+              "Default = 0. After truncation, reads contain a quality score below minQ will be discarded",
             type: "numeric",
+          },
+        ],
+      },
+      {
+        scriptName: "dada2-assemble.R",
+        imageName: "pipecraft/dada2:3.10",
+        serviceName: "denoise",
+        selected: "always",
+        disabled: "never",
+        showExtra: false,
+        extraInputs: [],
+        Inputs: [
+          {
+            name: "pool",
+            items: ["FALSE", "TRUE", "psuedo"],
+            value: "FALSE",
+            disabled: "never",
+            tooltip:
+              "Default = FALSE: sample inference is performed on each sample individually. If pool = TRUE, the algorithm will pool together all samples prior to sample inference. Pooling improves the detection of rare variants, but is computationally more expensive. If pool = 'pseudo', the algorithm will perform pseudo-pooling between individually processed samples. This argument has no effect if only 1 sample is provided, and pool does not affect error rates, which are always estimated from pooled observations across samples.",
+            type: "select",
+          },
+          {
+            name: "selfConsist",
+            disabled: "never",
+            value: false,
+            tooltip:
+              "Default = FALSE. If selfConsist = TRUE, the algorithm will alternate between sample inference and error rate estimation until convergence",
+            type: "bool",
+          },
+          {
+            name: "qualityType",
+            items: ["Auto", "FastqQuality"],
+            value: "Auto",
+            disabled: "never",
+            tooltip:
+              "Default = 'Auto': means to attempt to auto-detect the fastq quality encoding. This may fail for PacBio files with uniformly high quality scores, in which case use 'FastqQuality'",
+            type: "select",
           },
         ],
       },
@@ -2113,22 +2189,31 @@ export default new Vuex.Store({
             value: 12,
             disabled: "never",
             tooltip:
-              "The minimum length of the overlap required for mergingthe forward and reverse reads.",
+              "Default = 12. The minimum length of the overlap required for mergingthe forward and reverse reads.",
             type: "numeric",
           },
           {
             name: "maxMismatch",
             value: 0,
             disabled: "never",
-            tooltip: "The maximum mismatches allowed in the overlap region",
+            tooltip:
+              "Default = 0. The maximum mismatches allowed in the overlap region",
             type: "numeric",
           },
           {
-            name: "returnRejects",
+            name: "trimOverhang",
             value: false,
             disabled: "never",
             tooltip:
-              "Return and retain, the pairs that that were rejected based on mismatches in the overlap region",
+              "Default = FALSE. If TRUE, overhangs in the alignment between the forwards and reverse read are trimmed off. Overhangs are when the reverse read extends past the start of the forward read, and vice-versa, as can happen when reads are longer than the amplicon and read into the other-direction primer region.",
+            type: "bool",
+          },
+          {
+            name: "justConcatenate",
+            value: false,
+            disabled: "never",
+            tooltip:
+              "Default = FALSE. If TRUE, the forward and reverse-complemented reverse read are concatenated rather than merged, with a NNNNNNNNNN (10 Ns) spacer inserted between them",
             type: "bool",
           },
         ],
@@ -2136,18 +2221,19 @@ export default new Vuex.Store({
       {
         scriptName: "dada2-chimera.R",
         imageName: "pipecraft/dada2:3.10",
-        serviceName: "remove Bimera Denovo",
+        serviceName: "remove chimeras",
+        disabled: "never",
         selected: "always",
         showExtra: false,
         extraInputs: [],
         Inputs: [
           {
-            name: "method",
+            name: "chim_method",
             items: ["consensus", "pooled", "per-sample"],
             value: "consensus",
             disabled: "never",
             tooltip:
-              "If 'pooled': The samples in the sequence table are all pooled together for bimera identification, If 'consensus': The samples in a sequence table are independently checked for bimeras, If 'per-sample': The samples in a sequence table are independently checked for bimeras",
+              "Default = 'consensus': the samples in a sequence table are independently checked for chimeras. If 'pooled', the samples in the sequence table are all pooled together for chimera identification. If 'per-sample', the samples in a sequence table are independently checked for chimeras",
             type: "select",
           },
         ],
@@ -2157,16 +2243,18 @@ export default new Vuex.Store({
         scriptName: "dada2-classifier.R",
         imageName: "pipecraft/dada2:3.10",
         serviceName: "assign Taxonomy",
+        disabled: "never",
         selected: "always",
         showExtra: false,
         extraInputs: [],
         Inputs: [
           {
-            name: "refFasta",
-            btnName: "select file",
+            name: "dada2_database",
+            btnName: "select fasta",
             value: "undefined",
             disabled: "never",
-            tooltip: "Select a reference fasta file",
+            tooltip:
+              "Select a reference database fasta file for taxonomy annotation",
             type: "file",
           },
           {
@@ -2174,7 +2262,7 @@ export default new Vuex.Store({
             value: 50,
             disabled: "never",
             tooltip:
-              "The minimum bootstrap confidence for assigning a taxonomic level.",
+              "Default = 50. The minimum bootstrap confidence for assigning a taxonomic level",
             type: "numeric",
           },
           {
@@ -2182,7 +2270,7 @@ export default new Vuex.Store({
             value: false,
             disabled: "never",
             tooltip:
-              "the reverse-complement of each sequences will be used for classification if it is a better match to the reference sequences than the forward sequence.",
+              "Default = FALSE (grey). The reverse-complement of each sequences will be used for classification if it is a better match to the reference sequences than the forward sequence",
             type: "bool",
           },
         ],
@@ -2191,7 +2279,7 @@ export default new Vuex.Store({
     customWorkflowInfo: {
       OTU_Miseq: { info: "placeholder", link: "placeholder" },
       DADA2_Miseq: {
-        info: "This workflow is based on DADA2 Pipeline tutorial",
+        info: "This workflow is based on DADA2 pipeline tutorial",
         link: "https://benjjneb.github.io/dada2/tutorial.html",
       },
     },
@@ -2206,12 +2294,18 @@ export default new Vuex.Store({
               "single_end",
               "paired_end",
             );
+            if (state[key][i].disabled == "single_end") {
+              state[key][i].selected = "always";
+            }
           }
           if (payload == "single_end") {
             state[key][i].scriptName = state[key][i].scriptName.replace(
               "paired_end",
               "single_end",
             );
+            if (state[key][i].disabled == "single_end") {
+              state[key][i].selected = false;
+            }
           }
         }
       }
@@ -2227,6 +2321,32 @@ export default new Vuex.Store({
               j
             ].scriptName.replace("paired_end", "single_end");
           }
+        }
+      }
+    },
+    toggle_demux_mux(state, payload) {
+      for (const [key] of Object.entries(state.customWorkflowInfo)) {
+        for (let i = 0; i < state[key].length; i++) {
+          if (
+            payload == "demultiplexed" &&
+            state[key][i].disabled == "demultiplexed"
+          ) {
+            console.log(state[key][i].disabled);
+            state[key][i].selected = false;
+          }
+          if (
+            payload == "multiplexed" &&
+            state[key][i].disabled == "demultiplexed"
+          ) {
+            state[key][i].selected = true;
+          }
+        }
+      }
+      for (let i = 0; i < state.selectedSteps.length; i++) {
+        if (payload == "demultiplexed") {
+          state.selectedSteps = state.selectedSteps.filter(
+            (item) => !(item.stepName == "demultiplex"),
+          );
         }
       }
     },
