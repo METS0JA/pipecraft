@@ -10,6 +10,7 @@ export default new Vuex.Store({
       active: false,
       index: 5,
     },
+    runInfo: { active: false, type: null, step: null, totalSteps: null },
     workingDir: "/input",
     inputDir: "",
     data: {
@@ -341,7 +342,7 @@ export default new Vuex.Store({
         services: [
           {
             scriptName: "vsearch-quality.sh",
-            imageName: "pipecraft/vsearch:2.15.0",
+            imageName: "pipecraft/vsearch:2.18.0",
             serviceName: "vsearch",
             selected: false,
             showExtra: false,
@@ -909,7 +910,7 @@ export default new Vuex.Store({
           },
           {
             scriptName: "chimera_filtering_vsearch.sh",
-            imageName: "pipecraft/vsearch:2.15.0",
+            imageName: "pipecraft/vsearch:2.18.0",
             serviceName: "vsearch",
             selected: false,
             showExtra: false,
@@ -938,7 +939,8 @@ export default new Vuex.Store({
                 name: "denovno",
                 value: true,
                 disabled: "never",
-                tooltip: "Default = TRUE. Perform denovo chimera filtering with --uchime_denovo",
+                tooltip:
+                  "Default = TRUE. Perform denovo chimera filtering with --uchime_denovo",
                 type: "bool",
               },
               {
@@ -947,7 +949,8 @@ export default new Vuex.Store({
                 btnName: "select file",
                 value: "undefined",
                 disabled: "never",
-                tooltip: "Default = undefined. Perform reference database based chimera filtering with --uchime_ref. If denovo = TRUE, then reference based chimera filtering will be performed after denovo",
+                tooltip:
+                  "Default = undefined. Perform reference database based chimera filtering with --uchime_ref. If denovo = TRUE, then reference based chimera filtering will be performed after denovo",
                 type: "boolfile",
               },
             ],
@@ -1069,7 +1072,7 @@ export default new Vuex.Store({
           // },
           {
             scriptName: "vsearch-cluster.sh",
-            imageName: "pipecraft/vsearch:2.15.0",
+            imageName: "pipecraft/vsearch:2.18.0",
             serviceName: "vsearch",
             selected: false,
             showExtra: false,
@@ -1541,7 +1544,8 @@ export default new Vuex.Store({
             name: "denovno",
             value: true,
             disabled: "never",
-            tooltip: "Default = TRUE. Perform denovo chimera filtering with --uchime_denovo",
+            tooltip:
+              "Default = TRUE. Perform denovo chimera filtering with --uchime_denovo",
             type: "bool",
           },
           {
@@ -1550,7 +1554,8 @@ export default new Vuex.Store({
             btnName: "select file",
             value: "undefined",
             disabled: "never",
-            tooltip: "Default = undefined. Perform reference database based chimera filtering with --uchime_ref. If denovo = TRUE, then reference based chimera filtering will be performed after denovo",
+            tooltip:
+              "Default = undefined. Perform reference database based chimera filtering with --uchime_ref. If denovo = TRUE, then reference based chimera filtering will be performed after denovo",
             type: "boolfile",
           },
         ],
@@ -2313,7 +2318,7 @@ export default new Vuex.Store({
           if (payload == "paired_end") {
             state[key][i].scriptName = state[key][i].scriptName.replace(
               "single_end",
-              "paired_end",
+              "paired_end"
             );
             if (state[key][i].disabled == "single_end") {
               state[key][i].selected = "always";
@@ -2322,7 +2327,7 @@ export default new Vuex.Store({
           if (payload == "single_end") {
             state[key][i].scriptName = state[key][i].scriptName.replace(
               "paired_end",
-              "single_end",
+              "single_end"
             );
             if (state[key][i].disabled == "single_end") {
               state[key][i].selected = false;
@@ -2366,7 +2371,7 @@ export default new Vuex.Store({
       for (let i = 0; i < state.selectedSteps.length; i++) {
         if (payload == "demultiplexed") {
           state.selectedSteps = state.selectedSteps.filter(
-            (item) => !(item.stepName == "demultiplex"),
+            (item) => !(item.stepName == "demultiplex")
           );
         }
       }
