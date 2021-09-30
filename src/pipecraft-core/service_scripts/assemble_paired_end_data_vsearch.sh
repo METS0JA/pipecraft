@@ -26,8 +26,6 @@ fastq_maxns=$"--fastq_maxns ${max_Ns}"
 fastq_maxmergelen="--fastq_maxmergelen ${max_len}"
 fastq_qmax=$fastq_qmax #this applies to --fastq_qmax and --fastq_qmaxout option in vsearch --fastq_mergepairs
 notmerged_files=$keep_disjointed
-###############################
-###############################
 
 #############################
 ### Start of the workflow ###
