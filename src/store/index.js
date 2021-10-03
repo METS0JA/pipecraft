@@ -12,6 +12,7 @@ export default new Vuex.Store({
       active: false,
       index: 5,
     },
+    runInfo: { active: false, type: null, step: null, totalSteps: null },
     workingDir: "/input",
     inputDir: "",
     data: {
@@ -343,7 +344,7 @@ export default new Vuex.Store({
         services: [
           {
             scriptName: "vsearch-quality.sh",
-            imageName: "pipecraft/vsearch:2.15.0",
+            imageName: "pipecraft/vsearch:2.18.0",
             serviceName: "vsearch",
             selected: false,
             showExtra: false,
@@ -910,32 +911,38 @@ export default new Vuex.Store({
             ],
           },
           {
-            scriptName: "vsearch-chimera.sh",
-            imageName: "pipecraft/vsearch:2.15.0",
+            scriptName: "chimera_filtering_vsearch.sh",
+            imageName: "pipecraft/vsearch:2.18.0",
             serviceName: "vsearch",
             selected: false,
             showExtra: false,
             extraInputs: [],
             Inputs: [
               {
-                name: "abskew",
-                value: 1,
+                name: "pre_cluster",
+                value: 0.98,
                 disabled: "never",
-                tooltip: "zzzZZzzZZZzzz",
-                type: "numeric",
+                tooltip:
+                  "Default = 0.98. Identity percentage when performing 'pre-clustering' with --cluster_size for denovo chimera filtering with --uchime_denovo",
+                max: 1,
+                min: 0,
+                step: 0.01,
+                type: "slide",
               },
               {
-                name: "abundace annotation",
+                name: "min_unique_size",
                 value: 1,
                 disabled: "never",
-                tooltip: "zzzZZzzZZZzzz",
+                tooltip:
+                  "Default = 1. Minimum amount of a unique sequences in a fasta file. If value = 1, then no sequences are discarded after dereplication; if value = 2, then sequences, which are represented only once in a given file are discarded; and so on.",
                 type: "numeric",
               },
               {
                 name: "denovno",
-                value: false,
+                value: true,
                 disabled: "never",
-                tooltip: "zzzZZzzZZZzzz",
+                tooltip:
+                  "Default = TRUE. Perform denovo chimera filtering with --uchime_denovo",
                 type: "bool",
               },
               {
@@ -944,7 +951,8 @@ export default new Vuex.Store({
                 btnName: "select file",
                 value: "undefined",
                 disabled: "never",
-                tooltip: "zzzZZzzZZZzzz",
+                tooltip:
+                  "Default = undefined. Perform reference database based chimera filtering with --uchime_ref. If denovo = TRUE, then reference based chimera filtering will be performed after denovo",
                 type: "boolfile",
               },
             ],
@@ -1066,7 +1074,7 @@ export default new Vuex.Store({
           // },
           {
             scriptName: "vsearch-cluster.sh",
-            imageName: "pipecraft/vsearch:2.15.0",
+            imageName: "pipecraft/vsearch:2.18.0",
             serviceName: "vsearch",
             selected: false,
             showExtra: false,
@@ -1333,7 +1341,7 @@ export default new Vuex.Store({
         ],
       },
       {
-        scriptName: "assemble_pairedend_data_vsearch.sh",
+        scriptName: "assemble_paired_end_data_vsearch.sh",
         imageName: "pipecraft/vsearch:2.18",
         serviceName: "merge reads",
         selected: "always",
@@ -1414,7 +1422,7 @@ export default new Vuex.Store({
         ],
       },
       {
-        scriptName: "quality_filtering_paired_end_trimmomatic.sh",
+        scriptName: "quality_filtering_single_end_trimmomatic.sh",
         imageName: "pipecraft/trimmomatic:0.39",
         serviceName: "quality filter",
         disabled: "never",
@@ -1441,7 +1449,7 @@ export default new Vuex.Store({
             name: "cores",
             value: 4,
             disabled: "never",
-            tooltip: "number of cores to use",
+            tooltip: "Default = 4. Number of cores to use",
             type: "numeric",
           },
           {
@@ -1450,7 +1458,7 @@ export default new Vuex.Store({
             value: 33,
             disabled: "never",
             tooltip:
-              "phred quality scored encoding. Default is phred33. Use phred64 if working with data from older Illumina (Solexa) machines. ",
+              "Default = 33. Phred quality scored encoding. Use phred64 if working with data from older Illumina (Solexa) machines",
             type: "select",
           },
         ],
@@ -1481,7 +1489,7 @@ export default new Vuex.Store({
       },
       {
         scriptName: "chimera_filtering_vsearch.sh",
-        imageName: "pipecraft/vsearch:2.15.0",
+        imageName: "pipecraft/vsearch:2.18",
         serviceName: "chimera filter",
         disabled: "never",
         selected: "always",
@@ -1491,7 +1499,7 @@ export default new Vuex.Store({
             name: "cores",
             value: 4,
             disabled: "never",
-            tooltip: "number of cores to use",
+            tooltip: "Default = 4. Number of cores to use",
             type: "numeric",
           },
           {
@@ -1499,7 +1507,7 @@ export default new Vuex.Store({
             value: 2,
             disabled: "never",
             tooltip:
-              "the abundance skew is used to distinguish in a threeway alignment which sequence is the chimera and which are the parents. The assumption is that chimeras appear later in the PCR amplification process and are therefore less abundant than their parents. The default value is 2.0, which means that the parents should be at least 2 times more abundant than their chimera. Any positive value equal or greater than 1.0 can be used.",
+              "Default = 2. The abundance skew is used to distinguish in a threeway alignment which sequence is the chimera and which are the parents. The assumption is that chimeras appear later in the PCR amplification process and are therefore less abundant than their parents. The default value is 2.0, which means that the parents should be at least 2 times more abundant than their chimera. Any positive value equal or greater than 1.0 can be used",
             type: "numeric",
           },
           {
@@ -1507,7 +1515,7 @@ export default new Vuex.Store({
             value: 0.28,
             disabled: "never",
             tooltip:
-              "minimum score (h). Increasing this value tends to reduce the number of false positives and to decrease sensitivity. Default value is 0.28, and values ranging from 0.0 to 1.0 included are accepted.",
+              "Default = 0.28. Minimum score (h). Increasing this value tends to reduce the number of false positives and to decrease sensitivity. Values ranging from 0.0 to 1.0 included are accepted",
             max: 1,
             min: 0,
             step: 0.01,
@@ -1520,7 +1528,7 @@ export default new Vuex.Store({
             value: 0.98,
             disabled: "never",
             tooltip:
-              "identity percentage when performing 'pre-clustering' with --cluster_size for denovo chimera filtering with --uchime_denovo",
+              "Default = 0.98. Identity percentage when performing 'pre-clustering' with --cluster_size for denovo chimera filtering with --uchime_denovo",
             max: 1,
             min: 0,
             step: 0.01,
@@ -1531,8 +1539,26 @@ export default new Vuex.Store({
             value: 1,
             disabled: "never",
             tooltip:
-              "minimum amount of a unique sequences in a fasta file. If value = 1, then no sequences are discarded after dereplication; if value = 2, then sequences, which are represented only once in a given file are discarded; and so on.",
+              "Default = 1. Minimum amount of a unique sequences in a fasta file. If value = 1, then no sequences are discarded after dereplication; if value = 2, then sequences, which are represented only once in a given file are discarded; and so on.",
             type: "numeric",
+          },
+          {
+            name: "denovno",
+            value: true,
+            disabled: "never",
+            tooltip:
+              "Default = TRUE. Perform denovo chimera filtering with --uchime_denovo",
+            type: "bool",
+          },
+          {
+            name: "refrence_based",
+            active: false,
+            btnName: "select file",
+            value: "undefined",
+            disabled: "never",
+            tooltip:
+              "Default = undefined. Perform reference database based chimera filtering with --uchime_ref. If denovo = TRUE, then reference based chimera filtering will be performed after denovo",
+            type: "boolfile",
           },
         ],
       },
@@ -2304,7 +2330,7 @@ export default new Vuex.Store({
           if (payload == "paired_end") {
             state[key][i].scriptName = state[key][i].scriptName.replace(
               "single_end",
-              "paired_end",
+              "paired_end"
             );
             if (state[key][i].disabled == "single_end") {
               state[key][i].selected = "always";
@@ -2313,7 +2339,7 @@ export default new Vuex.Store({
           if (payload == "single_end") {
             state[key][i].scriptName = state[key][i].scriptName.replace(
               "paired_end",
-              "single_end",
+              "single_end"
             );
             if (state[key][i].disabled == "single_end") {
               state[key][i].selected = false;
@@ -2357,7 +2383,7 @@ export default new Vuex.Store({
       for (let i = 0; i < state.selectedSteps.length; i++) {
         if (payload == "demultiplexed") {
           state.selectedSteps = state.selectedSteps.filter(
-            (item) => !(item.stepName == "demultiplex"),
+            (item) => !(item.stepName == "demultiplex")
           );
         }
       }

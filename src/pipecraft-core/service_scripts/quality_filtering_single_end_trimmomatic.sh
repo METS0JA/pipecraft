@@ -1,8 +1,7 @@
 #!/bin/bash
 
-#Input = single-end fastq files.
-
 # Quality filter SINGLE-END sequencing data with trimmomatic
+#Input = single-end fastq files.
 
 ##########################################################
 ###Third-party applications:
@@ -18,9 +17,7 @@
 #pigz v2.4
 ##########################################################
 
-###############################
-###############################
-#These variables are for testing (DELETE when implementing to PipeCraft)
+#load variables
 extension=$fileFormat
 #mandatory options
 window_size=$window_size
@@ -31,12 +28,7 @@ threads=$cores
 phred=$phred
 leading_qual_threshold=$leading_qual_threshold #or 'undefined', if selection is not active
 trailing_qual_threshold=$trailing_qual_threshold #or 'undefined', if selection is not active
-###############################
-###############################
 
-#############################
-### Start of the workflow ###
-#############################
 #additional options, if selection != undefined
 if [[ $leading_qual_threshold == null ]]; then
     :
@@ -49,6 +41,9 @@ else
     TRAILING=$"TRAILING:$trailing_qual_threshold"
 fi
 
+#############################
+### Start of the workflow ###
+#############################
 start=$(date +%s)
 # Source for functions
 source /scripts/framework.functions.sh
