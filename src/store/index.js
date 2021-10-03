@@ -6,6 +6,8 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+    dockerStatus: "",
+    runInfo: { active: false, type: null, step: null, nrOfSteps: null },
     loader: {
       active: false,
       index: 5,
@@ -220,7 +222,7 @@ export default new Vuex.Store({
         ],
       },
       {
-        stepName: "trim adapters/primers",
+        stepName: "trim adapters|primers",
         disabled: "never",
         services: [
           {
@@ -2286,6 +2288,16 @@ export default new Vuex.Store({
   },
   getters: {},
   mutations: {
+    // runInfo: { active: false, type: null, step: null, nrOfSteps: null },
+    addRunInfo(state, payload) {
+      let result = Object.fromEntries(
+        Object.keys(state.runInfo).map((_, i) => [
+          Object.keys(state.runInfo)[i],
+          payload[i],
+        ]),
+      );
+      state.runInfo = result;
+    },
     toggle_PE_SE_scripts(state, payload) {
       for (const [key] of Object.entries(state.customWorkflowInfo)) {
         for (let i = 0; i < state[key].length; i++) {
@@ -2367,6 +2379,9 @@ export default new Vuex.Store({
     },
     addWorkingDir(state, filePath) {
       state.workingDir = filePath;
+    },
+    updateDockerStatus(state, payload) {
+      state.dockerStatus = payload;
     },
     addInputDir(state, filePath) {
       state.inputDir = filePath;

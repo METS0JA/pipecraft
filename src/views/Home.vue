@@ -1,5 +1,12 @@
 <template>
-  <div></div>
+  <div>
+    <v-img
+      style="margin: auto"
+      max-height="350"
+      max-width="350"
+      src="..\assets\PipeCraft2_logo.png"
+    ></v-img>
+  </div>
 </template>
 
 <script>
@@ -89,7 +96,7 @@ div {
   animation-timing-function: linear;
 
   &::before {
-    content: "PIPECRAFT";
+    content: "";
 
     font-size: 6rem;
     font-weight: 100;

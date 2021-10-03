@@ -15,13 +15,26 @@
           block
           :style="
             `/step/${element.stepName}/${index}` == $route.path
-              ? { background: '#1DE9B6' }
+              ? { border: '1px #1DE9B6 solid' }
               : { background: 'grey' }
           "
           @click="push2route(element.stepName.replace('/', ''), index)"
         >
           {{ element.stepName }}
-          <v-icon @click.stop="removeAt(index)">mdi-close-box</v-icon>
+          <v-icon
+            v-if="$store.state.runInfo.active == false"
+            @click.stop="removeAt(index)"
+            >mdi-close-box</v-icon
+          >
+          <v-progress-circular
+            v-if="
+              $store.state.runInfo.active == true &&
+                index == $store.state.runInfo.step
+            "
+            indeterminate
+            color="#1DE9B6"
+            :size="20"
+          ></v-progress-circular>
         </v-btn>
       </li>
     </transition-group>

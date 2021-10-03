@@ -122,9 +122,11 @@ export default {
       self.dockerActive = await docker
         .version()
         .then(() => {
+          self.$store.commit("updateDockerStatus", "running");
           return "#1DE9B6";
         })
         .catch(() => {
+          self.$store.commit("updateDockerStatus", "stopped");
           return "#FF7043";
         });
     }, 1000);
