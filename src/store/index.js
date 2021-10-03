@@ -12,7 +12,6 @@ export default new Vuex.Store({
       active: false,
       index: 5,
     },
-    runInfo: { active: false, type: null, step: null, totalSteps: null },
     workingDir: "/input",
     inputDir: "",
     data: {
@@ -2330,7 +2329,7 @@ export default new Vuex.Store({
           if (payload == "paired_end") {
             state[key][i].scriptName = state[key][i].scriptName.replace(
               "single_end",
-              "paired_end"
+              "paired_end",
             );
             if (state[key][i].disabled == "single_end") {
               state[key][i].selected = "always";
@@ -2339,7 +2338,7 @@ export default new Vuex.Store({
           if (payload == "single_end") {
             state[key][i].scriptName = state[key][i].scriptName.replace(
               "paired_end",
-              "single_end"
+              "single_end",
             );
             if (state[key][i].disabled == "single_end") {
               state[key][i].selected = false;
@@ -2383,7 +2382,7 @@ export default new Vuex.Store({
       for (let i = 0; i < state.selectedSteps.length; i++) {
         if (payload == "demultiplexed") {
           state.selectedSteps = state.selectedSteps.filter(
-            (item) => !(item.stepName == "demultiplex")
+            (item) => !(item.stepName == "demultiplex"),
           );
         }
       }
