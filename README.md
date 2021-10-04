@@ -4,7 +4,7 @@
 
 Docker (https://www.docker.com/get-started)
 
-Download the steup executable from this link  
+Download the setup executable from this link  
 https://github.com/SuvalineVana/pipecraft-vue/releases/download/0.2.0-beta/pipecraft.Setup.0.2.0-beta.exe
 
 ## For developers
