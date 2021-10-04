@@ -1,9 +1,21 @@
 <template>
-  <v-tooltip right :disabled="$store.state.dockerStatus == 'running'">
+  <v-tooltip
+    right
+    :disabled="
+      $store.state.dockerStatus == 'running' &&
+        $store.state.inputDir != '' &&
+        ('workflowName' in $route.params || $store.getters.selectedStepsReady)
+    "
+  >
     <template v-slot:activator="{ on }">
       <div v-on="on">
         <v-btn
-          :disabled="$store.state.dockerStatus == 'stopped'"
+          :disabled="
+            $store.state.dockerStatus == 'stopped' ||
+              $store.state.inputDir == '' ||
+              (!('workflowName' in $route.params) &&
+                !$store.getters.selectedStepsReady)
+          "
           block
           outlined
           color="white"
@@ -17,7 +29,13 @@
         </v-btn>
       </div>
     </template>
-    <span>Failed to find docker desktop</span>
+    <div v-if="this.$store.state.dockerStatus == 'stopped'">
+      Failed to find docker desktop!
+    </div>
+    <div v-if="this.$store.state.inputDir == ''">No files selected!</div>
+    <div v-if="!$store.getters.selectedStepsReady">
+      No steps or services selected
+    </div>
   </v-tooltip>
 </template>
 

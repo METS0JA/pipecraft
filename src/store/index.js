@@ -2311,7 +2311,23 @@ export default new Vuex.Store({
       },
     },
   },
-  getters: {},
+  getters: {
+    selectedStepsReady: (state) => {
+      let x = 0;
+      for (let index of state.selectedSteps.entries()) {
+        state.selectedSteps[index[0]].services.forEach((input) => {
+          if (input.selected === true || input.selected == "always") {
+            x = x + 1;
+          }
+        });
+      }
+      if (x == state.selectedSteps.length && state.selectedSteps.length > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+  },
   mutations: {
     // runInfo: { active: false, type: null, step: null, nrOfSteps: null },
     addRunInfo(state, payload) {
