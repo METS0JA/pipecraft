@@ -122,7 +122,9 @@ export default {
       self.dockerActive = await docker
         .version()
         .then(() => {
-          self.$store.commit("updateDockerStatus", "running");
+          if (self.dockerActive != "#1DE9B6") {
+            self.$store.commit("updateDockerStatus", "running");
+          }
           return "#1DE9B6";
         })
         .catch(() => {

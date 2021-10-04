@@ -1,5 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import router from "../router/index.js";
 var _ = require("lodash");
 
 Vue.use(Vuex);
@@ -2376,6 +2377,16 @@ export default new Vuex.Store({
           }
         }
       }
+      for (let i = 0; i < state.selectedSteps.length; i++) {
+        if (payload == "single_end") {
+          state.selectedSteps = state.selectedSteps.filter(
+            (item) => !(item.stepName == "assemble paired-end"),
+          );
+          if (router.currentRoute != "/home") {
+            router.push("/home");
+          }
+        }
+      }
     },
     toggle_demux_mux(state, payload) {
       for (const [key] of Object.entries(state.customWorkflowInfo)) {
@@ -2400,6 +2411,9 @@ export default new Vuex.Store({
           state.selectedSteps = state.selectedSteps.filter(
             (item) => !(item.stepName == "demultiplex"),
           );
+          if (router.currentRoute != "/home") {
+            router.push("/home");
+          }
         }
       }
     },
