@@ -2383,7 +2383,9 @@ export default new Vuex.Store({
             (item) => !(item.stepName == "assemble paired-end"),
           );
           if (router.currentRoute != "/home") {
-            router.push("/home");
+            router.push("/home").catch(() => {
+              /* ignore */
+            });
           }
         }
       }
@@ -2412,7 +2414,9 @@ export default new Vuex.Store({
             (item) => !(item.stepName == "demultiplex"),
           );
           if (router.currentRoute != "/home") {
-            router.push("/home");
+            router.push("/home").catch(() => {
+              /* ignore */
+            });
           }
         }
       }

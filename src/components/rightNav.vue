@@ -113,6 +113,12 @@ export default {
           tooltip: "get usearch",
           action: "",
         },
+        {
+          title: "Quality Control",
+          icon: "mdi-beaker-check",
+          tooltip: "Quality plots with fastQC and multiQC",
+          action: this.push2qc,
+        },
       ],
     };
   },
@@ -171,6 +177,26 @@ export default {
         this.$router.push(`/premade/${name}`);
       }
     },
+    push2qc() {
+      if (this.$route.path != "/fastqcANDmultiqc") {
+        this.$router.push("/fastqcANDmultiqc");
+      }
+    },
   },
 };
 </script>
+
+<style scoped>
+.column {
+  float: left;
+  width: 33.33%;
+  padding: 5px;
+}
+
+/* Clear floats after image containers */
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+</style>

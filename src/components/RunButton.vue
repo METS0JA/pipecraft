@@ -251,6 +251,7 @@ export default {
                 }
               })
               .catch((err) => {
+                this.$store.commit("addRunInfo", [false, null, null, null]);
                 let resObj = {};
                 resObj.statusCode = err.statusCode;
                 resObj.log = err.json.message;
@@ -271,6 +272,7 @@ export default {
               this.$store.commit("addWorkingDir", newWorkingDir);
             } else {
               Swal.fire(result.log);
+              this.$store.commit("addRunInfo", [false, null, null, null]);
               stdout = new streams.WritableStream();
               stderr = new streams.WritableStream();
               break;

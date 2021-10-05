@@ -4,6 +4,7 @@ import Home from "../views/Home.vue";
 import StepPrototype from "../views/StepPrototype.vue";
 import dada2Miseq from "../views/dada2Miseq.vue";
 import RunInfo from "../views/RunInfo.vue";
+import fastqcANDmultiqc from "../views/fastqcANDmultiqc.vue";
 // import About from "../views/About.vue";
 
 Vue.use(VueRouter);
@@ -21,6 +22,10 @@ const routes = [
   {
     path: "/RunInfo",
     component: RunInfo,
+  },
+  {
+    path: "/fastqcANDmultiqc",
+    component: fastqcANDmultiqc,
   },
 ];
 
