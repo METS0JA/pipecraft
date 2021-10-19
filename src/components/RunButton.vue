@@ -33,7 +33,12 @@
       Failed to find docker desktop!
     </div>
     <div v-if="this.$store.state.inputDir == ''">No files selected!</div>
-    <div v-if="!$store.getters.selectedStepsReady">
+    <div
+      v-if="
+        !$store.getters.selectedStepsReady &&
+          $route.params.workflowName == undefined
+      "
+    >
       No steps or services selected
     </div>
   </v-tooltip>

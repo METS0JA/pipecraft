@@ -28,7 +28,15 @@
       <v-tooltip left nudge-left="10">
         <template v-slot:activator="{ on }">
           <v-list-item-content v-on="on" @click="item.action">
-            <v-icon>{{ item.icon }}</v-icon>
+            <v-icon
+              :style="
+                `/fastqcANDmultiqc` == $route.path &&
+                item.icon == `mdi-beaker-check`
+                  ? { color: '#1DE9B6' }
+                  : { color: 'white' }
+              "
+              >{{ item.icon }}</v-icon
+            >
           </v-list-item-content>
         </template>
         <span>{{ item.tooltip }}</span>
@@ -40,7 +48,7 @@
           <v-list-item-content v-on="on" @click="push2premade('DADA2_Miseq')">
             <v-icon
               :style="
-                `/premade/dada2Miseq` == $route.path
+                `/premade/DADA2_Miseq` == $route.path
                   ? { color: '#1DE9B6' }
                   : { color: 'white' }
               "

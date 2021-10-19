@@ -44,7 +44,7 @@
       </v-btn>
 
       <v-btn @click="fastQualityCheck()" color="orange" text>
-        Generate Report
+        Create Report
       </v-btn>
       <v-tooltip right :disabled="reportReady">
         <template v-slot:activator="{ on }">
@@ -54,8 +54,12 @@
               color="orange"
               text
               :disabled="!reportReady"
+              :loading="reportLoading"
             >
               View Report
+              <template v-slot:loader>
+                <span>Loading...</span>
+              </template>
             </v-btn>
           </div>
         </template>
@@ -68,6 +72,9 @@
 </template>
 
 <script>
+import { pullImageAsync } from "dockerode-utils";
+import { imageExists } from "dockerode-utils";
+const shell = require("electron").shell;
 const { dialog } = require("electron").remote;
 const slash = require("slash");
 // const fs = require("fs");
@@ -84,10 +91,12 @@ export default {
       fileExtension: "",
       folderPath: "",
       reportReady: false,
+      reportLoading: false,
     };
   },
   methods: {
     folderSelect() {
+      this.reportReady = false;
       Swal.mixin({
         input: "select",
         confirmButtonText: "Next &rarr;",
@@ -135,7 +144,23 @@ export default {
         });
     },
     async fastQualityCheck() {
+      this.reportReady = false;
+      this.reportLoading = true;
       console.log("starting fastqc");
+      let gotImg = await imageExists(dockerode, "staphb/fastqc:0.11.9");
+      if (gotImg === false) {
+        console.log(`Pulling image staphb/fastqc:0.11.9`);
+        let output = await pullImageAsync(dockerode, "staphb/fastqc:0.11.9");
+        console.log(output);
+        console.log(`Pull complete`);
+      }
+      gotImg = await imageExists(dockerode, "ewels/multiqc");
+      if (gotImg === false) {
+        console.log(`Pulling image ewels/multiqc`);
+        let output = await pullImageAsync(dockerode, "ewels/multiqc");
+        console.log(output);
+        console.log(`Pull complete`);
+      }
       let result = await dockerode
         .run(
           "staphb/fastqc:0.11.9",
@@ -201,9 +226,10 @@ export default {
         });
       console.log(result2);
       this.reportReady = true;
+      this.reportLoading = false;
     },
     openReport() {
-      window.open(`file://${this.folderPath}/multiqc_report.html`);
+      shell.openExternal(`file://${this.folderPath}/multiqc_report.html`);
     },
   },
 };
