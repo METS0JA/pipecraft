@@ -33,7 +33,29 @@ export default new Vuex.Store({
             serviceName: "demultiplex",
             selected: false,
             showExtra: false,
-            extraInputs: [],
+            extraInputs: [
+              {
+                name: "cores",
+                value: 2,
+                disabled: "never",
+                tooltip: "number of cores to use",
+                type: "numeric",
+              },
+              {
+                name: "min_seq_length",
+                value: 10,
+                disabled: "never",
+                tooltip: "minimum length of the output sequence",
+                type: "numeric",
+              },
+              {
+                name: "no_indels",
+                value: true,
+                disabled: "never",
+                tooltip: "do not allow insertions or deletions",
+                type: "bool",
+              },
+            ],
             Inputs: [
               {
                 name: "index_file",
@@ -60,114 +82,93 @@ export default new Vuex.Store({
                   "number of overlap bases with the index. Recommended overlap is the max length of the index for confident sequence assignments to samples in the indexes file.",
                 type: "numeric",
               },
-              {
-                name: "cores",
-                value: 2,
-                disabled: "never",
-                tooltip: "number of cores to use",
-                type: "numeric",
-              },
-              {
-                name: "min_seq_length",
-                value: 10,
-                disabled: "never",
-                tooltip: "minimum length of the output sequence",
-                type: "numeric",
-              },
-              {
-                name: "no_indels",
-                value: true,
-                disabled: "never",
-                tooltip: "do not allow insertions or deletions",
-                type: "bool",
-              },
             ],
           },
-          {
-            scriptName: "exampleScript.sh",
-            imageName: "exmaple:image",
-            serviceName: "example inputs",
-            selected: false,
-            showExtra: false,
-            extraInputs: [],
-            Inputs: [
-              {
-                name: "param1",
-                value: 2,
-                disabled: "never",
-                tooltip: "numeric",
-                type: "numeric",
-              },
-              {
-                name: "param2",
-                value: true,
-                disabled: "never",
-                tooltip: "boolean",
-                type: "bool",
-              },
-              {
-                name: "select 1",
-                items: ["16S", "ITS", "18S"],
-                value: "16S",
-                disabled: "never",
-                tooltip: "selection",
-                type: "select",
-              },
-              {
-                name: "file 1",
-                btnName: "select file",
-                value: "undefined",
-                disabled: "never",
-                tooltip: "file select",
-                type: "file",
-              },
-              {
-                name: "file 2",
-                btnName: "select file",
-                value: "undefined",
-                disabled: "never",
-                tooltip: "boolean file select",
-                active: false,
-                type: "boolfile",
-              },
-              {
-                name: "select 2",
-                items: ["16S", "ITS", "18S"],
-                disabled: "never",
-                tooltip: "boolean select",
-                value: "undefined",
-                active: true,
-                type: "boolselect",
-              },
-              {
-                name: "chips",
-                value: ["ACCTTGG", "GCGTAAA", "YNAAGGCCTT"],
-                disabled: "never",
-                tooltip: "IUPAC primers",
-                type: "chip",
-                iupac: true,
-                rules: [(v) => v.length <= 13 || "TOO MANY PRIMERS"],
-              },
-              {
-                name: "slide",
-                value: 0,
-                disabled: "never",
-                tooltip: "slide 4 life",
-                max: 1,
-                min: 0,
-                step: 0.01,
-                type: "slide",
-              },
-              {
-                name: "combobox",
-                items: ["nii", "palju", "asju", "mida", "valida"],
-                value: [],
-                disabled: "never",
-                tooltip: "combobreaker",
-                type: "combobox",
-              },
-            ],
-          },
+          // {
+          //   scriptName: "exampleScript.sh",
+          //   imageName: "exmaple:image",
+          //   serviceName: "example inputs",
+          //   selected: false,
+          //   showExtra: false,
+          //   extraInputs: [],
+          //   Inputs: [
+          //     {
+          //       name: "param1",
+          //       value: 2,
+          //       disabled: "never",
+          //       tooltip: "numeric",
+          //       type: "numeric",
+          //     },
+          //     {
+          //       name: "param2",
+          //       value: true,
+          //       disabled: "never",
+          //       tooltip: "boolean",
+          //       type: "bool",
+          //     },
+          //     {
+          //       name: "select 1",
+          //       items: ["16S", "ITS", "18S"],
+          //       value: "16S",
+          //       disabled: "never",
+          //       tooltip: "selection",
+          //       type: "select",
+          //     },
+          //     {
+          //       name: "file 1",
+          //       btnName: "select file",
+          //       value: "undefined",
+          //       disabled: "never",
+          //       tooltip: "file select",
+          //       type: "file",
+          //     },
+          //     {
+          //       name: "file 2",
+          //       btnName: "select file",
+          //       value: "undefined",
+          //       disabled: "never",
+          //       tooltip: "boolean file select",
+          //       active: false,
+          //       type: "boolfile",
+          //     },
+          //     {
+          //       name: "select 2",
+          //       items: ["16S", "ITS", "18S"],
+          //       disabled: "never",
+          //       tooltip: "boolean select",
+          //       value: "undefined",
+          //       active: true,
+          //       type: "boolselect",
+          //     },
+          //     {
+          //       name: "chips",
+          //       value: ["ACCTTGG", "GCGTAAA", "YNAAGGCCTT"],
+          //       disabled: "never",
+          //       tooltip: "IUPAC primers",
+          //       type: "chip",
+          //       iupac: true,
+          //       rules: [(v) => v.length <= 13 || "TOO MANY PRIMERS"],
+          //     },
+          //     {
+          //       name: "slide",
+          //       value: 0,
+          //       disabled: "never",
+          //       tooltip: "slide 4 life",
+          //       max: 1,
+          //       min: 0,
+          //       step: 0.01,
+          //       type: "slide",
+          //     },
+          //     {
+          //       name: "combobox",
+          //       items: ["nii", "palju", "asju", "mida", "valida"],
+          //       value: [],
+          //       disabled: "never",
+          //       tooltip: "combobreaker",
+          //       type: "combobox",
+          //     },
+          //   ],
+          // },
         ],
       },
       {
@@ -232,7 +233,47 @@ export default new Vuex.Store({
             serviceName: "cutadapt",
             selected: false,
             showExtra: false,
-            extraInputs: [],
+            extraInputs: [
+              {
+                name: "cores",
+                value: 1,
+                disabled: "never",
+                tooltip:
+                  "number of cores to use. For paired-end dta in fasta format, set to 1 [default]. For fastq formats you may set the value to 0 to use all cores.",
+                type: "numeric",
+              },
+              {
+                name: "min_seq_length",
+                value: 32,
+                disabled: "never",
+                tooltip: "minimum length of the output sequence.",
+                type: "numeric",
+              },
+              {
+                name: "overlap",
+                value: 16,
+                disabled: "never",
+                tooltip:
+                  "number of overlap bases with the primer sequence. Partial matches are allowed, but short matches may occur by chance, leading to erroneously clipped bases. Specifying higher overlap than the length of primer sequnce will still clip the primer (e.g. primer length is 22 bp, but overlap is specified as 25 - this does not affect the identification and clipping of the primer as long as the match is in the specified error range).",
+                type: "numeric",
+              },
+              {
+                name: "no_indels",
+                value: true,
+                disabled: "never",
+                tooltip:
+                  "do not allow insertions or deletions is primer search. Mismatches are the only type of errprs accounted in the error rate parameter. ",
+                type: "bool",
+              },
+              {
+                name: "discard_untrimmed",
+                value: true,
+                disabled: "never",
+                tooltip:
+                  "Discard sequences where specified primers were not found.",
+                type: "bool",
+              },
+            ],
             Inputs: [
               {
                 name: "forward_primers",
@@ -277,65 +318,26 @@ export default new Vuex.Store({
                   "Keep seqs with primers found in both ends(linked), or keeps seqs with primer found atlest in one end(all)",
                 type: "select",
               },
-              {
-                name: "cores",
-                value: 1,
-                disabled: "never",
-                tooltip:
-                  "number of cores to use. For paired-end dta in fasta format, set to 1 [default]. For fastq formats you may set the value to 0 to use all cores.",
-                type: "numeric",
-              },
-              {
-                name: "min_seq_length",
-                value: 32,
-                disabled: "never",
-                tooltip: "minimum length of the output sequence.",
-                type: "numeric",
-              },
-              {
-                name: "overlap",
-                value: 16,
-                disabled: "never",
-                tooltip:
-                  "number of overlap bases with the primer sequence. Partial matches are allowed, but short matches may occur by chance, leading to erroneously clipped bases. Specifying higher overlap than the length of primer sequnce will still clip the primer (e.g. primer length is 22 bp, but overlap is specified as 25 - this does not affect the identification and clipping of the primer as long as the match is in the specified error range).",
-                type: "numeric",
-              },
-              {
-                name: "no_indels",
-                value: true,
-                disabled: "never",
-                tooltip:
-                  "do not allow insertions or deletions is primer search. Mismatches are the only type of errprs accounted in the error rate parameter. ",
-                type: "bool",
-              },
-              {
-                name: "discard_untrimmed",
-                value: true,
-                disabled: "never",
-                tooltip:
-                  "Discard sequences where specified primers were not found.",
-                type: "bool",
-              },
             ],
           },
-          {
-            scriptName: "trimmomatic-cut.sh",
-            imageName: "pipecraft/trimmomatic:0.39",
-            serviceName: "trimmomatic",
-            selected: false,
-            showExtra: false,
-            extraInputs: [],
-            Inputs: [],
-          },
-          {
-            scriptName: "mothur-cut.sh",
-            imageName: "pipecraft/mothur:1.43",
-            serviceName: "mothur",
-            selected: false,
-            showExtra: false,
-            extraInputs: [],
-            Inputs: [],
-          },
+          // {
+          //   scriptName: "trimmomatic-cut.sh",
+          //   imageName: "pipecraft/trimmomatic:0.39",
+          //   serviceName: "trimmomatic",
+          //   selected: false,
+          //   showExtra: false,
+          //   extraInputs: [],
+          //   Inputs: [],
+          // },
+          // {
+          //   scriptName: "mothur-cut.sh",
+          //   imageName: "pipecraft/mothur:1.43",
+          //   serviceName: "mothur",
+          //   selected: false,
+          //   showExtra: false,
+          //   extraInputs: [],
+          //   Inputs: [],
+          // },
         ],
       },
       {
@@ -350,275 +352,259 @@ export default new Vuex.Store({
             showExtra: false,
             extraInputs: [
               {
-                name: "fastq_maxlen",
+                name: "max_length",
                 value: null,
                 disabled: "never",
                 tooltip:
-                  "Discard sequences with more than the specified number of bases",
+                  "Default = undefined. Discard sequences with more than the specified number of bases",
                 type: "numeric",
               },
               {
-                name: "fastq_truncqual",
+                name: "qmax",
+                value: 41,
+                disabled: "never",
+                tooltip:
+                  "Default = 41. Specify the maximum quality score accepted when reading FASTQ files. The default is 41, which is usual for recent Sanger/Illumina 1.8+ files. For PacBio data use 93.",
+                type: "numeric",
+              },
+              {
+                name: "qmin",
                 value: 0,
                 disabled: "never",
                 tooltip:
-                  "Truncate sequences starting from the first basewith the specified base quality score value or lower",
+                  "Default = 0. The minimum quality score accepted for FASTQ files. The default is 0, which is usual for recent Sanger/Illumina 1.8+ files. Older formats may use scores between -5 and 2.",
                 type: "numeric",
               },
               {
-                name: "fastq_maxee_rate",
+                name: "maxee_rate",
                 value: null,
                 disabled: "never",
                 tooltip:
-                  "Discard sequences with more than the specified number of expected errors per base",
+                  "Default = undefined. Discard sequences with more than the specified number of expected errors per base",
                 type: "numeric",
               },
               {
-                name: "fastq_qmin",
-                value: 0,
-                disabled: "never",
-                tooltip:
-                  "Specify the minimum quality score accepted for FASTQ files",
-                type: "numeric",
-              },
-            ],
-            Inputs: [
-              {
-                name: "fastq_maxee",
+                name: "min_size",
                 value: 1,
                 disabled: "never",
                 tooltip:
-                  "Discard sequences with more than the specified number of expected error",
+                  "Default = 1. Discard sequences with an abundance lower than the specified value",
                 type: "numeric",
               },
+            ],
+            Inputs: [
               {
-                name: "fastq_maxns",
-                value: 0,
-                disabled: "never",
-                tooltip:
-                  "Discard sequences with more than the specified number of N’s",
-                type: "numeric",
-              },
-              {
-                name: "fastq_minlen",
+                name: "maxee",
                 value: 1,
                 disabled: "never",
                 tooltip:
-                  "Discard sequences with less than the specified number of bases",
-                type: "numeric",
-              },
-            ],
-          },
-          {
-            scriptName: "mothur-quality.sh",
-            imageName: "pipecraft/mothur:1.43",
-            serviceName: "mothur",
-            selected: false,
-            showExtra: false,
-            extraInputs: [],
-            Inputs: [
-              {
-                name: "qwindowaverage",
-                value: 30,
-                disabled: "never",
-                tooltip:
-                  "Set the minimum average quality score allowed over a window",
+                  "Default = 1. Maximum number of expected errors per sequence. Sequences with higher error rates will be discarded",
                 type: "numeric",
               },
               {
-                name: "qwindowsize",
-                value: 32,
-                disabled: "never",
-                tooltip: "Set the number of bases in a window",
-                type: "numeric",
-              },
-              {
-                name: "maxambig",
+                name: "maxNs",
                 value: 0,
                 disabled: "never",
-                tooltip: "Set the number of allowed ambiguous base calls",
-                type: "numeric",
-              },
-              {
-                name: "qthreshold",
-                value: null,
-                disabled: "never",
                 tooltip:
-                  "Discard sequences with a basecall below set quality value",
+                  "Default = 0. Discard sequences with more than the specified number of N’s",
                 type: "numeric",
               },
               {
-                name: "minlength",
-                value: null,
-                disabled: "never",
-                tooltip:
-                  "Discard sequences with less than the specified number of bases",
-                type: "numeric",
-              },
-              {
-                name: "maxlength",
-                value: null,
-                disabled: "never",
-                tooltip:
-                  "Discard sequences with more than the specified number of bases",
-                type: "numeric",
-              },
-            ],
-          },
-          {
-            scriptName: "dada2-quality.R",
-            imageName: "pipecraft/dada2:3.10",
-            serviceName: "dada2",
-            selected: false,
-            showExtra: false,
-            extraInputs: [],
-            Inputs: [
-              {
-                name: "maxEE",
+                name: "min_length",
                 value: 1,
                 disabled: "never",
                 tooltip:
-                  "Discard sequences with more than the specified number of expected errors",
-                type: "numeric",
-              },
-              {
-                name: "maxN",
-                value: 0,
-                disabled: "never",
-                tooltip:
-                  "Discard sequences with more than the specified number of N’s",
-                type: "numeric",
-              },
-              {
-                name: "minLen",
-                value: 20,
-                disabled: "never",
-                tooltip:
-                  "Remove reads with length less than minLen. minLen is enforced after all other trimming and truncation",
-                type: "numeric",
-              },
-              {
-                name: "truncQ",
-                value: null,
-                disabled: "never",
-                tooltip:
-                  "Truncate reads at the first instance of a quality score less than or equal to truncQ",
-                type: "numeric",
-              },
-              {
-                name: "truncLen",
-                value: 0,
-                disabled: "never",
-                tooltip:
-                  "Truncate reads after truncLen bases. Reads shorter than this are discarded",
-                type: "numeric",
-              },
-              {
-                name: "maxLen",
-                value: null,
-                disabled: "never",
-                tooltip:
-                  "Remove reads with length greater than maxLen. maxLen is enforced on the raw reads",
-                type: "numeric",
-              },
-              {
-                name: "minQ",
-                value: 0,
-                disabled: "never",
-                tooltip:
-                  "After truncation, reads contain a quality score below minQ will be discarded",
+                  "Default = 32. Minimum length of the filtered output sequence",
                 type: "numeric",
               },
             ],
           },
-          {
-            scriptName: "usearch-quality.sh",
-            imageName: "pipecraft/usearch",
-            serviceName: "usearch",
-            selected: false,
-            showExtra: false,
-            extraInputs: [],
-            Inputs: [
-              {
-                name: "fastq_maxee",
-                value: null,
-                disabled: "never",
-                tooltip:
-                  "Discard sequences with more than the specified number of expected errors for all bases in the read (is used after any truncation options have been applied).",
-                type: "numeric",
-              },
-              {
-                name: "fastq_maxns",
-                value: null,
-                disabled: "never",
-                tooltip:
-                  "Discard sequences with more than the specified number of N’s",
-                type: "numeric",
-              },
-              {
-                name: "fastq_minlen",
-                value: null,
-                disabled: "never",
-                tooltip:
-                  "Discard sequences with less than the specified number of bases",
-                type: "numeric",
-              },
-              {
-                name: "fastq_stripleft",
-                value: null,
-                disabled: "never",
-                tooltip: "Delete the first N bases in the read",
-                type: "numeric",
-              },
-              {
-                name: "fastq_truncqual",
-                value: null,
-                disabled: "never",
-                tooltip:
-                  "Truncate sequences starting from the first basewith the specified base quality score value or lower",
-                type: "numeric",
-              },
-              {
-                name: "fastq_maxee_rate",
-                value: null,
-                disabled: "never",
-                tooltip:
-                  "Discard sequences with more than the specified number of expected errors per base",
-                type: "numeric",
-              },
-            ],
-          },
+          // {
+          //   scriptName: "mothur-quality.sh",
+          //   imageName: "pipecraft/mothur:1.43",
+          //   serviceName: "mothur",
+          //   selected: false,
+          //   showExtra: false,
+          //   extraInputs: [],
+          //   Inputs: [
+          //     {
+          //       name: "qwindowaverage",
+          //       value: 30,
+          //       disabled: "never",
+          //       tooltip:
+          //         "Set the minimum average quality score allowed over a window",
+          //       type: "numeric",
+          //     },
+          //     {
+          //       name: "qwindowsize",
+          //       value: 32,
+          //       disabled: "never",
+          //       tooltip: "Set the number of bases in a window",
+          //       type: "numeric",
+          //     },
+          //     {
+          //       name: "maxambig",
+          //       value: 0,
+          //       disabled: "never",
+          //       tooltip: "Set the number of allowed ambiguous base calls",
+          //       type: "numeric",
+          //     },
+          //     {
+          //       name: "qthreshold",
+          //       value: null,
+          //       disabled: "never",
+          //       tooltip:
+          //         "Discard sequences with a basecall below set quality value",
+          //       type: "numeric",
+          //     },
+          //     {
+          //       name: "minlength",
+          //       value: null,
+          //       disabled: "never",
+          //       tooltip:
+          //         "Discard sequences with less than the specified number of bases",
+          //       type: "numeric",
+          //     },
+          //     {
+          //       name: "maxlength",
+          //       value: null,
+          //       disabled: "never",
+          //       tooltip:
+          //         "Discard sequences with more than the specified number of bases",
+          //       type: "numeric",
+          //     },
+          //   ],
+          // },
+          // {
+          //   scriptName: "dada2-quality.R",
+          //   imageName: "pipecraft/dada2:3.10",
+          //   serviceName: "dada2",
+          //   selected: false,
+          //   showExtra: false,
+          //   extraInputs: [],
+          //   Inputs: [
+          //     {
+          //       name: "maxEE",
+          //       value: 1,
+          //       disabled: "never",
+          //       tooltip:
+          //         "Discard sequences with more than the specified number of expected errors",
+          //       type: "numeric",
+          //     },
+          //     {
+          //       name: "maxN",
+          //       value: 0,
+          //       disabled: "never",
+          //       tooltip:
+          //         "Discard sequences with more than the specified number of N’s",
+          //       type: "numeric",
+          //     },
+          //     {
+          //       name: "minLen",
+          //       value: 20,
+          //       disabled: "never",
+          //       tooltip:
+          //         "Remove reads with length less than minLen. minLen is enforced after all other trimming and truncation",
+          //       type: "numeric",
+          //     },
+          //     {
+          //       name: "truncQ",
+          //       value: null,
+          //       disabled: "never",
+          //       tooltip:
+          //         "Truncate reads at the first instance of a quality score less than or equal to truncQ",
+          //       type: "numeric",
+          //     },
+          //     {
+          //       name: "truncLen",
+          //       value: 0,
+          //       disabled: "never",
+          //       tooltip:
+          //         "Truncate reads after truncLen bases. Reads shorter than this are discarded",
+          //       type: "numeric",
+          //     },
+          //     {
+          //       name: "maxLen",
+          //       value: null,
+          //       disabled: "never",
+          //       tooltip:
+          //         "Remove reads with length greater than maxLen. maxLen is enforced on the raw reads",
+          //       type: "numeric",
+          //     },
+          //     {
+          //       name: "minQ",
+          //       value: 0,
+          //       disabled: "never",
+          //       tooltip:
+          //         "After truncation, reads contain a quality score below minQ will be discarded",
+          //       type: "numeric",
+          //     },
+          //   ],
+          // },
+          // {
+          //   scriptName: "usearch-quality.sh",
+          //   imageName: "pipecraft/usearch",
+          //   serviceName: "usearch",
+          //   selected: false,
+          //   showExtra: false,
+          //   extraInputs: [],
+          //   Inputs: [
+          //     {
+          //       name: "fastq_maxee",
+          //       value: null,
+          //       disabled: "never",
+          //       tooltip:
+          //         "Discard sequences with more than the specified number of expected errors for all bases in the read (is used after any truncation options have been applied).",
+          //       type: "numeric",
+          //     },
+          //     {
+          //       name: "fastq_maxns",
+          //       value: null,
+          //       disabled: "never",
+          //       tooltip:
+          //         "Discard sequences with more than the specified number of N’s",
+          //       type: "numeric",
+          //     },
+          //     {
+          //       name: "fastq_minlen",
+          //       value: null,
+          //       disabled: "never",
+          //       tooltip:
+          //         "Discard sequences with less than the specified number of bases",
+          //       type: "numeric",
+          //     },
+          //     {
+          //       name: "fastq_stripleft",
+          //       value: null,
+          //       disabled: "never",
+          //       tooltip: "Delete the first N bases in the read",
+          //       type: "numeric",
+          //     },
+          //     {
+          //       name: "fastq_truncqual",
+          //       value: null,
+          //       disabled: "never",
+          //       tooltip:
+          //         "Truncate sequences starting from the first basewith the specified base quality score value or lower",
+          //       type: "numeric",
+          //     },
+          //     {
+          //       name: "fastq_maxee_rate",
+          //       value: null,
+          //       disabled: "never",
+          //       tooltip:
+          //         "Discard sequences with more than the specified number of expected errors per base",
+          //       type: "numeric",
+          //     },
+          //   ],
+          // },
           {
             scriptName: "quality_filtering_paired_end_trimmomatic.sh",
             imageName: "pipecraft/trimmomatic:0.39",
             serviceName: "trimmomatic",
             selected: false,
             showExtra: false,
-            extraInputs: [],
-            Inputs: [
-              {
-                name: "window_size",
-                value: 5,
-                disabled: "never",
-                tooltip:
-                  "the number of bases to average base qualities. Starts scanning at the 5'-end of a sequence and trimms the read once the average required quality (required_qual) within the window size falls below the threshold.",
-                type: "numeric",
-              },
-              {
-                name: "required_quality",
-                value: 27,
-                disabled: "never",
-                tooltip:
-                  "the average quality required for selected window size",
-                type: "numeric",
-              },
-              {
-                name: "min_length",
-                value: 32,
-                disabled: "never",
-                tooltip: "minimum length of the filtered sequence",
-                type: "numeric",
-              },
+            extraInputs: [
               {
                 name: "leading_qual_threshold",
                 value: null,
@@ -650,6 +636,31 @@ export default new Vuex.Store({
                 tooltip:
                   "phred quality scored encoding. Default is phred33. Use phred64 if working with data from older Illumina (Solexa) machines. ",
                 type: "select",
+              },
+            ],
+            Inputs: [
+              {
+                name: "window_size",
+                value: 5,
+                disabled: "never",
+                tooltip:
+                  "the number of bases to average base qualities. Starts scanning at the 5'-end of a sequence and trimms the read once the average required quality (required_qual) within the window size falls below the threshold.",
+                type: "numeric",
+              },
+              {
+                name: "required_quality",
+                value: 27,
+                disabled: "never",
+                tooltip:
+                  "the average quality required for selected window size",
+                type: "numeric",
+              },
+              {
+                name: "min_length",
+                value: 32,
+                disabled: "never",
+                tooltip: "minimum length of the filtered sequence",
+                type: "numeric",
               },
             ],
           },
@@ -698,7 +709,16 @@ export default new Vuex.Store({
             serviceName: "pandaseq",
             selected: false,
             showExtra: false,
-            extraInputs: [],
+            extraInputs: [
+              {
+                name: "write unpaired",
+                value: false,
+                disabled: "never",
+                tooltip:
+                  "Write sequences for which the optimal alignment cannot be computed to a file as concatenated pairs.",
+                type: "bool",
+              },
+            ],
             Inputs: [
               {
                 name: "minoverlap -o",
@@ -730,14 +750,6 @@ export default new Vuex.Store({
                 disabled: "never",
                 tooltip: "Sets maximum length for a sequence before assembly.",
                 type: "numeric",
-              },
-              {
-                name: "write unpaired",
-                value: false,
-                disabled: "never",
-                tooltip:
-                  "Write sequences for which the optimal alignment cannot be computed to a file as concatenated pairs.",
-                type: "bool",
               },
             ],
           },
@@ -807,7 +819,7 @@ export default new Vuex.Store({
           },
           {
             scriptName: "assemble_pairedend_data_vsearch.sh",
-            imageName: "pipecraft/mothur:1.43",
+            imageName: "pipecraft/vsearch:2.18",
             serviceName: "vsearch",
             disabled: "single_end",
             selected: false,
@@ -2001,6 +2013,14 @@ export default new Vuex.Store({
             type: "numeric",
           },
           {
+            name: "overlap",
+            value: 16,
+            disabled: "never",
+            tooltip:
+              "number of overlap bases with the primer sequence. Partial matches are allowed, but short matches may occur by chance, leading to erroneously clipped bases. Specifying higher overlap than the length of primer sequnce will still clip the primer (e.g. primer length is 22 bp, but overlap is specified as 25 - this does not affect the identification and clipping of the primer as long as the match is in the specified error range).",
+            type: "numeric",
+          },
+          {
             name: "no_indels",
             value: true,
             disabled: "never",
@@ -2427,7 +2447,7 @@ export default new Vuex.Store({
     toggleExtra(state, payload) {
       state.selectedSteps[payload.stepIndex].services[
         payload.serviceIndex
-      ].showExtra = !state.selectedSteps[payload.serviceIndex].services[
+      ].showExtra = !state.selectedSteps[payload.stepIndex].services[
         payload.serviceIndex
       ].showExtra;
     },

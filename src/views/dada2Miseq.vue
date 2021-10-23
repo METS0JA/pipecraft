@@ -16,7 +16,7 @@
             >{{ $route.params.workflowName.replace(/_/g, " ") }}</v-card-title
           >
         </template>
-        <span>tip me please</span>
+        <span></span>
       </v-tooltip>
       <v-card-text
         class="pr-15 pl-15 text-center"
@@ -75,7 +75,7 @@
           {{ service.serviceName.toUpperCase() }}
         </v-expansion-panel-header>
         <v-expansion-panel-content>
-          <v-row>
+          <v-row justify="center">
             <v-col
               v-for="(input, i) in service.Inputs"
               :key="input.name"
@@ -142,7 +142,22 @@
               /></v-container>
             </v-col>
           </v-row>
+          <v-row v-if="service.extraInputs.length > 0" justify="center">
+            <v-btn
+              light
+              class="mt-5 mb-8"
+              style="justify-content: center;"
+              @click="toggleExtra(index)"
+            >
+              toggle advance options
+            </v-btn></v-row
+          >
+          <v-divider
+            v-if="service.extraInputs.length > 0 && service.showExtra == true"
+          ></v-divider>
           <v-row
+            style="margin-top:10px"
+            justify="center"
             v-if="service.extraInputs.length > 0 && service.showExtra == true"
           >
             <v-col
@@ -211,16 +226,6 @@
               /></v-container>
             </v-col>
           </v-row>
-          <v-row v-if="service.extraInputs.length > 0" justify="center">
-            <v-btn
-              light
-              class="mt-5 mb-5"
-              style="justify-content: center;"
-              @click="toggleExtra(index)"
-            >
-              toggle advance options
-            </v-btn></v-row
-          >
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>

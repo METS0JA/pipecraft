@@ -103,24 +103,24 @@ export default {
           tooltip: "load workflow",
           action: this.loadWorkFlow,
         },
-        {
-          title: "Expert",
-          icon: "mdi-puzzle-edit",
-          tooltip: "expert mode",
-          action: "",
-        },
-        {
-          title: "Step-by-step mode",
-          icon: "mdi-format-list-bulleted",
-          tooltip: "step-by-step mode",
-          action: "",
-        },
-        {
-          title: "Usearch",
-          icon: "mdi-alpha-u-box",
-          tooltip: "get usearch",
-          action: "",
-        },
+        // {
+        //   title: "Expert",
+        //   icon: "mdi-puzzle-edit",
+        //   tooltip: "expert mode",
+        //   action: "",
+        // },
+        // {
+        //   title: "Step-by-step mode",
+        //   icon: "mdi-format-list-bulleted",
+        //   tooltip: "step-by-step mode",
+        //   action: "",
+        // },
+        // {
+        //   title: "Usearch",
+        //   icon: "mdi-alpha-u-box",
+        //   tooltip: "get usearch",
+        //   action: "",
+        // },
         {
           title: "Quality Control",
           icon: "mdi-beaker-check",
