@@ -23,19 +23,19 @@
 ###############################
 ###############################
 #These variables are for testing (DELETE when implementing to PipeCraft)
-extension=$"fasta"
+extension=$fileFormat
 #mandatory options
 organisms=$"-t all"             # list: A,B,C,D,E,F,G,H,I,L,M,O,P,Q,R,S,T,U,X,Y
 regions=$"--save_regions all"   # list: all,SSU,ITS1,5.8S,ITS2,LSU
-partial=$"--partial 50"
+partial=$"--partial ${partial}"
 #additional options
-cores=$"--cpu 6"                # pos int
+cores=$"--cpu ${cores}"                # pos int
 eval=$"-E 1e4"                  # float (E)
-score=$"-S 0"                   # pos int
-domains=$"-N 3"                 # pos int
-complement=$"undefined"         # or TRUE
-only_full=$"undefined"          # or TRUE
-truncate=$"undefined"           # or TRUE
+score=$"-S ${scores}"                   # pos int
+domains=$"-N ${domains}"                 # pos int
+complement=$complement         # or TRUE
+only_full=$only_full          # or TRUE
+truncate=$truncate           # or TRUE
 ###############################
 ###############################
 
@@ -43,17 +43,17 @@ truncate=$"undefined"           # or TRUE
 ### Start of the workflow ###
 #############################
 #additional options, if selection != undefined
-if [[ $complement == "undefined" ]]; then
+if [[ $complement == false ]]; then
     :
 else
     complement_in=$"--complement"
 fi
-if [[ $only_full == "undefined" ]]; then
+if [[ $only_full == false ]]; then
     :
 else
     only_full_in=$"--only_full"
 fi
-if [[ $truncate == "undefined" ]]; then
+if [[ $truncate == false ]]; then
     :
 else
     truncate_in=$"--truncate"
