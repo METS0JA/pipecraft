@@ -18,12 +18,18 @@
               v-for="(input, i) in service.Inputs"
               :key="input.name"
               cols="12"
-              xl="2"
-              lg="3"
-              md="4"
-              sm="6"
+              :xl="input.type === 'combobox' ? 4 : 2"
+              :lg="input.type === 'combobox' ? 6 : 3"
+              :md="input.type === 'combobox' ? 8 : 4"
+              :sm="input.type === 'combobox' ? 12 : 3"
               style="height:fit-content; width:fit-content"
             >
+              <v-container v-if="input.type === 'combobox'"
+                ><InputCombo
+                  :serviceIndex="index"
+                  :inputIndex="i"
+                  :list="'Inputs'"
+              /></v-container>
               <v-container v-if="input.type === 'numeric'"
                 ><InputNumeric
                   :serviceIndex="index"
@@ -92,17 +98,22 @@
             justify="center"
             v-if="service.extraInputs.length > 0 && service.showExtra == true"
           >
-            <!-- numericInputs -->
             <v-col
               v-for="(input, i) in service.extraInputs"
               :key="input.name"
               cols="12"
-              xl="2"
-              lg="3"
-              md="4"
-              sm="6"
+              :xl="input.type === 'combobox' ? 4 : 2"
+              :lg="input.type === 'combobox' ? 6 : 3"
+              :md="input.type === 'combobox' ? 8 : 4"
+              :sm="input.type === 'combobox' ? 12 : 3"
               style="height:fit-content; width:fit-content"
             >
+              <v-container v-if="input.type === 'combobox'"
+                ><InputCombo
+                  :serviceIndex="index"
+                  :inputIndex="i"
+                  :list="'extraInputs'"
+              /></v-container>
               <v-container v-if="input.type === 'numeric'"
                 ><InputNumeric
                   :serviceIndex="index"
@@ -168,10 +179,12 @@ import InputBoolFile from "../components/InputBoolFile.vue";
 import InputBoolSelect from "../components/InputBoolSelect.vue";
 import InputChip from "../components/InputChip.vue";
 import InputSlide from "../components/InputSlide.vue";
+import InputCombo from "../components/InputCombo.vue";
 
 export default {
   name: "Home",
   components: {
+    InputCombo,
     InputChip,
     InputNumeric,
     InputBool,

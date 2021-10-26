@@ -2,6 +2,7 @@ FROM alpine:3.10
 
 RUN apk add build-base \
     && apk add wget  \
+    && apk add bash \
     && apk add git  \
     && wget https://github.com/shenwei356/seqkit/releases/download/v2.0.0/seqkit_linux_amd64.tar.gz -O /tmp/seqkit.tar.gz  \
     && tar zxvf /tmp/seqkit.tar.gz -C /usr/bin/ && rm /tmp/seqkit.tar.gz \

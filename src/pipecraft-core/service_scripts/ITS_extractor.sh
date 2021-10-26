@@ -25,8 +25,8 @@
 #These variables are for testing (DELETE when implementing to PipeCraft)
 extension=$fileFormat
 #mandatory options
-organisms=$"-t all"             # list: A,B,C,D,E,F,G,H,I,L,M,O,P,Q,R,S,T,U,X,Y
-regions=$"--save_regions all"   # list: all,SSU,ITS1,5.8S,ITS2,LSU
+organisms=$"-t ${Organisms}"             # list: A,B,C,D,E,F,G,H,I,L,M,O,P,Q,R,S,T,U,X,Y
+regions=$"--save_regions ${Regions}"   # list: all,SSU,ITS1,5.8S,ITS2,LSU
 partial=$"--partial ${partial}"
 #additional options
 cores=$"--cpu ${cores}"                # pos int
