@@ -87,7 +87,7 @@ export default {
               this.$store.state[name][index[0]].selected == "always"
             ) {
               console.log(
-                `Startin step ${index[0] + 1}: ${index[1].serviceName}`
+                `Startin step ${index[0] + 1}: ${index[1].serviceName}`,
               );
               let scriptName = this.$store.state[name][index[0]].scriptName;
               let imageName = this.$store.state[name][index[0]].imageName;
@@ -111,7 +111,7 @@ export default {
                 "\n",
                 `INPUT: ${Input}`,
                 "\n",
-                `WORKDIR: ${WorkingDir}`
+                `WORKDIR: ${WorkingDir}`,
               );
               console.log(envVariables);
               let result = await dockerode
@@ -127,7 +127,7 @@ export default {
                       Binds: Binds,
                     },
                     Env: envVariables,
-                  }
+                  },
                 )
                 .then(async ([res, container]) => {
                   console.log(stdout.toString());
@@ -152,7 +152,7 @@ export default {
               if (result.statusCode == 0) {
                 let newWorkingDir = this.getVariableFromLog(
                   result.log,
-                  "workingDir"
+                  "workingDir",
                 );
                 let newDataInfo = {
                   dataFormat: this.getVariableFromLog(result.log, "dataFormat"),
@@ -161,7 +161,7 @@ export default {
                 };
                 this.$store.commit(
                   "toggle_PE_SE_scripts",
-                  newDataInfo.readType
+                  newDataInfo.readType,
                 );
                 this.$store.commit("addInputInfo", newDataInfo);
                 this.$store.commit("addWorkingDir", newWorkingDir);
@@ -174,10 +174,11 @@ export default {
               stdout = new streams.WritableStream();
               stderr = new streams.WritableStream();
               console.log(
-                `Finished step ${index[0] + 1}: ${index[1].serviceName}`
+                `Finished step ${index[0] + 1}: ${index[1].serviceName}`,
               );
             }
           }
+          this.$store.commit("addWorkingDir", "/input");
         }
       });
     },
@@ -225,7 +226,7 @@ export default {
               "\n",
               `INPUT: ${Input}`,
               "\n",
-              `WORKDIR: ${WorkingDir}`
+              `WORKDIR: ${WorkingDir}`,
             );
             console.log(envVariables);
             let result = await dockerode
@@ -241,7 +242,7 @@ export default {
                     Binds: Binds,
                   },
                   Env: envVariables,
-                }
+                },
               )
               .then(async ([res, container]) => {
                 console.log(stdout.toString());
@@ -266,7 +267,7 @@ export default {
             if (result.statusCode == 0) {
               let newWorkingDir = this.getVariableFromLog(
                 result.log,
-                "workingDir"
+                "workingDir",
               );
               let newDataInfo = {
                 dataFormat: this.getVariableFromLog(result.log, "dataFormat"),
@@ -287,6 +288,7 @@ export default {
             console.log(`Finished step ${index[0] + 1}: ${index[1].stepName}`);
             this.$store.commit("addRunInfo", [false, null, null, null]);
           }
+          this.$store.commit("addWorkingDir", "/input");
         }
       });
     },
@@ -305,14 +307,14 @@ export default {
           let varObj = {};
           varObj[input.name] = input.value;
           envVariables.push(stringify(varObj).replace(/(\r\n|\n|\r)/gm, ""));
-        }
+        },
       );
       this.selectedSteps[stepIndex].services[serviceIndex].extraInputs.forEach(
         (input) => {
           let varObj = {};
           varObj[input.name] = input.value;
           envVariables.push(stringify(varObj).replace(/(\r\n|\n|\r)/gm, ""));
-        }
+        },
       );
       let dataInfo = {
         workingDir: this.$store.state.workingDir,
@@ -390,7 +392,7 @@ export default {
             let bind = `${correctedPath}:/extraFiles`;
             Binds.push(bind);
           }
-        }
+        },
       );
       // this.selectedSteps[stepIndex].services[serviceIndex].extraInputs.forEach((input) => {
       //   if (input.type == "file" || input.type == "boolfile") {
@@ -418,7 +420,7 @@ export default {
         imageName,
         scriptName,
         envVariables,
-        this.$store.state.workingDir
+        this.$store.state.workingDir,
       );
       return result;
     },

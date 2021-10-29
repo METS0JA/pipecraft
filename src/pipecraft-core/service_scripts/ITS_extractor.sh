@@ -23,10 +23,14 @@
 ###############################
 ###############################
 #These variables are for testing (DELETE when implementing to PipeCraft)
+echo $Regions
+echo $Organisms
 extension=$fileFormat
 #mandatory options
-organisms=$"-t ${Organisms}"             # list: A,B,C,D,E,F,G,H,I,L,M,O,P,Q,R,S,T,U,X,Y
+organisms=$"-t all"             # list: A,B,C,D,E,F,G,H,I,L,M,O,P,Q,R,S,T,U,X,Y
 regions=$"--save_regions ${Regions}"   # list: all,SSU,ITS1,5.8S,ITS2,LSU
+echo $regions
+echo $organisms
 partial=$"--partial ${partial}"
 #additional options
 cores=$"--cpu ${cores}"                # pos int
@@ -254,7 +258,7 @@ runtime=$((end-start))
 printf "Total time: $runtime sec.\n\n"
 
 #variables for all services
-echo "workingDir=/$output_dir"
+echo "workingDir=$output_dir/ITS1"
 echo "fileFormat=$newextension"
 echo "dataFormat=$dataFormat"
 echo "readType=single-end"

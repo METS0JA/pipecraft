@@ -24,23 +24,23 @@
 ###############################
 ###############################
 #These variables are for testing (DELETE when implementing to PipeCraft)
-extension=$"fastq.gz"
+extension=$fileFormat
 #mandatory options
-id=$"--id 0.97"              # positive float (0-1)
-otutype=$"--centroids"       # list: --centroids, --consout
-strands=$"--strand both"     # list: --strand both, --strand plus
-minsize=$"--minsize 2"
+id=$"--id ${similarity_threshold}"              # positive float (0-1)
+otutype=$"--${OTU_type}"       # list: --centroids, --consout
+strands=$"--strand ${strands}"     # list: --strand both, --strand plus
+minsize=$"--minsize ${min_OTU_size}"
 
 #additional options
 cores=$"--threads 6"         # positive integer
-seqsort=$"--cluster_size"    # list: --cluster_size or --cluster_fast, --cluster_smallmem
-simtype=$"--iddef 2"         # list: --iddef 0; --iddef 1; --iddef 2; --iddef 3; --iddef 4
-centroid=$"similarity"       # list: similarity, abundance
-maxaccepts=$"--maxaccepts 1" # positive integer
-relabel=$"sha1"              # list: none, sha1, md5
-mask=$"--qmask dust"         # list: --qmask dust, --qmask none
-dbmask=$"--dbmask dust"      # list: --qmask dust, --qmask none
-uc=$"undefined"              # undefined or TRUE
+seqsort=$"--${sequence_sorting}"    # list: --cluster_size or --cluster_fast, --cluster_smallmem
+simtype=$"--iddef ${similarity_type}"         # list: --iddef 0; --iddef 1; --iddef 2; --iddef 3; --iddef 4
+centroid=$centroid_type       # list: similarity, abundance
+maxaccepts=$"--maxaccepts ${max_hits}" # positive integer
+relabel=$relabel              # list: none, sha1, md5
+mask=$"--qmask ${mask}"         # list: --qmask dust, --qmask none
+dbmask=$"--dbmask ${dbmask}"      # list: --qmask dust, --qmask none
+uc=$output_UC              # undefined or TRUE
 ###############################
 ###############################
 
@@ -63,7 +63,7 @@ elif [[ $relabel == "sha1" ]]; then
 elif [[ $relabel == "md5" ]]; then
     relabel_in=$"--relabel_md5"
 fi
-if [[ $uc == "undefined" ]]; then
+if [[ $uc == false ]]; then
     uc_in=$""
 else
     uc_in=$"--uc $output_dir/OTUs.uc"
@@ -197,7 +197,7 @@ runtime=$((end-start))
 printf "Total time: $runtime sec.\n\n"
 
 #variables for all services
-echo "workingDir=/$output_dir"
+echo "workingDir=$output_dir"
 echo "fileFormat=$newextension"
 echo "dataFormat=$dataFormat"
 echo "readType=single-end"

@@ -1,8 +1,11 @@
-FROM alpine:3.10
+FROM alpine:3.14
 
 RUN apk add build-base \
     && apk add automake \
+    && apk add --no-cache --upgrade grep \
     && apk add autoconf  \
+    && apk add pigz  \
+    && apk add bash  \
     && apk add wget  \
     && apk add git  \
     && apk add zlib-dev \

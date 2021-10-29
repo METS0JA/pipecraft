@@ -25,20 +25,25 @@ extension=$fileFormat
 #mandatory options
 id=$"--id ${pre_cluster}" 
 minuniquesize=$"--minuniquesize ${min_unique_size}" 
-denovo=${denovno} #FALSE or TRUE
+denovo=${denovo} #FALSE or TRUE
 #load path to the reference database, if specified
 regex='[^\\]*$'
-ref=$(echo $reference_based | grep -oP "$regex")
-reference_based=$(printf "/extraFiles/$ref")
+# ref=$(echo $reference_based | grep -oP "$regex")
+# reference_based=$(printf "/extraFiles/$ref")
 #additional options
 cores=$"--threads ${cores}" # pos int
 abskew=$"--abskew ${abundance_skew}" # pos int
 minh=$"--minh ${min_h}" # float (0-1)
+echo $reference_based
+
 
 #additional options, if selection != undefined
-if [[ $reference_based == "undefined" ]]; then
+if [[ $reference_based == undefined ]]; then
     :
 else
+    echo "OK"
+    ref=$(echo $reference_based | grep -oE "$regex")
+    reference_based=$(printf "/extraFiles/$ref")
     database=$reference_based
 fi
 
@@ -76,7 +81,7 @@ for file in *.$extension; do
     check_extension_fastx
 
     #If input is FASTQ then convert to FASTA
-    if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]]; then
+    if [[ $newextension == "fastq" ]] || [[ $newextension == "fasta" ]]; then
         checkerror=$(seqkit fq2fa -t dna --line-width 0 $input.$newextension -o $input.fasta 2>&1)
         check_app_error
         printf "Note: converted $newextension to FASTA \n"
@@ -91,7 +96,8 @@ for file in *.$extension; do
     ### Start chimera filtering ###
     ###############################
     #dereplicate sequences
-    if [[ $denovo_filt == "TRUE" ]]; then
+    if [[ $denovo == true ]]; then
+        echo '1'
         checkerror=$(vsearch --derep_fulllength $input.$newextension \
         $minuniquesize \
         --sizein --sizeout \
@@ -101,6 +107,7 @@ for file in *.$extension; do
         check_app_error
 
         #pre-cluster sequences; sorts seqs automaticcaly by decreasing abundance
+        echo '2'
         checkerror=$(vsearch --cluster_size tempdir/$input.derep.fasta \
         $cores \
         $id \
@@ -112,6 +119,7 @@ for file in *.$extension; do
         check_app_error
 
         #search chimeras
+        echo '3'
         checkerror=$(vsearch --uchime_denovo tempdir/$input.preclustered.fasta \
         $abskew \
         $minh \
@@ -122,8 +130,9 @@ for file in *.$extension; do
         --nonchimeras tempdir/$input.denovo.nonchimeras.fasta 2>&1)
         check_app_error
 
-        if [[ $reference_based == "undefined" ]]; then
+        if [[ $reference_based == undefined ]]; then
             #Extract all non-chimeric sequences and add to $output_dir
+            echo '4'
             checkerror=$(vsearch --usearch_global $input.fasta \
             -db tempdir/$input.denovo.nonchimeras.fasta \
             --sizein --xsize \
@@ -140,6 +149,7 @@ for file in *.$extension; do
             fi
 
         else
+            echo '5'
             checkerror=$(vsearch --uchime_ref tempdir/$input.denovo.nonchimeras.fasta \
             $cores \
             --db $database \
@@ -151,6 +161,7 @@ for file in *.$extension; do
             check_app_error
 
             #Extract all non-chimeric sequences
+            echo '6'
             checkerror=$(vsearch --usearch_global $input.fasta \
             -db tempdir/$input.ref.denovo.nonchimeras.fasta \
             --sizein --xsize \
@@ -168,6 +179,7 @@ for file in *.$extension; do
         fi
     
     else #only reference based chimera filtering
+        echo '7'
         checkerror=$(vsearch --uchime_ref $input.fasta \
         $cores \
         --db $database \
@@ -191,7 +203,7 @@ done
 #################################################
 printf "\nCleaning up and compiling final stats files ...\n"
 #file identifier string after the process
-if [[ $reference_based == "undefined" ]]; then
+if [[ $reference_based == undefined ]]; then
     outfile_addition=$"denovo.nonchimeras"
 elif [[ $denovo == "undefined" ]]; then
     outfile_addition=$"ref.nonchimeras"
@@ -218,7 +230,7 @@ runtime=$((end-start))
 printf "Total time: $runtime sec.\n\n"
 
 #variables for all services
-echo "workingDir=/$output_dir"
+echo "workingDir=$output_dir"
 echo "fileFormat=$newextension"
 echo "dataFormat=$dataFormat"
 echo "readType=single-end"

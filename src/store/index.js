@@ -950,7 +950,7 @@ export default new Vuex.Store({
                 type: "numeric",
               },
               {
-                name: "denovno",
+                name: "denovo",
                 value: true,
                 disabled: "never",
                 tooltip:
@@ -958,7 +958,7 @@ export default new Vuex.Store({
                 type: "bool",
               },
               {
-                name: "refrence based",
+                name: "reference_based",
                 active: false,
                 btnName: "select file",
                 value: "undefined",
@@ -999,7 +999,7 @@ export default new Vuex.Store({
                 type: "bool",
               },
               {
-                name: "refrence based",
+                name: "reference based",
                 active: false,
                 btnName: "select file",
                 value: "undefined",
@@ -1659,7 +1659,7 @@ export default new Vuex.Store({
             type: "numeric",
           },
           {
-            name: "denovno",
+            name: "denovo",
             value: true,
             disabled: "never",
             tooltip:
@@ -1667,7 +1667,7 @@ export default new Vuex.Store({
             type: "bool",
           },
           {
-            name: "refrence_based",
+            name: "reference_based",
             active: false,
             btnName: "select file",
             value: "undefined",
@@ -1679,7 +1679,7 @@ export default new Vuex.Store({
         ],
       },
       {
-        scriptName: "reorient_paired_end_reads.sh",
+        scriptName: "ITS_extractor.sh",
         imageName: "pipecraft/itsx:1.1.3",
         serviceName: "gene extraction",
         disabled: "never",
@@ -1793,15 +1793,15 @@ export default new Vuex.Store({
         ],
       },
       {
-        scriptName: "cluster.sh",
-        imageName: "ppiecraft/",
+        scriptName: "clustering_vsearch.sh",
+        imageName: "pipecraft/vsearch:2.18",
         serviceName: "clustering",
         disabled: "never",
         selected: "always",
         showExtra: false,
         extraInputs: [
           {
-            name: "similarity type",
+            name: "similarity_type",
             items: ["0", "1", "2", "3", "4"],
             value: "2",
             disabled: "never",
@@ -1810,7 +1810,7 @@ export default new Vuex.Store({
             type: "select",
           },
           {
-            name: "sequence sorting",
+            name: "sequence_sorting",
             items: ["cluster_fast", "cluster_size", "cluster_smallmem"],
             value: "cluster_size",
             disabled: "never",
@@ -1819,7 +1819,7 @@ export default new Vuex.Store({
             type: "select",
           },
           {
-            name: "centroid type",
+            name: "centroid_type",
             items: ["similarity", "abundance"],
             value: "similarity",
             disabled: "never",
@@ -1828,7 +1828,7 @@ export default new Vuex.Store({
             type: "select",
           },
           {
-            name: "max hits",
+            name: "max_hits",
             value: 1,
             disabled: "never",
             tooltip:
@@ -1862,7 +1862,7 @@ export default new Vuex.Store({
             type: "select",
           },
           {
-            name: "output UC",
+            name: "output_UC",
             value: false,
             disabled: "never",
             tooltip:
@@ -1872,7 +1872,7 @@ export default new Vuex.Store({
         ],
         Inputs: [
           {
-            name: "OTU type",
+            name: "OTU_type",
             items: ["centroid", "consensus"],
             disabled: "never",
             tooltip:
@@ -1881,7 +1881,7 @@ export default new Vuex.Store({
             type: "select",
           },
           {
-            name: "similarity threshold",
+            name: "similarity_threshold",
             value: 0.97,
             disabled: "never",
             tooltip:
@@ -1901,7 +1901,7 @@ export default new Vuex.Store({
             type: "select",
           },
           {
-            name: "min OTU size",
+            name: "min_OTU_size",
             value: 2,
             disabled: "never",
             tooltip:

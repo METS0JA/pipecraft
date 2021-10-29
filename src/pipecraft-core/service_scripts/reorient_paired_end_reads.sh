@@ -18,14 +18,9 @@
     #https://github.com/indraniel/fqgrep
 #pigz v2.4
 ##########################################################
-<<<<<<< HEAD
-###############################
-#These variables are for testing (DELETE when implementing to PipeCraft)
-=======
 
 # Load variables from interface
 ###############################
->>>>>>> fcc2c99bc783fa22befa5e6b7737edb21af76c01
 extension=$fileFormat
 mismatches=$mismatches
 fwd_tempprimer=$forward_primers
