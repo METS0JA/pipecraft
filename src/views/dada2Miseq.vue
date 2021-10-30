@@ -38,20 +38,6 @@
       >
     </v-card>
     <v-expansion-panels dark multiple popout>
-      <v-overlay
-        z-index="2"
-        opacity="0.6"
-        absolute
-        :value="this.$store.state.loader.active"
-      >
-        <v-progress-circular
-          :size="70"
-          :width="7"
-          color="purple"
-          indeterminate
-          >{{ `${this.$store.state.loader.index}%` }}</v-progress-circular
-        >
-      </v-overlay>
       <v-expansion-panel
         v-for="(service, index) in services"
         :key="index"
@@ -73,6 +59,31 @@
             style="max-width:34px; padding-top:0; margin:0"
           ></v-checkbox>
           {{ service.serviceName.toUpperCase() }}
+          <!-- <v-progress-circular
+            v-if="
+              $store.state.runInfo.active == true &&
+                $store.state.runInfo.type == 'customWorkflow' &&
+                index == $store.state.runInfo.step
+            "
+            indeterminate
+            color="#1DE9B6"
+            :size="20"
+          ></v-progress-circular> -->
+
+          <div
+            v-if="
+              $store.state.runInfo.active == true &&
+                $store.state.runInfo.type == 'customWorkflow' &&
+                index == $store.state.runInfo.step
+            "
+            style="margin-left:25px"
+          >
+            <v-progress-circular
+              indeterminate
+              color="#1DE9B6"
+              :size="20"
+            ></v-progress-circular>
+          </div>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <v-row justify="center">

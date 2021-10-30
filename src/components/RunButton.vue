@@ -89,6 +89,12 @@ export default {
               console.log(
                 `Startin step ${index[0] + 1}: ${index[1].serviceName}`,
               );
+              this.$store.commit("addRunInfo", [
+                true,
+                "customWorkflow",
+                index[0],
+                this.$store.state[name].length,
+              ]);
               let scriptName = this.$store.state[name][index[0]].scriptName;
               let imageName = this.$store.state[name][index[0]].imageName;
               let Input = this.$store.state.inputDir;
@@ -143,6 +149,7 @@ export default {
                   }
                 })
                 .catch((err) => {
+                  this.$store.commit("addRunInfo", [false, null, null, null]);
                   let resObj = {};
                   resObj.statusCode = err.statusCode;
                   resObj.log = err.json.message;
@@ -167,6 +174,7 @@ export default {
                 this.$store.commit("addWorkingDir", newWorkingDir);
               } else {
                 Swal.fire(result.log);
+                this.$store.commit("addRunInfo", [false, null, null, null]);
                 stdout = new streams.WritableStream();
                 stderr = new streams.WritableStream();
                 break;
@@ -176,6 +184,7 @@ export default {
               console.log(
                 `Finished step ${index[0] + 1}: ${index[1].serviceName}`,
               );
+              this.$store.commit("addRunInfo", [false, null, null, null]);
             }
           }
           this.$store.commit("addWorkingDir", "/input");

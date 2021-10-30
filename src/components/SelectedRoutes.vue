@@ -21,20 +21,25 @@
           @click="push2route(element.stepName.replace('/', ''), index)"
         >
           {{ element.stepName }}
-          <v-icon
-            v-if="$store.state.runInfo.active == false"
+          <!-- <v-icon
+            v-if="
+              $store.state.runInfo.active == false &&
+                $store.state.runInfo.type != 'workflow'
+            "
             @click.stop="removeAt(index)"
             >mdi-close-box</v-icon
-          >
+          > -->
           <v-progress-circular
             v-if="
               $store.state.runInfo.active == true &&
+                $store.state.runInfo.type == 'workflow' &&
                 index == $store.state.runInfo.step
             "
             indeterminate
             color="#1DE9B6"
             :size="20"
           ></v-progress-circular>
+          <v-icon v-else @click.stop="removeAt(index)">mdi-close-box</v-icon>
         </v-btn>
       </li>
     </transition-group>

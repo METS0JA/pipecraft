@@ -346,7 +346,7 @@ export default new Vuex.Store({
         services: [
           {
             scriptName: "vsearch-quality.sh",
-            imageName: "pipecraft/vsearch:2.18.0",
+            imageName: "pipecraft/vsearch:2.18",
             serviceName: "vsearch",
             selected: false,
             showExtra: false,
@@ -924,7 +924,7 @@ export default new Vuex.Store({
           },
           {
             scriptName: "chimera_filtering_vsearch.sh",
-            imageName: "pipecraft/vsearch:2.18.0",
+            imageName: "pipecraft/vsearch:2.18",
             serviceName: "vsearch",
             selected: false,
             showExtra: false,
@@ -1190,7 +1190,7 @@ export default new Vuex.Store({
           // },
           {
             scriptName: "vsearch-cluster.sh",
-            imageName: "pipecraft/vsearch:2.18.0",
+            imageName: "pipecraft/vsearch:2.18",
             serviceName: "vsearch",
             selected: false,
             showExtra: false,
@@ -2482,7 +2482,7 @@ export default new Vuex.Store({
               "single_end",
             );
             if (state[key][i].disabled == "single_end") {
-              state[key][i].selected = false;
+              state[key][i].selected = "never";
             }
           }
         }

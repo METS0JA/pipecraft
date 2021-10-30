@@ -27,7 +27,7 @@ echo $Regions
 echo $Organisms
 extension=$fileFormat
 #mandatory options
-organisms=$"-t all"             # list: A,B,C,D,E,F,G,H,I,L,M,O,P,Q,R,S,T,U,X,Y
+organisms=$"-t ${Organisms}"             # list: A,B,C,D,E,F,G,H,I,L,M,O,P,Q,R,S,T,U,X,Y
 regions=$"--save_regions ${Regions}"   # list: all,SSU,ITS1,5.8S,ITS2,LSU
 echo $regions
 echo $organisms
