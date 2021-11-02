@@ -4,7 +4,9 @@
     :disabled="
       $store.state.dockerStatus == 'running' &&
         $store.state.inputDir != '' &&
-        ('workflowName' in $route.params || $store.getters.selectedStepsReady)
+        (('workflowName' in $route.params &&
+          $store.getters.customWorkflowReady) ||
+          $store.getters.selectedStepsReady)
     "
   >
     <template v-slot:activator="{ on }">
@@ -14,7 +16,9 @@
             $store.state.dockerStatus == 'stopped' ||
               $store.state.inputDir == '' ||
               (!('workflowName' in $route.params) &&
-                !$store.getters.selectedStepsReady)
+                !$store.getters.selectedStepsReady) ||
+              ('workflowName' in $route.params &&
+                !$store.getters.customWorkflowReady)
           "
           block
           outlined
@@ -39,7 +43,14 @@
           $route.params.workflowName == undefined
       "
     >
-      No steps or services selected
+      Missing selected services or mandatory inputs
+    </div>
+    <div
+      v-if="
+        'workflowName' in $route.params && !$store.getters.customWorkflowReady
+      "
+    >
+      Missing mandatory inputs
     </div>
   </v-tooltip>
 </template>
@@ -89,11 +100,14 @@ export default {
               console.log(
                 `Startin step ${index[0] + 1}: ${index[1].serviceName}`,
               );
+              let Hostname = index[1].serviceName.replace(" ", "_");
+              console.log(Hostname);
               this.$store.commit("addRunInfo", [
                 true,
                 "customWorkflow",
                 index[0],
                 this.$store.state[name].length,
+                Hostname,
               ]);
               let scriptName = this.$store.state[name][index[0]].scriptName;
               let imageName = this.$store.state[name][index[0]].imageName;
@@ -105,10 +119,12 @@ export default {
               console.log(Binds);
               let gotImg = await imageExists(dockerode, imageName);
               if (gotImg === false) {
+                this.$store.commit("activatePullLoader");
                 console.log(`Pulling image ${imageName}`);
                 let output = await pullImageAsync(dockerode, imageName);
                 console.log(output);
                 console.log(`Pull complete`);
+                this.$store.commit("deactivatePullLoader");
               }
               console.log(
                 `SCRIPT: ${scriptName}`,
@@ -128,6 +144,7 @@ export default {
                   {
                     Tty: false,
                     WorkingDir: WorkingDir,
+                    name: Hostname,
                     Volumes: {},
                     HostConfig: {
                       Binds: Binds,
@@ -149,7 +166,7 @@ export default {
                   }
                 })
                 .catch((err) => {
-                  this.$store.commit("addRunInfo", [false, null, null, null]);
+                  this.$store.commit("resetRunInfo");
                   let resObj = {};
                   resObj.statusCode = err.statusCode;
                   resObj.log = err.json.message;
@@ -173,8 +190,12 @@ export default {
                 this.$store.commit("addInputInfo", newDataInfo);
                 this.$store.commit("addWorkingDir", newWorkingDir);
               } else {
-                Swal.fire(result.log);
-                this.$store.commit("addRunInfo", [false, null, null, null]);
+                if (result.statusCode == 137 && result.log == "") {
+                  Swal.fire("Workflow stopped");
+                } else {
+                  Swal.fire(result.log);
+                }
+                this.$store.commit("resetRunInfo");
                 stdout = new streams.WritableStream();
                 stderr = new streams.WritableStream();
                 break;
@@ -184,7 +205,7 @@ export default {
               console.log(
                 `Finished step ${index[0] + 1}: ${index[1].serviceName}`,
               );
-              this.$store.commit("addRunInfo", [false, null, null, null]);
+              this.$store.commit("resetRunInfo");
             }
           }
           this.$store.commit("addWorkingDir", "/input");
@@ -204,11 +225,14 @@ export default {
 
           for (let index of this.selectedSteps.entries()) {
             console.log(`Startin step: ${index[0] + 1} ${index[1].stepName}`);
+            let Hostname = index[1].stepName.replace(/[ |]/g, "_");
+            console.log(Hostname);
             this.$store.commit("addRunInfo", [
               true,
               "workflow",
               index[0],
               this.selectedSteps.length,
+              Hostname,
             ]);
             let serviceIndex = this.findSelectedService(index[0]);
             let scriptName = this.selectedSteps[index[0]].services[serviceIndex]
@@ -224,9 +248,11 @@ export default {
             let gotImg = await imageExists(dockerode, imageName);
             if (gotImg === false) {
               console.log(`Pulling image ${imageName}`);
+              this.$store.commit("activatePullLoader");
               let output = await pullImageAsync(dockerode, imageName);
               console.log(output);
               console.log(`Pull complete`);
+              this.$store.commit("deactivatePullLoader");
             }
             console.log(
               `SCRIPT: ${scriptName}`,
@@ -247,6 +273,7 @@ export default {
                   Tty: false,
                   WorkingDir: WorkingDir,
                   Volumes: {},
+                  name: Hostname,
                   HostConfig: {
                     Binds: Binds,
                   },
@@ -266,7 +293,7 @@ export default {
                 }
               })
               .catch((err) => {
-                this.$store.commit("addRunInfo", [false, null, null, null]);
+                this.$store.commit("resetRunInfo");
                 let resObj = {};
                 resObj.statusCode = err.statusCode;
                 resObj.log = err.json.message;
@@ -286,8 +313,12 @@ export default {
               this.$store.commit("addInputInfo", newDataInfo);
               this.$store.commit("addWorkingDir", newWorkingDir);
             } else {
-              Swal.fire(result.log);
-              this.$store.commit("addRunInfo", [false, null, null, null]);
+              if (result.statusCode == 137 && result.log == "") {
+                Swal.fire("Workflow stopped");
+              } else {
+                Swal.fire(result.log);
+              }
+              this.$store.commit("resetRunInfo");
               stdout = new streams.WritableStream();
               stderr = new streams.WritableStream();
               break;
@@ -295,7 +326,7 @@ export default {
             stdout = new streams.WritableStream();
             stderr = new streams.WritableStream();
             console.log(`Finished step ${index[0] + 1}: ${index[1].stepName}`);
-            this.$store.commit("addRunInfo", [false, null, null, null]);
+            this.$store.commit("resetRunInfo");
           }
           this.$store.commit("addWorkingDir", "/input");
         }

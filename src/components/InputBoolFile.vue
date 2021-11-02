@@ -32,7 +32,7 @@
                   disabled
                   style="border-bottom-right-radius: 0; border-bottom-left-radius:0;"
                   hide-details="true"
-                  v-model="input.value"
+                  v-model="fileName"
                   class="centered-input"
                   background-color="transparent"
                   solo
@@ -47,7 +47,7 @@
                 >{{ input.btnName }}</v-btn
               >
             </template>
-            <span>{{ input.value }}</span>
+            <span>{{ fileName }}</span>
           </v-tooltip>
         </v-col>
       </v-row>
@@ -57,6 +57,7 @@
 
 <script>
 const { dialog } = require("electron").remote;
+var path = require("path");
 export default {
   computed: {
     input() {
@@ -70,6 +71,10 @@ export default {
           this.$attrs.inputIndex
         ];
       }
+    },
+    fileName() {
+      var filename = path.parse(this.input.value).base;
+      return filename;
     },
   },
   methods: {

@@ -8,10 +8,15 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     dockerStatus: "",
-    runInfo: { active: false, type: null, step: null, nrOfSteps: null },
-    loader: {
+    runInfo: {
       active: false,
-      index: 5,
+      type: null,
+      step: null,
+      nrOfSteps: null,
+      containerID: null,
+    },
+    pullLoader: {
+      active: false,
     },
     workingDir: "/input",
     inputDir: "",
@@ -2439,6 +2444,7 @@ export default new Vuex.Store({
   getters: {
     selectedStepsReady: (state) => {
       let x = 0;
+      let fileInputValues = [];
       for (let index of state.selectedSteps.entries()) {
         state.selectedSteps[index[0]].services.forEach((input) => {
           if (input.selected === true || input.selected == "always") {
@@ -2446,15 +2452,78 @@ export default new Vuex.Store({
           }
         });
       }
-      if (x == state.selectedSteps.length && state.selectedSteps.length > 0) {
+      for (let index of state.selectedSteps.entries()) {
+        state.selectedSteps[index[0]].services.forEach((input) => {
+          input.Inputs.forEach((input) => {
+            if (input.type == "file") {
+              fileInputValues.push(input.value);
+            }
+          });
+        });
+      }
+      if (
+        x == state.selectedSteps.length &&
+        state.selectedSteps.length > 0 &&
+        !fileInputValues.includes("undefined")
+      ) {
         return true;
       } else {
         return false;
       }
     },
+    customWorkflowReady: (state) => {
+      if (state.route.params.workflowName) {
+        let fileInputValues = [];
+        state[state.route.params.workflowName].forEach((input) => {
+          if (input.selected == true || input.selected == "always") {
+            input.Inputs.forEach((input) => {
+              if (input.type == "file") {
+                fileInputValues.push(input.value);
+              }
+            });
+          }
+        });
+        if (fileInputValues.includes("undefined")) {
+          return false;
+        } else {
+          return true;
+        }
+      } else {
+        return false;
+      }
+    },
+    // customWorkflowReady: (state) => {
+    //   if (state.route.params.workflowName) {
+    //     let fileInputValues = [];
+    //     state[state.route.params.workflowName].forEach((input) => {
+    //       if (input.selected == true || input.selected == "always") {
+    //         input.Inputs.forEach((input) => {
+    //           if (input.type == "file") {
+    //             fileInputValues.push(input.value);
+    //           }
+    //         });
+    //       }
+    //     });
+    //   }
+    // },
   },
   mutations: {
+    activatePullLoader(state) {
+      state.pullLoader.active = true;
+    },
+    deactivatePullLoader(state) {
+      state.pullLoader.active = false;
+    },
     // runInfo: { active: false, type: null, step: null, nrOfSteps: null },
+    resetRunInfo(state) {
+      state.runInfo = {
+        active: false,
+        type: null,
+        step: null,
+        nrOfSteps: null,
+        containerID: null,
+      };
+    },
     addRunInfo(state, payload) {
       let result = Object.fromEntries(
         Object.keys(state.runInfo).map((_, i) => [

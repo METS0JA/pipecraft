@@ -2,9 +2,24 @@
   <v-list dense rounded>
     <v-list-item>
       <v-list-item-content>
-        <v-btn block color="grey" @click="folderSelect">
-          Select workDir
-        </v-btn>
+        <v-tooltip right>
+          <template v-slot:activator="{ on }">
+            <div v-on="on">
+              <v-btn block color="grey" @click="folderSelect">
+                Select workDir
+              </v-btn>
+            </div>
+          </template>
+          <div v-if="this.$store.state.inputDir == ''">No files selected!</div>
+          <div v-else>
+            <div>{{ $store.state.inputDir }}</div>
+            <div>
+              {{ $store.state.data.dataFormat }} |
+              {{ $store.state.data.readType }} |
+              {{ $store.state.data.fileFormat }}
+            </div>
+          </div>
+        </v-tooltip>
       </v-list-item-content>
     </v-list-item>
     <!-- <v-list-item>
@@ -31,7 +46,12 @@
       </v-list-item-content>
     </v-list-item>
     <v-list-item>
-      <v-list-item-content>
+      <v-list-item-content v-if="$store.state.runInfo.active == true">
+        <v-btn block color="grey" @click="stopWorkflow">
+          Stop workflow
+        </v-btn>
+      </v-list-item-content>
+      <v-list-item-content v-else>
         <RunButton />
       </v-list-item-content>
     </v-list-item>
@@ -48,6 +68,8 @@ const { dialog } = require("electron").remote;
 import AddMenu from "./AddMenu.vue";
 import RunButton from "./RunButton";
 import SelectedRoutes from "./SelectedRoutes";
+import * as Dockerode from "dockerode";
+var dockerode = new Dockerode({ socketPath: "//./pipe/docker_engine" });
 
 export default {
   name: "leftNav",
@@ -69,6 +91,15 @@ export default {
     },
   },
   methods: {
+    stopWorkflow() {
+      var container = dockerode.getContainer(
+        this.$store.state.runInfo.containerID,
+      );
+      container.kill(function(err, data) {
+        console.log(data);
+      });
+      this.$store.commit("resetRunInfo");
+    },
     folderSelect() {
       Swal.mixin({
         input: "select",

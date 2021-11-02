@@ -83,6 +83,11 @@
               color="#1DE9B6"
               :size="20"
             ></v-progress-circular>
+            <span
+              v-if="$store.state.pullLoader.active == true"
+              style="padding-left:25px"
+              >Pulling image ...</span
+            >
           </div>
         </v-expansion-panel-header>
         <v-expansion-panel-content>

@@ -1,4 +1,5 @@
 import Vue from "vue";
+import { sync } from "vuex-router-sync";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
@@ -6,6 +7,7 @@ import vuetify from "./plugins/vuetify";
 import Sortable from "vue-sortable";
 Vue.config.productionTip = false;
 Vue.prototype.$test = 0;
+sync(store, router);
 
 new Vue({
   router,
