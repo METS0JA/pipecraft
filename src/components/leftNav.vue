@@ -5,7 +5,15 @@
         <v-tooltip right>
           <template v-slot:activator="{ on }">
             <div v-on="on">
-              <v-btn block color="grey" @click="folderSelect">
+              <v-btn
+                block
+                :style="
+                  $store.state.inputDir != ''
+                    ? { borderBottom: 'thin #1DE9B6 solid' }
+                    : { borderBottom: 'thin #E57373 solid' }
+                "
+                @click="folderSelect"
+              >
                 Select workDir
               </v-btn>
             </div>

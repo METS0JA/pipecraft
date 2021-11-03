@@ -15,8 +15,8 @@
           block
           :style="
             `/step/${element.stepName}/${index}` == $route.path
-              ? { border: '1px #1DE9B6 solid' }
-              : { background: 'grey' }
+              ? { borderBottom: '1px #1DE9B6 solid' }
+              : { background: '#424242' }
           "
           @click="push2route(element.stepName.replace('/', ''), index)"
         >
@@ -134,5 +134,12 @@ ul.list-group {
 }
 .v-btn:not(.v-btn--round).v-size--default {
   padding: 0 10px;
+}
+.routeActive {
+  border-bottom: 1px #1de9b6 solid;
+  border-bottom-width: 95%;
+}
+.route {
+  background-color: #424242;
 }
 </style>

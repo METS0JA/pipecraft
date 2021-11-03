@@ -480,72 +480,107 @@ export default new Vuex.Store({
           //     },
           //   ],
           // },
-          // {
-          //   scriptName: "dada2-quality.R",
-          //   imageName: "pipecraft/dada2:3.10",
-          //   serviceName: "dada2",
-          //   selected: false,
-          //   showExtra: false,
-          //   extraInputs: [],
-          //   Inputs: [
-          //     {
-          //       name: "maxEE",
-          //       value: 1,
-          //       disabled: "never",
-          //       tooltip:
-          //         "Discard sequences with more than the specified number of expected errors",
-          //       type: "numeric",
-          //     },
-          //     {
-          //       name: "maxN",
-          //       value: 0,
-          //       disabled: "never",
-          //       tooltip:
-          //         "Discard sequences with more than the specified number of N’s",
-          //       type: "numeric",
-          //     },
-          //     {
-          //       name: "minLen",
-          //       value: 20,
-          //       disabled: "never",
-          //       tooltip:
-          //         "Remove reads with length less than minLen. minLen is enforced after all other trimming and truncation",
-          //       type: "numeric",
-          //     },
-          //     {
-          //       name: "truncQ",
-          //       value: null,
-          //       disabled: "never",
-          //       tooltip:
-          //         "Truncate reads at the first instance of a quality score less than or equal to truncQ",
-          //       type: "numeric",
-          //     },
-          //     {
-          //       name: "truncLen",
-          //       value: 0,
-          //       disabled: "never",
-          //       tooltip:
-          //         "Truncate reads after truncLen bases. Reads shorter than this are discarded",
-          //       type: "numeric",
-          //     },
-          //     {
-          //       name: "maxLen",
-          //       value: null,
-          //       disabled: "never",
-          //       tooltip:
-          //         "Remove reads with length greater than maxLen. maxLen is enforced on the raw reads",
-          //       type: "numeric",
-          //     },
-          //     {
-          //       name: "minQ",
-          //       value: 0,
-          //       disabled: "never",
-          //       tooltip:
-          //         "After truncation, reads contain a quality score below minQ will be discarded",
-          //       type: "numeric",
-          //     },
-          //   ],
-          // },
+          {
+            scriptName: "dada2-quality.R",
+            imageName: "pipecraft/dada2:3.10",
+            serviceName: "dada2",
+            selected: false,
+            showExtra: false,
+            extraInputs: [],
+            Inputs: [
+              {
+                name: "read_R1",
+                value: ["_R1"],
+                disabled: "single_end",
+                tooltip:
+                  "Identifyer string that is common for all R1 reads (default = '_R1'; i.e. all R1 files have '_R1' string)",
+                type: "chip",
+                rules: [(v) => v.length <= 1 || "ADD ONLY ONE IDENTIFIER"],
+              },
+              {
+                name: "read_R2",
+                value: ["_R2"],
+                disabled: "single_end",
+                tooltip:
+                  "Identifyer string that is common for all R2 reads (default = '_R2'; i.e. all R2 files have '_R2' string)",
+                type: "chip",
+                rules: [(v) => v.length <= 1 || "ADD ONLY ONE IDENTIFIER"],
+              },
+              {
+                name: "samp_ID",
+                value: ["_"],
+                disabled: "never",
+                tooltip:
+                  "Identifyer string that separates the sample name for redundant charachters (e.g. file name = sampl84_S73_L001_R1_001.fastq, then underscore '_' would be the 'identifier string' (sample name = sampl84))",
+                type: "chip",
+                rules: [(v) => v.length <= 1 || "ADD ONLY ONE IDENTIFIER"],
+              },
+              {
+                name: "maxEE",
+                value: 2,
+                disabled: "never",
+                tooltip:
+                  "Default = 2. Discard sequences with more than the specified number of expected errors",
+                type: "numeric",
+              },
+              {
+                name: "maxN",
+                value: 0,
+                disabled: "never",
+                tooltip:
+                  "Default = 0. Discard sequences with more than the specified number of N’s (ambiguous bases)",
+                type: "numeric",
+              },
+              {
+                name: "minLen",
+                value: 20,
+                disabled: "never",
+                tooltip:
+                  "Default = 20. Remove reads with length less than minLen. minLen is enforced after all other trimming and truncation",
+                type: "numeric",
+              },
+              {
+                name: "truncQ",
+                value: 2,
+                disabled: "never",
+                tooltip:
+                  "Default = 2. Truncate reads at the first instance of a quality score less than or equal to truncQ",
+                type: "numeric",
+              },
+              {
+                name: "truncLen",
+                value: 0,
+                disabled: "never",
+                tooltip:
+                  "Default = 0 (no truncation). Truncate reads after truncLen bases (applies to R1 reads when working with paired-end data). Reads shorter than this are discarded. Explore quality profiles (with FastQC) see whether poor quality ends needs to truncated",
+                type: "numeric",
+              },
+              {
+                name: "truncLen_R2",
+                value: 0,
+                disabled: "single_end",
+                tooltip:
+                  "Default = 0 (no truncation). Truncate R2 reads after truncLen bases. Reads shorter than this are discarded. Explore quality profiles (with FastQC) see whether poor quality ends needs to truncated",
+                type: "numeric",
+              },
+              {
+                name: "maxLen",
+                value: 9999,
+                disabled: "never",
+                tooltip:
+                  "Remove reads with length greater than maxLen. maxLen is enforced on the raw reads. In dada2, the default = Inf, but here set as 9999",
+                type: "numeric",
+              },
+              {
+                name: "minQ",
+                value: 0,
+                disabled: "never",
+                tooltip:
+                  "Default = 0. After truncation, reads contain a quality score below minQ will be discarded",
+                type: "numeric",
+              },
+            ],
+          },
           // {
           //   scriptName: "usearch-quality.sh",
           //   imageName: "pipecraft/usearch",
@@ -688,140 +723,149 @@ export default new Vuex.Store({
                 value: 12,
                 disabled: "never",
                 tooltip:
-                  "The minimum length of the overlap required for mergingthe forward and reverse reads.",
+                  "Default = 12. The minimum length of the overlap required for mergingthe forward and reverse reads.",
                 type: "numeric",
               },
               {
                 name: "maxMismatch",
                 value: 0,
                 disabled: "never",
-                tooltip: "The maximum mismatches allowed in the overlap region",
+                tooltip:
+                  "Default = 0. The maximum mismatches allowed in the overlap region",
                 type: "numeric",
               },
               {
-                name: "returnRejects",
+                name: "trimOverhang",
                 value: false,
                 disabled: "never",
                 tooltip:
-                  "Return and retain, the pairs that that were rejected based on mismatches in the overlap region",
+                  "Default = FALSE. If TRUE, overhangs in the alignment between the forwards and reverse read are trimmed off. Overhangs are when the reverse read extends past the start of the forward read, and vice-versa, as can happen when reads are longer than the amplicon and read into the other-direction primer region.",
+                type: "bool",
+              },
+              {
+                name: "justConcatenate",
+                value: false,
+                disabled: "never",
+                tooltip:
+                  "Default = FALSE. If TRUE, the forward and reverse-complemented reverse read are concatenated rather than merged, with a NNNNNNNNNN (10 Ns) spacer inserted between them",
                 type: "bool",
               },
             ],
           },
-          {
-            scriptName: "pandaseq-assemble.sh",
-            imageName: "pipecraft/pandaseq:2.11",
-            serviceName: "pandaseq",
-            selected: false,
-            showExtra: false,
-            extraInputs: [
-              {
-                name: "write unpaired",
-                value: false,
-                disabled: "never",
-                tooltip:
-                  "Write sequences for which the optimal alignment cannot be computed to a file as concatenated pairs.",
-                type: "bool",
-              },
-            ],
-            Inputs: [
-              {
-                name: "minoverlap -o",
-                value: 1,
-                disabled: "never",
-                tooltip:
-                  "Sets the minimum overlap between forward and reverse reads.",
-                type: "numeric",
-              },
-              {
-                name: "minlen -l",
-                value: 1,
-                disabled: "never",
-                tooltip:
-                  "Sets the minimum length for a sequence before assembly",
-                type: "numeric",
-              },
-              {
-                name: "maxoverlap -O",
-                value: 1,
-                disabled: "never",
-                tooltip:
-                  "Sets the maximum overlap between forward and reverse reads.",
-                type: "numeric",
-              },
-              {
-                name: "maxlen -L",
-                value: 1,
-                disabled: "never",
-                tooltip: "Sets maximum length for a sequence before assembly.",
-                type: "numeric",
-              },
-            ],
-          },
-          {
-            scriptName: "flash-assemble.sh",
-            imageName: "pipecraft/flash:2",
-            serviceName: "flash",
-            selected: false,
-            showExtra: false,
-            extraInputs: [],
-            Inputs: [
-              {
-                name: "min overlap -m",
-                value: 100,
-                disabled: "never",
-                tooltip:
-                  "Set the minimum required overlap length between two reads to provide a confident overlap.",
-                type: "numeric",
-              },
-              {
-                name: "mismatch ratio -x",
-                value: 0.25,
-                disabled: "never",
-                tooltip:
-                  "Set the maximum allowed ratio of the number of mismatches at the overlap length.",
-                type: "numeric",
-              },
-              {
-                name: "max overlap -M",
-                value: null,
-                disabled: "never",
-                tooltip:
-                  "Set the maximum overlap length expected in approximately 90% of read pairs.",
-                type: "numeric",
-              },
-              {
-                name: "read length -r",
-                value: 1,
-                disabled: "never",
-                tooltip: "Average read length.",
-                type: "numeric",
-              },
-              {
-                name: "fragment length -f",
-                value: 1,
-                disabled: "never",
-                tooltip: "Average fragment length",
-                type: "numeric",
-              },
-              {
-                name: "σ fragment lengths -s",
-                value: 1,
-                disabled: "never",
-                tooltip:
-                  "if you do not know standard deviation of the fragment library, you can probably assume that the standard deviation is 10% of the average fragment length",
-                type: "numeric",
-              },
-              {
-                name: "phredOffset -p",
-                value: 1,
-                disabled: "never",
-                tooltip:
-                  "Set the smallest ASCII value of the characters used to represent quality values of bases in fastq files. 33 for latest Illumina and Sanger or 64 for earlier Illumina.",
-                type: "numeric",
-              },
-            ],
-          },
+          // {
+          //   scriptName: "pandaseq-assemble.sh",
+          //   imageName: "pipecraft/pandaseq:2.11",
+          //   serviceName: "pandaseq",
+          //   selected: false,
+          //   showExtra: false,
+          //   extraInputs: [
+          //     {
+          //       name: "write unpaired",
+          //       value: false,
+          //       disabled: "never",
+          //       tooltip:
+          //         "Write sequences for which the optimal alignment cannot be computed to a file as concatenated pairs.",
+          //       type: "bool",
+          //     },
+          //   ],
+          //   Inputs: [
+          //     {
+          //       name: "minoverlap -o",
+          //       value: 1,
+          //       disabled: "never",
+          //       tooltip:
+          //         "Sets the minimum overlap between forward and reverse reads.",
+          //       type: "numeric",
+          //     },
+          //     {
+          //       name: "minlen -l",
+          //       value: 1,
+          //       disabled: "never",
+          //       tooltip:
+          //         "Sets the minimum length for a sequence before assembly",
+          //       type: "numeric",
+          //     },
+          //     {
+          //       name: "maxoverlap -O",
+          //       value: 1,
+          //       disabled: "never",
+          //       tooltip:
+          //         "Sets the maximum overlap between forward and reverse reads.",
+          //       type: "numeric",
+          //     },
+          //     {
+          //       name: "maxlen -L",
+          //       value: 1,
+          //       disabled: "never",
+          //       tooltip: "Sets maximum length for a sequence before assembly.",
+          //       type: "numeric",
+          //     },
+          //   ],
+          // },
+          // {
+          //   scriptName: "flash-assemble.sh",
+          //   imageName: "pipecraft/flash:2",
+          //   serviceName: "flash",
+          //   selected: false,
+          //   showExtra: false,
+          //   extraInputs: [],
+          //   Inputs: [
+          //     {
+          //       name: "min overlap -m",
+          //       value: 100,
+          //       disabled: "never",
+          //       tooltip:
+          //         "Set the minimum required overlap length between two reads to provide a confident overlap.",
+          //       type: "numeric",
+          //     },
+          //     {
+          //       name: "mismatch ratio -x",
+          //       value: 0.25,
+          //       disabled: "never",
+          //       tooltip:
+          //         "Set the maximum allowed ratio of the number of mismatches at the overlap length.",
+          //       type: "numeric",
+          //     },
+          //     {
+          //       name: "max overlap -M",
+          //       value: null,
+          //       disabled: "never",
+          //       tooltip:
+          //         "Set the maximum overlap length expected in approximately 90% of read pairs.",
+          //       type: "numeric",
+          //     },
+          //     {
+          //       name: "read length -r",
+          //       value: 1,
+          //       disabled: "never",
+          //       tooltip: "Average read length.",
+          //       type: "numeric",
+          //     },
+          //     {
+          //       name: "fragment length -f",
+          //       value: 1,
+          //       disabled: "never",
+          //       tooltip: "Average fragment length",
+          //       type: "numeric",
+          //     },
+          //     {
+          //       name: "σ fragment lengths -s",
+          //       value: 1,
+          //       disabled: "never",
+          //       tooltip:
+          //         "if you do not know standard deviation of the fragment library, you can probably assume that the standard deviation is 10% of the average fragment length",
+          //       type: "numeric",
+          //     },
+          //     {
+          //       name: "phredOffset -p",
+          //       value: 1,
+          //       disabled: "never",
+          //       tooltip:
+          //         "Set the smallest ASCII value of the characters used to represent quality values of bases in fastq files. 33 for latest Illumina and Sanger or 64 for earlier Illumina.",
+          //       type: "numeric",
+          //     },
+          //   ],
+          // },
           {
             scriptName: "assemble_pairedend_data_vsearch.sh",
             imageName: "pipecraft/vsearch:2.18",
@@ -829,40 +873,9 @@ export default new Vuex.Store({
             disabled: "single_end",
             selected: false,
             showExtra: false,
-            extraInputs: [],
-            Inputs: [
+            extraInputs: [
               {
-                name: "min overlength",
-                value: 10,
-                disabled: "never",
-                tooltip: "minimum overlap between the merged reads",
-                type: "numeric",
-              },
-              {
-                name: "min lenght",
-                value: 32,
-                disabled: "never",
-                tooltip: "minimum length of the merged sequence",
-                type: "numeric",
-              },
-              {
-                name: "allow merge stagger",
-                value: true,
-                disabled: "never",
-                tooltip:
-                  "allow to merge staggered read pairs. Staggered pairs are pairs where the 3’ end of the reverse read has an overhang to the left of the 5’ end of the forward read. This situation can occur when a very short fragment is sequenced.",
-                type: "bool",
-              },
-              {
-                name: "include only R1",
-                value: false,
-                disabled: "never",
-                tooltip:
-                  "include unassembled R1 reads to the set of assembled reads per sample. This may be relevant when working with e.g. ITS2 sequences, because the ITS2 region in some taxa is too long for assembly, therefore discarded completely after assembly process. Thus, including also unassembled R1 reads, partial ITS2 sequences for these taxa will be represented in the final output. If this option = TRUE, then other specified options (lenght, max error rate etc.) have not been applied to R1 reads in the 'assembled' file. Thus, additional quality filtering (if this was done before assembling) should be run on the 'assembled' data.",
-                type: "bool",
-              },
-              {
-                name: "max diffs",
+                name: "max_diffs",
                 value: 20,
                 disabled: "never",
                 tooltip:
@@ -870,7 +883,7 @@ export default new Vuex.Store({
                 type: "numeric",
               },
               {
-                name: "max Ns",
+                name: "max_Ns",
                 value: 0,
                 disabled: "never",
                 tooltip:
@@ -878,14 +891,14 @@ export default new Vuex.Store({
                 type: "numeric",
               },
               {
-                name: "max len",
+                name: "max_len",
                 value: 600,
                 disabled: "never",
                 tooltip: "maximum length of the merged sequence",
                 type: "numeric",
               },
               {
-                name: "keep disjointed",
+                name: "keep_disjointed",
                 value: false,
                 disabled: "never",
                 tooltip:
@@ -893,12 +906,44 @@ export default new Vuex.Store({
                 type: "bool",
               },
               {
-                name: "fastq qmax",
+                name: "fastq_qmax",
                 value: 41,
                 disabled: "never",
                 tooltip:
                   "maximum quality score accepted when reading FASTQ files. The default is 41, which is usual for recent Sanger/Illumina 1.8+ files.",
                 type: "numeric",
+              },
+            ],
+            Inputs: [
+              {
+                name: "min_overlap",
+                value: 10,
+                disabled: "never",
+                tooltip: "minimum overlap between the merged reads",
+                type: "numeric",
+              },
+              {
+                name: "min_lenght",
+                value: 32,
+                disabled: "never",
+                tooltip: "minimum length of the merged sequence",
+                type: "numeric",
+              },
+              {
+                name: "allow_merge_stagger",
+                value: true,
+                disabled: "never",
+                tooltip:
+                  "allow to merge staggered read pairs. Staggered pairs are pairs where the 3’ end of the reverse read has an overhang to the left of the 5’ end of the forward read. This situation can occur when a very short fragment is sequenced.",
+                type: "bool",
+              },
+              {
+                name: "include_only_R1",
+                value: false,
+                disabled: "never",
+                tooltip:
+                  "include unassembled R1 reads to the set of assembled reads per sample. This may be relevant when working with e.g. ITS2 sequences, because the ITS2 region in some taxa is too long for assembly, therefore discarded completely after assembly process. Thus, including also unassembled R1 reads, partial ITS2 sequences for these taxa will be represented in the final output. If this option = TRUE, then other specified options (lenght, max error rate etc.) have not been applied to R1 reads in the 'assembled' file. Thus, additional quality filtering (if this was done before assembling) should be run on the 'assembled' data.",
+                type: "bool",
               },
             ],
           },
@@ -922,7 +967,7 @@ export default new Vuex.Store({
                 value: "consensus",
                 disabled: "never",
                 tooltip:
-                  "If 'pooled': The samples in the sequence table are all pooled together for bimera identification, If 'consensus': The samples in a sequence table are independently checked for bimeras, If 'per-sample': The samples in a sequence table are independently checked for bimeras",
+                  "Default = 'consensus': the samples in a sequence table are independently checked for chimeras. If 'pooled', the samples in the sequence table are all pooled together for chimera identification. If 'per-sample', the samples in a sequence table are independently checked for chimeras",
                 type: "select",
               },
             ],
@@ -933,7 +978,34 @@ export default new Vuex.Store({
             serviceName: "vsearch",
             selected: false,
             showExtra: false,
-            extraInputs: [],
+            extraInputs: [
+              {
+                name: "cores",
+                value: 4,
+                disabled: "never",
+                tooltip: "Default = 4. Number of cores to use",
+                type: "numeric",
+              },
+              {
+                name: "abundance_skew",
+                value: 2,
+                disabled: "never",
+                tooltip:
+                  "Default = 2. The abundance skew is used to distinguish in a threeway alignment which sequence is the chimera and which are the parents. The assumption is that chimeras appear later in the PCR amplification process and are therefore less abundant than their parents. The default value is 2.0, which means that the parents should be at least 2 times more abundant than their chimera. Any positive value equal or greater than 1.0 can be used",
+                type: "numeric",
+              },
+              {
+                name: "min_h",
+                value: 0.28,
+                disabled: "never",
+                tooltip:
+                  "Default = 0.28. Minimum score (h). Increasing this value tends to reduce the number of false positives and to decrease sensitivity. Values ranging from 0.0 to 1.0 included are accepted",
+                max: 1,
+                min: 0,
+                step: 0.01,
+                type: "slide",
+              },
+            ],
             Inputs: [
               {
                 name: "pre_cluster",
@@ -1166,15 +1238,15 @@ export default new Vuex.Store({
           //   extraInputs: [],
           //   Inputs: [],
           // },
-          {
-            scriptName: "dada2-asv.R",
-            imageName: "pipecraft/dada2:3.10",
-            serviceName: "dada2",
-            selected: false,
-            showExtra: false,
-            extraInputs: [],
-            Inputs: [],
-          },
+          // {
+          //   scriptName: "dada2-asv.R",
+          //   imageName: "pipecraft/dada2:3.10",
+          //   serviceName: "dada2",
+          //   selected: false,
+          //   showExtra: false,
+          //   extraInputs: [],
+          //   Inputs: [],
+          // },
           // {
           //   scriptName: "cd-hit-cluster.sh",
           //   imageName: "pipecraft/cdhit:4.8.1",
@@ -1194,13 +1266,121 @@ export default new Vuex.Store({
           //   Inputs: [],
           // },
           {
-            scriptName: "vsearch-cluster.sh",
+            scriptName: "clustering_vsearch.sh",
             imageName: "pipecraft/vsearch:2.18",
             serviceName: "vsearch",
             selected: false,
             showExtra: false,
-            extraInputs: [],
-            Inputs: [],
+            extraInputs: [
+              {
+                name: "similarity_type",
+                items: ["0", "1", "2", "3", "4"],
+                value: "2",
+                disabled: "never",
+                tooltip:
+                  "pairwise sequence identity definition. Default = --iddef 2 [(matching columns) / (alignment length - terminal gaps)]",
+                type: "select",
+              },
+              {
+                name: "sequence_sorting",
+                items: ["cluster_fast", "cluster_size", "cluster_smallmem"],
+                value: "cluster_size",
+                disabled: "never",
+                tooltip:
+                  'size = sort the sequences by decreasing abundance; "length" = sort the sequences by decreasing length (--cluster_fast); "no" = do not sort sequences (--cluster_smallmem --usersort)',
+                type: "select",
+              },
+              {
+                name: "centroid_type",
+                items: ["similarity", "abundance"],
+                value: "similarity",
+                disabled: "never",
+                tooltip:
+                  '"similarity" = assign representative sequence to the closest (most similar) centroid (distance-based greedy clustering); "abundance" = assign representative sequence to the most abundant centroid (abundance-based greedy clustering; --sizeorder), --maxaccepts should be > 1',
+                type: "select",
+              },
+              {
+                name: "max_hits",
+                value: 1,
+                disabled: "never",
+                tooltip:
+                  "maximum number of hits to accept before stopping the search (should be > 1 for abundance-based selection of centroids [centroid type])",
+                type: "numeric",
+              },
+              {
+                name: "relabel",
+                items: ["none", "md5m", "sha1"],
+                value: "sha1",
+                disabled: "never",
+                tooltip: "relabel sequence identifiers (none = do not relabel)",
+                type: "select",
+              },
+              {
+                name: "mask",
+                items: ["dust", "none"],
+                value: "dust",
+                disabled: "never",
+                tooltip:
+                  'mask regions in sequences using the "dust" method, or do not mask ("none").',
+                type: "select",
+              },
+              {
+                name: "dbmask",
+                items: ["dust", "none"],
+                value: "dust",
+                disabled: "never",
+                tooltip:
+                  'prior the OTU table creation, mask regions in sequences using the "dust" method, or do not mask ("none").',
+                type: "select",
+              },
+              {
+                name: "output_UC",
+                value: false,
+                disabled: "never",
+                tooltip:
+                  "output clustering results in tab-separated UCLAST-like format",
+                type: "bool",
+              },
+            ],
+            Inputs: [
+              {
+                name: "OTU_type",
+                items: ["centroid", "consensus"],
+                disabled: "never",
+                tooltip:
+                  '"centroid" = output centroid sequences; "consensus" = output consensus sequences',
+                value: "centroid",
+                type: "select",
+              },
+              {
+                name: "similarity_threshold",
+                value: 0.97,
+                disabled: "never",
+                tooltip:
+                  "define OTUs based on the sequence similarity threshold; 0.97 = 97% similarity threshold",
+                max: 1,
+                min: 0,
+                step: 0.01,
+                type: "slide",
+              },
+              {
+                name: "strands",
+                items: ["both", "plus"],
+                disabled: "never",
+                tooltip:
+                  "when comparing sequences with the cluster seed, check both strands (forward and reverse complementary) or the plus strand only",
+                value: "both",
+                type: "select",
+              },
+              {
+                name: "min_OTU_size",
+                value: 2,
+                disabled: "never",
+                tooltip:
+                  "minimum read count per output OTU (e.g., if value = 2, then singleton OTUs will be discarded [OTUs with only one sequence])",
+                type: "numeric",
+              },
+            ],
           },
         ],
       },
@@ -1211,11 +1391,80 @@ export default new Vuex.Store({
           {
             scriptName: "",
             imageName: "",
-            serviceName: "mothur",
+            serviceName: "assign taxonomy",
             selected: false,
             showExtra: false,
-            extraInputs: [],
-            Inputs: [],
+            extraInputs: [
+              {
+                name: "e-value",
+                value: 10,
+                disabled: "never",
+                tooltip: "",
+                type: "numeric",
+              },
+              {
+                name: "word size",
+                value: 11,
+                disabled: "never",
+                tooltip: "",
+                type: "numeric",
+              },
+              {
+                name: "reward",
+                value: 2,
+                disabled: "never",
+                tooltip: "",
+                type: "numeric",
+              },
+              {
+                name: "peanlty",
+                value: -3,
+                disabled: "never",
+                tooltip: "",
+                type: "numeric",
+              },
+              {
+                name: "gap open",
+                value: 5,
+                disabled: "never",
+                tooltip: "",
+                type: "numeric",
+              },
+              {
+                name: "gap extend",
+                value: 2,
+                disabled: "never",
+                tooltip: "",
+                type: "numeric",
+              },
+            ],
+            Inputs: [
+              {
+                name: "database file(s)",
+                btnName: "select file",
+                value: "undefined",
+                disabled: "never",
+                tooltip:
+                  "database files, up to 5 files (may be fasta formated - automatically will convert to BLAST database format)",
+                type: "file",
+              },
+              {
+                name: "task",
+                items: ["blastn", "megablast"],
+                value: "blastn",
+                disabled: "never",
+                tooltip: "",
+                type: "select",
+              },
+              {
+                name: "strand",
+                items: ["plus", "both"],
+                value: "both",
+                disabled: "never",
+                tooltip: "",
+                type: "select",
+              },
+            ],
           },
           {
             scriptName: "dada2-classifier.R",
@@ -1226,11 +1475,12 @@ export default new Vuex.Store({
             extraInputs: [],
             Inputs: [
               {
-                name: "refFasta",
-                btnName: "select file",
+                name: "dada2_database",
+                btnName: "select fasta",
                 value: "undefined",
                 disabled: "never",
-                tooltip: "Select a reference fasta file",
+                tooltip:
+                  "Select a reference database fasta file for taxonomy annotation",
                 type: "file",
               },
               {
@@ -1238,7 +1488,7 @@ export default new Vuex.Store({
                 value: 50,
                 disabled: "never",
                 tooltip:
-                  "The minimum bootstrap confidence for assigning a taxonomic level.",
+                  "Default = 50. The minimum bootstrap confidence for assigning a taxonomic level",
                 type: "numeric",
               },
               {
@@ -1246,19 +1496,10 @@ export default new Vuex.Store({
                 value: false,
                 disabled: "never",
                 tooltip:
-                  "the reverse-complement of each sequences will be used for classification if it is a better match to the reference sequences than the forward sequence.",
+                  "Default = FALSE (grey). The reverse-complement of each sequences will be used for classification if it is a better match to the reference sequences than the forward sequence",
                 type: "bool",
               },
             ],
-          },
-          {
-            scriptName: "",
-            imageName: "",
-            serviceName: "blast",
-            selected: false,
-            showExtra: false,
-            extraInputs: [],
-            Inputs: [],
           },
         ],
       },
@@ -2385,7 +2626,7 @@ export default new Vuex.Store({
         extraInputs: [],
         Inputs: [
           {
-            name: "chim_method",
+            name: "method",
             items: ["consensus", "pooled", "per-sample"],
             value: "consensus",
             disabled: "never",

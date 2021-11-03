@@ -21,8 +21,16 @@
                 !$store.getters.customWorkflowReady)
           "
           block
-          outlined
-          color="white"
+          :style="
+            $store.state.dockerStatus == 'stopped' ||
+            $store.state.inputDir == '' ||
+            (!('workflowName' in $route.params) &&
+              !$store.getters.selectedStepsReady) ||
+            ('workflowName' in $route.params &&
+              !$store.getters.customWorkflowReady)
+              ? { border: 'thin #E57373 solid' }
+              : { borderBottom: 'thin #1DE9B6 solid' }
+          "
           @click="
             $route.params.workflowName
               ? runCustomWorkFlow($route.params.workflowName)
