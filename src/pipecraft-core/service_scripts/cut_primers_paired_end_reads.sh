@@ -3,7 +3,7 @@
 #Input = paired-end fastq or paired-end fasta files.
 
 # REMOVE PRIMERS from paired-end reads (e.g. Illumina reads)
-#Degenerate primers are allowed using IUPAC codes.
+# Degenerate primers are allowed using IUPAC codes.
 
 ##########################################################
 ###Third-party applications:
@@ -169,8 +169,8 @@ while read LINE; do
         -A file:tempdir2/fwd_primer_RC.fasta \
         -G file:tempdir2/fwd_primer.fasta \
         -A file:tempdir2/rev_primer_RC.fasta \
-        -o $output_dir/$inputR1.primersCut.$newextension \
-        -p $output_dir/$inputR2.primersCut.$newextension \
+        -o $output_dir/$inputR1.$newextension \
+        -p $output_dir/$inputR2.$newextension \
         $inputR1.$newextension $inputR2.$newextension 2>&1)
         check_app_error
 
@@ -188,8 +188,8 @@ while read LINE; do
         -g file:tempdir2/liked_rev_fwdRC.fasta \
         -G file:tempdir2/liked_fwd_revRC.fasta \
         -G file:tempdir2/liked_rev_fwdRC.fasta \
-        -o $output_dir/$inputR1.primersCut.$newextension \
-        -p $output_dir/$inputR2.primersCut.$newextension \
+        -o $output_dir/$inputR1.$newextension \
+        -p $output_dir/$inputR2.$newextension \
         $inputR1.$newextension $inputR2.$newextension 2>&1)
         check_app_error
     fi
@@ -200,7 +200,6 @@ done < tempdir2/paired_end_files.txt
 #################################################
 printf "\nCleaning up and compiling final stats files ...\n"
 #file identifier string after the process
-outfile_addition=$"primersCut"
 clean_and_make_stats
 
 #Make README.txt file for untrimmed seqs
