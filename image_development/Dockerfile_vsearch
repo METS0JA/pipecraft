@@ -2,6 +2,7 @@ FROM alpine:3.14
 
 RUN apk add build-base \
     && apk add automake \
+    && apk add parallel \
     && apk add --no-cache --upgrade grep \
     && apk add autoconf  \
     && apk add pigz  \
