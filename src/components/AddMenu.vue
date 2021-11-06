@@ -2,7 +2,15 @@
   <div class="text-center">
     <v-menu offset-x :close-on-content-click="false">
       <template v-slot:activator="{ on, attrs }">
-        <v-btn block outlined color="white" dark v-bind="attrs" v-on="on">
+        <v-btn
+          block
+          outlined
+          color="white"
+          style="background-color:#212121"
+          dark
+          v-bind="attrs"
+          v-on="on"
+        >
           add step
         </v-btn>
       </template>

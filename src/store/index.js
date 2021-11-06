@@ -1386,8 +1386,8 @@ export default new Vuex.Store({
         disabled: "never",
         services: [
           {
-            scriptName: "",
-            imageName: "",
+            scriptName: "taxonomy_BLAST_xml.sh",
+            imageName: "ncbi/blast:2.12.0",
             serviceName: "assign taxonomy",
             selected: false,
             showExtra: false,
@@ -1414,7 +1414,7 @@ export default new Vuex.Store({
                 type: "numeric",
               },
               {
-                name: "peanlty",
+                name: "penalty",
                 value: -3,
                 disabled: "never",
                 tooltip: "",
@@ -2154,7 +2154,7 @@ export default new Vuex.Store({
       },
       {
         scriptName: "taxonomy_BLAST_xml.sh",
-        imageName: "pipecraft/reorient:1",
+        imageName: "ncbi/blast:2.12.0",
         serviceName: "assign taxonomy",
         disabled: "never",
         selected: "always",
@@ -2182,7 +2182,7 @@ export default new Vuex.Store({
             type: "numeric",
           },
           {
-            name: "peanlty",
+            name: "penalty",
             value: -3,
             disabled: "never",
             tooltip: "",

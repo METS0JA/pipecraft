@@ -6,11 +6,22 @@
           <template v-slot:activator="{ on }">
             <div v-on="on">
               <v-btn
+                style="background-color:#212121"
                 block
                 :style="
                   $store.state.inputDir != ''
-                    ? { borderBottom: 'thin #1DE9B6 solid' }
-                    : { borderBottom: 'thin #E57373 solid' }
+                    ? {
+                        borderBottom: 'thin #1DE9B6 solid',
+                        borderTop: 'thin white solid',
+                        borderLeft: 'thin white solid',
+                        borderRight: 'thin white solid',
+                      }
+                    : {
+                        borderBottom: 'thin #E57373 solid',
+                        borderTop: 'thin white solid',
+                        borderRight: 'thin white solid',
+                        borderLeft: 'thin white solid',
+                      }
                 "
                 @click="folderSelect"
               >
