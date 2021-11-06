@@ -329,7 +329,7 @@ if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]]; then
     touch tempdir2/seq_count_after.txt
     outfile_check=$(ls $output_dir/*.$newextension 2>/dev/null | wc -l)
 	if [ $outfile_check != 0 ]; then 
-	    for file in $output_dir/*.$outfile_addition.$newextension; do
+	    for file in $output_dir/*.$newextension; do
 	        size=$(echo $(cat $file | wc -l) / 4 | bc)
 	        printf "$file\t$size\n" >> tempdir2/seq_count_after.txt
 	    done
@@ -347,7 +347,7 @@ if [[ $newextension == "fasta" ]] || [[ $newextension == "fa" ]] || [[ $newexten
     touch tempdir2/seq_count_after.txt
     outfile_check=$(ls $output_dir/*.$newextension 2>/dev/null | wc -l)
 	if [ $outfile_check != 0 ]; then 
-	    for file in $output_dir/*.$outfile_addition.$newextension; do
+	    for file in $output_dir/*.$newextension; do
 	        size=$(grep -c "^>" $file)
 	        printf "$file\t$size\n" >> tempdir2/seq_count_after.txt
 	    done
@@ -358,8 +358,7 @@ if [[ $newextension == "fasta" ]] || [[ $newextension == "fa" ]] || [[ $newexten
 fi
 ### Compile a track reads summary file (seq_count_summary.txt)
 output_dir_for_sed=$(echo $output_dir | sed -e "s/\//\\\\\//g")
-sed -e "s/\.$outfile_addition//" < tempdir2/seq_count_after.txt | \
-sed -e "s/$output_dir_for_sed\///" > tempdir2/seq_count_after.temp
+sed -e "s/$output_dir_for_sed\///" < tempdir2/seq_count_after.txt > tempdir2/seq_count_after.temp
 printf "File\tReads\tProcessed_reads\n" > $output_dir/seq_count_summary.txt
 while read LINE; do
     file1=$(echo $LINE | awk '{print $1}')
@@ -484,6 +483,7 @@ if [ -d tempdir ]; then
     rm -rf tempdir
 fi
 }
+
 
 ###########################################################
 ### Paired-end data reorient reads based on FWD primers ###

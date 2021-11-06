@@ -36,7 +36,6 @@ abskew=$"--abskew ${abundance_skew}" # pos int
 minh=$"--minh ${min_h}" # float (0-1)
 echo $reference_based
 
-
 #additional options, if selection != undefined
 if [[ $reference_based == undefined ]]; then
     :
@@ -139,7 +138,7 @@ for file in *.$extension; do
             $id \
             --strand both \
             --fasta_width 0 \
-            --matched $output_dir/$input.denovo.nonchimeras.fasta 2>&1)
+            --matched $output_dir/$input.fasta 2>&1)
             check_app_error
 
             #If input was fastq, then move all converted FASTA files to $output_dir/FASTA
@@ -157,7 +156,7 @@ for file in *.$extension; do
             --sizeout \
             --fasta_width 0 \
             --chimeras $output_dir/chimeras/$input.ref.chimeras.fasta \
-            --nonchimeras tempdir/$input.ref.denovo.nonchimeras.fasta 2>&1)
+            --nonchimeras tempdir/$input.ref.denovo.nonchimera.fasta 2>&1)
             check_app_error
 
             #Extract all non-chimeric sequences
@@ -168,7 +167,7 @@ for file in *.$extension; do
             $id \
             --strand both \
             --fasta_width 0 \
-            --matched $output_dir/$input.ref.denovo.nonchimeras.fasta 2>&1)
+            --matched $output_dir/$input.fasta 2>&1)
             check_app_error
 
             #If input was fastq, then move all converted FASTA files to $output_dir/FASTA
@@ -187,7 +186,7 @@ for file in *.$extension; do
         --sizeout \
         --fasta_width 0 \
         --chimeras $output_dir/chimeras/$input.ref.chimeras.fasta \
-        --nonchimeras $output_dir/$input.ref.nonchimeras.fasta 2>&1)
+        --nonchimeras $output_dir/$input.fasta 2>&1)
         check_app_error
 
         #If input was fastq, then move all converted FASTA files to $output_dir/FASTA
@@ -202,21 +201,12 @@ done
 ### COMPILE FINAL STATISTICS AND README FILES ###
 #################################################
 printf "\nCleaning up and compiling final stats files ...\n"
-#file identifier string after the process
-if [[ $reference_based == undefined ]]; then
-    outfile_addition=$"denovo.nonchimeras"
-elif [[ $denovo == "undefined" ]]; then
-    outfile_addition=$"ref.nonchimeras"
-else
-    outfile_addition=$"ref.denovo.nonchimeras"
-fi
-
 clean_and_make_stats
 
 #Make README.txt file
-printf "Files in /$output_dir directory represent chimera filtered sequences.
-Files in $output_dir/chimeras directory represent identified putative chimeric sequences.
-In input was FASTQ formatted file(s), then it was converted to FASTA, and only FASTA is outputted.
+printf "Files in 'chimera_Filtered_out' directory represent chimera filtered sequences.
+Files in 'chimera_Filtered_out/chimeras' directory represent identified putative chimeric sequences.
+If input was FASTQ formatted file(s), then it was converted to FASTA, and only FASTA is outputted.
 \n" > $output_dir/README.txt
 
 #Done

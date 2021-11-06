@@ -137,7 +137,7 @@ for file in *.$extension; do
         -g file:tempdir2/liked_fwd_revRC.fasta \
         -g file:tempdir2/fwd_primer.fasta \
         -a file:tempdir2/rev_primer_RC.fasta \
-        -o $output_dir/$input.primersCut.$newextension \
+        -o $output_dir/$input.$newextension \
         $input.$newextension 2>&1)
         check_app_error
 
@@ -150,7 +150,7 @@ for file in *.$extension; do
         $cores \
         $untrimmed_output \
         -g file:tempdir2/liked_fwd_revRC.fasta \
-        -o $output_dir/$input.primersCut.$newextension \
+        -o $output_dir/$input.$newextension \
         $input.$newextension 2>&1)
         check_app_error
     fi
@@ -161,7 +161,6 @@ done
 #################################################
 printf "\nCleaning up and compiling final stats files ...\n"
 #file identifier string after the process
-outfile_addition=$"primersCut"
 clean_and_make_stats
 
 #Make README.txt file for untrimmed seqs

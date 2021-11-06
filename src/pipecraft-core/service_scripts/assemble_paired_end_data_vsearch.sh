@@ -57,7 +57,7 @@ while read LINE; do
     ########################
     ### Start assembling ###
     ########################
-    fastqout=$(echo $inputR1 | sed -e 's/R1.*/assembled/')
+    fastqout=$(echo $inputR1 | sed -e 's/R1.*//')
 
     #variables for not_merged output files
     if [[ $notmerged_files == "TRUE" ]]; then
@@ -111,13 +111,10 @@ clean_and_make_stats_Assemble_Demux
 
 #Make README.txt file for demultiplexed reads
 printf "Files in $output_dir directory represent assembled paired-end files.\n
-If include only R1 = TRUE, then the unassembled R1 reads have been added to the set of assembled reads per sample.
+If 'include only R1' = TRUE, then the unassembled R1 reads have been added to the set of assembled reads per sample.
 This may be relevant when working with e.g. ITS2 sequences, because ITS2 region in some taxa is too long for assembly, 
 therefore discarded completely after assembly process. Thus, including also unassembled R1 reads, partial ITS2 sequences 
-for these taxa will be represented in the final output. 
-If include only R1 option = TRUE, then other specified options (lenght, max error rate etc.) have not been 
-applied to R1 reads in the 'assembled' file. Thus, additional quality filtering (if this was done before assembling) 
-should be run on the 'assembled' data.\n
+for these taxa will be represented in the final output. \n
 NOTE RUNNING THE PROCESS SEVERAL TIMES IN THE SAME DIRECTORY WILL OVERWRITE ALL THE OUTPUTS!" > $output_dir/README.txt
 
 ###Done, files in $output_dir folder

@@ -1,15 +1,13 @@
 #!/bin/bash
 
-# Sequence clustering
+# Sequence clustering with vsearch
 
 #Input = single-end fasta/fastq files.
 #Output = FASTA formated representative OTU sequences and OTU_table.txt.
 
-
-
 ##########################################################
 ###Third-party applications:
-#vsearch v2.17.0
+#vsearch v2.18.0
     #citation: Rognes T, Flouri T, Nichols B, Quince C, Mahé F (2016) VSEARCH: a versatile open source tool for metagenomics PeerJ 4:e2584
     #Copyright (C) 2014-2021, Torbjorn Rognes, Frederic Mahe and Tomas Flouri
     #Distributed under the GNU General Public License version 3 by the Free Software Foundation
@@ -21,29 +19,28 @@
 #pigz v2.4
 ##########################################################
 
-###############################
-###############################
-#These variables are for testing (DELETE when implementing to PipeCraft)
+#load variables
 extension=$fileFormat
 #mandatory options
-id=$"--id ${similarity_threshold}"              # positive float (0-1)
-otutype=$"--${OTU_type}"       # list: --centroids, --consout
-strands=$"--strand ${strands}"     # list: --strand both, --strand plus
-minsize=$"--minsize ${min_OTU_size}"
+id=$"--id ${similarity_threshold}" # positive float (0-1)
+otutype=$"--${OTU_type}" # list: --centroids, --consout
+strands=$"--strand ${strands}" # list: --strand both, --strand plus
+minsize=$"--minsize ${min_OTU_size}" # pos int
 
 #additional options
-cores=$"--threads 6"         # positive integer
-seqsort=$"--${sequence_sorting}"    # list: --cluster_size or --cluster_fast, --cluster_smallmem
-simtype=$"--iddef ${similarity_type}"         # list: --iddef 0; --iddef 1; --iddef 2; --iddef 3; --iddef 4
-centroid=$centroid_type       # list: similarity, abundance
-maxaccepts=$"--maxaccepts ${max_hits}" # positive integer
-relabel=$relabel              # list: none, sha1, md5
-mask=$"--qmask ${mask}"         # list: --qmask dust, --qmask none
-dbmask=$"--dbmask ${dbmask}"      # list: --qmask dust, --qmask none
-uc=$output_UC              # undefined or TRUE
-###############################
+seqsort=$"--${sequence_sorting}" # list: --cluster_size or --cluster_fast, --cluster_smallmem
+simtype=$"--iddef ${similarity_type}" # list: --iddef 0; --iddef 1; --iddef 2; --iddef 3; --iddef 4
+centroid=$centroid_type # list: similarity, abundance
+maxaccepts=$"--maxaccepts ${max_hits}" # pos int
+relabel=$relabel # list: none, sha1, md5
+mask=$"--qmask ${mask}" # list: --qmask dust, --qmask none
+dbmask=$"--dbmask ${dbmask}"  # list: --qmask dust, --qmask none
+uc=$output_UC # undefined or TRUE
 ###############################
 
+echo $centroid
+echo  $relabel
+echo $extension
 #############################
 ### Start of the workflow ###
 #############################
@@ -63,6 +60,7 @@ elif [[ $relabel == "sha1" ]]; then
 elif [[ $relabel == "md5" ]]; then
     relabel_in=$"--relabel_md5"
 fi
+
 if [[ $uc == false ]]; then
     uc_in=$""
 else
@@ -81,6 +79,7 @@ prepare_SE_env
 ### Pre-process samples
 printf "Checking files ...\n"
 for file in *.$extension; do
+    echo $file
     #Read file name; without extension
     input=$(echo $file | sed -e "s/.$extension//")
     #If input is compressed, then decompress (keeping the compressed file, but overwriting if filename exists!)
@@ -90,7 +89,11 @@ for file in *.$extension; do
     check_extension_fastx
 done
 
+echo $newextension
+
 ### Global dereplication
+find . -maxdepth 1 -name "*.$newextension"
+
 find . -maxdepth 1 -name "*.$newextension" | parallel -j 1 "cat {}" \
 | vsearch \
 --derep_fulllength - \
@@ -100,8 +103,8 @@ find . -maxdepth 1 -name "*.$newextension" | parallel -j 1 "cat {}" \
 --sizein --sizeout > $output_dir/Glob_derep.fasta
 
 ### Clustering
-checkerror=$(vsearch \
-$seqsort $output_dir/Glob_derep.fasta \
+checkerror=$(vsearch $seqsort \
+$output_dir/Glob_derep.fasta \
 $id \
 $simtype \
 $strands \
@@ -110,7 +113,8 @@ $mask \
 $centroid_in \
 $maxaccepts \
 $cores \
-$otutype $output_dir/OTUs.temp.fasta \
+$otutype \
+$output_dir/OTUs.temp.fasta \
 $uc_in \
 --fasta_width 0 \
 --sizein --sizeout 2>&1)

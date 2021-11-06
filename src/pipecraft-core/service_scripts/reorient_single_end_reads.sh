@@ -81,7 +81,7 @@ for file in *.$extension; do
 
     # Move final output to $output_dir
     mkdir -p $output_dir
-    mv tempdir/$outfile.reoriented.$newextension $output_dir/$outfile.reoriented.$newextension
+    mv tempdir/$outfile.reoriented.$newextension $output_dir/$outfile.$newextension
 
     ### Move multiprimer chimeras to '$output_dir/multiprimer_chimeras' dir
     mkdir -p $output_dir/multiprimer_chimeras
@@ -91,21 +91,21 @@ for file in *.$extension; do
 
     ### Check if reoriented output is empty; if yes, then report WARNING
     if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]]; then
-        if [ -s $output_dir/$outfile.reoriented.$newextension ]; then
-            size=$(echo $(cat $output_dir/$outfile.reoriented.$newextension | wc -l) / 4 | bc)
-            printf "$size sequences in $outfile.reoriented.$newextension\n"
+        if [ -s $output_dir/$outfile.$newextension ]; then
+            size=$(echo $(cat $output_dir/$outfile.$newextension | wc -l) / 4 | bc)
+            printf "$size sequences in $outfile.$newextension\n"
         else
             printf '%s\n' "WARNING]: primers not found in file $outfile (no output)"
-            rm $output_dir/$outfile.reoriented.$newextension
+            rm $output_dir/$outfile.$newextension
         fi
     fi
     if [[ $newextension == "fasta" ]] || [[ $newextension == "fa" ]] || [[ $newextension == "fas" ]]; then
-        if [ -s $output_dir/$outfile.reoriented.$newextension ]; then
-            size=$(grep -c ">" $output_dir/$outfile.reoriented.$newextension)
-            printf "$size sequences in $outfile.reoriented.$newextension\n"
+        if [ -s $output_dir/$outfile.$newextension ]; then
+            size=$(grep -c ">" $output_dir/$outfile.$newextension)
+            printf "$size sequences in $outfile.$newextension\n"
         else
             printf '%s\n' "WARNING]: primers not found in file $outfile (no output)"
-            rm $output_dir/$outfile.reoriented.$newextension
+            rm $output_dir/$outfile.$newextension
         fi
     fi
 done
@@ -115,7 +115,6 @@ done
 #################################################
 printf "\nCleaning up and compiling final stats files ...\n"
 #file identifier string after the process
-outfile_addition=$"reoriented"
 clean_and_make_stats
 
 #Make README.txt file for multi-primer chimeras
@@ -132,7 +131,7 @@ It is highly likely that this sequence is a chimeric one, and should be therefor
 Usually only very few such 'multi-primer' chimeric sequences are found in the amplicon data sets.\n" > $output_dir/multiprimer_chimeras/README.txt
 
 #Make README.txt file for this process
-printf "*.$outfile_addition.fastq files here represent sequences that have been reoriented based on PCR primers.
+printf "Files here represent sequences that have been reoriented based on PCR primers.
 Forward primer(s) [has to be 5'-3']: $fwd_tempprimer
 Reverse primer(s) [has to be 3'-5']: $rev_tempprimer
 [If primers were not specified in orientations noted above, please run this step again].\n

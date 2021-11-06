@@ -939,7 +939,7 @@ export default new Vuex.Store({
                 value: false,
                 disabled: "never",
                 tooltip:
-                  "include unassembled R1 reads to the set of assembled reads per sample. This may be relevant when working with e.g. ITS2 sequences, because the ITS2 region in some taxa is too long for assembly, therefore discarded completely after assembly process. Thus, including also unassembled R1 reads, partial ITS2 sequences for these taxa will be represented in the final output. If this option = TRUE, then other specified options (lenght, max error rate etc.) have not been applied to R1 reads in the 'assembled' file. Thus, additional quality filtering (if this was done before assembling) should be run on the 'assembled' data.",
+                  "Include unassembled R1 reads to the set of assembled reads per sample. This may be relevant when working with e.g. ITS2 sequences, because the ITS2 region in some taxa is too long for assembly, therefore discarded completely after assembly process. Thus, including also unassembled R1 reads, partial ITS2 sequences for these taxa will be represented in the final output.",
                 type: "bool",
               },
             ],
@@ -1775,7 +1775,7 @@ export default new Vuex.Store({
             value: false,
             disabled: "never",
             tooltip:
-              "include unassembled R1 reads to the set of assembled reads per sample. This may be relevant when working with e.g. ITS2 sequences, because the ITS2 region in some taxa is too long for assembly, therefore discarded completely after assembly process. Thus, including also unassembled R1 reads, partial ITS2 sequences for these taxa will be represented in the final output. If this option = TRUE, then other specified options (lenght, max error rate etc.) have not been applied to R1 reads in the 'assembled' file. Thus, additional quality filtering (if this was done before assembling) should be run on the 'assembled' data.",
+              "Include unassembled R1 reads to the set of assembled reads per sample. This may be relevant when working with e.g. ITS2 sequences, because the ITS2 region in some taxa is too long for assembly, therefore discarded completely after assembly process. Thus, including also unassembled R1 reads, partial ITS2 sequences for these taxa will be represented in the final output.",
             type: "bool",
           },
         ],
@@ -2153,7 +2153,7 @@ export default new Vuex.Store({
         ],
       },
       {
-        scriptName: "reorient_paired_end_reads.sh",
+        scriptName: "taxonomy_BLAST_xml.sh",
         imageName: "pipecraft/reorient:1",
         serviceName: "assign taxonomy",
         disabled: "never",
@@ -2161,14 +2161,14 @@ export default new Vuex.Store({
         showExtra: false,
         extraInputs: [
           {
-            name: "e-value",
+            name: "e_value",
             value: 10,
             disabled: "never",
             tooltip: "",
             type: "numeric",
           },
           {
-            name: "word size",
+            name: "word_size",
             value: 11,
             disabled: "never",
             tooltip: "",
@@ -2189,14 +2189,14 @@ export default new Vuex.Store({
             type: "numeric",
           },
           {
-            name: "gap open",
+            name: "gap_open",
             value: 5,
             disabled: "never",
             tooltip: "",
             type: "numeric",
           },
           {
-            name: "gap extend",
+            name: "gap_extend",
             value: 2,
             disabled: "never",
             tooltip: "",
@@ -2205,7 +2205,7 @@ export default new Vuex.Store({
         ],
         Inputs: [
           {
-            name: "database file(s)",
+            name: "database_file",
             btnName: "select file",
             value: "undefined",
             disabled: "never",

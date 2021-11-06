@@ -72,7 +72,7 @@ for file in *.$extension; do
     ###############################
     checkerror=$(java -jar /Trimmomatic-0.39/trimmomatic-0.39.jar SE \
     $input.$newextension \
-    $output_dir/$input.qualFilt.$newextension \
+    $output_dir/$input.$newextension \
     -phred$phred \
     $LEADING \
     $TRAILING \
@@ -83,7 +83,7 @@ for file in *.$extension; do
 
     #Convert output fastq files to FASTA
     mkdir -p $output_dir/FASTA
-    checkerror=$(seqkit fq2fa -t dna --line-width 0 $output_dir/$input.qualFilt.$newextension -o $output_dir/FASTA/$input.qualFilt.fasta 2>&1)
+    checkerror=$(seqkit fq2fa -t dna --line-width 0 $output_dir/$input.$newextension -o $output_dir/FASTA/$input.fasta 2>&1)
     check_app_error
 done
 
@@ -94,7 +94,6 @@ done
 #################################################
 printf "\nCleaning up and compiling final stats files ...\n"
 #file identifier string after the process
-outfile_addition=$"qualFilt"
 clean_and_make_stats
 
 #Make README.txt file

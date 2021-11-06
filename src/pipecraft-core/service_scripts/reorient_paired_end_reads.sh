@@ -118,27 +118,27 @@ while read LINE; do
     check_app_error
     rm $inputR1.reoriented.$newextension
     rm $inputR2.reoriented.$newextension
-    mv $inputR1.reoriented.paired.$newextension $inputR1.reoriented.$newextension
-    mv $inputR2.reoriented.paired.$newextension $inputR2.reoriented.$newextension
+    mv $inputR1.reoriented.paired.$newextension $inputR1.$newextension
+    mv $inputR2.reoriented.paired.$newextension $inputR2.$newextension
     cd ..
     #Move final files to $output_dir
-    mv tempdir/$inputR1.reoriented.$newextension $output_dir/$inputR1.reoriented.$newextension
-    mv tempdir/$inputR2.reoriented.$newextension $output_dir/$inputR2.reoriented.$newextension
+    mv tempdir/$inputR1.$newextension $output_dir/$inputR1.$newextension
+    mv tempdir/$inputR2.$newextension $output_dir/$inputR2.$newextension
 
     ### Check if reoriented output is empty; if yes, then report WARNING
-    if [ -s $output_dir/$inputR1.reoriented.$newextension ]; then
-        size=$(echo $(cat $output_dir/$inputR1.reoriented.$newextension | wc -l) / 4 | bc)
-        printf "$size sequences in $inputR1.reoriented.$newextension\n"
+    if [ -s $output_dir/$inputR1.$newextension ]; then
+        size=$(echo $(cat $output_dir/$inputR1.$newextension | wc -l) / 4 | bc)
+        printf "$size sequences in $inputR1.$newextension\n"
     else
         printf '%s\n' "WARNING]: after synchronizing, $inputR1 has 0 seqs (no output)"
-        rm $output_dir/$inputR1.reoriented.$newextension
+        rm $output_dir/$inputR1.$newextension
     fi
-    if [ -s $output_dir/$inputR2.reoriented.$newextension ]; then
-        size=$(echo $(cat $output_dir/$inputR2.reoriented.$newextension | wc -l) / 4 | bc)
-        printf "$size sequences in $inputR2.reoriented.$newextension\n"
+    if [ -s $output_dir/$inputR2.$newextension ]; then
+        size=$(echo $(cat $output_dir/$inputR2.$newextension | wc -l) / 4 | bc)
+        printf "$size sequences in $inputR2.$newextension\n"
     else
         printf '%s\n' "WARNING]: after synchronizing, $inputR2 has 0 seqs (no output)"
-        rm $output_dir/$inputR2.reoriented.$newextension
+        rm $output_dir/$inputR2.$newextension
     fi
 done < tempdir2/paired_end_files.txt
 
@@ -147,7 +147,6 @@ done < tempdir2/paired_end_files.txt
 #################################################
 printf "\nCleaning up and compiling final stats files ...\n"
 #file identifier string after the process
-outfile_addition=$"reoriented"
 clean_and_make_stats
 
 #Make README.txt file for multi-primer chimeras
@@ -164,7 +163,7 @@ It is highly likely that this sequence is a chimeric one, and should be therefor
 Usually only very few such 'multi-primer' chimeric sequences are found in the amplicon data sets.\n" > $output_dir/multiprimer_chimeras/README.txt
 
 #Make README.txt file for this process
-printf "*.$outfile_addition.fastq files here represent sequences that have been reoriented based on PCR primers.
+printf "Files here represent sequences that have been reoriented based on PCR primers.
 Forward primer(s) [has to be 5'-3']: $fwd_tempprimer
 Reverse primer(s) [has to be 3'-5']: $rev_tempprimer
 [If primers were not specified in orientations noted above, please run this step again].\n
