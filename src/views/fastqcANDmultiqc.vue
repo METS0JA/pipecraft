@@ -126,7 +126,7 @@ export default {
         .then(async (result) => {
           if (result.value) {
             console.log(result.value);
-            this.fileExtension = result.value[0];
+            this.fileExtension = result.value[0].replace("_", ".");
             dialog
               .showOpenDialog({
                 title: "Select the folder containing your sequnece files",
