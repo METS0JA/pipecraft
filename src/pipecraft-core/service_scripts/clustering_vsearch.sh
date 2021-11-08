@@ -38,9 +38,6 @@ dbmask=$"--dbmask ${dbmask}"  # list: --qmask dust, --qmask none
 uc=$output_UC # undefined or TRUE
 ###############################
 
-echo $centroid
-echo  $relabel
-echo $extension
 #############################
 ### Start of the workflow ###
 #############################
@@ -79,7 +76,6 @@ prepare_SE_env
 ### Pre-process samples
 printf "Checking files ...\n"
 for file in *.$extension; do
-    echo $file
     #Read file name; without extension
     input=$(echo $file | sed -e "s/.$extension//")
     #If input is compressed, then decompress (keeping the compressed file, but overwriting if filename exists!)
@@ -88,8 +84,6 @@ for file in *.$extension; do
     ### Check input formats (fastq supported)
     check_extension_fastx
 done
-
-echo $newextension
 
 ### Global dereplication
 find . -maxdepth 1 -name "*.$newextension"

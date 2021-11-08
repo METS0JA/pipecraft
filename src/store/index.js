@@ -1454,7 +1454,7 @@ export default new Vuex.Store({
                 type: "select",
               },
               {
-                name: "strand",
+                name: "strands",
                 items: ["plus", "both"],
                 value: "both",
                 disabled: "never",
@@ -2222,7 +2222,7 @@ export default new Vuex.Store({
             type: "select",
           },
           {
-            name: "strand",
+            name: "strands",
             items: ["plus", "both"],
             value: "both",
             disabled: "never",
