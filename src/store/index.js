@@ -550,7 +550,7 @@ export default new Vuex.Store({
                 value: 0,
                 disabled: "never",
                 tooltip:
-                  "(no truncation). Truncate reads after truncLen bases (applies to R1 reads when working with paired-end data). Reads shorter than this are discarded. Explore quality profiles (with FastQC) see whether poor quality ends needs to truncated",
+                  "(no truncation). Truncate reads after truncLen bases (applies to R1 reads when working with paired-end data). Reads shorter than this are discarded. Explore quality profiles (with QualityCheck module) see whether poor quality ends needs to truncated",
                 type: "numeric",
               },
               {
@@ -558,7 +558,7 @@ export default new Vuex.Store({
                 value: 0,
                 disabled: "single_end",
                 tooltip:
-                  "(no truncation). Truncate R2 reads after truncLen bases. Reads shorter than this are discarded. Explore quality profiles (with FastQC) see whether poor quality ends needs to truncated",
+                  "(no truncation). Truncate R2 reads after truncLen bases. Reads shorter than this are discarded. Explore quality profiles (with QualityCheck module) see whether poor quality ends needs to truncated",
                 type: "numeric",
               },
               {
@@ -2516,7 +2516,7 @@ export default new Vuex.Store({
             value: 0,
             disabled: "never",
             tooltip:
-              "Truncate reads after truncLen bases (applies to R1 reads when working with paired-end data). Reads shorter than this are discarded. Explore quality profiles (with FastQC) see whether poor quality ends needs to truncated",
+              "Truncate reads after truncLen bases (applies to R1 reads when working with paired-end data). Reads shorter than this are discarded. Explore quality profiles (with QualityCheck module) see whether poor quality ends needs to truncated",
             type: "numeric",
           },
           {
@@ -2524,7 +2524,7 @@ export default new Vuex.Store({
             value: 0,
             disabled: "single_end",
             tooltip:
-              "Truncate R2 reads after truncLen bases. Reads shorter than this are discarded. Explore quality profiles (with FastQC) see whether poor quality ends needs to truncated",
+              "Truncate R2 reads after truncLen bases. Reads shorter than this are discarded. Explore quality profiles (with QualityCheck module) see whether poor quality ends needs to truncated",
             type: "numeric",
           },
           {

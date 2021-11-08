@@ -56,7 +56,7 @@
             >
           </v-list-item-content>
         </template>
-        <span>DADA2 MiSeq workflow</span>
+        <span>DADA2 workflow</span>
       </v-tooltip>
     </v-list-item>
     <v-list-item class="mt-5" ripple link>
@@ -73,7 +73,7 @@
             >
           </v-list-item-content>
         </template>
-        <span>OTU MiSeq workflow</span>
+        <span>OTU workflow</span>
       </v-tooltip>
     </v-list-item>
   </v-list>
@@ -124,7 +124,7 @@ export default {
         {
           title: "Quality Control",
           icon: "mdi-beaker-check",
-          tooltip: "Quality plots with fastQC and multiQC",
+          tooltip: "QualityCheck (FastQC and MultiQC)",
           action: this.push2qc,
         },
       ],

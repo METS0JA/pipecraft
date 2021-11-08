@@ -81,8 +81,8 @@ while read LINE; do
 
     checkerror=$(trimmomatic PE \
     $inputR1.$newextension $inputR2.$newextension \
-    $output_dir/$inputR1.qualFilt.$newextension $output_dir/discarded/$inputR1.discarded.$newextension \
-    $output_dir/$inputR2.qualFilt.$newextension $output_dir/discarded/$inputR2.discarded.$newextension \
+    $output_dir/$inputR1.$newextension $output_dir/discarded/$inputR1.discarded.$newextension \
+    $output_dir/$inputR2.$newextension $output_dir/discarded/$inputR2.discarded.$newextension \
     $LEADING \
     $TRAILING \
     -phred$phred \
@@ -93,9 +93,9 @@ while read LINE; do
 
     #Convert output fastq files to FASTA
     mkdir -p $output_dir/FASTA
-    checkerror=$(seqkit fq2fa -t dna --line-width 0 $output_dir/$inputR1.qualFilt.$newextension -o $output_dir/FASTA/$inputR1.qualFilt.fasta 2>&1)
+    checkerror=$(seqkit fq2fa -t dna --line-width 0 $output_dir/$inputR1.$newextension -o $output_dir/FASTA/$inputR1.fasta 2>&1)
     check_app_error
-    checkerror=$(seqkit fq2fa -t dna --line-width 0 $output_dir/$inputR2.qualFilt.$newextension -o $output_dir/FASTA/$inputR2.qualFilt.fasta 2>&1)
+    checkerror=$(seqkit fq2fa -t dna --line-width 0 $output_dir/$inputR2.$newextension -o $output_dir/FASTA/$inputR2.fasta 2>&1)
     check_app_error
 done < tempdir2/paired_end_files.txt
 
@@ -104,7 +104,6 @@ done < tempdir2/paired_end_files.txt
 #################################################
 printf "\nCleaning up and compiling final stats files ...\n"
 #file identifier string after the process
-outfile_addition=$"qualFilt"
 clean_and_make_stats
 
 #Make README.txt file for discarded seqs
@@ -112,8 +111,8 @@ printf "Files in /discarded folder represent sequences that did not pass quality
 If no files in this folder, then all sequences were passed to files in $output_dir directory" > $output_dir/untrimmed/README.txt
 
 #Make README.txt file
-printf "Files in /$output_dir directory represent quality filtered sequences in FASTQ format according to the selected options.
-Files in $output_dir/FASTA directory represent quality filtered sequences in FASTA format.
+printf "Files in this directory represent quality filtered sequences in FASTQ format according to the selected options.
+Files in /FASTA directory represent quality filtered sequences in FASTA format.
 If the quality of the data is sufficent after this step (check with FastQC module), then
 you may proceed with FASTA files only (however, note that FASTQ files are needed to assemble paired-end data).\n" > $output_dir/README.txt
 

@@ -88,7 +88,6 @@ for file in *.$extension; do
 done
 
 
-
 #################################################
 ### COMPILE FINAL STATISTICS AND README FILES ###
 #################################################
@@ -97,9 +96,9 @@ printf "\nCleaning up and compiling final stats files ...\n"
 clean_and_make_stats
 
 #Make README.txt file
-printf "Files in /$output_dir directory represent quality filtered sequences in FASTQ format according to the selected options.
-Files in $output_dir/FASTA directory represent quality filtered sequences in FASTA format.
-If the quality of the data is sufficent after this step (check with FastQC module), then
+printf "Files in this directory represent quality filtered sequences in FASTQ format according to the selected options.
+Files in /FASTA directory represent quality filtered sequences in FASTA format.
+If the quality of the data is sufficent after this step (check with QualityCheck module), then
 you may proceed with FASTA files only.\n" > $output_dir/README.txt
 
 #Done
