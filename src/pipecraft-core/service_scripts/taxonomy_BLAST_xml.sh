@@ -11,14 +11,13 @@
     #BLAST 2.11.0+
     #citation: Camacho C., Coulouris G., Avagyan V., Ma N., Papadopoulos J., Bealer K., & Madden T.L. (2008) "BLAST+: architecture and applications." BMC Bioinformatics 10:421. 
 #python3 with biopython module
+#gawk
 ##########################################################
 
 ###############################
 ###############################
 #These variables are for testing (DELETE when implementing to PipeCraft)
 extension=$"fasta"
-
-echo $workingDir
 
 #input OTUs/ASVs
 if [[ -f "$workingDir/OTUs.fasta" ]]; then
@@ -38,7 +37,7 @@ task=$"-task ${task}" # list: blastn, megablast
 strands=$"-strand ${strands}" #list: both, plus
 
 #additional options
-cores=$"-num_threads ${cores}" # positive integer
+cores=$"-num_threads 8" # positive integer
 evalue=$"-evalue=${e_value}" # float
 wordsize=$"-word_size=${word_size}" # positive integer
 reward=$"-reward=${reward}" # positive integer
@@ -87,12 +86,6 @@ else
 	database=$"-db $db1"
 fi
 
-echo $database
-echo $IN
-head $IN
-echo $strands
-
-
 ## Perform taxonomy annotation
 printf '%s\n' "Running BLAST"
 checkerror=$(blastn \
@@ -114,47 +107,49 @@ $gapextend \
 check_app_error
 
 ### Parse BLAST xml file
-# python3 $parseXML $output_dir/10BestHits.xml
+cd $output_dir
+python /scripts/Blast_xml_parse.py 10BestHits.xml
 
-# #Extract first best hit from 10 best hits file
-# gawk 'BEGIN{FS=OFS="\t"}{print $1,$4}' < 10hits.txt | \
-# sed -e 's/^$/NO_BLAST_HIT/g' | \
-# sed '1 i\SeqID+first_hit+score+e-value+query len+query start+query end+target len+target start+target end+align len+identities+gaps+coverage%+id%' \
-# > $output_dir/BLAST_1st_best_hit.txt
+#Extract first best hit from 10 best hits file
+gawk 'BEGIN{FS=OFS="\t"}{print $1,$4}' < 10hits.txt | \
+sed -e 's/^$/NO_BLAST_HIT/g' | \
+sed '1 i\SeqID+first_hit+score+e-value+query len+query start+query end+target len+target start+target end+align len+identities+gaps+coverage%+id%' \
+> BLAST_1st_best_hit.txt
 
-# #Format 10 best hits from 10 best hits file
-# gawk 'BEGIN{FS=OFS="\t"}{print $1,$4,$6,$7,$9,$10,$12,$13,$15,$16,$18,$19,$21,$22,$24,$25,$27,$28,$30,$31}' < 10hits.txt | \
-# sed '1 i\SeqID+first_hit+score+e-value+query len+query start+query end+target len+target start+target end+align len+identities+gaps+coverage%+id%+next_hits' \
-# > $output_dir/BLAST_10_best_hits.txt
+#Format 10 best hits from 10 best hits file
+gawk 'BEGIN{FS=OFS="\t"}{print $1,$4,$6,$7,$9,$10,$12,$13,$15,$16,$18,$19,$21,$22,$24,$25,$27,$28,$30,$31}' < 10hits.txt | \
+sed '1 i\SeqID+first_hit+score+e-value+query len+query start+query end+target len+target start+target end+align len+identities+gaps+coverage%+id%+next_hits' \
+> BLAST_10_best_hits.txt
 
+cd ..
 
-# #################################################
-# ### COMPILE FINAL STATISTICS AND README FILES ###
-# #################################################
-# printf "\nCleaning up and compiling final stats files ...\n"
-# rm 10hits.txt
-# rm $output_dir/10BestHits.xml
-# if [[ -d tempdir2 ]];then
-# 	rm -r tempdir2
-# fi
-# #Make README.txt file
-# printf "Taxonomy annotation was done with BLAST.
-# Input = $IN
-# BLAST_1st_best_hit.txt contains BLAST results for the 1st best hit in the used database(s).
-# BLAST_10_best_hits.txt contains BLAST results for the 10 best hits in the used database(s).\n
-# score -> blast score
-# e-value -> blast e-value
-# query len -> query (i.e. OTU/ASV) sequence length
-# query start -> start position of match in the query seq
-# query end -> end position of match in the query seq
-# target len -> target seq length in the database
-# target start -> start position of match in the target seq
-# target end -> end position of match in the target seq
-# align len -> alignment length of query and target
-# identities -> number of identical matches
-# gaps -> number of gaps in the alignment
-# coverage -> query coverage percentage against the target sequence (100 percent is full-length match; low coverage may indicate presence of chimeric sequence/OTU)
-# id -> identity percentage against the target sequence.\n" > $output_dir/README.txt
+#################################################
+### COMPILE FINAL STATISTICS AND README FILES ###
+#################################################
+printf "\nCleaning up and compiling final stats files ...\n"
+rm $output_dir/10hits.txt
+rm $output_dir/10BestHits.xml
+if [[ -d tempdir2 ]];then
+	rm -r tempdir2
+fi
+#Make README.txt file
+printf "Taxonomy annotation was done with BLAST.
+Input = $IN
+BLAST_1st_best_hit.txt contains BLAST results for the 1st best hit in the used database(s).
+BLAST_10_best_hits.txt contains BLAST results for the 10 best hits in the used database(s).\n
+score -> blast score
+e-value -> blast e-value
+query len -> query (i.e. OTU/ASV) sequence length
+query start -> start position of match in the query seq
+query end -> end position of match in the query seq
+target len -> target seq length in the database
+target start -> start position of match in the target seq
+target end -> end position of match in the target seq
+align len -> alignment length of query and target
+identities -> number of identical matches
+gaps -> number of gaps in the alignment
+coverage -> query coverage percentage against the target sequence (100 percent is full-length match; low coverage may indicate presence of chimeric sequence/OTU)
+id -> identity percentage against the target sequence.\n" > $output_dir/README.txt
 
 #Done
 printf "\nDONE\n"
