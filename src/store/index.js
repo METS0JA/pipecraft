@@ -1387,7 +1387,7 @@ export default new Vuex.Store({
         services: [
           {
             scriptName: "taxonomy_BLAST_xml.sh",
-            imageName: "ncbi/blast:2.12.0",
+            imageName: "pipecraft/blast:2.12",
             serviceName: "assign taxonomy",
             selected: false,
             showExtra: false,
@@ -1432,6 +1432,13 @@ export default new Vuex.Store({
                 value: 2,
                 disabled: "never",
                 tooltip: "",
+                type: "numeric",
+              },
+              {
+                name: "cores",
+                value: 4,
+                disabled: "never",
+                tooltip: "number of cores to use",
                 type: "numeric",
               },
             ],
@@ -2154,7 +2161,7 @@ export default new Vuex.Store({
       },
       {
         scriptName: "taxonomy_BLAST_xml.sh",
-        imageName: "ncbi/blast:2.12.0",
+        imageName: "pipecraft/blast:2.12",
         serviceName: "assign taxonomy",
         disabled: "never",
         selected: "always",
@@ -2200,6 +2207,13 @@ export default new Vuex.Store({
             value: 2,
             disabled: "never",
             tooltip: "",
+            type: "numeric",
+          },
+          {
+            name: "cores",
+            value: 4,
+            disabled: "never",
+            tooltip: "number of cores to use",
             type: "numeric",
           },
         ],

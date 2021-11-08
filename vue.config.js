@@ -10,6 +10,9 @@ module.exports = {
         win: {
           icon: "build/icon.ico",
         },
+        linux: {
+          icon: "build/icon.png",
+        },
         appx: {
           applicationId: "pipecraft",
         },

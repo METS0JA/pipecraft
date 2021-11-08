@@ -38,7 +38,7 @@ task=$"-task ${task}" # list: blastn, megablast
 strands=$"-strand ${strands}" #list: both, plus
 
 #additional options
-cores=$"-num_threads 8" # positive integer
+cores=$"-num_threads ${cores}" # positive integer
 evalue=$"-evalue=${e_value}" # float
 wordsize=$"-word_size=${word_size}" # positive integer
 reward=$"-reward=${reward}" # positive integer
