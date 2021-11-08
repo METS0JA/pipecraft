@@ -113,7 +113,7 @@ If no files in this folder, then all sequences were passed to files in $output_d
 #Make README.txt file
 printf "Files in this directory represent quality filtered sequences in FASTQ format according to the selected options.
 Files in /FASTA directory represent quality filtered sequences in FASTA format.
-If the quality of the data is sufficent after this step (check with FastQC module), then
+If the quality of the data is sufficent after this step (check with QualityCheck module), then
 you may proceed with FASTA files only (however, note that FASTQ files are needed to assemble paired-end data).\n" > $output_dir/README.txt
 
 #Done
