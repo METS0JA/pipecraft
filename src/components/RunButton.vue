@@ -228,6 +228,7 @@ export default {
             }
           }
           this.$store.commit("addWorkingDir", "/input");
+          Swal.fire("Workflow finished");
         }
       });
     },
@@ -348,6 +349,7 @@ export default {
             this.$store.commit("resetRunInfo");
           }
           this.$store.commit("addWorkingDir", "/input");
+          Swal.fire("Workflow finished");
         }
       });
     },

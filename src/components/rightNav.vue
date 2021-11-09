@@ -156,8 +156,16 @@ export default {
         })
         .then((result) => {
           if (result.canceled !== true) {
+            var conf = [];
+            let confJson;
             let configSavePath = slash(result.filePath);
-            let confJson = JSON.stringify(this.$store.state.selectedSteps);
+            if (this.$route.params.workflowName) {
+              conf.push(this.$store.state[this.$route.params.workflowName]);
+              conf.push(this.$route.params.workflowName);
+              confJson = JSON.stringify(conf);
+            } else {
+              confJson = JSON.stringify(this.$store.state.selectedSteps);
+            }
             fs.writeFileSync(configSavePath, confJson);
           }
         })
@@ -176,7 +184,11 @@ export default {
             let configLoadPath = slash(result.filePaths[0]);
             let configJSON = fs.readFileSync(configLoadPath);
             let configObj = JSON.parse(configJSON);
-            this.$store.commit("loadWorkflow", configObj);
+            if (Object.keys(this.$store.state).includes(configObj[1])) {
+              this.$store.commit("loadCustomWorkflow", configObj);
+            } else {
+              this.$store.commit("loadWorkflow", configObj);
+            }
           }
         });
     },

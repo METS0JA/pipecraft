@@ -2866,6 +2866,9 @@ export default new Vuex.Store({
     loadWorkflow(state, payload) {
       state.selectedSteps = payload;
     },
+    loadCustomWorkflow(state, payload) {
+      state[payload[1]] = payload[0];
+    },
     toggleExtra(state, payload) {
       state.selectedSteps[payload.stepIndex].services[
         payload.serviceIndex

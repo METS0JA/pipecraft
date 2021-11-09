@@ -1,7 +1,7 @@
 {
   "name": "Pipecraft",
   "productName": "pipecraft",
-  "version": "0.2.0beta",
+  "version": "0.2.2",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
