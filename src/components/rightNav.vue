@@ -80,7 +80,7 @@
 </template>
 
 <script>
-const { dialog } = require("electron").remote;
+const { dialog } = require("@electron/remote");
 const slash = require("slash");
 const fs = require("fs");
 var Docker = require("dockerode");

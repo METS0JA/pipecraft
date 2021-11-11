@@ -75,7 +75,7 @@
 import { pullImageAsync } from "dockerode-utils";
 import { imageExists } from "dockerode-utils";
 const shell = require("electron").shell;
-const { dialog } = require("electron").remote;
+const { dialog } = require("@electron/remote");
 const slash = require("slash");
 // const fs = require("fs");
 const streams = require("memory-streams");

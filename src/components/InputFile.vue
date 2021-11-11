@@ -43,7 +43,7 @@
 
 <script>
 var path = require("path");
-const { dialog } = require("electron").remote;
+const { dialog } = require("@electron/remote");
 
 export default {
   computed: {
