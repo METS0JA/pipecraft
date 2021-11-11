@@ -12,7 +12,7 @@ dataFormat = Sys.getenv('dataFormat')
 workingDir = Sys.getenv('workingDir')
 
 #load variables
-method = Sys.getenv('chim_method')
+method = Sys.getenv('method')
 
 #check for output dir and delete if needed
 if (dir.exists("/input/chimeraFiltered_out.dada2")) {

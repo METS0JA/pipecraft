@@ -83,7 +83,8 @@
 // var path = require("path");
 const Swal = require("sweetalert2");
 const slash = require("slash");
-const { dialog } = require("electron").remote;
+const { dialog } = require("@electron/remote");
+// const { dialog } = require("electron").remote;
 import AddMenu from "./AddMenu.vue";
 import RunButton from "./RunButton";
 import SelectedRoutes from "./SelectedRoutes";

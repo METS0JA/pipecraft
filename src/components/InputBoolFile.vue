@@ -56,7 +56,7 @@
 </template>
 
 <script>
-const { dialog } = require("electron").remote;
+const { dialog } = require("@electron/remote");
 var path = require("path");
 export default {
   computed: {

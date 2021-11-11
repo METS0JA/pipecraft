@@ -111,6 +111,8 @@ export default {
         if (result.isConfirmed) {
           console.log(name);
           this.$store.commit("addWorkingDir", "/input");
+          let startTime = Date.now();
+          console.log(startTime);
           for (let index of this.$store.state[name].entries()) {
             if (
               this.$store.state[name][index[0]].selected == true ||
@@ -167,6 +169,7 @@ export default {
                     Volumes: {},
                     HostConfig: {
                       Binds: Binds,
+                      CpuCount: 6,
                     },
                     Env: envVariables,
                   },
@@ -227,6 +230,8 @@ export default {
               this.$store.commit("resetRunInfo");
             }
           }
+          let endTime = Date.now();
+          console.log(endTime - startTime);
           this.$store.commit("addWorkingDir", "/input");
           Swal.fire("Workflow finished");
         }

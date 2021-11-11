@@ -3,92 +3,16 @@
 import { app, protocol, BrowserWindow, ipcMain } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
+import * as remoteMain from "@electron/remote/main";
+remoteMain.initialize();
 // import { exitCode, stdout } from "process";
-var Docker = require("dockerode");
-var docker = new Docker({ socketPath: "//./pipe/docker_engine" });
-const streams = require("memory-streams");
-var stdout = new streams.WritableStream();
-var stderr = new streams.WritableStream();
 
 const isDevelopment = process.env.NODE_ENV !== "production";
-
-async function imageCheck(imageName) {
-  console.log(imageName);
-  let repoList = [];
-  let imageList = await docker.listImages();
-  imageList.forEach((image) => {
-    repoList.push(image.RepoTags[0]);
-  });
-  console.log(repoList);
-  if (repoList.includes(imageName) === false) {
-    console.log(`pulling image ${imageName}`);
-    await docker.pull(imageName);
-  }
-}
-
-ipcMain.on(
-  "runStep",
-  async (event, imageName, scriptName, envVariables, Input) => {
-    var result = await docker
-      .run(
-        imageName,
-        ["sh", "-c", `/scripts/${scriptName}`],
-        [stdout, stderr],
-        {
-          Tty: false,
-          WorkingDir: "/input",
-          Volumes: {},
-          HostConfig: {
-            Binds: [
-              `${process.cwd()}/src/pipecraft-core/service_scripts:/scripts`, // Edit path for build
-              `${Input}:/input`,
-            ],
-          },
-          Env: envVariables,
-        },
-      )
-      .then(([res, container]) => {
-        let resObj = { statusCode: res.StatusCode };
-        console.log(res);
-        console.log("stdout:", stdout.toString());
-        console.log("stderr:", stderr.toString());
-        if (res.StatusCode === 0) {
-          resObj.log = stdout.toString();
-          return resObj;
-        } else {
-          resObj.log = stderr.toString();
-          return resObj;
-        }
-      })
-      .then(async (container) => {
-        let variables = await docker.container.exec({ Cmd: ["env"] });
-        console.log(variables);
-        console.log("plz");
-      })
-      .catch((err) => {
-        console.log(err);
-        console.log(err);
-        console.log(err);
-        let resObj = { statusCode: err.code, log: err };
-        return resObj;
-      });
-    console.log(process.cwd());
-    console.log(result);
-    event.returnValue = result;
-    stdout = new streams.WritableStream();
-    stderr = new streams.WritableStream();
-  },
-);
 
 ipcMain.on("openDevConsole", () => {
   mainWindow.webContents.openDevTools();
 });
 
-ipcMain.on("checkDockerStatus", async (event) => {
-  var result = await docker.ping();
-  console.log(result);
-  event.returnValue = result;
-});
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: "app", privileges: { secure: true, standard: true } },
@@ -102,9 +26,13 @@ async function createWindow() {
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-      nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
+      // nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
+      nodeIntegration: true,
+      contextIsolation: false,
+      enableRemoteModule: true,
     },
   });
+  remoteMain.enable(win.webContents);
   //win.removeMenu();
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
