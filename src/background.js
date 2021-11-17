@@ -5,6 +5,11 @@ import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
 import * as remoteMain from "@electron/remote/main";
 remoteMain.initialize();
+import * as pty from "node-pty";
+import os from "os";
+import { prototype } from "events";
+
+var shell = os.platform() === "win32" ? "powershell.exe" : "bash";
 // import { exitCode, stdout } from "process";
 
 const isDevelopment = process.env.NODE_ENV !== "production";
@@ -40,6 +45,31 @@ async function createWindow() {
     // Load the index.html when not in development
     win.loadURL("app://./index.html");
   }
+  var ptyProcess = pty.spawn(shell, [], {
+    name: "xterm-color",
+    cwd: process.env.HOME,
+    env: process.env,
+  });
+  ptyProcess.on("data", function(data) {
+    win.webContents.send("terminal.incData", data);
+  });
+  // ptyProcess.write('clear\r')
+  // ptyProcess.write('echo "Setting up the terminal"\r');
+  // ptyProcess.write('clear\r');
+
+  ipcMain.on("terminal.toTerm", function(event, data) {
+    ptyProcess.write(data);
+  });
+  ipcMain.on("openExpert", function(event, data) {
+    ptyProcess.write("gc expertReadme.txt\r");
+  });
+  ipcMain.on("terminalResize", function(event, data) {
+    console.log(data);
+    ptyProcess.resize(
+      Math.max(data ? data.cols : data.cols, 1),
+      Math.max(data ? data.rows : data.rows, 1),
+    );
+  });
 }
 
 // Quit when all windows are closed.

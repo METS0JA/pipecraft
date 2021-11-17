@@ -103,29 +103,17 @@ export default {
           tooltip: "load workflow",
           action: this.loadWorkFlow,
         },
-        // {
-        //   title: "Expert",
-        //   icon: "mdi-puzzle-edit",
-        //   tooltip: "expert mode",
-        //   action: "",
-        // },
-        // {
-        //   title: "Step-by-step mode",
-        //   icon: "mdi-format-list-bulleted",
-        //   tooltip: "step-by-step mode",
-        //   action: "",
-        // },
-        // {
-        //   title: "Usearch",
-        //   icon: "mdi-alpha-u-box",
-        //   tooltip: "get usearch",
-        //   action: "",
-        // },
         {
           title: "Quality Control",
           icon: "mdi-beaker-check",
           tooltip: "QualityCheck (FastQC and MultiQC)",
           action: this.push2qc,
+        },
+        {
+          title: "ExpertMode",
+          icon: "mdi-puzzle-edit",
+          tooltip: "Expert mode",
+          action: this.push2expert,
         },
       ],
     };
@@ -200,6 +188,11 @@ export default {
     push2qc() {
       if (this.$route.path != "/fastqcANDmultiqc") {
         this.$router.push("/fastqcANDmultiqc");
+      }
+    },
+    push2expert() {
+      if (this.$route.path != "/ExpertMode") {
+        this.$router.push("/ExpertMode");
       }
     },
   },
