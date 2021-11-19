@@ -7,19 +7,37 @@
 ></template>
 
 <script>
+const pty = require("@electron/remote").require("node-pty");
+import os from "os";
 import "xterm/css/xterm.css";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
-import { ipcRenderer } from "electron";
-const term = new Terminal({
-  experimentalCharAtlas: "dynamic",
-  theme: { background: "#454442" },
+var term;
+var shell = os.platform() === "win32" ? "powershell.exe" : "bash";
+var ptyProc = pty.spawn(shell, [], {
+  name: "xterm-color",
 });
+term = new Terminal({
+  theme: { background: "#454442" },
+  rows: 35,
+  experimentalCharAtlas: "dynamic",
+});
+
 const fitAddon = new FitAddon();
 term.loadAddon(fitAddon);
-term.onResize((size) => {
-  ipcRenderer.send("terminalResize", size);
+term.onData((data) => {
+  ptyProc.write(data);
 });
+ptyProc.on("data", function(data) {
+  term.write(data);
+});
+term.onResize((size) => {
+  ptyProc.resize(
+    Math.max(size ? size.cols : term.cols, 1),
+    Math.max(size ? size.rows : term.rows, 1),
+  );
+});
+ptyProc.write("gc expertReadme.txt\r");
 
 export default {
   created() {
@@ -34,22 +52,14 @@ export default {
     };
   },
   mounted() {
-    console.log("entered");
     term.open(document.getElementById("terminal"));
     fitAddon.fit();
-    term.onData((e) => {
-      ipcRenderer.send("terminal.toTerm", e);
-    });
-    ipcRenderer.on("terminal.incData", function(event, data) {
-      term.write(data);
-    });
   },
+  beforeDestroy() {},
   name: "ExperMode",
   components: {
     // SelectedRoutes,
   },
-
-  computed: {},
   methods: {
     myEventHandler() {
       fitAddon.fit();
