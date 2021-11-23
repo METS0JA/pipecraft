@@ -637,7 +637,7 @@ export default new Vuex.Store({
           //   ],
           // },
           {
-            scriptName: "quality_filtering_paired_end_trimmomatic.sh",
+            scriptName: "quality_filtering_single_end_trimmomatic.sh",
             imageName: "pipecraft/trimmomatic:0.39",
             serviceName: "trimmomatic",
             selected: false,
@@ -864,7 +864,7 @@ export default new Vuex.Store({
           //   ],
           // },
           {
-            scriptName: "assemble_pairedend_data_vsearch.sh",
+            scriptName: "assemble_paired_end_data_vsearch.sh",
             imageName: "pipecraft/vsearch:2.18",
             serviceName: "vsearch",
             disabled: "single_end",
