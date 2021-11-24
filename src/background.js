@@ -17,8 +17,8 @@ protocol.registerSchemesAsPrivileged([
 async function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 1024,
-    height: 768,
+    width: 1280,
+    height: 700,
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
@@ -29,7 +29,7 @@ async function createWindow() {
     },
   });
   remoteMain.enable(win.webContents);
-  //win.removeMenu();
+  win.removeMenu();
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode

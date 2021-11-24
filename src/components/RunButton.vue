@@ -230,8 +230,10 @@ export default {
               this.$store.commit("resetRunInfo");
             }
           }
-          let endTime = Date.now();
-          console.log(endTime - startTime);
+          let totalTime = this.millisToMinutesAndSeconds(
+            Date.now() - startTime,
+          );
+          console.log(totalTime);
           this.$store.commit("addWorkingDir", "/input");
           Swal.fire("Workflow finished");
         }
@@ -489,6 +491,11 @@ export default {
         this.$store.state.workingDir,
       );
       return result;
+    },
+    millisToMinutesAndSeconds(millis) {
+      var minutes = Math.floor(millis / 60000);
+      var seconds = ((millis % 60000) / 1000).toFixed(0);
+      return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
     },
   },
 };

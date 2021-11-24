@@ -5,7 +5,7 @@
       <!-- <SelectedRoutes /> -->
     </v-navigation-drawer>
 
-    <v-navigation-drawer app clipped right permanent width="70" dark>
+    <v-navigation-drawer app clipped right permanent width="72" dark>
       <rightNav />
     </v-navigation-drawer>
 
