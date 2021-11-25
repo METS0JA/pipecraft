@@ -15,7 +15,7 @@
           block
           :style="
             `/step/${element.stepName}/${index}` == $route.path
-              ? { borderBottom: '1px #1DE9B6 solid' }
+              ? { borderBottom: 'thin white solid' }
               : { background: '#424242' }
           "
           @click="push2route(element.stepName.replace('/', ''), index)"

@@ -169,7 +169,7 @@ export default {
                     Volumes: {},
                     HostConfig: {
                       Binds: Binds,
-                      CpuCount: 6,
+                      // CpuCount: 6,
                     },
                     Env: envVariables,
                   },
