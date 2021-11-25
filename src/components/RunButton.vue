@@ -228,6 +228,12 @@ export default {
                 `Finished step ${index[0] + 1}: ${index[1].serviceName}`,
               );
               this.$store.commit("resetRunInfo");
+              if (
+                this.$store.state[name].length == index[0] + 1 &&
+                result.statusCode == 0
+              ) {
+                Swal.fire("Workflow finished");
+              }
             }
           }
           let totalTime = this.millisToMinutesAndSeconds(
@@ -235,7 +241,7 @@ export default {
           );
           console.log(totalTime);
           this.$store.commit("addWorkingDir", "/input");
-          Swal.fire("Workflow finished");
+          this.$store.commit("resetRunInfo");
         }
       });
     },
@@ -249,7 +255,7 @@ export default {
       }).then(async (result) => {
         if (result.isConfirmed) {
           this.$store.commit("addWorkingDir", "/input");
-
+          let startTime = Date.now();
           for (let index of this.selectedSteps.entries()) {
             console.log(`Startin step: ${index[0] + 1} ${index[1].stepName}`);
             let Hostname = index[1].stepName.replace(/[ |]/g, "_");
@@ -354,9 +360,19 @@ export default {
             stderr = new streams.WritableStream();
             console.log(`Finished step ${index[0] + 1}: ${index[1].stepName}`);
             this.$store.commit("resetRunInfo");
+            if (
+              this.selectedSteps.length == index[0] + 1 &&
+              result.statusCode == 0
+            ) {
+              Swal.fire("Workflow finished");
+            }
           }
+          let totalTime = this.millisToMinutesAndSeconds(
+            Date.now() - startTime,
+          );
+          console.log(totalTime);
           this.$store.commit("addWorkingDir", "/input");
-          Swal.fire("Workflow finished");
+          this.$store.commit("resetRunInfo");
         }
       });
     },
