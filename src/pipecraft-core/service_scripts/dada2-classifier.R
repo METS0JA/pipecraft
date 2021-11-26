@@ -60,4 +60,4 @@ write.table(tax2, file.path(path_results, "taxonomy.csv"), sep = "\t", quote=F, 
 print('workingDir=/input/taxonomy_out.dada2')
 print('fileFormat=taxtab')
 print('dataFormat=demultiplexed')
-print('readType=single-end')
+print('readType=single_end')

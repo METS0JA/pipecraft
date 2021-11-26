@@ -74,4 +74,4 @@ write.csv(seq_count, file.path(path_results, "seq_count_summary.csv"), row.names
 print('workingDir=/input/qualFiltered_out.dada2')
 print('fileFormat=fastq')
 print('dataFormat=demultiplexed')
-print('readType=paired-end')
+print('readType=paired_end')

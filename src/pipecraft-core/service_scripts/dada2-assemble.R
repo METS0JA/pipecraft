@@ -164,4 +164,4 @@ if (pool == ""){
 print('workingDir=/input/denoised_assembled.dada2')
 print('fileFormat=fasta')
 print('dataFormat=demultiplexed')
-print('readType=single-end')
+print('readType=single_end')
