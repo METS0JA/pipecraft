@@ -3,6 +3,8 @@
 ### Prerequisites:
 
 Docker (https://www.docker.com/get-started)
+        (https://docs.docker.com/engine/install/ubuntu/)
+        (https://docs.docker.com/engine/install/linux-postinstall/)
 
 Download the setup executable from this link  
 https://github.com/SuvalineVana/pipecraft-vue/releases/download/0.2.2-beta/pipecraft.Setup.0.2.2.exe
@@ -11,9 +13,14 @@ https://github.com/SuvalineVana/pipecraft-vue/releases/download/0.2.2-beta/pipec
 
 ### Prerequisites:
 
-NodeJS (https://nodejs.org/en/download/)  
+NodeJS https://nodejs.org/en/download/ (make sure you lets node install build tools on windows and build-essential on ubuntu)
 Yarn (https://classic.yarnpkg.com/en/docs/install/#windows-stable)  
-Docker (https://www.docker.com/get-started)  
+Docker: windows(https://www.docker.com/get-started)
+        ubuntu and based distros ```bash
+                                curl -fsSL https://get.docker.com -o get-docker.sh
+                                sudo sh get-docker.sh
+                                ```
+        https://docs.docker.com/engine/install/linux-postinstall/          
 Git (https://git-scm.com/downloads)
 
 ```bash
@@ -22,3 +29,9 @@ cd pipecraft-vue
 yarn install
 yarn electron:serve
 ```
+
+If yarn install fails on windows
+```bash
+yarn config set msvs_version 2019
+```
+

@@ -11,15 +11,3 @@ seqTable = makeSequenceTable(dadaSeqs)
 
 write seqTable
 
-extra options toggle v-if extraInputs TRUE
-primer inputs allow  backspace and arrowkeys
-show step route as active add glow or color to button
-
-To view all env variables:
-
-docker exec container env
-To get one:
-
-docker exec container env | grep VARIABLE | cut -d'=' -f2
-
-container.exec({Cmd:['env']})
