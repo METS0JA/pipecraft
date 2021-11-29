@@ -25,6 +25,8 @@ database = gsub("\\\\", "/", database) #replace backslashes \ in the database pa
 database = paste("/extraFiles", basename(database), sep = "/")
 minBoot = Sys.getenv('minBoot')
 tryRC = Sys.getenv('tryRC')
+print(database)
+
 
 #"FALSE" or "TRUE" to FALSE or TRUE for dada2
 if (tryRC == "false" || tryRC == "FALSE"){
@@ -36,9 +38,13 @@ if (tryRC == "true" || tryRC == "TRUE"){
 
 #load data
 ASV_tab.nochim = readRDS(file.path(workingDir, "ASVs_table.denoised-merged.nochim.rds"))
+print(ASV_tab.nochim)
+print(database)
 
 #assign taxonomy
-tax <- assignTaxonomy(ASV_tab.nochim , database, multithread = TRUE, minBoot = minBoot, tryRC = tryRC, outputBootstraps = TRUE)
+tax <- assignTaxonomy(ASV_tab.nochim , database, multithread = FALSE, minBoot = minBoot, tryRC = tryRC, outputBootstraps = TRUE)
+print('yo2')
+
 
 ###format and save taxonomy results
 #sequence headers

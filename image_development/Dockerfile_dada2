@@ -1,14 +1,15 @@
-FROM alpine:3.13
+FROM ubuntu:20.04
+ARG DEBIAN_FRONTEND=noninteractive
 
-RUN apk add build-base \
-    && apk add R \
-    && apk add pigz \
-    && apk add R-dev  \
-    && apk add linux-headers  \
-    && apk add libjpeg-turbo-dev \
-    && wget https://github.com/shenwei356/seqkit/releases/download/v2.0.0/seqkit_linux_amd64.tar.gz -O /tmp/seqkit.tar.gz  \
-	&& tar zxvf /tmp/seqkit.tar.gz -C /usr/bin/ && rm /tmp/seqkit.tar.gz
+RUN apt-get update -y
+RUN apt-get install build-essential -y
+RUN apt-get install pigz -y
+RUN apt-get install wget -y
+RUN apt-get install r-base-dev -y
+RUN apt-get install libcurl4-gnutls-dev  -y
+RUN apt-get install libxml2-dev -y
+RUN apt-get install libssl-dev -y
+RUN wget https://github.com/shenwei356/seqkit/releases/download/v2.0.0/seqkit_linux_amd64.tar.gz -O /tmp/seqkit.tar.gz && \
+    tar zxvf /tmp/seqkit.tar.gz -C /usr/bin/ && rm /tmp/seqkit.tar.gz
 ADD image_development/dada2_install.R /
-RUN Rscript dada2_install.R 
-RUN apk del R-dev && apk del build-base
-
+RUN Rscript dada2_install.R

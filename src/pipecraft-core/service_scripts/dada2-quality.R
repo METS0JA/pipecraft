@@ -38,8 +38,8 @@ fnRs = sort(list.files(pattern = read_R2, full.names = TRUE))
 #sample names
 sample_names = sapply(strsplit(basename(fnFs), samp_ID), `[`, 1)
 #filtered files path
-filtFs = file.path(path_results, paste0(sample_names, "_R1_filt.fastq.gz"))
-filtRs = file.path(path_results, paste0(sample_names, "_R2_filt.fastq.gz"))
+filtFs = file.path(path_results, paste0(sample_names, "_R1_filt.", fileFormat))
+filtRs = file.path(path_results, paste0(sample_names, "_R2_filt.", fileFormat))
 names(filtFs) = sample_names
 names(filtRs) = sample_names
 
