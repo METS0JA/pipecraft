@@ -5,7 +5,7 @@ import StepPrototype from "../views/StepPrototype.vue";
 import dada2Miseq from "../views/dada2Miseq.vue";
 import RunInfo from "../views/RunInfo.vue";
 import fastqcANDmultiqc from "../views/fastqcANDmultiqc.vue";
-// import About from "../views/About.vue";
+import ExpertMode from "../views/ExpertMode.vue";
 
 Vue.use(VueRouter);
 
@@ -26,6 +26,10 @@ const routes = [
   {
     path: "/fastqcANDmultiqc",
     component: fastqcANDmultiqc,
+  },
+  {
+    path: "/ExpertMode",
+    component: ExpertMode,
   },
 ];
 

@@ -66,7 +66,11 @@
     </v-list-item>
     <v-list-item>
       <v-list-item-content v-if="$store.state.runInfo.active == true">
-        <v-btn block color="grey" @click="stopWorkflow">
+        <v-btn
+          block
+          style="background-color:#212121; border:thin #E57373 solid; color: #E57373"
+          @click="stopWorkflow"
+        >
           Stop workflow
         </v-btn>
       </v-list-item-content>

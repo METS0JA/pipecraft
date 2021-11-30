@@ -30,8 +30,7 @@
           <v-list-item-content v-on="on" @click="item.action">
             <v-icon
               :style="
-                `/fastqcANDmultiqc` == $route.path &&
-                item.icon == `mdi-beaker-check`
+                `/${item.title}` == $route.path
                   ? { color: '#1DE9B6' }
                   : { color: 'white' }
               "
@@ -42,35 +41,77 @@
         <span>{{ item.tooltip }}</span>
       </v-tooltip>
     </v-list-item>
-    <v-list-item class="mt-5" ripple link>
+    <v-list-item style="padding: 0" class="mt-5" ripple link>
       <v-tooltip left nudge-left="10">
         <template v-slot:activator="{ on }">
           <v-list-item-content v-on="on" @click="push2premade('DADA2_Miseq')">
-            <v-icon
-              :style="
-                `/premade/DADA2_Miseq` == $route.path
-                  ? { color: '#1DE9B6' }
-                  : { color: 'white' }
-              "
-              >mdi-alpha-d-box</v-icon
-            >
+            <div>
+              <v-icon
+                style="margin-right: -11px; margin-left: 11px"
+                :style="
+                  `/premade/DADA2_Miseq` == $route.path
+                    ? { color: '#1DE9B6' }
+                    : { color: 'white' }
+                "
+                >mdi-alpha-a-box</v-icon
+              >
+              <v-icon
+                style="margin-right: -11px"
+                :style="
+                  `/premade/DADA2_Miseq` == $route.path
+                    ? { color: '#1DE9B6' }
+                    : { color: 'white' }
+                "
+                >mdi-alpha-s-box</v-icon
+              >
+              <v-icon
+                style="margin-right: -11px"
+                :style="
+                  `/premade/DADA2_Miseq` == $route.path
+                    ? { color: '#1DE9B6' }
+                    : { color: 'white' }
+                "
+                >mdi-alpha-v-box</v-icon
+              >
+            </div>
           </v-list-item-content>
         </template>
         <span>DADA2 workflow</span>
       </v-tooltip>
     </v-list-item>
-    <v-list-item class="mt-5" ripple link>
+    <v-list-item style="padding:0" class="mt-5" ripple link>
       <v-tooltip left nudge-left="10">
         <template v-slot:activator="{ on }">
           <v-list-item-content v-on="on" @click="push2premade('OTU_Miseq')">
-            <v-icon
-              :style="
-                `/premade/OTU_Miseq` == $route.path
-                  ? { color: '#1DE9B6' }
-                  : { color: 'white' }
-              "
-              >mdi-alpha-d-box</v-icon
-            >
+            <div>
+              <v-icon
+                style="margin-right: -11px; margin-left: 11px"
+                :style="
+                  `/premade/OTU_Miseq` == $route.path
+                    ? { color: '#1DE9B6' }
+                    : { color: 'white' }
+                "
+                >mdi-alpha-o-box</v-icon
+              >
+              <v-icon
+                style="margin-right: -11px"
+                :style="
+                  `/premade/OTU_Miseq` == $route.path
+                    ? { color: '#1DE9B6' }
+                    : { color: 'white' }
+                "
+                >mdi-alpha-t-box</v-icon
+              >
+              <v-icon
+                style="margin-right: -11px"
+                :style="
+                  `/premade/OTU_Miseq` == $route.path
+                    ? { color: '#1DE9B6' }
+                    : { color: 'white' }
+                "
+                >mdi-alpha-u-box</v-icon
+              >
+            </div>
           </v-list-item-content>
         </template>
         <span>OTU workflow</span>
@@ -103,29 +144,17 @@ export default {
           tooltip: "load workflow",
           action: this.loadWorkFlow,
         },
-        // {
-        //   title: "Expert",
-        //   icon: "mdi-puzzle-edit",
-        //   tooltip: "expert mode",
-        //   action: "",
-        // },
-        // {
-        //   title: "Step-by-step mode",
-        //   icon: "mdi-format-list-bulleted",
-        //   tooltip: "step-by-step mode",
-        //   action: "",
-        // },
-        // {
-        //   title: "Usearch",
-        //   icon: "mdi-alpha-u-box",
-        //   tooltip: "get usearch",
-        //   action: "",
-        // },
         {
-          title: "Quality Control",
+          title: "fastqcANDmultiqc",
           icon: "mdi-beaker-check",
           tooltip: "QualityCheck (FastQC and MultiQC)",
           action: this.push2qc,
+        },
+        {
+          title: "ExpertMode",
+          icon: "mdi-puzzle-edit",
+          tooltip: "Expert mode",
+          action: this.push2expert,
         },
       ],
     };
@@ -186,6 +215,7 @@ export default {
             let configObj = JSON.parse(configJSON);
             if (Object.keys(this.$store.state).includes(configObj[1])) {
               this.$store.commit("loadCustomWorkflow", configObj);
+              this.$router.push(`/premade/${configObj[1]}`);
             } else {
               this.$store.commit("loadWorkflow", configObj);
             }
@@ -200,6 +230,11 @@ export default {
     push2qc() {
       if (this.$route.path != "/fastqcANDmultiqc") {
         this.$router.push("/fastqcANDmultiqc");
+      }
+    },
+    push2expert() {
+      if (this.$route.path != "/ExpertMode") {
+        this.$router.push("/ExpertMode");
       }
     },
   },
@@ -218,5 +253,11 @@ export default {
   content: "";
   clear: both;
   display: table;
+}
+.v-icon.v-icon::after {
+  transform: scale(1);
+}
+.material icons.primary header material icon first menu {
+  margin-left: -2 px;
 }
 </style>

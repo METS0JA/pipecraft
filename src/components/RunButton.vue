@@ -169,7 +169,7 @@ export default {
                     Volumes: {},
                     HostConfig: {
                       Binds: Binds,
-                      CpuCount: 6,
+                      // CpuCount: 6,
                     },
                     Env: envVariables,
                   },
@@ -228,12 +228,20 @@ export default {
                 `Finished step ${index[0] + 1}: ${index[1].serviceName}`,
               );
               this.$store.commit("resetRunInfo");
+              if (
+                this.$store.state[name].length == index[0] + 1 &&
+                result.statusCode == 0
+              ) {
+                Swal.fire("Workflow finished");
+              }
             }
           }
-          let endTime = Date.now();
-          console.log(endTime - startTime);
+          let totalTime = this.millisToMinutesAndSeconds(
+            Date.now() - startTime,
+          );
+          console.log(totalTime);
           this.$store.commit("addWorkingDir", "/input");
-          Swal.fire("Workflow finished");
+          this.$store.commit("resetRunInfo");
         }
       });
     },
@@ -247,7 +255,7 @@ export default {
       }).then(async (result) => {
         if (result.isConfirmed) {
           this.$store.commit("addWorkingDir", "/input");
-
+          let startTime = Date.now();
           for (let index of this.selectedSteps.entries()) {
             console.log(`Startin step: ${index[0] + 1} ${index[1].stepName}`);
             let Hostname = index[1].stepName.replace(/[ |]/g, "_");
@@ -352,9 +360,19 @@ export default {
             stderr = new streams.WritableStream();
             console.log(`Finished step ${index[0] + 1}: ${index[1].stepName}`);
             this.$store.commit("resetRunInfo");
+            if (
+              this.selectedSteps.length == index[0] + 1 &&
+              result.statusCode == 0
+            ) {
+              Swal.fire("Workflow finished");
+            }
           }
+          let totalTime = this.millisToMinutesAndSeconds(
+            Date.now() - startTime,
+          );
+          console.log(totalTime);
           this.$store.commit("addWorkingDir", "/input");
-          Swal.fire("Workflow finished");
+          this.$store.commit("resetRunInfo");
         }
       });
     },
@@ -489,6 +507,11 @@ export default {
         this.$store.state.workingDir,
       );
       return result;
+    },
+    millisToMinutesAndSeconds(millis) {
+      var minutes = Math.floor(millis / 60000);
+      var seconds = ((millis % 60000) / 1000).toFixed(0);
+      return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
     },
   },
 };

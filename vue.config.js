@@ -5,6 +5,7 @@ module.exports = {
   transpileDependencies: ["vuetify"],
   pluginOptions: {
     electronBuilder: {
+      externals: ["node-pty"],
       nodeIntegration: true,
       builderOptions: {
         win: {

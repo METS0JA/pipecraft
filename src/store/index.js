@@ -480,7 +480,7 @@ export default new Vuex.Store({
           // },
           {
             scriptName: "dada2-quality.R",
-            imageName: "pipecraft/dada2:3.10",
+            imageName: "pipecraft/dada2:1.16",
             serviceName: "dada2",
             selected: false,
             showExtra: false,
@@ -710,7 +710,7 @@ export default new Vuex.Store({
         services: [
           {
             scriptName: "dada2-assemble.R",
-            imageName: "pipecraft/dada2:3.10",
+            imageName: "pipecraft/dada2:1.16",
             serviceName: "dada2",
             selected: false,
             showExtra: false,
@@ -952,7 +952,7 @@ export default new Vuex.Store({
         services: [
           {
             scriptName: "dada2-chimera.R",
-            imageName: "pipecraft/dada2:3.10",
+            imageName: "pipecraft/dada2:1.16",
             serviceName: "dada2",
             selected: false,
             showExtra: false,
@@ -1043,46 +1043,46 @@ export default new Vuex.Store({
               },
             ],
           },
-          {
-            scriptName: "usearch-chimera.sh",
-            imageName: "pipecraft/usearch",
-            serviceName: "usearch",
-            selected: false,
-            showExtra: false,
-            extraInputs: [],
-            Inputs: [
-              {
-                name: "abskew",
-                value: 1,
-                disabled: "never",
-                tooltip: "zzzZZzzZZZzzz",
-                type: "numeric",
-              },
-              {
-                name: "abundance annotation",
-                value: 1,
-                disabled: "never",
-                tooltip: "zzzZZzzZZZzzz",
-                type: "numeric",
-              },
-              {
-                name: "denovo",
-                value: false,
-                disabled: "never",
-                tooltip: "zzzZZzzZZZzzz",
-                type: "bool",
-              },
-              {
-                name: "reference based",
-                active: false,
-                btnName: "select file",
-                value: "undefined",
-                disabled: "never",
-                tooltip: "zzZZzz",
-                type: "boolfile",
-              },
-            ],
-          },
+          // {
+          //   scriptName: "usearch-chimera.sh",
+          //   imageName: "pipecraft/usearch",
+          //   serviceName: "usearch",
+          //   selected: false,
+          //   showExtra: false,
+          //   extraInputs: [],
+          //   Inputs: [
+          //     {
+          //       name: "abskew",
+          //       value: 1,
+          //       disabled: "never",
+          //       tooltip: "zzzZZzzZZZzzz",
+          //       type: "numeric",
+          //     },
+          //     {
+          //       name: "abundance annotation",
+          //       value: 1,
+          //       disabled: "never",
+          //       tooltip: "zzzZZzzZZZzzz",
+          //       type: "numeric",
+          //     },
+          //     {
+          //       name: "denovo",
+          //       value: false,
+          //       disabled: "never",
+          //       tooltip: "zzzZZzzZZZzzz",
+          //       type: "bool",
+          //     },
+          //     {
+          //       name: "reference based",
+          //       active: false,
+          //       btnName: "select file",
+          //       value: "undefined",
+          //       disabled: "never",
+          //       tooltip: "zzZZzz",
+          //       type: "boolfile",
+          //     },
+          //   ],
+          // },
         ],
       },
       {
@@ -1237,7 +1237,7 @@ export default new Vuex.Store({
           // },
           // {
           //   scriptName: "dada2-asv.R",
-          //   imageName: "pipecraft/dada2:3.10",
+          //   imageName: "pipecraft/dada2:1.16",
           //   serviceName: "dada2",
           //   selected: false,
           //   showExtra: false,
@@ -1472,7 +1472,7 @@ export default new Vuex.Store({
           },
           {
             scriptName: "dada2-classifier.R",
-            imageName: "pipecraft/dada2:3.10",
+            imageName: "pipecraft/dada2:1.16",
             serviceName: "dada2",
             selected: false,
             showExtra: false,
@@ -2445,7 +2445,7 @@ export default new Vuex.Store({
       },
       {
         scriptName: "dada2-quality.R",
-        imageName: "pipecraft/dada2:3.10",
+        imageName: "pipecraft/dada2:1.16",
         serviceName: "quality filter",
         disabled: "never",
         selected: "always",
@@ -2547,7 +2547,7 @@ export default new Vuex.Store({
       },
       {
         scriptName: "dada2-assemble.R",
-        imageName: "pipecraft/dada2:3.10",
+        imageName: "pipecraft/dada2:1.16",
         serviceName: "denoise",
         selected: "always",
         disabled: "never",
@@ -2584,7 +2584,7 @@ export default new Vuex.Store({
       },
       {
         scriptName: "dada2-assemble.R",
-        imageName: "pipecraft/dada2:3.10",
+        imageName: "pipecraft/dada2:1.16",
         serviceName: "merge Pairs",
         selected: "always",
         disabled: "single_end",
@@ -2626,7 +2626,7 @@ export default new Vuex.Store({
       },
       {
         scriptName: "dada2-chimera.R",
-        imageName: "pipecraft/dada2:3.10",
+        imageName: "pipecraft/dada2:1.16",
         serviceName: "remove chimeras",
         disabled: "never",
         selected: "always",
@@ -2647,7 +2647,7 @@ export default new Vuex.Store({
 
       {
         scriptName: "dada2-classifier.R",
-        imageName: "pipecraft/dada2:3.10",
+        imageName: "pipecraft/dada2:1.16",
         serviceName: "assign Taxonomy",
         disabled: "never",
         selected: "always",

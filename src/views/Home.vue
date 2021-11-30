@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-img
-      style="margin: auto"
+      style="margin: auto; background:transparent"
       max-height="350"
       max-width="350"
       src="..\assets\PipeCraft2_logo.png"
@@ -29,7 +29,7 @@ export default {
 @import url(https://fonts.googleapis.com/css?family=Exo:100);
 
 /* Background data (Original source: https://subtlepatterns.com/grid-me/) */
-$bg-url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAIAAACRXR/mAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAABnSURBVHja7M5RDYAwDEXRDgmvEocnlrQS2SwUFST9uEfBGWs9c97nbGtDcquqiKhOImLs/UpuzVzWEi1atGjRokWLFi1atGjRokWLFi1atGjRokWLFi1af7Ukz8xWp8z8AAAA//8DAJ4LoEAAlL1nAAAAAElFTkSuQmCC";
+$bg-url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAAAJcEhZcwAACxMAAAsTAQCanBgAAACFSURBVGhD7dq7DQMxDMBQXabxxrnC23gJ7eJCcT5DUAEfYAhQJfaO+37W3rsiou1733/VMeeMMcbZ9ZSZcZ1Za63vprHHb7ZnCI0hNIbQGEJjCI0hNIbQGEJjCI0hNIbQGEJjCI0hNIbQGEJjCI0hNIbQGEJjCI0hNP8TUlWf/06dZWa8AJZ1Tf0j5ddzAAAAAElFTkSuQmCC";
 $bg-width: 150px;
 $bg-height: 150px;
 

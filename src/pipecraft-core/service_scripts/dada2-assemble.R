@@ -53,7 +53,7 @@ if (pool != ""){
         unlink("/input/denoised_assembled.dada2", recursive=TRUE)
     }
     #create output dir
-    path_results = "/input/denoised_assembled.dada2"
+    path_results = "/input/denoised_assembled.dada2/"
     dir.create(path_results)
 
     #filtered files path
@@ -89,7 +89,7 @@ if (pool != ""){
 
 ### Merge denoised paired-end reads
 if (pool == ""){
-    path_results = "/input/denoised_assembled.dada2"
+    path_results = "/input/denoised_assembled.dada2/"
     #load denoised data
     dadaFs = readRDS(file.path(path_results, "dadaFs.rds"))
     dadaRs = readRDS(file.path(path_results, "dadaRs.rds"))
@@ -160,8 +160,12 @@ if (pool == ""){
 }
 
 #DONE 
-
+if (pool != ""){
+    print('readType=paired_end')
+    } else {
+        print('readType=single_end')
+        }
 print('workingDir=/input/denoised_assembled.dada2')
 print('fileFormat=fasta')
 print('dataFormat=demultiplexed')
-print('readType=single-end')
+

@@ -1,5 +1,4 @@
 #!/usr/bin/env Rscript
-install.packages("Rcpp" ,repos = "http://cran.us.r-project.org")
-if (!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager" ,repos = "http://cran.us.r-project.org")
-BiocManager::install("dada2", version = "3.10")
+install.packages("devtools")
+library("devtools")
+devtools::install_github("benjjneb/dada2", ref="v1.16")
