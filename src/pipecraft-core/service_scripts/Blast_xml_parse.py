@@ -3,7 +3,7 @@
 from sys import argv
 import re
 
-script, filename1= argv
+script, filename1 = argv
 from operator import itemgetter
 import math
 from decimal import Decimal
