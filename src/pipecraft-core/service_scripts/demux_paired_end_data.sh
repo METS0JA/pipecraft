@@ -211,13 +211,17 @@ sed -e "s/\.R1\.$newextension//" | \
 grep -E -v "round2|round1|unknown" > tempdir2/demux_files.txt
 
 #Assign sample names / rename outputs
-python3 assign_sample_names.demuxModule.py $indexes_file
+printf "\nAssign sample names / rename outputs\n"
+python3 /scripts/assign_sample_names.demuxModule.py $indexes_file tempdir2/barcodes_fwd.uniq.renamed.fasta tempdir2/barcodes_rev.uniq.renamed.fasta tempdir2/demux_files.txt
+
+head tempdir2/demux_files.txt
+head tempdir2/barcodes_fwd.uniq.renamed.fasta
 
 #################################################
 ### COMPILE FINAL STATISTICS AND README FILES ###
 #################################################
 printf "\nCleaning up and compiling final stats files ...\n"
-clean_and_make_stats_Assemble_Demux
+#clean_and_make_stats_Assemble_Demux
 
 #Make README.txt file for demultiplexed reads
 printf "Files in $output_dir directory represent per sample sequence files, 
@@ -242,5 +246,5 @@ printf "Total time: $runtime sec.\n\n"
 #variables for all services
 echo "workingDir=$output_dir"
 echo "fileFormat=$newextension"
-echo "dataFormat=demultiplexed"
+echo "dataFormat=multiplexed"
 echo "readType=paired_end"
