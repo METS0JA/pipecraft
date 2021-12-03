@@ -17,7 +17,6 @@
     #Copyright © 2016-2019 Wei Shen, 2019 Oxford Nanopore Technologies.
     #https://bioinf.shenwei.me/seqkit/
 #pigz v2.4
-#perl v5.32.0
 ##########################################################
 
 #load variables

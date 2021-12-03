@@ -637,7 +637,7 @@ export default new Vuex.Store({
           //   ],
           // },
           {
-            scriptName: "quality_filtering_paired_end_trimmomatic.sh",
+            scriptName: "quality_filtering_single_end_trimmomatic.sh",
             imageName: "pipecraft/trimmomatic:0.39",
             serviceName: "trimmomatic",
             selected: false,
