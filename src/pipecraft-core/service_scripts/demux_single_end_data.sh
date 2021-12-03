@@ -26,7 +26,6 @@ indexes_file=$(printf "/extraFiles/$oligos_file")
 extension=$fileFormat
 error_rate="-e ${index_mismatch}"
 if [ "$no_indels" = true ] ; then
-    echo 'Be careful not to fall off!'
     no_indels=$"--no-indels"
 else
     no_indels=''
@@ -35,7 +34,6 @@ cores=$"--cores ${cores}"
 overlap=$"--overlap ${overlap}"
 ###############################
 ###############################
-set -e
 
 #############################
 ### Start of the workflow ###
