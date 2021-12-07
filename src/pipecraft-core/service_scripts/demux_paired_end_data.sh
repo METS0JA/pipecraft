@@ -39,15 +39,15 @@ printf "minlen = $minlen\n"
 printf "cores = $cores\n"
 printf "overlap = $overlap\n"
 
+# Source for functions
+source /scripts/framework.functions.sh
+#output dir
+output_dir=$"/input/demultiplex_out"
+
 #############################
 ### Start of the workflow ###
 #############################
 start=$(date +%s)
-# Source for functions
-source /scripts/framework.functions.sh
-
-#output dir
-output_dir=$"/input/demultiplex_out"
 ### Check if files with specified extension exist in the dir
 first_file_check
 ### Prepare working env and check paired-end data
@@ -58,6 +58,7 @@ check_indexes_file
 ### Process file
 printf "Checking files ...\n"
 while read LINE; do
+
     #Write file name without extension
     inputR1=$(echo $LINE | sed -e "s/.$extension//")
     inputR2=$(echo $inputR1 | sed -e 's/R1/R2/')
@@ -69,7 +70,7 @@ while read LINE; do
     check_extension_fastx
 
     ### Check if dual indexes or single indexes and prepare workflow accordingly
-    if grep -q "\..." tempdir2/ValidatedBarcodesFileForDemux.fasta.temp; then
+    if [[ $tag = "dual" ]]; then
         #dual indexes
         #make rev barcodes file
         seqkit seq --quiet -n tempdir2/ValidatedBarcodesFileForDemux.fasta.temp | \
@@ -94,8 +95,8 @@ while read LINE; do
         seqkit replace --quiet tempdir2/barcodes_rev.uniq.fasta -w 0 -p .+ -r "indexR_{nr}" > tempdir2/barcodes_rev.uniq.renamed.fasta
 
         #assign demux variables
-        indexes_file_in1=$"-g file:tempdir2/barcodes_fwd.uniq.renamed.fasta -G file:tempdir2/barcodes_rev.uniq.renamed.fasta"
-        indexes_file_in2=$"-g file:../tempdir2/barcodes_fwd.uniq.renamed.fasta -G file:../tempdir2/barcodes_rev.uniq.renamed.fasta"
+        indexes_file_round1=$"-g file:tempdir2/barcodes_fwd.uniq.renamed.fasta -G file:tempdir2/barcodes_rev.uniq.renamed.fasta"
+        indexes_file_round2=$"-g file:../tempdir2/barcodes_fwd.uniq.renamed.fasta -G file:../tempdir2/barcodes_rev.uniq.renamed.fasta"
         outR1=$"-o $output_dir/round1-{name1}-{name2}.R1.$newextension"
         outR2=$"-p $output_dir/round1-{name1}-{name2}.R2.$newextension"
         outR2_round2=$"-o round2-{name1}-{name2}.R2.$newextension"
@@ -105,8 +106,8 @@ while read LINE; do
     else
         #single indexes
         #assign demux variables
-        indexes_file_in1=$"-g file:tempdir2/ValidatedBarcodesFileForDemux.fasta.temp"
-        indexes_file_in2=$"-g file:../tempdir2/ValidatedBarcodesFileForDemux.fasta.temp"
+        indexes_file_round1=$"-g file:tempdir2/ValidatedBarcodesFileForDemux.fasta.temp"
+        indexes_file_round2=$"-g file:../tempdir2/ValidatedBarcodesFileForDemux.fasta.temp"
         outR1=$"-o $output_dir/round1-{name}.R1.$newextension"
         outR2=$"-p $output_dir/round1-{name}.R2.$newextension"
         outR2_round2=$"-o round2-{name}.R2.$newextension"
@@ -124,7 +125,7 @@ while read LINE; do
 
     ### Round1 demux
     checkerror=$(cutadapt --quiet \
-    $indexes_file_in1 \
+    $indexes_file_round1 \
     $error_rate \
     $no_indels \
     $overlap \
@@ -138,7 +139,7 @@ while read LINE; do
     #Round2 demux (RC; R1 and R2 position switched!)
     cd $output_dir
     checkerror=$(cutadapt --quiet \
-    $indexes_file_in2 \
+    $indexes_file_round2 \
     $error_rate \
     $no_indels \
     $overlap \
@@ -183,7 +184,6 @@ while read LINE; do
     cd ..
 done < tempdir2/paired_end_files.txt
 
-
 #merge unknowns
 unknowns_R1=$(ls $output_dir | grep -E "round1-|round2-" | grep ".R1")
 unknowns_R2=$(ls $output_dir | grep -E "round1-|round2-" | grep ".R2")
@@ -205,46 +205,46 @@ else
     cd ..
 fi
 
-# Make patterns file for assigning sample names to files
-ls $output_dir | grep ".R1.$newextension" | \
-sed -e "s/\.R1\.$newextension//" | \
-grep -E -v "round2|round1|unknown" > tempdir2/demux_files.txt
+# Make patterns file for assigning sample names to files if using DUAL indexes
+if [[ $tag = "dual" ]]; then
+    ls $output_dir | grep ".R1.$newextension" | \
+    sed -e "s/\.R1\.$newextension//" | \
+    grep -E -v "round2|round1|unknown" > tempdir2/demux_files.txt
 
-#Assign sample names / rename outputs
-printf "\nAssign sample names / rename outputs\n"
-python3 /scripts/assign_sample_names.demuxModule.py $indexes_file tempdir2/barcodes_fwd.uniq.renamed.fasta tempdir2/barcodes_rev.uniq.renamed.fasta tempdir2/demux_files.txt
+    #Assign sample names
+    export $newextension
+    $run_python_module
+fi
 
-head tempdir2/demux_files.txt
-head tempdir2/barcodes_fwd.uniq.renamed.fasta
 
 #################################################
 ### COMPILE FINAL STATISTICS AND README FILES ###
 #################################################
 printf "\nCleaning up and compiling final stats files ...\n"
-#clean_and_make_stats_Assemble_Demux
+clean_and_make_stats_Assemble_Demux
+end=$(date +%s)
+runtime=$((end-start))
 
 #Make README.txt file for demultiplexed reads
-printf "Files in $output_dir directory represent per sample sequence files, 
+printf "Files in 'demultiplex_out' directory represent per sample sequence files, 
 that were generated based on the specified indexes file ($indexes_file).
 Paired-end data, has been demultiplexed taken into account that some sequences
 may be also in reverse complementary orientation.\n
 Output R1 and R2 reads are synchronized for merging paired-end data. 
 IF SEQUENCE YIELD PER SAMPLE IS LOW (OR ZERO), DOUBLE-CHECK THE INDEXES FORMATTING.\n
-RUNNING THE PROCESS SEVERAL TIMES IN THE SAME DIRECTORY WILL OVERWRITE ALL THE OUTPUTS!" > $output_dir/README.txt
-
+RUNNING THE PROCESS SEVERAL TIMES IN THE SAME DIRECTORY WILL OVERWRITE ALL THE OUTPUTS!\n
+\nSummary of sequence counts in 'seq_count_summary.txt'\n
+\n\n Total time was $runtime sec.\n" > $output_dir/README.txt
 
 ###Done, files in $output_dir folder
 printf "\nDONE\n"
 printf "Data in directory $output_dir\n"
-printf "Summary of sequence counts in '$output_dir/seq_count_summary.txt'\n"
+printf "Summary of sequence counts in 'seq_count_summary.txt'\n"
 printf "Check README.txt file in $output_dir for further information about the process.\n\n"
-
-end=$(date +%s)
-runtime=$((end-start))
 printf "Total time: $runtime sec.\n\n"
 
 #variables for all services
 echo "workingDir=$output_dir"
 echo "fileFormat=$newextension"
-echo "dataFormat=multiplexed"
-echo "readType=paired_end"
+echo "dataFormat=demultiplexed"
+echo "readType=paired-end"
