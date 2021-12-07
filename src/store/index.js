@@ -68,22 +68,22 @@ export default new Vuex.Store({
                 btnName: "select fasta",
                 disabled: "never",
                 tooltip:
-                  "Select your fasta formatted file for demultiplexing where fasta headers = sample names and sequences = sample specific index or index combination",
+                  "select your fasta formatted indexes file for demultiplexing, where fasta headers = sample names, and sequences = sample specific index or index combination",
                 type: "file",
               },
               {
                 name: "index_mismatch",
-                value: 1,
+                value: 0,
                 disabled: "never",
-                tooltip: "Allowed mismatches during the index search",
+                tooltip: "allowed mismatches during the index search",
                 type: "numeric",
               },
               {
                 name: "overlap",
-                value: 12,
+                value: 8,
                 disabled: "never",
                 tooltip:
-                  "number of overlap bases with the index. Recommended overlap is the max length of the index for confident sequence assignments to samples in the indexes file.",
+                  "number of overlap bases with the index. Recommended overlap is the max length of the index for confident sequence assignments to samples in the indexes file",
                 type: "numeric",
               },
             ],
@@ -192,7 +192,7 @@ export default new Vuex.Store({
                 value: 2,
                 disabled: "never",
                 tooltip:
-                  "allowed mismatches in primer search. By default, 2 mismatches are allowed per primer.",
+                  "allowed mismatches in primer search.",
                 type: "numeric",
               },
               // paired-end tags not needed, because in reorienting PipeCraft needes 'R1' and 'R2' stings! Gives ERROR if 'R1' not found.
@@ -228,7 +228,7 @@ export default new Vuex.Store({
         ],
       },
       {
-        stepName: "trim adapters|primers",
+        stepName: "cut primers",
         disabled: "never",
         services: [
           {
@@ -243,7 +243,7 @@ export default new Vuex.Store({
                 value: 1,
                 disabled: "never",
                 tooltip:
-                  "number of cores to use. For paired-end dta in fasta format, set to 1 [default]. For fastq formats you may set the value to 0 to use all cores.",
+                  "number of cores to use. For paired-end data in fasta format, set to 1 [default]. For fastq formats you may set the value to 0 to use all cores",
                 type: "numeric",
               },
               {
@@ -251,14 +251,6 @@ export default new Vuex.Store({
                 value: 32,
                 disabled: "never",
                 tooltip: "minimum length of the output sequence.",
-                type: "numeric",
-              },
-              {
-                name: "overlap",
-                value: 16,
-                disabled: "never",
-                tooltip:
-                  "number of overlap bases with the primer sequence. Partial matches are allowed, but short matches may occur by chance, leading to erroneously clipped bases. Specifying higher overlap than the length of primer sequnce will still clip the primer (e.g. primer length is 22 bp, but overlap is specified as 25 - this does not affect the identification and clipping of the primer as long as the match is in the specified error range).",
                 type: "numeric",
               },
               {
@@ -283,7 +275,7 @@ export default new Vuex.Store({
                 name: "forward_primers",
                 value: [],
                 disabled: "never",
-                tooltip: "Add up to 13 PCR primers",
+                tooltip: "add up to 13 PCR primers",
                 type: "chip",
                 iupac: true,
                 rules: [(v) => v.length <= 13 || "TOO MANY PRIMERS"],
@@ -292,7 +284,7 @@ export default new Vuex.Store({
                 name: "reverse_primers",
                 value: [],
                 disabled: "never",
-                tooltip: "Add up to 13 PCR primers",
+                tooltip: "add up to 13 PCR primers",
                 type: "chip",
                 iupac: true,
                 rules: [(v) => v.length <= 13 || "TOO MANY PRIMERS"],
@@ -302,15 +294,15 @@ export default new Vuex.Store({
                 value: 2,
                 disabled: "never",
                 tooltip:
-                  "allowed mismatches in primer search. By default, 2 mismatches are allowed per primer.",
+                  "allowed mismatches in primer search",
                 type: "numeric",
               },
               {
                 name: "min_overlap",
-                value: 15,
+                value: 20,
                 disabled: "never",
                 tooltip:
-                  "the number of minimum overlap bases with the primer sequence.",
+                  "number of overlap bases with the primer sequence. Partial matches are allowed, but short matches may occur by chance, leading to erroneously clipped bases. Specifying higher overlap than the length of primer sequnce will still clip the primer (e.g. primer length is 22 bp, but overlap is specified as 25 - this does not affect the identification and clipping of the primer as long as the match is in the specified error range)",
                 type: "numeric",
               },
               {
@@ -319,29 +311,11 @@ export default new Vuex.Store({
                 value: "keep_all",
                 disabled: "never",
                 tooltip:
-                  "Keep seqs with primers found in both ends(linked), or keeps seqs with primer found atlest in one end(all)",
+                  "keep_all = keep sequences where at least one primer was found (fwd or rev); recommended when cutting primers from paired-end data (unassembled), when only R1 or R2 sequence lenghts are shorther than the expected amplicon length. keep_only_linked = keep sequences if primers are found in both ends (fwd…rev); discards sequences where both primers were not found.",
                 type: "select",
               },
             ],
           },
-          // {
-          //   scriptName: "trimmomatic-cut.sh",
-          //   imageName: "pipecraft/trimmomatic:0.39",
-          //   serviceName: "trimmomatic",
-          //   selected: false,
-          //   showExtra: false,
-          //   extraInputs: [],
-          //   Inputs: [],
-          // },
-          // {
-          //   scriptName: "mothur-cut.sh",
-          //   imageName: "pipecraft/mothur:1.43",
-          //   serviceName: "mothur",
-          //   selected: false,
-          //   showExtra: false,
-          //   extraInputs: [],
-          //   Inputs: [],
-          // },
         ],
       },
       {
@@ -422,62 +396,6 @@ export default new Vuex.Store({
               },
             ],
           },
-          // {
-          //   scriptName: "mothur-quality.sh",
-          //   imageName: "pipecraft/mothur:1.43",
-          //   serviceName: "mothur",
-          //   selected: false,
-          //   showExtra: false,
-          //   extraInputs: [],
-          //   Inputs: [
-          //     {
-          //       name: "qwindowaverage",
-          //       value: 30,
-          //       disabled: "never",
-          //       tooltip:
-          //         "Set the minimum average quality score allowed over a window",
-          //       type: "numeric",
-          //     },
-          //     {
-          //       name: "qwindowsize",
-          //       value: 32,
-          //       disabled: "never",
-          //       tooltip: "Set the number of bases in a window",
-          //       type: "numeric",
-          //     },
-          //     {
-          //       name: "maxambig",
-          //       value: 0,
-          //       disabled: "never",
-          //       tooltip: "Set the number of allowed ambiguous base calls",
-          //       type: "numeric",
-          //     },
-          //     {
-          //       name: "qthreshold",
-          //       value: null,
-          //       disabled: "never",
-          //       tooltip:
-          //         "Discard sequences with a basecall below set quality value",
-          //       type: "numeric",
-          //     },
-          //     {
-          //       name: "minlength",
-          //       value: null,
-          //       disabled: "never",
-          //       tooltip:
-          //         "Discard sequences with less than the specified number of bases",
-          //       type: "numeric",
-          //     },
-          //     {
-          //       name: "maxlength",
-          //       value: null,
-          //       disabled: "never",
-          //       tooltip:
-          //         "Discard sequences with more than the specified number of bases",
-          //       type: "numeric",
-          //     },
-          //   ],
-          // },
           {
             scriptName: "dada2-quality.R",
             imageName: "pipecraft/dada2:3.10",
@@ -579,63 +497,6 @@ export default new Vuex.Store({
               },
             ],
           },
-          // {
-          //   scriptName: "usearch-quality.sh",
-          //   imageName: "pipecraft/usearch",
-          //   serviceName: "usearch",
-          //   selected: false,
-          //   showExtra: false,
-          //   extraInputs: [],
-          //   Inputs: [
-          //     {
-          //       name: "fastq_maxee",
-          //       value: null,
-          //       disabled: "never",
-          //       tooltip:
-          //         "Discard sequences with more than the specified number of expected errors for all bases in the read (is used after any truncation options have been applied).",
-          //       type: "numeric",
-          //     },
-          //     {
-          //       name: "fastq_maxns",
-          //       value: null,
-          //       disabled: "never",
-          //       tooltip:
-          //         "Discard sequences with more than the specified number of N’s",
-          //       type: "numeric",
-          //     },
-          //     {
-          //       name: "fastq_minlen",
-          //       value: null,
-          //       disabled: "never",
-          //       tooltip:
-          //         "Discard sequences with less than the specified number of bases",
-          //       type: "numeric",
-          //     },
-          //     {
-          //       name: "fastq_stripleft",
-          //       value: null,
-          //       disabled: "never",
-          //       tooltip: "Delete the first N bases in the read",
-          //       type: "numeric",
-          //     },
-          //     {
-          //       name: "fastq_truncqual",
-          //       value: null,
-          //       disabled: "never",
-          //       tooltip:
-          //         "Truncate sequences starting from the first basewith the specified base quality score value or lower",
-          //       type: "numeric",
-          //     },
-          //     {
-          //       name: "fastq_maxee_rate",
-          //       value: null,
-          //       disabled: "never",
-          //       tooltip:
-          //         "Discard sequences with more than the specified number of expected errors per base",
-          //       type: "numeric",
-          //     },
-          //   ],
-          // },
           {
             scriptName: "quality_filtering_single_end_trimmomatic.sh",
             imageName: "pipecraft/trimmomatic:0.39",
@@ -749,120 +610,6 @@ export default new Vuex.Store({
               },
             ],
           },
-          // {
-          //   scriptName: "pandaseq-assemble.sh",
-          //   imageName: "pipecraft/pandaseq:2.11",
-          //   serviceName: "pandaseq",
-          //   selected: false,
-          //   showExtra: false,
-          //   extraInputs: [
-          //     {
-          //       name: "write unpaired",
-          //       value: false,
-          //       disabled: "never",
-          //       tooltip:
-          //         "Write sequences for which the optimal alignment cannot be computed to a file as concatenated pairs.",
-          //       type: "bool",
-          //     },
-          //   ],
-          //   Inputs: [
-          //     {
-          //       name: "minoverlap -o",
-          //       value: 1,
-          //       disabled: "never",
-          //       tooltip:
-          //         "Sets the minimum overlap between forward and reverse reads.",
-          //       type: "numeric",
-          //     },
-          //     {
-          //       name: "minlen -l",
-          //       value: 1,
-          //       disabled: "never",
-          //       tooltip:
-          //         "Sets the minimum length for a sequence before assembly",
-          //       type: "numeric",
-          //     },
-          //     {
-          //       name: "maxoverlap -O",
-          //       value: 1,
-          //       disabled: "never",
-          //       tooltip:
-          //         "Sets the maximum overlap between forward and reverse reads.",
-          //       type: "numeric",
-          //     },
-          //     {
-          //       name: "maxlen -L",
-          //       value: 1,
-          //       disabled: "never",
-          //       tooltip: "Sets maximum length for a sequence before assembly.",
-          //       type: "numeric",
-          //     },
-          //   ],
-          // },
-          // {
-          //   scriptName: "flash-assemble.sh",
-          //   imageName: "pipecraft/flash:2",
-          //   serviceName: "flash",
-          //   selected: false,
-          //   showExtra: false,
-          //   extraInputs: [],
-          //   Inputs: [
-          //     {
-          //       name: "min overlap -m",
-          //       value: 100,
-          //       disabled: "never",
-          //       tooltip:
-          //         "Set the minimum required overlap length between two reads to provide a confident overlap.",
-          //       type: "numeric",
-          //     },
-          //     {
-          //       name: "mismatch ratio -x",
-          //       value: 0.25,
-          //       disabled: "never",
-          //       tooltip:
-          //         "Set the maximum allowed ratio of the number of mismatches at the overlap length.",
-          //       type: "numeric",
-          //     },
-          //     {
-          //       name: "max overlap -M",
-          //       value: null,
-          //       disabled: "never",
-          //       tooltip:
-          //         "Set the maximum overlap length expected in approximately 90% of read pairs.",
-          //       type: "numeric",
-          //     },
-          //     {
-          //       name: "read length -r",
-          //       value: 1,
-          //       disabled: "never",
-          //       tooltip: "Average read length.",
-          //       type: "numeric",
-          //     },
-          //     {
-          //       name: "fragment length -f",
-          //       value: 1,
-          //       disabled: "never",
-          //       tooltip: "Average fragment length",
-          //       type: "numeric",
-          //     },
-          //     {
-          //       name: "σ fragment lengths -s",
-          //       value: 1,
-          //       disabled: "never",
-          //       tooltip:
-          //         "if you do not know standard deviation of the fragment library, you can probably assume that the standard deviation is 10% of the average fragment length",
-          //       type: "numeric",
-          //     },
-          //     {
-          //       name: "phredOffset -p",
-          //       value: 1,
-          //       disabled: "never",
-          //       tooltip:
-          //         "Set the smallest ASCII value of the characters used to represent quality values of bases in fastq files. 33 for latest Illumina and Sanger or 64 for earlier Illumina.",
-          //       type: "numeric",
-          //     },
-          //   ],
-          // },
           {
             scriptName: "assemble_paired_end_data_vsearch.sh",
             imageName: "pipecraft/vsearch:2.18",
@@ -1043,46 +790,6 @@ export default new Vuex.Store({
               },
             ],
           },
-          // {
-          //   scriptName: "usearch-chimera.sh",
-          //   imageName: "pipecraft/usearch",
-          //   serviceName: "usearch",
-          //   selected: false,
-          //   showExtra: false,
-          //   extraInputs: [],
-          //   Inputs: [
-          //     {
-          //       name: "abskew",
-          //       value: 1,
-          //       disabled: "never",
-          //       tooltip: "zzzZZzzZZZzzz",
-          //       type: "numeric",
-          //     },
-          //     {
-          //       name: "abundance annotation",
-          //       value: 1,
-          //       disabled: "never",
-          //       tooltip: "zzzZZzzZZZzzz",
-          //       type: "numeric",
-          //     },
-          //     {
-          //       name: "denovo",
-          //       value: false,
-          //       disabled: "never",
-          //       tooltip: "zzzZZzzZZZzzz",
-          //       type: "bool",
-          //     },
-          //     {
-          //       name: "reference based",
-          //       active: false,
-          //       btnName: "select file",
-          //       value: "undefined",
-          //       disabled: "never",
-          //       tooltip: "zzZZzz",
-          //       type: "boolfile",
-          //     },
-          //   ],
-          // },
         ],
       },
       {
@@ -1202,66 +909,12 @@ export default new Vuex.Store({
               },
             ],
           },
-          // {
-          //   scriptName: "metaxa-extraction.sh",
-          //   imageName: "pipecraft/metaxa:latest",
-          //   serviceName: "metaxa",
-          //   selected: false,
-          //   showExtra: false,
-          //   extraInputs: [],
-          //   Inputs: [],
-          // },
-          // {
-          //   scriptName: "vxtractor-extraction.sh",
-          //   imageName: "pipecraft/vxtractor:latest",
-          //   serviceName: "vxtractor",
-          //   selected: false,
-          //   showExtra: false,
-          //   extraInputs: [],
-          //   Inputs: [],
-          // },
         ],
       },
       {
         stepName: "cluster | ASV",
         disabled: "never",
         services: [
-          // {
-          //   scriptName: "mothur-cluster.sh",
-          //   imageName: "pipecraft/mothur:1.43",
-          //   serviceName: "mothur",
-          //   selected: false,
-          //   showExtra: false,
-          //   extraInputs: [],
-          //   Inputs: [],
-          // },
-          // {
-          //   scriptName: "dada2-asv.R",
-          //   imageName: "pipecraft/dada2:3.10",
-          //   serviceName: "dada2",
-          //   selected: false,
-          //   showExtra: false,
-          //   extraInputs: [],
-          //   Inputs: [],
-          // },
-          // {
-          //   scriptName: "cd-hit-cluster.sh",
-          //   imageName: "pipecraft/cdhit:4.8.1",
-          //   serviceName: "cd-hit",
-          //   selected: false,
-          //   showExtra: false,
-          //   extraInputs: [],
-          //   Inputs: [],
-          // },
-          // {
-          //   scriptName: "swarm-cluster.sh",
-          //   imageName: "pipecraft/swarm:3.0.0",
-          //   serviceName: "swarm",
-          //   selected: false,
-          //   showExtra: false,
-          //   extraInputs: [],
-          //   Inputs: [],
-          // },
           {
             scriptName: "clustering_vsearch.sh",
             imageName: "pipecraft/vsearch:2.18",
@@ -1519,14 +1172,14 @@ export default new Vuex.Store({
         extraInputs: [
           {
             name: "cores",
-            value: 2,
+            value: 1,
             disabled: "never",
             tooltip: "number of cores to use",
             type: "numeric",
           },
           {
             name: "min_seq_length",
-            value: 10,
+            value: 32,
             disabled: "never",
             tooltip: "minimum length of the output sequence",
             type: "numeric",
@@ -1551,14 +1204,14 @@ export default new Vuex.Store({
           },
           {
             name: "index_mismatch",
-            value: 1,
+            value: 0,
             disabled: "never",
             tooltip: "Allowed mismatches during the index search",
             type: "numeric",
           },
           {
             name: "overlap",
-            value: 12,
+            value: 8,
             disabled: "never",
             tooltip:
               "number of overlap bases with the index. Recommended overlap is the max length of the index for confident sequence assignments to samples in the indexes file.",
@@ -1580,18 +1233,9 @@ export default new Vuex.Store({
             value: 2,
             disabled: "never",
             tooltip:
-              "allowed mismatches in primer search. By default, 2 mismatches are allowed per primer.",
+              "allowed mismatches in primer search",
             type: "numeric",
           },
-          //          {
-          //            name: "paired_end_tags",
-          //            value: ["R1", "R2"],
-          //            disabled: "single_end",
-          //            tooltip: "Define a tag for fwd and rev reads",
-          //            type: "chip",
-          //            iupac: false,
-          //            rules: [(v) => v.length <= 2 || "TOO MANY TAGS"],
-          //          },
           {
             name: "forward_primers",
             value: [],
@@ -1615,7 +1259,7 @@ export default new Vuex.Store({
       {
         scriptName: "cut_primers_paired_end_reads.sh",
         imageName: "pipecraft/demux:0.1",
-        serviceName: "remove primers",
+        serviceName: "cut primers",
         disabled: "never",
         selected: false,
         showExtra: false,
@@ -1637,7 +1281,7 @@ export default new Vuex.Store({
           },
           {
             name: "overlap",
-            value: 16,
+            value: 20,
             disabled: "never",
             tooltip:
               "number of overlap bases with the primer sequence. Partial matches are allowed, but short matches may occur by chance, leading to erroneously clipped bases. Specifying higher overlap than the length of primer sequnce will still clip the primer (e.g. primer length is 22 bp, but overlap is specified as 25 - this does not affect the identification and clipping of the primer as long as the match is in the specified error range).",
@@ -1656,7 +1300,7 @@ export default new Vuex.Store({
             value: true,
             disabled: "never",
             tooltip:
-              "Discard sequences where specified primers were not found.",
+              "discard sequences where specified primers were not found.",
             type: "bool",
           },
         ],

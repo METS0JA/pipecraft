@@ -26,7 +26,7 @@ overlap=$"--overlap ${min_overlap}"
 cores=$"--cores ${cores}"
 no_indels=$no_indels
 discard_untrimmed=$discard_untrimmed
-seqs_to_keep=$seqs_to_keep #keep_all/keep_only_linked
+seqs_to_keep=$seqs_to_keep
 
 fwd_tempprimer=$forward_primers
 rev_tempprimer=$reverse_primers
