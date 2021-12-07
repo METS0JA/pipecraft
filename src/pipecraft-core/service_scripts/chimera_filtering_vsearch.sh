@@ -1,8 +1,7 @@
 #!/bin/bash
 
 # Chimera filtering
-
-#Input = single-end fasta/fastq files. FASTQ files will be converted to FASTA files; output is only FASTA.
+# Input = single-end fasta/fastq files. FASTQ files will be converted to FASTA files; output is only FASTA.
 
 ##########################################################
 ###Third-party applications:
@@ -21,21 +20,20 @@
 
 #load variables
 extension=$fileFormat
-#mandatory options
 id=$"--id ${pre_cluster}" 
 minuniquesize=$"--minuniquesize ${min_unique_size}" 
 denovo=${denovo} #FALSE or TRUE
-#load path to the reference database, if specified
-regex='[^\\]*$'
-# ref=$(echo $reference_based | grep -oP "$regex")
-# reference_based=$(printf "/extraFiles/$ref")
-#additional options
 cores=$"--threads ${cores}" # pos int
 abskew=$"--abskew ${abundance_skew}" # pos int
 minh=$"--minh ${min_h}" # float (0-1)
-echo $reference_based
 
-#additional options, if selection != undefined
+#Source for functions
+source /scripts/framework.functions.sh
+#output dir
+output_dir=$"/input/chimera_Filtered_out"
+
+#load path to reference database (if specified)
+regex='[^\\]*$'
 if [[ $reference_based == undefined ]]; then
     :
 else
@@ -49,11 +47,6 @@ fi
 ### Start of the workflow ###
 #############################
 start=$(date +%s)
-# Source for functions
-source /scripts/framework.functions.sh
-
-#output dir
-output_dir=$"/input/chimera_Filtered_out"
 ### Check if files with specified extension exist in the dir
 first_file_check
 ### Prepare working env and check paired-end data
@@ -79,7 +72,7 @@ for file in *.$extension; do
     check_extension_fastx
 
     #If input is FASTQ then convert to FASTA
-    if [[ $newextension == "fastq" ]] || [[ $newextension == "fasta" ]]; then
+    if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]]; then
         checkerror=$(seqkit fq2fa -t dna --line-width 0 $input.$newextension -o $input.fasta 2>&1)
         check_app_error
         printf "Note: converted $newextension to FASTA \n"
@@ -94,8 +87,7 @@ for file in *.$extension; do
     ### Start chimera filtering ###
     ###############################
     #dereplicate sequences
-    if [[ $denovo == true ]]; then
-        echo '1'
+    if [[ $denovo_filt == "TRUE" ]]; then
         checkerror=$(vsearch --derep_fulllength $input.$newextension \
         $minuniquesize \
         --sizein --sizeout \
@@ -105,7 +97,6 @@ for file in *.$extension; do
         check_app_error
 
         #pre-cluster sequences; sorts seqs automaticcaly by decreasing abundance
-        echo '2'
         checkerror=$(vsearch --cluster_size tempdir/$input.derep.fasta \
         $cores \
         $id \
@@ -117,7 +108,6 @@ for file in *.$extension; do
         check_app_error
 
         #search chimeras
-        echo '3'
         checkerror=$(vsearch --uchime_denovo tempdir/$input.preclustered.fasta \
         $abskew \
         $minh \
@@ -125,14 +115,13 @@ for file in *.$extension; do
         --sizeout \
         --fasta_width 0 \
         --chimeras $output_dir/chimeras/$input.denovo.chimeras.fasta \
-        --nonchimeras tempdir/$input.denovo.nonchimeras.fasta 2>&1)
+        --nonchimeras tempdir/$input.fasta 2>&1)
         check_app_error
 
-        if [[ $reference_based == undefined ]]; then
+        if [[ $reference_based == "undefined" ]]; then
             #Extract all non-chimeric sequences and add to $output_dir
-            echo '4'
             checkerror=$(vsearch --usearch_global $input.fasta \
-            -db tempdir/$input.denovo.nonchimeras.fasta \
+            -db tempdir/$input.fasta \
             --sizein --xsize \
             $id \
             --strand both \
@@ -147,19 +136,17 @@ for file in *.$extension; do
             fi
 
         else
-            echo '5'
-            checkerror=$(vsearch --uchime_ref tempdir/$input.denovo.nonchimeras.fasta \
+            checkerror=$(vsearch --uchime_ref tempdir/$input.fasta \
             $cores \
             --db $database \
             --sizein \
             --sizeout \
             --fasta_width 0 \
             --chimeras $output_dir/chimeras/$input.ref.chimeras.fasta \
-            --nonchimeras tempdir/$input.ref.denovo.nonchimera.fasta 2>&1)
+            --nonchimeras tempdir/$input.ref.denovo.nonchimeras.fasta 2>&1)
             check_app_error
 
             #Extract all non-chimeric sequences
-            echo '6'
             checkerror=$(vsearch --usearch_global $input.fasta \
             -db tempdir/$input.ref.denovo.nonchimeras.fasta \
             --sizein --xsize \
@@ -177,7 +164,6 @@ for file in *.$extension; do
         fi
     
     else #only reference based chimera filtering
-        echo '7'
         checkerror=$(vsearch --uchime_ref $input.fasta \
         $cores \
         --db $database \
@@ -200,26 +186,27 @@ done
 ### COMPILE FINAL STATISTICS AND README FILES ###
 #################################################
 printf "\nCleaning up and compiling final stats files ...\n"
+
 clean_and_make_stats
+end=$(date +%s)
+runtime=$((end-start))
 
 #Make README.txt file
-printf "Files in 'chimera_Filtered_out' directory represent chimera filtered sequences.
-Files in 'chimera_Filtered_out/chimeras' directory represent identified putative chimeric sequences.
-If input was FASTQ formatted file(s), then it was converted to FASTA, and only FASTA is outputted.
-\n" > $output_dir/README.txt
+printf "Files in 'chimeraFiltered_out' directory represent chimera filtered sequences.
+Files in 'chimeraFiltered_out/chimeras' directory represent identified putative chimeric sequences.
+In input was FASTQ formatted file(s), then it was converted to FASTA, and only FASTA is outputted.
+\nSummary of sequence counts in 'seq_count_summary.txt'\n
+\n\nTotal run time was $runtime sec.\n" > $output_dir/README.txt
 
 #Done
 printf "\nDONE\n"
 printf "Data in directory '$output_dir'\n"
 printf "Summary of sequence counts in '$output_dir/seq_count_summary.txt'\n"
 printf "Check README.txt files in output directory for further information about the process.\n"
-
-end=$(date +%s)
-runtime=$((end-start))
 printf "Total time: $runtime sec.\n\n"
 
 #variables for all services
-echo "workingDir=$output_dir"
+echo "workingDir=/$output_dir"
 echo "fileFormat=$newextension"
 echo "dataFormat=$dataFormat"
-echo "readType=single_end"
+echo "readType=single-end"

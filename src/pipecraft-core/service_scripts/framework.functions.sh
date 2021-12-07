@@ -339,7 +339,7 @@ fi
 #Note for counting seqs
 if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]]; then
     printf "\nPlease note that sequence count assumes that there are 4 lines per sequence in a FASTQ file (as this is mostly the case).
-You may double-check the sequence count of one file using implemented 'FastQC' program in PipeCraft.\n" >> $output_dir/seq_count_summary.txt
+You may double-check the sequence count of one file using implemented 'QualityCheck' module in PipeCraft.\n" >> $output_dir/seq_count_summary.txt
 fi
 }
 
@@ -411,7 +411,7 @@ done < tempdir2/seq_count_before.txt && rm -rf tempdir2
 #Note for counting seqs in FASTQ files
 if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]]; then
     printf "\nPlease note that sequence count assumes that there are 4 lines per sequence in a FASTQ file (as this is mostly the case).
-You may double-check the sequence count of one file using implemented 'FastQC' program in PipeCraft.\n" >> $output_dir/seq_count_summary.txt
+You may double-check the sequence count of one file using implemented 'QualityCheck' module in PipeCraft.\n" >> $output_dir/seq_count_summary.txt
 fi
 
 #Delete decompressed files if original set of files were compressed
@@ -497,7 +497,7 @@ done < tempdir2/seq_count_before.txt && rm -rf tempdir2
 #Note for counting seqs in FASTQ files
 if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]]; then
     printf "\nPlease note that sequence count assumes that there are 4 lines per sequence in a FASTQ file (as this is mostly the case).
-You may double-check the sequence count of one file using implemented 'FastQC' program in PipeCraft.\n" >> $output_dir/$subdir/seq_count_summary.txt
+You may double-check the sequence count of one file using implemented 'QualityCheck' module in PipeCraft.\n" >> $output_dir/$subdir/seq_count_summary.txt
 fi
 
 #Delete decompressed files if original set of files were compressed

@@ -19,15 +19,18 @@
 
 #load variables
 extension=$fileFormat
-#mandatory options
 window_size=$window_size
 required_qual=$required_quality
 min_length=$min_length
-#additional options
 threads=$cores
 phred=$phred
-leading_qual_threshold=$leading_qual_threshold #or 'undefined', if selection is not active
-trailing_qual_threshold=$trailing_qual_threshold #or 'undefined', if selection is not active
+leading_qual_threshold=$leading_qual_threshold
+trailing_qual_threshold=$trailing_qual_threshold
+
+#Source for functions
+source /scripts/framework.functions.sh
+#output dir
+output_dir=$"/input/qualFiltered_out"
 
 #additional options, if selection != undefined
 if [[ $leading_qual_threshold == null ]]; then
@@ -45,11 +48,6 @@ fi
 ### Start of the workflow ###
 #############################
 start=$(date +%s)
-# Source for functions
-source /scripts/framework.functions.sh
-
-#output dir
-output_dir=$"/input/qualFiltered_out"
 ### Check if files with specified extension exist in the dir
 first_file_check
 ### Prepare working env and check paired-end data
@@ -70,7 +68,7 @@ for file in *.$extension; do
     ###############################
     ### Start quality filtering ###
     ###############################
-    checkerror=$(java -jar /Trimmomatic-0.39/trimmomatic-0.39.jar SE \
+    checkerror=$(trimmomatic SE \
     $input.$newextension \
     $output_dir/$input.$newextension \
     -phred$phred \
@@ -87,32 +85,32 @@ for file in *.$extension; do
     check_app_error
 done
 
-
 #################################################
 ### COMPILE FINAL STATISTICS AND README FILES ###
 #################################################
 printf "\nCleaning up and compiling final stats files ...\n"
 #file identifier string after the process
 clean_and_make_stats
+end=$(date +%s)
+runtime=$((end-start))
 
 #Make README.txt file
-printf "Files in this directory represent quality filtered sequences in FASTQ format according to the selected options.
-Files in /FASTA directory represent quality filtered sequences in FASTA format.
+printf "Files in 'qualFiltered_out' directory represent quality filtered sequences in FASTQ format according to the selected options.
+Files in $output_dir/FASTA directory represent quality filtered sequences in FASTA format.
 If the quality of the data is sufficent after this step (check with QualityCheck module), then
-you may proceed with FASTA files only.\n" > $output_dir/README.txt
+you may proceed with FASTA files only.\n
+\nSummary of sequence counts in 'seq_count_summary.txt'\n
+\n\nTotal run time was $runtime sec.\n" > $output_dir/README.txt
 
 #Done
 printf "\nDONE\n"
 printf "Data in directory '$output_dir'\n"
 printf "Summary of sequence counts in '$output_dir/seq_count_summary.txt'\n"
 printf "Check README.txt files in output directory for further information about the process.\n"
-
-end=$(date +%s)
-runtime=$((end-start))
 printf "Total time: $runtime sec.\n\n"
 
 #variables for all services
-echo "workingDir=$output_dir"
+echo "workingDir=/$output_dir"
 echo "fileFormat=$newextension"
 echo "dataFormat=$dataFormat"
-echo "readType=single_end"
+echo "readType=single-end"

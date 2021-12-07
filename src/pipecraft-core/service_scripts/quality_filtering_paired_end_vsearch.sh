@@ -1,49 +1,39 @@
 #!/bin/bash
 
-#Input = paired-end fastq files.
-
-# Quality filter PAIRED-END sequencing data with trimmomatic
+# Quality filter PAIRED-END sequencing data with vsearch
+# Input = paired-end fastq files
 
 ##########################################################
 ###Third-party applications:
-#trimmomatic v0.39
-    #citation: Bolger, A. M., Lohse, M., & Usadel, B. (2014). Trimmomatic: A flexible trimmer for Illumina Sequence Data. Bioinformatics, btu1
-    #Distributed under the GNU GENERAL PUBLIC LICENE
-    #https://github.com/usadellab/Trimmomatic
+#vsearch v2.17.0
+    #citation: Rognes T, Flouri T, Nichols B, Quince C, Mahé F (2016) VSEARCH: a versatile open source tool for metagenomics PeerJ 4:e2584
+    #Copyright (C) 2014-2021, Torbjorn Rognes, Frederic Mahe and Tomas Flouri
+    #Distributed under the GNU General Public License version 3 by the Free Software Foundation
+    #https://github.com/torognes/vsearch
 #seqkit v2.0.0
     #citation: Shen W, Le S, Li Y, Hu F (2016) SeqKit: A Cross-Platform and Ultrafast Toolkit for FASTA/Q File Manipulation. PLOS ONE 11(10): e0163962. https://doi.org/10.1371/journal.pone.0163962
     #Distributed under the MIT License
     #Copyright © 2016-2019 Wei Shen, 2019 Oxford Nanopore Technologies.
     #https://bioinf.shenwei.me/seqkit/
 #pigz v2.4
-##########################################################
+########################################################
 
 #load variables
 extension=$fileFormat
-window_size=$window_size
-required_qual=$required_quality
-min_length=$min_length
-threads=$cores
-phred=$phred
-leading_qual_threshold=$leading_qual_threshold
-trailing_qual_threshold=$trailing_qual_threshold
+maxee=$"--fastq_maxee ${maxee}"                    # pos int
+maxns=$"--fastq_maxns ${maxns}"                    # pos int
+minlen=$"--fastq_minlen ${minlen}"                 # pos int
+cores=$"--threads ${cores}"                        # pos int
+qmax=$"--fastq_qmax ${qmax}"                     # pos int (0-100)
+qmin=$"--fastq_qmin ${qmin}"                     # pos or neg int
+minsize=$"--minsize ${minsize}"                      # pos int
+maxlen=$"" #--fastq_maxlen $int             # pos int
+maxee_rate=$"" #--fastq_maxee_rate $float   # pos float
 
 #Source for functions
 source /scripts/framework.functions.sh
 #output dir
 output_dir=$"/input/qualFiltered_out"
-
-#additional options, if selection != undefined
-if [[ $leading_qual_threshold == null ]]; then
-    :
-else
-    LEADING=$"LEADING:$leading_qual_threshold"
-fi
-if [[ $trailing_qual_threshold == null ]]; then
-    :
-else
-    TRAILING=$"TRAILING:$trailing_qual_threshold"
-fi
 
 #############################
 ### Start of the workflow ###
@@ -70,20 +60,67 @@ while read LINE; do
     ###############################
     ### Start quality filtering ###
     ###############################
-    #make dir for discarded seqs
-    mkdir -p $output_dir/discarded
+    mkdir -p tempdir
 
-    checkerror=$(trimmomatic PE \
-    $inputR1.$newextension $inputR2.$newextension \
-    $output_dir/$inputR1.$newextension $output_dir/discarded/$inputR1.discarded.$newextension \
-    $output_dir/$inputR2.$newextension $output_dir/discarded/$inputR2.discarded.$newextension \
-    $LEADING \
-    $TRAILING \
-    -phred$phred \
-    SLIDINGWINDOW:$window_size:$required_qual \
-    MINLEN:$min_length \
-    -threads $threads 2>&1)
+    #R1
+    checkerror=$(vsearch --fastq_filter \
+    $inputR1.$newextension \
+    $maxee \
+    $maxns \
+    $minlen \
+    $cores \
+    $qmax \
+    $qmin \
+    $minsize \
+    $maxlen \
+    $maxee_rate \
+    --fastqout tempdir/$inputR1.$newextension 2>&1)
     check_app_error
+
+    #R2
+    checkerror=$(vsearch --fastq_filter \
+    $inputR2.$newextension \
+    $maxee \
+    $maxns \
+    $minlen \
+    $cores \
+    $qmax \
+    $qmin \
+    $minsize \
+    $maxlen \
+    $maxee_rate \
+    --fastqout tempdir/$inputR2.$newextension 2>&1)
+    check_app_error
+
+    #Synchronize R1 and R2
+    printf "\nSynchronizing R1 and R2 reads (matching order for paired-end reads merging)\n"
+    cd tempdir
+    checkerror=$(seqkit pair -1 $inputR1.$newextension -2 $inputR2.$newextension -w 0 2>&1)
+    check_app_error
+
+    rm $inputR1.$newextension
+    rm $inputR2.$newextension
+    mv $inputR1.paired.$newextension $inputR1.$newextension
+    mv $inputR2.paired.$newextension $inputR2.$newextension
+    cd ..
+
+    #Move final files to $output_dir
+    mv tempdir/$inputR1.$newextension $output_dir/$inputR1.$newextension
+    mv tempdir/$inputR2.$newextension $output_dir/$inputR2.$newextension
+
+    ### Check if output is empty; if yes, then report WARNING
+    if [ -s $output_dir/$inputR1.$newextension ]; then
+        :
+    else
+        printf '%s\n' "WARNING]: $inputR1 has 0 seqs (no output)"
+        rm $output_dir/$inputR1.$newextension
+    fi
+    if [ -s $output_dir/$inputR2.$newextension ]; then
+        :
+    else
+        printf '%s\n' "WARNING]: $inputR2 has 0 seqs (no output)"
+        rm $output_dir/$inputR2.$newextension
+    fi
 
     #Convert output fastq files to FASTA
     mkdir -p $output_dir/FASTA
@@ -91,6 +128,7 @@ while read LINE; do
     check_app_error
     checkerror=$(seqkit fq2fa -t dna --line-width 0 $output_dir/$inputR2.$newextension -o $output_dir/FASTA/$inputR2.fasta 2>&1)
     check_app_error
+
 done < tempdir2/paired_end_files.txt
 
 #################################################
@@ -101,10 +139,6 @@ printf "\nCleaning up and compiling final stats files ...\n"
 clean_and_make_stats
 end=$(date +%s)
 runtime=$((end-start))
-
-#Make README.txt file for discarded seqs
-printf "Files in /discarded folder represent sequences that did not pass quality filtering.\n
-If no files in this folder, then all sequences were passed to files in $output_dir directory" > $output_dir/untrimmed/README.txt
 
 #Make README.txt file
 printf "Files in 'qualFiltered_out' directory represent quality filtered sequences in FASTQ format according to the selected options.

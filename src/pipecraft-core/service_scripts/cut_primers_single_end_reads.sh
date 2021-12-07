@@ -1,9 +1,8 @@
 #!/bin/bash
 
-#Input = fastq or fasta files.
-
-# REMOVE PRIMERS from single-end reads (e.g PacBio reads)
-#Degenerate primers are allowed using IUPAC codes.
+# REMOVE PRIMERS from single-end reads
+# Degenerate primers are allowed using IUPAC codes. Reverse complementary stings will be also searched.
+# Input = single-end fastq or fasta files. If using fasta, then cores must = 1
 
 ##########################################################
 ###Third-party applications:
@@ -11,7 +10,7 @@
     #citation: Martin, M. (2011). Cutadapt removes adapter sequences from high-throughput sequencing reads. EMBnet. journal, 17(1), 10-12.
     #Distributed under MIT License"
     #https://cutadapt.readthedocs.io/en/stable/#
-#seqkit v0.15.0
+#seqkit v2.0.0
     #citation: Shen W, Le S, Li Y, Hu F (2016) SeqKit: A Cross-Platform and Ultrafast Toolkit for FASTA/Q File Manipulation. PLOS ONE 11(10): e0163962. https://doi.org/10.1371/journal.pone.0163962
     #Distributed under the MIT License
     #Copyright © 2016-2019 Wei Shen, 2019 Oxford Nanopore Technologies.
@@ -19,9 +18,7 @@
 #pigz v2.4
 ##########################################################
 
-###############################
-###############################
-#These variables are for testing (DELETE when implementing to PipeCraft)
+#load variables
 extension=$fileFormat
 mismatches=$"-e ${mismatches}"
 min_length=$"--minimum-length ${min_seq_length}"
@@ -33,18 +30,16 @@ seqs_to_keep=$seqs_to_keep
 
 fwd_tempprimer=$forward_primers
 rev_tempprimer=$reverse_primers
-###############################
-###############################
+
+#Source for functions
+source /scripts/framework.functions.sh
+#output dir
+output_dir=$"/input/primersCut_out"
 
 #############################
 ### Start of the workflow ###
 #############################
 start=$(date +%s)
-# Source for functions
-source /scripts/framework.functions.sh
-
-#output dir
-output_dir=$"/input/primersCut_out"
 ### Check if files with specified extension exist in the dir
 first_file_check
 ### Prepare working env and check single-end data
@@ -162,6 +157,8 @@ done
 printf "\nCleaning up and compiling final stats files ...\n"
 #file identifier string after the process
 clean_and_make_stats
+end=$(date +%s)
+runtime=$((end-start))
 
 #Make README.txt file for untrimmed seqs
 if [[ $discard_untrimmed == "TRUE" ]]; then
@@ -181,20 +178,19 @@ Note that REVERSE COMPLEMENTARY search was also performed for sequences when no 
 If a match was found on a reverse complementary strand, then this reverse complementary sequence is outputted instead of 'original' read where no primer matches were found.
 If forward primer(s) were specified in 5'-3' orientation, then all output seqs are in 5'-3' orientation.
 Therefore, for single-end data, NO ADDITIONAL 'reorient reads' process is needed (and also impossible, because primers are now clipped).\n
-If no outputs were generated into /$output_dir, check your specified primer stings and adjust settings" > $output_dir/README.txt
+If no outputs were generated into /$output_dir, check your specified primer stings and adjust settings.
+\nSummary of sequence counts in 'seq_count_summary.txt'\n
+\n\nTotal run time was $runtime sec.\n" > $output_dir/README.txt
 
 #Done
 printf "\nDONE\n"
 printf "Data in directory '$output_dir'\n"
-printf "Summary of sequence counts in '$output_dir/seq_count_summary.txt'\n"
+printf "Summary of sequence counts in 'seq_count_summary.txt'\n"
 printf "Check README.txt files in output directory for further information about the process.\n"
-
-end=$(date +%s)
-runtime=$((end-start))
 printf "Total time: $runtime sec.\n\n"
 
 #variables for all services
 echo "workingDir=/$output_dir"
 echo "fileFormat=$newextension"
 echo "dataFormat=$dataFormat"
-echo "readType=single_end"
+echo "readType=single-end"

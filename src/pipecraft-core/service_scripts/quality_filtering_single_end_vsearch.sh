@@ -1,15 +1,16 @@
+
 #!/bin/bash
 
-#Input = paired-end fastq files.
-
-# Quality filter PAIRED-END sequencing data with trimmomatic
+# Quality filter SINGLE-END sequencing data with vsearch
+# Input = single-end fastq files
 
 ##########################################################
 ###Third-party applications:
-#trimmomatic v0.39
-    #citation: Bolger, A. M., Lohse, M., & Usadel, B. (2014). Trimmomatic: A flexible trimmer for Illumina Sequence Data. Bioinformatics, btu1
-    #Distributed under the GNU GENERAL PUBLIC LICENE
-    #https://github.com/usadellab/Trimmomatic
+#vsearch v2.17.0
+    #citation: Rognes T, Flouri T, Nichols B, Quince C, Mahé F (2016) VSEARCH: a versatile open source tool for metagenomics PeerJ 4:e2584
+    #Copyright (C) 2014-2021, Torbjorn Rognes, Frederic Mahe and Tomas Flouri
+    #Distributed under the GNU General Public License version 3 by the Free Software Foundation
+    #https://github.com/torognes/vsearch
 #seqkit v2.0.0
     #citation: Shen W, Le S, Li Y, Hu F (2016) SeqKit: A Cross-Platform and Ultrafast Toolkit for FASTA/Q File Manipulation. PLOS ONE 11(10): e0163962. https://doi.org/10.1371/journal.pone.0163962
     #Distributed under the MIT License
@@ -18,32 +19,24 @@
 #pigz v2.4
 ##########################################################
 
+fastq_minoverlen=$"--fastq_minovlen ${}"
+
 #load variables
 extension=$fileFormat
-window_size=$window_size
-required_qual=$required_quality
-min_length=$min_length
-threads=$cores
-phred=$phred
-leading_qual_threshold=$leading_qual_threshold
-trailing_qual_threshold=$trailing_qual_threshold
+maxee=$"--fastq_maxee ${maxee}"                    # pos int
+maxns=$"--fastq_maxns ${maxns}"                    # pos int
+minlen=$"--fastq_minlen ${minlen}"                 # pos int
+cores=$"--threads ${cores}"                        # pos int
+qmax=$"--fastq_qmax ${qmax}"                     # pos int (0-100)
+qmin=$"--fastq_qmin ${qmin}"                     # pos or neg int
+minsize=$"--minsize ${minsize}"                      # pos int
+maxlen=$"" #--fastq_maxlen $int             # pos int
+maxee_rate=$"" #--fastq_maxee_rate $float   # pos float
 
 #Source for functions
 source /scripts/framework.functions.sh
 #output dir
 output_dir=$"/input/qualFiltered_out"
-
-#additional options, if selection != undefined
-if [[ $leading_qual_threshold == null ]]; then
-    :
-else
-    LEADING=$"LEADING:$leading_qual_threshold"
-fi
-if [[ $trailing_qual_threshold == null ]]; then
-    :
-else
-    TRAILING=$"TRAILING:$trailing_qual_threshold"
-fi
 
 #############################
 ### Start of the workflow ###
@@ -52,46 +45,41 @@ start=$(date +%s)
 ### Check if files with specified extension exist in the dir
 first_file_check
 ### Prepare working env and check paired-end data
-prepare_PE_env
+prepare_SE_env
 ### Process samples
-while read LINE; do
-    #Read in R1 and R2 file names; without extension
-    inputR1=$(echo $LINE | sed -e "s/.$extension//")
-    inputR2=$(echo $inputR1 | sed -e 's/R1/R2/')
+for file in *.$extension; do
+    #Read file name; without extension
+    input=$(echo $file | sed -e "s/.$extension//")
     ## Preparing files for the process
     printf "\n____________________________________\n"
-    printf "Processing $inputR1 and $inputR2 ...\n"
+    printf "Processing $input ...\n"
     #If input is compressed, then decompress (keeping the compressed file, but overwriting if filename exists!)
         #$extension will be $newextension
-    check_gz_zip_PE
+    check_gz_zip_SE
     ### Check input formats (fastq supported)
     check_extension_fastq
 
     ###############################
     ### Start quality filtering ###
     ###############################
-    #make dir for discarded seqs
-    mkdir -p $output_dir/discarded
-
-    checkerror=$(trimmomatic PE \
-    $inputR1.$newextension $inputR2.$newextension \
-    $output_dir/$inputR1.$newextension $output_dir/discarded/$inputR1.discarded.$newextension \
-    $output_dir/$inputR2.$newextension $output_dir/discarded/$inputR2.discarded.$newextension \
-    $LEADING \
-    $TRAILING \
-    -phred$phred \
-    SLIDINGWINDOW:$window_size:$required_qual \
-    MINLEN:$min_length \
-    -threads $threads 2>&1)
-    check_app_error
-
-    #Convert output fastq files to FASTA
     mkdir -p $output_dir/FASTA
-    checkerror=$(seqkit fq2fa -t dna --line-width 0 $output_dir/$inputR1.$newextension -o $output_dir/FASTA/$inputR1.fasta 2>&1)
+
+    checkerror=$(vsearch --fastq_filter \
+    $input.$newextension \
+    $maxee \
+    $maxns \
+    $minlen \
+    $cores \
+    $qmax \
+    $qmin \
+    $minsize \
+    $maxlen \
+    $maxee_rate \
+    --fastqout $output_dir/$input.$newextension \
+    --fastaout $output_dir/FASTA/$input.fasta 2>&1)
     check_app_error
-    checkerror=$(seqkit fq2fa -t dna --line-width 0 $output_dir/$inputR2.$newextension -o $output_dir/FASTA/$inputR2.fasta 2>&1)
-    check_app_error
-done < tempdir2/paired_end_files.txt
+done
+
 
 #################################################
 ### COMPILE FINAL STATISTICS AND README FILES ###
@@ -102,15 +90,11 @@ clean_and_make_stats
 end=$(date +%s)
 runtime=$((end-start))
 
-#Make README.txt file for discarded seqs
-printf "Files in /discarded folder represent sequences that did not pass quality filtering.\n
-If no files in this folder, then all sequences were passed to files in $output_dir directory" > $output_dir/untrimmed/README.txt
-
 #Make README.txt file
 printf "Files in 'qualFiltered_out' directory represent quality filtered sequences in FASTQ format according to the selected options.
 Files in 'qualFiltered_out/FASTA' directory represent quality filtered sequences in FASTA format.
 If the quality of the data is sufficent after this step (check with QualityCheck module), then
-you may proceed with FASTA files only (however, note that FASTQ files are needed to assemble paired-end data).\n
+you may proceed with FASTA files only.
 \nSummary of sequence counts in 'seq_count_summary.txt'\n
 \n\nTotal run time was $runtime sec.\n" > $output_dir/README.txt
 
@@ -125,4 +109,4 @@ printf "Total time: $runtime sec.\n\n"
 echo "workingDir=/$output_dir"
 echo "fileFormat=$newextension"
 echo "dataFormat=$dataFormat"
-echo "readType=paired-end"
+echo "readType=single-end"

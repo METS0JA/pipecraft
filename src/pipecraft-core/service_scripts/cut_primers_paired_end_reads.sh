@@ -1,9 +1,8 @@
 #!/bin/bash
 
-#Input = paired-end fastq or paired-end fasta files.
-
-# REMOVE PRIMERS from paired-end reads (e.g. Illumina reads)
-# Degenerate primers are allowed using IUPAC codes.
+# REMOVE PRIMERS from paired-end reads
+# Degenerate primers are allowed using IUPAC codes. Reverse complementary stings will be also searched.
+# Input = paired-end fastq or paired-end fasta files. If using fasta, then cores must = 1
 
 ##########################################################
 ###Third-party applications:
@@ -11,7 +10,7 @@
     #citation: Martin, M. (2011). Cutadapt removes adapter sequences from high-throughput sequencing reads. EMBnet. journal, 17(1), 10-12.
     #Distributed under MIT License"
     #https://cutadapt.readthedocs.io/en/stable/#
-#seqkit v0.15.0
+#seqkit v2.0.0
     #citation: Shen W, Le S, Li Y, Hu F (2016) SeqKit: A Cross-Platform and Ultrafast Toolkit for FASTA/Q File Manipulation. PLOS ONE 11(10): e0163962. https://doi.org/10.1371/journal.pone.0163962
     #Distributed under the MIT License
     #Copyright © 2016-2019 Wei Shen, 2019 Oxford Nanopore Technologies.
@@ -19,9 +18,7 @@
 #pigz v2.4
 ##########################################################
 
-###############################
-###############################
-#These variables are for testing (DELETE when implementing to PipeCraft)
+#load variables
 extension=$fileFormat
 mismatches=$"-e ${mismatches}"
 min_length=$"--minimum-length ${min_seq_length}"
@@ -34,18 +31,15 @@ seqs_to_keep=$seqs_to_keep #keep_all/keep_only_linked
 fwd_tempprimer=$forward_primers
 rev_tempprimer=$reverse_primers
 
-###############################
-###############################
+#Source for functions
+source /scripts/framework.functions.sh
+#output dir
+output_dir=$"/input/primersCut_out"
 
 #############################
 ### Start of the workflow ###
 #############################
 start=$(date +%s)
-# Source for functions
-source /scripts/framework.functions.sh
-
-#output dir
-output_dir=$"/input/primersCut_out"
 ### Check if files with specified extension exist in the dir
 first_file_check
 ### Prepare working env and check paired-end data
@@ -112,12 +106,7 @@ while read LINE; do
     fi
 done < tempdir2/rev_primer.fasta
 
-#############################
-### Start of the workflow ###
-#############################
-if [[ $no_indels == "TRUE" ]]; then
-    indels=$"--no-indels"
-fi
+
 ### Read through each file in paired_end_files.txt
 while read LINE; do
     #Write file name without extension
@@ -141,7 +130,7 @@ while read LINE; do
 
     #If discard_untrimmed = TRUE, then assigns outputs and make outdir
     if [[ $discard_untrimmed == "TRUE" ]]; then
-        mkdir -r -p $output_dir/untrimmed
+        mkdir -p $output_dir/untrimmed
         untrimmed_output=$"--untrimmed-output $output_dir/untrimmed/$inputR1.untrimmed.$newextension"
         untrimmed_paired_output=$"--untrimmed-paired-output $output_dir/untrimmed/$inputR2.untrimmed.$newextension"
     fi
@@ -156,7 +145,7 @@ while read LINE; do
         $cores \
         $untrimmed_output \
         $untrimmed_paired_output \
-        --pair-filter=both \
+        --pair-filter=$pair_filter \
         -g file:tempdir2/liked_fwd_revRC.fasta \
         -g file:tempdir2/liked_rev_fwdRC.fasta \
         -g file:tempdir2/fwd_primer.fasta \
@@ -183,15 +172,37 @@ while read LINE; do
         $cores \
         $untrimmed_output \
         $untrimmed_paired_output \
-        --pair-filter=both \
+        --pair-filter=$pair_filter \
         -g file:tempdir2/liked_fwd_revRC.fasta \
         -g file:tempdir2/liked_rev_fwdRC.fasta \
         -G file:tempdir2/liked_fwd_revRC.fasta \
         -G file:tempdir2/liked_rev_fwdRC.fasta \
-        -o $output_dir/$inputR1.$newextension \
-        -p $output_dir/$inputR2.$newextension \
+        -o $output_dir/$inputR1.round1.$newextension \
+        -p $output_dir/$inputR2.round1.$newextension \
         $inputR1.$newextension $inputR2.$newextension 2>&1)
         check_app_error
+
+        #additional check of the primer presence
+        checkerror=$(cutadapt --quiet \
+        $mismatches \
+        $min_length \
+        $overlap \
+        $indels \
+        $cores \
+        -g file:tempdir2/fwd_primer.fasta \
+        -g file:tempdir2/fwd_primer_RC.fasta \
+        -g file:tempdir2/rev_primer.fasta \
+        -g file:tempdir2/rev_primer_RC.fasta \
+        -G file:tempdir2/fwd_primer.fasta \
+        -G file:tempdir2/fwd_primer_RC.fasta \
+        -G file:tempdir2/rev_primer.fasta \
+        -G file:tempdir2/rev_primer_RC.fasta \
+        -o $output_dir/$inputR1.$newextension \
+        -p $output_dir/$inputR2.$newextension \
+        $output_dir/$inputR1.round1.$newextension $output_dir/$inputR2.round1.$newextension 2>&1)
+        check_app_error
+        rm $output_dir/$inputR1.round1.$newextension
+        rm $output_dir/$inputR2.round1.$newextension
     fi
 done < tempdir2/paired_end_files.txt
 
@@ -199,8 +210,10 @@ done < tempdir2/paired_end_files.txt
 ### COMPILE FINAL STATISTICS AND README FILES ###
 #################################################
 printf "\nCleaning up and compiling final stats files ...\n"
-#file identifier string after the process
 clean_and_make_stats
+
+end=$(date +%s)
+runtime=$((end-start))
 
 #Make README.txt file for untrimmed seqs
 if [[ $discard_untrimmed == "TRUE" ]]; then
@@ -212,25 +225,24 @@ If no files in this folder, then all sequences were passed to files in $output_d
 fi
 
 #Make README.txt file for PrimerClipped reads
-printf "Files in /$output_dir folder represent sequences from where the PCR primers were recognized and clipped.
+printf "Files in 'primersCut_out' folder represent sequences from where the PCR primers were recognized and clipped.
 Forward primer(s) [has to be 5'-3']: $fwd_tempprimer
 Reverse primer(s) [has to be 3'-5']: $rev_tempprimer
 [If primers were not specified in orientations noted above, please run this step again].\n
 Output R1 and R2 reads are synchronized for merging paired-end data. 
-If no outputs were generated into /$output_dir, check your specified primer stings and adjust settings" > $output_dir/README.txt
+If no outputs were generated into /$output_dir, check your specified primer stings and adjust settings.
+\nSummary of sequence counts in 'seq_count_summary.txt'\n
+\n\nTotal run time was $runtime sec.\n" > $output_dir/README.txt
 
 #Done
 printf "\nDONE\n"
 printf "Data in directory '$output_dir'\n"
-printf "Summary of sequence counts in '$output_dir/seq_count_summary.txt'\n"
+printf "Summary of sequence counts in 'seq_count_summary.txt'\n"
 printf "Check README.txt files in output directory for further information about the process.\n"
-
-end=$(date +%s)
-runtime=$((end-start))
 printf "Total time: $runtime sec.\n\n"
 
 #variables for all services
-echo "workingDir=$output_dir"
+echo "workingDir=/$output_dir"
 echo "fileFormat=$newextension"
 echo "dataFormat=$dataFormat"
-echo "readType=paired_end"
+echo "readType=paired-end"
