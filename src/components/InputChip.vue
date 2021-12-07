@@ -106,8 +106,8 @@ export default {
 </script>
 
 <style>
-.centered-input >>> input {
-  text-align: center;
+  .v-text-field input {
+    text-align: center;
 }
 .v-text-field__details {
   position: relative;

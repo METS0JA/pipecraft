@@ -72,8 +72,15 @@ export default {
 };
 </script>
 
-<style scoped>
-.centered-input >>> input {
-  text-align: center;
+
+
+<style lang="scss" scoped>
+  .v-text-field {
+    ::v-deep input {
+      text-align:center !important
+    }
+  }
+  .v-text-field input {
+    text-align: center;
 }
 </style>

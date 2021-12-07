@@ -182,8 +182,8 @@ export default {
 </script>
 
 <style scoped>
-.centered-input >>> input {
-  text-align: center;
+  .v-text-field input {
+    text-align: center;
 }
 div >>> div.v-select__selections {
   margin-top: 8px;
@@ -192,3 +192,5 @@ div >>> div.v-select__selections {
   padding-top: 20px;
 }
 </style>
+
+
