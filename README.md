@@ -24,9 +24,9 @@ Docker: windows(https://www.docker.com/get-started)
 Git (https://git-scm.com/downloads)
 
 ```bash
-git clone https://github.com/SuvalineVana/pipecraft-vue
-cd pipecraft-vue
-yarn install
+git clone https://github.com/SuvalineVana/pipecraft
+cd pipecraft
+yarn install --ignore-optional
 yarn electron:serve
 ```
 
