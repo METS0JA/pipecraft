@@ -148,6 +148,19 @@ if [ -d tempdir2 ]; then
     rm -rf tempdir2
 fi
 mkdir -p tempdir2
+#Make a file where to read file names for single-end read processing.
+touch tempdir2/files_in_folder.txt
+for file in *.$extension; do
+    echo $file >> tempdir2/files_in_folder.txt
+done
+#Check for empty spaces in the files names. Replace with _
+while read file; do
+    if [[ $file == *" "* ]]; then
+        printf '%s\n' "WARNING]: File $file name contains empty spaces, replaced 'space' with '_'" >&2
+        rename 's/ /_/g' "$file"
+    fi
+done < tempdir2/files_in_folder.txt
+rm tempdir2/files_in_folder.txt
 }
 
 
@@ -208,15 +221,6 @@ else
     newextension=$extension
     export newextension
     fi
-### Double-check input formats (only fastq/fq supported)
-if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]]; then
-    :
-else
-    printf '%s\n' "ERROR]: $file formatting not supported here!
-Supported extensions: fastq, fq (and gz or zip compressed formats).
->Quitting" >&2
-    end_process
-    fi
 }
 
 
@@ -270,24 +274,51 @@ function clean_and_make_stats_Assemble_Demux () {
 #Delete empty output files
 find $output_dir -empty -type f -delete
 # Count input reads
-touch tempdir2/seq_count.txt
-for file in *.$newextension; do
-    size=$(echo $(cat $file | wc -l) / 4 | bc)
-    printf "$file\t$size\n" >> tempdir2/seq_count.txt
-done
-### Count reads after the process
-touch tempdir2/seq_count_after.txt
-outfile_check=$(ls $output_dir/*.$newextension 2>/dev/null | wc -l)
-if [ $outfile_check != 0 ]; then 
-    for file in $output_dir/*.$newextension; do
+if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]]; then
+    touch tempdir2/seq_count.txt
+    for file in *.$newextension; do
         size=$(echo $(cat $file | wc -l) / 4 | bc)
-        filename=$(echo $file | sed -e "s/\/input\/demultiplex_out\///;s/\/input\/assembled_out\///")
-        printf "$filename\t$size\n" >> tempdir2/seq_count_after.txt
+        printf "$file\t$size\n" >> tempdir2/seq_count.txt
     done
-else 
-    printf '%s\n' "ERROR]: no output files generated ($output_dir). Adjust settings." >&2
-    end_process
 fi
+if [[ $newextension == "fasta" ]] || [[ $newextension == "fa" ]] || [[ $newextension == "fas" ]]; then
+    touch tempdir2/seq_count.txt
+    for file in *.$newextension; do
+        size=$(grep -c "^>" $file)
+        printf "$file\t$size\n" >> tempdir2/seq_count.txt
+    done
+fi
+
+### Count reads after the process
+if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]]; then
+    touch tempdir2/seq_count_after.txt
+    outfile_check=$(ls $output_dir/*.$newextension 2>/dev/null | wc -l)
+    if [ $outfile_check != 0 ]; then 
+        for file in $output_dir/*.$newextension; do
+            size=$(echo $(cat $file | wc -l) / 4 | bc)
+            filename=$(echo $file | sed -e "s/demultiplex_out\///;s/assembled_out\///")
+            printf "$filename\t$size\n" >> tempdir2/seq_count_after.txt
+        done
+    else 
+        printf '%s\n' "ERROR]: no output files generated ($output_dir). Adjust settings." >&2
+        end_process
+    fi
+fi
+if [[ $newextension == "fasta" ]] || [[ $newextension == "fa" ]] || [[ $newextension == "fas" ]]; then
+    touch tempdir2/seq_count_after.txt
+    outfile_check=$(ls $output_dir/*.$newextension 2>/dev/null | wc -l)
+    if [ $outfile_check != 0 ]; then 
+        for file in $output_dir/*.$newextension; do
+            size=$(grep -c "^>" $file)
+            filename=$(echo $file | sed -e "s/demultiplex_out\///;s/assembled_out\///")
+            printf "$filename\t$size\n" >> tempdir2/seq_count_after.txt
+        done
+    else 
+        printf '%s\n' "ERROR]: no output files generated ($output_dir). Adjust settings." >&2
+        end_process
+    fi
+fi
+
 ### Compile a track reads summary file (seq_count_summary_demultiplex.txt)
 printf "File\tReads\n" > $output_dir/seq_count_summary.txt
 while read LINE; do
@@ -328,15 +359,15 @@ if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]]; then
     done
     touch tempdir2/seq_count_after.txt
     outfile_check=$(ls $output_dir/*.$newextension 2>/dev/null | wc -l)
-	if [ $outfile_check != 0 ]; then 
-	    for file in $output_dir/*.$newextension; do
-	        size=$(echo $(cat $file | wc -l) / 4 | bc)
-	        printf "$file\t$size\n" >> tempdir2/seq_count_after.txt
-	    done
-	else
-		printf '%s\n' "ERROR]: no output files generated ($output_dir). Check settings!" >&2
-    	end_process
-	fi
+    if [ $outfile_check != 0 ]; then 
+        for file in $output_dir/*.$newextension; do
+            size=$(echo $(cat $file | wc -l) / 4 | bc)
+            printf "$file\t$size\n" >> tempdir2/seq_count_after.txt
+        done
+    else
+        printf '%s\n' "ERROR]: no output files generated ($output_dir). Check settings!" >&2
+        end_process
+    fi
 fi
 if [[ $newextension == "fasta" ]] || [[ $newextension == "fa" ]] || [[ $newextension == "fas" ]]; then
     touch tempdir2/seq_count_before.txt
@@ -346,15 +377,15 @@ if [[ $newextension == "fasta" ]] || [[ $newextension == "fa" ]] || [[ $newexten
     done
     touch tempdir2/seq_count_after.txt
     outfile_check=$(ls $output_dir/*.$newextension 2>/dev/null | wc -l)
-	if [ $outfile_check != 0 ]; then 
-	    for file in $output_dir/*.$newextension; do
-	        size=$(grep -c "^>" $file)
-	        printf "$file\t$size\n" >> tempdir2/seq_count_after.txt
-	    done
-	else
-		printf '%s\n' "ERROR]: no output files generated ($output_dir). Check settings!" >&2
-    	end_process
-	fi
+    if [ $outfile_check != 0 ]; then 
+        for file in $output_dir/*.$newextension; do
+            size=$(grep -c "^>" $file)
+            printf "$file\t$size\n" >> tempdir2/seq_count_after.txt
+        done
+    else
+        printf '%s\n' "ERROR]: no output files generated ($output_dir). Check settings!" >&2
+        end_process
+    fi
 fi
 ### Compile a track reads summary file (seq_count_summary.txt)
 output_dir_for_sed=$(echo $output_dir | sed -e "s/\//\\\\\//g")
@@ -379,7 +410,7 @@ done < tempdir2/seq_count_before.txt && rm -rf tempdir2
 
 #Note for counting seqs in FASTQ files
 if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]]; then
-	printf "\nPlease note that sequence count assumes that there are 4 lines per sequence in a FASTQ file (as this is mostly the case).
+    printf "\nPlease note that sequence count assumes that there are 4 lines per sequence in a FASTQ file (as this is mostly the case).
 You may double-check the sequence count of one file using implemented 'FastQC' program in PipeCraft.\n" >> $output_dir/seq_count_summary.txt
 fi
 
@@ -499,7 +530,7 @@ for primer in $(echo $fwd_tempprimer | sed "s/,/ /g"); do
     #seach fwd primer in R1 and write to file
     fqgrep -m $mismatches -p $fwd_primer -e $inputR1.$newextension >> tempdir/R1.5_3.fastq
     #seach fwd primer in R2 and write to file
-    fqgrep -m $mismatches -p $fwd_primer -e $inputR2.$newextension >> tempdir/R2.5_3.fastq
+    fqgrep -m $mismatches -p $fwd_primer -e $inputR2.$newextension >> tempdir/R1.5_3.fastq
 done
 }
 
@@ -515,33 +546,33 @@ for primer in $(echo $rev_tempprimer | sed "s/,/ /g"); do
     rev_primer=$(convert_IUPAC $primer)
     printf '%s\n' " searching REV primer $primer"
     #search rev primer in R1 and write to file
-    fqgrep -m $mismatches -p $rev_primer -e $inputR1.$newextension >> tempdir/R1.3_5.fastq
+    fqgrep -m $mismatches -p $rev_primer -e $inputR1.$newextension >> tempdir/R2.3_5.fastq
     #search rev primer in R2 and write to file
     fqgrep -m $mismatches -p $rev_primer -e $inputR2.$newextension >> tempdir/R2.3_5.fastq
 done
 }
 
 #######################################################
-### Single-End data reorient reads based on primers ###
+### Single-end data reorient reads based on primers ###
 #######################################################
 #Fwd primers
 function SE_reorient_FWD () {
 touch tempdir/5_3.fastx
 ### Reorient based on FWD primer(s)
 for primer in $(echo $fwd_tempprimer | sed "s/,/ /g"); do
-	printf '%s\n' " searching FWD primer $primer"
-	#convert IUPAC codes in fwd primer
-	fwd_primer=$(convert_IUPAC $primer)
-	#seach fwd primer and write to file
-	if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]]; then
-	    fqgrep -m $mismatches -p $fwd_primer -e $input.$newextension >> tempdir/5_3.fastx
+    printf '%s\n' " searching FWD primer $primer"
+    #convert IUPAC codes in fwd primer
+    fwd_primer=$(convert_IUPAC $primer)
+    #seach fwd primer and write to file
+    if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]]; then
+        fqgrep -m $mismatches -p $fwd_primer -e $input.$newextension >> tempdir/5_3.fastx
     elif [[ $newextension == "fasta" ]] || [[ $newextension == "fa" ]] || [[ $newextension == "fas" ]]; then
-    	fqgrep -m $mismatches -p $fwd_primer -f -e $input.$newextension >> tempdir/5_3.fastx
+        fqgrep -m $mismatches -p $fwd_primer -f -e $input.$newextension >> tempdir/5_3.fastx
     else
-	    printf '%s\n' "ERROR]: $file formatting not supported!
+        printf '%s\n' "ERROR]: $file formatting not supported!
 Supported extensions: fastq, fq, fasta, fa, fas (and gz or zip compressed formats).
 >Quitting" >&2
-		end_process
+        end_process
     fi
 done
 }
@@ -555,84 +586,84 @@ for primer in $(echo $rev_tempprimer | sed "s/,/ /g"); do
     printf '%s\n' " searching REV primer $primer"
     #search rev primer and write to file
     if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]]; then
-    	fqgrep -m $mismatches -p $rev_primer -e $input.$newextension >> tempdir/3_5.fastx
+        fqgrep -m $mismatches -p $rev_primer -e $input.$newextension >> tempdir/3_5.fastx
     elif [[ $newextension == "fasta" ]] || [[ $newextension == "fa" ]] || [[ $newextension == "fas" ]]; then
-    	fqgrep -m $mismatches -p $rev_primer -f -e $input.$newextension >> tempdir/3_5.fastx
+        fqgrep -m $mismatches -p $rev_primer -f -e $input.$newextension >> tempdir/3_5.fastx
     else
-	    printf '%s\n' "ERROR]: $file formatting not supported!
+        printf '%s\n' "ERROR]: $file formatting not supported!
 Supported extensions: fastq, fq, fasta, fa, fas (and gz or zip compressed formats).
 >Quitting" >&2
-		end_process
+        end_process
     fi
 done
 }
 
-################################
-### Multiprimer artefacts R1 ###
-################################
+#############################
+### Multiprimer artefacts ###
+#############################
 # R1 multi-primer artefacts search
 function multiprimer_search_R1 () {
-checkerror=$(seqkit rmdup --quiet -n -D tempdir/duplicatesR1.temp tempdir/R1.5_3.fastq > tempdir/R1.5_3.fastq.temp 2>&1)
+checkerror=$(seqkit rmdup --quiet -w 0 -n -D tempdir/duplicatesR1.temp tempdir/R1.5_3.fastq > tempdir/R1.5_3.fastq.temp 2>&1)
 check_app_error
 if [ -s tempdir/duplicatesR1.temp ]; then
     awk 'BEGIN{FS=","}{print $2}' tempdir/duplicatesR1.temp | sed -e 's/^ //' > tempdir/duplicatesR1.names
         #Remove duplicate seqs from fastq
-    checkerror=$(seqkit grep --invert-match -n -f tempdir/duplicatesR1.names tempdir/R1.5_3.fastq.temp \
-    -o tempdir/$inputR1.reoriented.$newextension 2>&1)
+    checkerror=$(seqkit grep --invert-match -n -w 0 -f tempdir/duplicatesR1.names tempdir/R1.5_3.fastq.temp \
+    -o tempdir/$inputR1.$newextension 2>&1)
     check_app_error
         #Get multi-primer artefacts
-    checkerror=$(seqkit grep -f tempdir/duplicatesR1.names tempdir/R1.5_3.fastq.temp -o tempdir/$inputR1.multiprimer.$newextension 2>&1)
+    checkerror=$(seqkit grep -w 0 -f tempdir/duplicatesR1.names tempdir/R1.5_3.fastq.temp -o tempdir/$inputR1.multiprimer.$newextension 2>&1)
     check_app_error
     multiprimer_count=$(wc -l tempdir/duplicatesR1.names | awk '{print $1}')
     printf "   - found $multiprimer_count 'multi-primer' chimeric sequence(s) from $inputR1.$newextension \n"
 else
-    mv tempdir/R1.5_3.fastq.temp tempdir/$inputR1.reoriented.$newextension
+    mv tempdir/R1.5_3.fastq.temp tempdir/$inputR1.$newextension
     printf "   - no 'multi-primer' chimeric sequences found from $inputR1.$newextension \n"
 fi
 }
 
 # R2 multi-primer artefacts search
 function multiprimer_search_R2 () {
-checkerror=$(seqkit rmdup --quiet -n -D tempdir/duplicatesR2.temp tempdir/R2.3_5.fastq > tempdir/R2.3_5.fastq.temp 2>&1)
+checkerror=$(seqkit rmdup --quiet -w 0 -n -D tempdir/duplicatesR2.temp tempdir/R2.3_5.fastq > tempdir/R2.3_5.fastq.temp 2>&1)
 check_app_error
 if [ -s tempdir/duplicatesR2.temp ]; then
     awk 'BEGIN{FS=","}{print $2}' tempdir/duplicatesR2.temp | sed -e 's/^ //' > tempdir/duplicatesR2.names
         #Remove duplicate seqs from fastq
-    checkerror=$(seqkit grep --invert-match -n -f tempdir/duplicatesR2.names tempdir/R2.3_5.fastq.temp \
-    -o tempdir/$inputR2.reoriented.$newextension 2>&1)
+    checkerror=$(seqkit grep --invert-match -n -w 0 -f tempdir/duplicatesR2.names tempdir/R2.3_5.fastq.temp \
+    -o tempdir/$inputR2.$newextension 2>&1)
     check_app_error
         #Get multi-primer artefacts
-    checkerror=$(seqkit grep -f tempdir/duplicatesR2.names tempdir/R2.3_5.fastq.temp -o tempdir/$inputR2.multiprimer.$newextension 2>&1)
+    checkerror=$(seqkit grep -w 0 -f tempdir/duplicatesR2.names tempdir/R2.3_5.fastq.temp -o tempdir/$inputR2.multiprimer.$newextension 2>&1)
     check_app_error
 
     multiprimer_count=$(wc -l tempdir/duplicatesR2.names | awk '{print $1}')
     printf "   - found $multiprimer_count 'multi-primer' chimeric sequence(s) from $inputR2.$newextension \n"
 else
-    mv tempdir/R2.3_5.fastq.temp tempdir/$inputR2.reoriented.$newextension
+    mv tempdir/R2.3_5.fastq.temp tempdir/$inputR2.$newextension
     printf "   - no 'multi-primer' chimeric sequences found from $inputR2.$newextension \n"
 fi
 }
 
 # Single-end data multi-primer artefacts search
 function multiprimer_search_SE () {
-checkerror=$(seqkit rmdup --quiet -n -D tempdir/duplicates.temp tempdir/5_3.fastx > tempdir/5_3.fastx.temp 2>&1)
+checkerror=$(seqkit rmdup --quiet -w 0 -n -D tempdir/duplicates.temp tempdir/5_3.fastx > tempdir/5_3.fastx.temp 2>&1)
 check_app_error
 if [ -s tempdir/duplicates.temp ]; then
     awk 'BEGIN{FS=","}{print $2}' tempdir/duplicates.temp | sed -e 's/^ //' > tempdir/duplicates.names
         #Remove duplicate seqs from fastx
-    checkerror=$(seqkit grep --invert-match -n -f tempdir/duplicates.names tempdir/5_3.fastx.temp \
-    -o tempdir/$input.reoriented.$newextension 2>&1)
+    checkerror=$(seqkit grep --invert-match -n -w 0 -f tempdir/duplicates.names tempdir/5_3.fastx.temp \
+    -o tempdir/$input.$newextension 2>&1)
     check_app_error
 
         #Get multi-primer artefacts
-    checkerror=$(seqkit grep -f tempdir/duplicates.names tempdir/5_3.fastx.temp \
+    checkerror=$(seqkit grep -w 0  -f tempdir/duplicates.names tempdir/5_3.fastx.temp \
     -o tempdir/$input.multiprimer.$newextension 2>&1)
     check_app_error
 
     multiprimer_count=$(wc -l tempdir/duplicates.names | awk '{print $1}')
     printf "   - found $multiprimer_count 'multi-primer' chimeric sequence(s) from $input.$newextension \n"
 else
-    mv tempdir/5_3.fastx.temp tempdir/$input.reoriented.$newextension
+    mv tempdir/5_3.fastx.temp tempdir/$input.$newextension
     printf "   - no 'multi-primer' chimeric sequences found from $input.$newextension \n"
 fi
 }
@@ -643,7 +674,7 @@ fi
 ###########################
 ### Check barcodes file
 function check_indexes_file () {
-printf "\nValidating barcodes file ...\n"
+printf "\nValidating indexes file ...\n"
     #is fasta format?
 cat $indexes_file | seqkit seq -v > tempdir2/ValidatedBarcodesFileForDemux.fasta.temp
 if [ "$?" != "0" ]; then
@@ -662,8 +693,12 @@ Please check the indexes file and include only unique index combinations and sam
     # report if dual indexes or single indexes
 if grep -q "\..." tempdir2/ValidatedBarcodesFileForDemux.fasta.temp; then
     echo "ok; dual indexes"
+    tag=$"dual"
+    export tag
 else
     echo "ok; single indexes"
+    tag=$"single"
+    export tag
 fi
 }
 
