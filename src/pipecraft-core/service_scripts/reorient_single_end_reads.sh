@@ -28,15 +28,15 @@ rev_tempprimer=$reverse_primers
 ###############################
 ###############################
 
+# Source for functions
+source /scripts/framework.functions.sh
+#output dir
+output_dir=$"/input/reoriented_out"
+
 #############################
 ### Start of the workflow ###
 #############################
 start=$(date +%s)
-# Source for functions
-source /scripts/framework.functions.sh
-
-#output dir
-output_dir=$"/input/reoriented_out"
 ### Check if files with specified extension exist in the dir
 first_file_check
 ### Prepare working env and check paired-end data
@@ -81,7 +81,7 @@ for file in *.$extension; do
 
     # Move final output to $output_dir
     mkdir -p $output_dir
-    mv tempdir/$outfile.reoriented.$newextension $output_dir/$outfile.$newextension
+    mv tempdir/$outfile.$newextension $output_dir/$outfile.$newextension
 
     ### Move multiprimer chimeras to '$output_dir/multiprimer_chimeras' dir
     mkdir -p $output_dir/multiprimer_chimeras
@@ -90,23 +90,11 @@ for file in *.$extension; do
     fi
 
     ### Check if reoriented output is empty; if yes, then report WARNING
-    if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]]; then
-        if [ -s $output_dir/$outfile.$newextension ]; then
-            size=$(echo $(cat $output_dir/$outfile.$newextension | wc -l) / 4 | bc)
-            printf "$size sequences in $outfile.$newextension\n"
-        else
-            printf '%s\n' "WARNING]: primers not found in file $outfile (no output)"
-            rm $output_dir/$outfile.$newextension
-        fi
-    fi
-    if [[ $newextension == "fasta" ]] || [[ $newextension == "fa" ]] || [[ $newextension == "fas" ]]; then
-        if [ -s $output_dir/$outfile.$newextension ]; then
-            size=$(grep -c ">" $output_dir/$outfile.$newextension)
-            printf "$size sequences in $outfile.$newextension\n"
-        else
-            printf '%s\n' "WARNING]: primers not found in file $outfile (no output)"
-            rm $output_dir/$outfile.$newextension
-        fi
+    if [ -s $output_dir/$outfile.$newextension ]; then
+        :
+    else
+        printf '%s\n' "WARNING]: primers not found in file $outfile (no output)"
+        rm $output_dir/$outfile.$newextension
     fi
 done
 
@@ -116,6 +104,8 @@ done
 printf "\nCleaning up and compiling final stats files ...\n"
 #file identifier string after the process
 clean_and_make_stats
+end=$(date +%s)
+runtime=$((end-start))
 
 #Make README.txt file for multi-primer chimeras
 printf "If there are some files in that directory here,
@@ -135,19 +125,18 @@ printf "Files here represent sequences that have been reoriented based on PCR pr
 Forward primer(s) [has to be 5'-3']: $fwd_tempprimer
 Reverse primer(s) [has to be 3'-5']: $rev_tempprimer
 [If primers were not specified in orientations noted above, please run this step again].\n
-RUNNING THE PROCESS SEVERAL TIMES IN THE SAME DIRECTORY WILL OVERWRITE ALL OUTPUTS!" > $output_dir/README.txt
+RUNNING THE PROCESS SEVERAL TIMES IN THE SAME DIRECTORY WILL OVERWRITE ALL OUTPUTS!
+\nSummary of sequence counts in 'seq_count_summary.txt'\n
+\n\nTotal run time was $runtime sec.\n" > $output_dir/README.txt
 
 printf "\nDONE\n"
 printf "Data in directory '$output_dir'\n"
-printf "Summary of sequence counts in '$output_dir/seq_count_summary.txt'\n"
+printf "Summary of sequence counts in 'seq_count_summary.txt'\n"
 printf "Check README.txt file in $output_dir directory for further information about the process.\n"
-
-end=$(date +%s)
-runtime=$((end-start))
 printf "Total time: $runtime sec.\n\n"
 
 #variables for all services
 echo "workingDir=/$output_dir"
 echo "fileFormat=$newextension"
 echo "dataFormat=demultiplexed"
-echo "readType=single_end"
+echo "readType=single-end"

@@ -27,16 +27,16 @@ fwd_tempprimer=$forward_primers
 rev_tempprimer=$reverse_primers
 ###############################
 
+# Source for functions
+source /scripts/framework.functions.sh
+#output dir
+output_dir=$"/input/reoriented_out"
+
+
 #############################
 ### Start of the workflow ###
 #############################
 start=$(date +%s)
-ls
-# Source for functions
-source /scripts/framework.functions.sh
-
-#output dir
-output_dir=$"/input/reoriented_out"
 ### Check if files with specified extension exist in the dir
 first_file_check
 ### Prepare working env and check paired-end data
@@ -111,15 +111,15 @@ while read LINE; do
         mv tempdir/$inputR2.multiprimer.$newextension $output_dir/multiprimer_chimeras
     fi
         
-    #pair R1 and R2 seqs (synchronize)
+    #Synchronize R1 and R2
     printf "\nSynchronizing R1 and R2 reads (matching order for paired-end reads merging)\n"
     cd tempdir
-    checkerror=$(seqkit pair -1 $inputR1.reoriented.$newextension -2 $inputR2.reoriented.$newextension 2>&1)
+    checkerror=$(seqkit pair -1 $inputR1.$newextension -2 $inputR2.$newextension -w 0 2>&1)
     check_app_error
-    rm $inputR1.reoriented.$newextension
-    rm $inputR2.reoriented.$newextension
-    mv $inputR1.reoriented.paired.$newextension $inputR1.$newextension
-    mv $inputR2.reoriented.paired.$newextension $inputR2.$newextension
+    rm $inputR1.$newextension
+    rm $inputR2.$newextension
+    mv $inputR1.paired.$newextension $inputR1.$newextension
+    mv $inputR2.paired.$newextension $inputR2.$newextension
     cd ..
     #Move final files to $output_dir
     mv tempdir/$inputR1.$newextension $output_dir/$inputR1.$newextension
@@ -127,15 +127,13 @@ while read LINE; do
 
     ### Check if reoriented output is empty; if yes, then report WARNING
     if [ -s $output_dir/$inputR1.$newextension ]; then
-        size=$(echo $(cat $output_dir/$inputR1.$newextension | wc -l) / 4 | bc)
-        printf "$size sequences in $inputR1.$newextension\n"
+        :
     else
         printf '%s\n' "WARNING]: after synchronizing, $inputR1 has 0 seqs (no output)"
         rm $output_dir/$inputR1.$newextension
     fi
     if [ -s $output_dir/$inputR2.$newextension ]; then
-        size=$(echo $(cat $output_dir/$inputR2.$newextension | wc -l) / 4 | bc)
-        printf "$size sequences in $inputR2.$newextension\n"
+        :
     else
         printf '%s\n' "WARNING]: after synchronizing, $inputR2 has 0 seqs (no output)"
         rm $output_dir/$inputR2.$newextension
@@ -146,8 +144,9 @@ done < tempdir2/paired_end_files.txt
 ### COMPILE FINAL STATISTICS AND README FILES ###
 #################################################
 printf "\nCleaning up and compiling final stats files ...\n"
-#file identifier string after the process
 clean_and_make_stats
+end=$(date +%s)
+runtime=$((end-start))
 
 #Make README.txt file for multi-primer chimeras
 printf "If there are some files in that directory here,
@@ -170,19 +169,18 @@ Reverse primer(s) [has to be 3'-5']: $rev_tempprimer
 Output R1 and R2 reads have been synchronized for merging paired-end data. 
 (R1 reads are 5'-3' oriented and R2 reads 3'-5' oriented (for merging paired-end data)).\n
 This does not affect merging paired-end reads using PipeCraft implemented software.\n
-RUNNING THE PROCESS SEVERAL TIMES IN THE SAME DIRECTORY WILL OVERWRITE ALL OUTPUTS!" > $output_dir/README.txt
+RUNNING THE PROCESS SEVERAL TIMES IN THE SAME DIRECTORY WILL OVERWRITE ALL OUTPUTS!
+\nSummary of sequence counts in 'seq_count_summary.txt'\n
+\n\nTotal run time was $runtime sec.\n" > $output_dir/README.txt
 
 printf "\nDONE\n"
 printf "Data in directory '$output_dir'\n"
-printf "Summary of sequence counts in '$output_dir/seq_count_summary.txt'\n"
+printf "Summary of sequence counts in 'seq_count_summary.txt'\n"
 printf "Check README.txt file in $output_dir directory for further information about the process.\n"
-
-end=$(date +%s)
-runtime=$((end-start))
 printf "Total time: $runtime sec.\n\n"
 
 #variables for all services
-echo "workingDir=$output_dir"
+echo "workingDir=/$output_dir"
 echo "fileFormat=$newextension"
 echo "dataFormat=demultiplexed"
-echo "readType=paired_end"
+echo "readType=paired-end"
