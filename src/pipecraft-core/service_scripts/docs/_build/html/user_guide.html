@@ -1,0 +1,381 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xml:lang="" lang="" version="-//W3C//DTD XHTML 1.1//EN" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  
+  <title>User guide &mdash; PipeCraft 2.0 documentation</title>
+  
+
+  
+
+  
+
+    <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'/>
+    <link rel="stylesheet" href="_static/css/pdj.css" type="text/css" />
+
+  
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/css/pdj.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="PipeCraft 2.0 documentation" href="index.html"/>
+        <link rel="next" title="Licence" href="licence.html"/>
+        <link rel="prev" title="Installation" href="installation.html"/>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="cache-control" content="public" />
+    <meta name="robots" content="follow, all" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Add jQuery library -->
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+  </head>
+
+  <body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="index.html" class="fa fa-home"> PipeCraft </a>
+        <div role="search">
+	  <form id ="rtd-search-form" class="wy-form"
+		action="search.html" method="get">
+	    <input type="text" name="q" placeholder="Search docs" />
+	    <input type="hidden" name="check_keywords" value="yes" />
+	    <input type="hidden" name="area" value="default" />
+	  </form>
+	</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#windows">Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#macos">MacOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#linux">Linux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#uninstalling">Uninstalling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#removing-docker-images">Removing docker images</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">User guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#the-interface">The interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#full-pipeline-workflows">Full pipeline workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#analyses-panels">ANALYSES PANELS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#demultiplex">DEMULTIPLEX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reorient">REORIENT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#trim-adapters-primers">TRIM ADAPTERS/PRIMERS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#quality-filter">QUALITY FILTER</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#assemble-paired-end-reads">ASSEMBLE PAIRED-END reads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#remove-chimeras">REMOVE CHIMERAS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#assign-taxonomy">ASSIGN TAXONOMY</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#expert-mode-via-command-line">Expert-mode (via command line)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="licence.html">Licence</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">Contact developers</a></li>
+</ul>
+
+          
+        
+
+      </div>
+      &nbsp;
+    </nav>
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      <nav class="wy-nav-top" id="barra-mobile" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="#">Porão do Juca</a>
+      </nav>
+
+      <div class="wy-nav-content">
+	<div class="fundo-claro">
+	</div>
+	<div class="fundo-escuro">
+	</div>
+
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+	    
+	    <!-- <ul class="wy-breadcrumbs"> -->
+	    <!--   <li><a href="#">Docs</a> &raquo;</li> -->
+
+	    <!--   <li>Features</li> -->
+	    <!--   <li class="wy-breadcrumbs-aside"> -->
+
+	    <!-- 	<a href="_sources/index.txt" rel="nofollow"> View page source</a> -->
+
+	    <!--   </li> -->
+	    <!-- </ul> -->
+	    <!-- <hr/> -->
+	  </div>
+
+          <div role="main" class="">
+
+	    <div id="content" class="hfeed entry-container hentry">
+  <a class="reference internal image-reference" href="_images/PipeCraft2_icon_v2.png"><img alt="logo" src="_images/PipeCraft2_icon_v2.png" style="width: 80px;" /></a>
+<section id="user-guide">
+<h1>User guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h1>
+<section id="the-interface">
+<h2>The interface<a class="headerlink" href="#the-interface" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">The</span> <span class="pre">main</span> <span class="pre">interface</span> <span class="pre">image</span> <span class="pre">with</span> <span class="pre">explanations</span></code></p>
+</section>
+<section id="full-pipeline-workflows">
+<h2>Full pipeline workflows<a class="headerlink" href="#full-pipeline-workflows" title="Permalink to this headline">¶</a></h2>
+<section id="asvs-dada2-workflow-panel">
+<h3>ASVs (DADA2) workflow panel<a class="headerlink" href="#asvs-dada2-workflow-panel" title="Permalink to this headline">¶</a></h3>
+<dl>
+<dt>This automated workflow is based on DADA2 tutorial: <a class="reference external" href="https://benjjneb.github.io/dada2/tutorial.html">https://benjjneb.github.io/dada2/tutorial.html</a></dt><dd><div class="line-block">
+<div class="line">Note that <code class="docutils literal notranslate"><span class="pre">demultiplexing</span></code>, <code class="docutils literal notranslate"><span class="pre">reorient</span></code> and <code class="docutils literal notranslate"><span class="pre">remove</span> <span class="pre">primers</span></code> steps are optional and do not represent parts from DADA2 tutorial. Nevertheless, it is advisable to <a class="reference internal" href="#reorinet"><span class="std std-ref">reorient</span></a> your reads (to 5’-3’) and <a class="reference internal" href="#remove-primers"><span class="std std-ref">remove primers</span></a> before proceeding with ASV generation with DADA2.</div>
+</div>
+</dd>
+</dl>
+<p><strong>Default options:</strong></p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 64%" />
+<col style="width: 36%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Analyses step</p></th>
+<th class="head"><p>Setting</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="#demux"><span class="std std-ref">DEMULTIPLEX</span></a> (optional)</p></td>
+<td><p>–</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reorinet"><span class="std std-ref">REORIENT</span></a> (optional)</p></td>
+<td><p>–</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#remove-primers"><span class="std std-ref">REMOVE PRIMERS</span></a> (optional)</p></td>
+<td><p>–</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#qual-filt"><span class="std std-ref">FILTER AND TRIM</span></a></p></td>
+<td><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">maxEE</span></code> = 1</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">maxN</span></code> = 0</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">minLen</span></code> = 32</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">truncQ</span></code> = 2</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">truncLen</span></code> = 0</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">maxLen</span></code> = 600</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">minQ</span></code> = 2</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#merge-pairs"><span class="std std-ref">MERGE PAIRED-END READS</span></a></p></td>
+<td><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">minOverlap</span></code> = 12</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">maxMismatch</span></code> = 0</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">returnRejects</span></code> = FALSE</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#chimeras"><span class="std std-ref">REMOVE CHIMERAS</span></a></p></td>
+<td><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">method</span></code> = consensus</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#taxonomy"><span class="std std-ref">ASSGIN TAXONOMY</span></a></p></td>
+<td><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">minBoot</span></code> = 50</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">tryRC</span></code> = FALSE</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">refFasta</span></code> = silva138.1</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="otus-vsearch-workflow-panel">
+<h3>OTUs (vsearch) workflow panel<a class="headerlink" href="#otus-vsearch-workflow-panel" title="Permalink to this headline">¶</a></h3>
+<p>xxx</p>
+</section>
+</section>
+<section id="analyses-panels">
+<span id="panels"></span><h2>ANALYSES PANELS<a class="headerlink" href="#analyses-panels" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="demultiplex">
+<span id="demux"></span><h2>DEMULTIPLEX<a class="headerlink" href="#demultiplex" title="Permalink to this headline">¶</a></h2>
+<p>If data is <strong>multiplexed, the first step would be demultiplexing</strong>.
+This is done based on the user specified <a class="reference internal" href="#indexes"><span class="std std-ref">indexes file</span></a>, which includes molecular identifier sequences (so called indexes/tags/barcodes) per sample.
+Note that reverse complementary matches will also be searched.
+<strong>Output</strong> will be fastq/fasta files per sample. Indexes will be <strong>truncated</strong> from the sequences.</p>
+<section id="indexes-file-example-fasta-formatted">
+<span id="indexes"></span><h3>Indexes file example (fasta formatted)<a class="headerlink" href="#indexes-file-example-fasta-formatted" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only <strong>IUPAC codes</strong> are allowed.</p>
+</div>
+<ol class="arabic simple">
+<li><p>Demultiplexing using single indexes:</p></li>
+</ol>
+<blockquote>
+<div><div class="line-block">
+<div class="line">&gt;sample1</div>
+<div class="line">AGCTGCACCTAA</div>
+<div class="line">&gt;sample2</div>
+<div class="line">AGCTGTCAAGCT</div>
+<div class="line">&gt;sample3</div>
+<div class="line">AGCTTCGACAGT</div>
+<div class="line">&gt;sample4</div>
+<div class="line">AGGCTCCATGTA</div>
+<div class="line">&gt;sample5</div>
+<div class="line">AGGCTTACGTGT</div>
+<div class="line">&gt;sample6</div>
+<div class="line">AGGTACGCAATT</div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>Demultiplexing using dual indexes (IMPORTANT! reverse indexes will be automatically oriented to 5’-3’ (like fwd indexes); so you can simply copy-paste the indexes from your lab protocol.)</p></li>
+</ol>
+<blockquote>
+<div><div class="line-block">
+<div class="line">&gt;sample1</div>
+<div class="line">AGCTGCACCTAA…AGCTGCACCTAA</div>
+<div class="line">&gt;sample2</div>
+<div class="line">AGCTGTCAAGCT…AGCTGTCAAGCT</div>
+<div class="line">&gt;sample3</div>
+<div class="line">AGCTTCGACAGT…AGCTTCGACAGT</div>
+<div class="line">&gt;sample4</div>
+<div class="line">AGGCTCCATGTA…AGGCTCCATGTA</div>
+<div class="line">&gt;sample5</div>
+<div class="line">AGGCTTACGTGT…AGGCTTACGTGT</div>
+<div class="line">&gt;sample6</div>
+<div class="line">AGGTACGCAATT…AGGTACGCAATT</div>
+</div>
+</div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Anchored indexes (<a class="reference external" href="https://cutadapt.readthedocs.io/en/stable/guide.html#anchored-5adapters">https://cutadapt.readthedocs.io/en/stable/guide.html#anchored-5adapters</a>) with ^ symbol are not supported in PipeCraft demultiplex GUI panel.</p>
+<blockquote>
+<div><p>DO NOT USE, e.g.</p>
+</div></blockquote>
+<div class="line-block">
+<div class="line">&gt;sample1</div>
+<div class="line">^AGCTGCACCTAA</div>
+<div class="line"><br /></div>
+<div class="line">&gt;sample1</div>
+<div class="line">^AGCTGCACCTAA…AGCTGCACCTAA</div>
+</div>
+</div>
+</section>
+</section>
+<section id="reorient">
+<span id="reorinet"></span><h2>REORIENT<a class="headerlink" href="#reorient" title="Permalink to this headline">¶</a></h2>
+<p>xxx</p>
+</section>
+<section id="trim-adapters-primers">
+<span id="remove-primers"></span><h2>TRIM ADAPTERS/PRIMERS<a class="headerlink" href="#trim-adapters-primers" title="Permalink to this headline">¶</a></h2>
+<p>xxx</p>
+</section>
+<section id="quality-filter">
+<span id="qual-filt"></span><h2>QUALITY FILTER<a class="headerlink" href="#quality-filter" title="Permalink to this headline">¶</a></h2>
+<p>xxx</p>
+</section>
+<section id="assemble-paired-end-reads">
+<span id="merge-pairs"></span><h2>ASSEMBLE PAIRED-END reads<a class="headerlink" href="#assemble-paired-end-reads" title="Permalink to this headline">¶</a></h2>
+<p>xxx</p>
+</section>
+<section id="remove-chimeras">
+<span id="chimeras"></span><h2>REMOVE CHIMERAS<a class="headerlink" href="#remove-chimeras" title="Permalink to this headline">¶</a></h2>
+<p>xxx</p>
+</section>
+<section id="assign-taxonomy">
+<span id="taxonomy"></span><h2>ASSIGN TAXONOMY<a class="headerlink" href="#assign-taxonomy" title="Permalink to this headline">¶</a></h2>
+<p>xxx</p>
+</section>
+<section id="expert-mode-via-command-line">
+<span id="expert-mode"></span><h2>Expert-mode (via command line)<a class="headerlink" href="#expert-mode-via-command-line" title="Permalink to this headline">¶</a></h2>
+<p>xxx</p>
+</section>
+</section>
+
+
+	    </div>
+            <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="licence.html" class="btn btn-neutral float-right" title="Licence">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="installation.html" class="btn btn-neutral" title="Installation"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2022, Sten Anslan.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/jucacrispim/sphinx_pdj_theme">theme</a> provided by <a href="http://poraodojuca.net">Porão do Juca</a>.
+
+</footer>
+	</div>
+	</div>
+	  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+    <script type="text/javascript" src="_static/documentation_options.js">
+
+    </script>
+    <script type="text/javascript" src="_static/jquery.js">
+
+    </script>
+    <script type="text/javascript" src="_static/underscore.js">
+
+    </script>
+    <script type="text/javascript" src="_static/doctools.js">
+
+    </script>
+
+  
+
+   <script type="text/javascript"
+           src="_static/js/theme.js"></script>
+
+   <script type="text/javascript"
+           src="_static/js/pdj.js"></script>
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+  </body>
+</html>

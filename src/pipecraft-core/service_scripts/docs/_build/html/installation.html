@@ -1,0 +1,246 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xml:lang="" lang="" version="-//W3C//DTD XHTML 1.1//EN" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  
+  <title>Installation &mdash; PipeCraft 2.0 documentation</title>
+  
+
+  
+
+  
+
+    <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'/>
+    <link rel="stylesheet" href="_static/css/pdj.css" type="text/css" />
+
+  
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/css/pdj.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="PipeCraft 2.0 documentation" href="index.html"/>
+        <link rel="next" title="User guide" href="user_guide.html"/>
+        <link rel="prev" title="PipeCraft documentation" href="index.html"/>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="cache-control" content="public" />
+    <meta name="robots" content="follow, all" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Add jQuery library -->
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+  </head>
+
+  <body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="index.html" class="fa fa-home"> PipeCraft </a>
+        <div role="search">
+	  <form id ="rtd-search-form" class="wy-form"
+		action="search.html" method="get">
+	    <input type="text" name="q" placeholder="Search docs" />
+	    <input type="hidden" name="check_keywords" value="yes" />
+	    <input type="hidden" name="area" value="default" />
+	  </form>
+	</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	
+          
+          
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#windows">Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#macos">MacOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#linux">Linux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#uninstalling">Uninstalling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#removing-docker-images">Removing docker images</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide.html#the-interface">The interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide.html#full-pipeline-workflows">Full pipeline workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide.html#analyses-panels">ANALYSES PANELS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide.html#demultiplex">DEMULTIPLEX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide.html#reorient">REORIENT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide.html#trim-adapters-primers">TRIM ADAPTERS/PRIMERS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide.html#quality-filter">QUALITY FILTER</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide.html#assemble-paired-end-reads">ASSEMBLE PAIRED-END reads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide.html#remove-chimeras">REMOVE CHIMERAS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide.html#assign-taxonomy">ASSIGN TAXONOMY</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide.html#expert-mode-via-command-line">Expert-mode (via command line)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="licence.html">Licence</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contact.html">Contact developers</a></li>
+</ul>
+
+          
+        
+
+      </div>
+      &nbsp;
+    </nav>
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      <nav class="wy-nav-top" id="barra-mobile" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="#">Porão do Juca</a>
+      </nav>
+
+      <div class="wy-nav-content">
+	<div class="fundo-claro">
+	</div>
+	<div class="fundo-escuro">
+	</div>
+
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+	    
+	    <!-- <ul class="wy-breadcrumbs"> -->
+	    <!--   <li><a href="#">Docs</a> &raquo;</li> -->
+
+	    <!--   <li>Features</li> -->
+	    <!--   <li class="wy-breadcrumbs-aside"> -->
+
+	    <!-- 	<a href="_sources/index.txt" rel="nofollow"> View page source</a> -->
+
+	    <!--   </li> -->
+	    <!-- </ul> -->
+	    <!-- <hr/> -->
+	  </div>
+
+          <div role="main" class="">
+
+	    <div id="content" class="hfeed entry-container hentry">
+  <a class="reference internal image-reference" href="_images/PipeCraft2_logo.png"><img alt="logo" src="_images/PipeCraft2_logo.png" style="width: 100px;" /></a>
+<section id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>The only prerequisity is <a class="reference external" href="https://www.docker.com/">docker</a>.</p>
+<p>See platform-specific (Windows, Mac, Linux) docker installation guidelines below.</p>
+<p><em>Modules of PipeCraft are distributed through docker containers, which will liberate the users from the
+struggle to install/compile various software for metabarcoding data analyses.</em></p>
+</section>
+<section id="windows">
+<h2>Windows<a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Download docker for windows <a class="reference external" href="https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe?utm_source=docker&amp;amp;utm_medium=webreferral&amp;amp;utm_campaign=dd-smartbutton&amp;amp;utm_location=module">here</a> (direct download link form <a class="reference external" href="https://www.docker.com/get-started">https://www.docker.com/get-started</a>)</p></li>
+<li><p>Download PipeCraft for Windows (<a class="reference external" href="https://github.com/SuvalineVana/pipecraft-vue/releases/tag/0.2.0-beta">link</a>)</p></li>
+<li><p>Install PipeCraft by running the executable file</p></li>
+</ol>
+</section>
+<section id="macos">
+<h2>MacOS<a class="headerlink" href="#macos" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Download docker for Mac <a class="reference external" href="https://www.docker.com/get-started">here</a></p></li>
+<li><p>Download PipeCraft for Mac (link)</p></li>
+<li><p>Install PipeCraft by running the executable file</p></li>
+</ol>
+</section>
+<section id="linux">
+<h2>Linux<a class="headerlink" href="#linux" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Install docker; follow the guidelines under appropriate Linux distribution <a class="reference external" href="https://hub.docker.com/search?offering=community&amp;operating_system=linux&amp;q=&amp;type=edition">here</a></p></li>
+<li><p>Download PipeCraft for Linux (link)</p></li>
+<li><p>Install PipeCraft by running the executable file</p></li>
+</ol>
+</section>
+<section id="uninstalling">
+<h2>Uninstalling<a class="headerlink" href="#uninstalling" title="Permalink to this headline">¶</a></h2>
+<p>xxx</p>
+</section>
+<section id="removing-docker-images">
+<h2>Removing docker images<a class="headerlink" href="#removing-docker-images" title="Permalink to this headline">¶</a></h2>
+<p>xxx</p>
+</section>
+</section>
+
+
+	    </div>
+            <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="user_guide.html" class="btn btn-neutral float-right" title="User guide">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="PipeCraft documentation"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2022, Sten Anslan.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/jucacrispim/sphinx_pdj_theme">theme</a> provided by <a href="http://poraodojuca.net">Porão do Juca</a>.
+
+</footer>
+	</div>
+	</div>
+	  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+    <script type="text/javascript" src="_static/documentation_options.js">
+
+    </script>
+    <script type="text/javascript" src="_static/jquery.js">
+
+    </script>
+    <script type="text/javascript" src="_static/underscore.js">
+
+    </script>
+    <script type="text/javascript" src="_static/doctools.js">
+
+    </script>
+
+  
+
+   <script type="text/javascript"
+           src="_static/js/theme.js"></script>
+
+   <script type="text/javascript"
+           src="_static/js/pdj.js"></script>
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+  </body>
+</html>

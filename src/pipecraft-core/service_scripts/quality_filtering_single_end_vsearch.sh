@@ -89,7 +89,6 @@ for file in *.$extension; do
     check_app_error
 done
 
-
 #################################################
 ### COMPILE FINAL STATISTICS AND README FILES ###
 #################################################
