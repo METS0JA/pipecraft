@@ -73,7 +73,7 @@ while read LINE; do
     #make dir for discarded seqs
     mkdir -p $output_dir/discarded
 
-    checkerror=$(trimmomatic PE \
+    checkerror=$(java -jar /Trimmomatic-0.39/trimmomatic-0.39.jar PE \
     $inputR1.$newextension $inputR2.$newextension \
     $output_dir/$inputR1.$newextension $output_dir/discarded/$inputR1.discarded.$newextension \
     $output_dir/$inputR2.$newextension $output_dir/discarded/$inputR2.discarded.$newextension \
@@ -122,7 +122,7 @@ printf "Check README.txt files in output directory for further information about
 printf "Total time: $runtime sec.\n\n"
 
 #variables for all services
-echo "workingDir=/$output_dir"
+echo "workingDir=$output_dir"
 echo "fileFormat=$newextension"
 echo "dataFormat=$dataFormat"
 echo "readType=paired-end"

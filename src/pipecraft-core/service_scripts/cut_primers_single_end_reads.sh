@@ -25,8 +25,9 @@ min_length=$"--minimum-length ${min_seq_length}"
 overlap=$"--overlap ${min_overlap}"
 cores=$"--cores ${cores}"
 no_indels=$no_indels
-discard_untrimmed=$discard_untrimmed
+discard_untrimmed=$"TRUE" #currently only fixed to TRUE 
 seqs_to_keep=$seqs_to_keep
+pair_filter=$pair_filter
 
 fwd_tempprimer=$forward_primers
 rev_tempprimer=$reverse_primers

@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # Quality filter SINGLE-END sequencing data with vsearch
@@ -19,24 +18,34 @@
 #pigz v2.4
 ##########################################################
 
-fastq_minoverlen=$"--fastq_minovlen ${}"
-
 #load variables
 extension=$fileFormat
-maxee=$"--fastq_maxee ${maxee}"                    # pos int
-maxns=$"--fastq_maxns ${maxns}"                    # pos int
-minlen=$"--fastq_minlen ${minlen}"                 # pos int
-cores=$"--threads ${cores}"                        # pos int
-qmax=$"--fastq_qmax ${qmax}"                     # pos int (0-100)
-qmin=$"--fastq_qmin ${qmin}"                     # pos or neg int
-minsize=$"--minsize ${minsize}"                      # pos int
-maxlen=$"" #--fastq_maxlen $int             # pos int
-maxee_rate=$"" #--fastq_maxee_rate $float   # pos float
+maxee=$"--fastq_maxee ${maxee}"
+maxns=$"--fastq_maxns ${maxNs}"
+minlen=$"--fastq_minlen ${min_length}"
+cores=$"--threads ${cores}"
+qmax=$"--fastq_qmax ${qmax}"
+qmin=$"--fastq_qmin ${qmin}"
+minsize=$"--minsize ${min_size}"
+maxlen=$max_length
+maxeerate=$maxee_rate
 
 #Source for functions
 source /scripts/framework.functions.sh
 #output dir
 output_dir=$"/input/qualFiltered_out"
+
+#additional options, if selection != undefined
+if [[ $maxlen == null ]]; then
+    max_length=$""
+else
+    max_length=$"--fastq_maxlen $maxlen"
+fi
+if [[ $maxeerate == null ]]; then
+    maxee_rate=$""
+else
+    maxee_rate=$"--fastq_maxee_rate $maxeerate"
+fi
 
 #############################
 ### Start of the workflow ###
@@ -106,7 +115,7 @@ printf "Check README.txt files in output directory for further information about
 printf "Total time: $runtime sec.\n\n"
 
 #variables for all services
-echo "workingDir=/$output_dir"
+echo "workingDir=$output_dir"
 echo "fileFormat=$newextension"
 echo "dataFormat=$dataFormat"
 echo "readType=single-end"

@@ -68,7 +68,7 @@ for file in *.$extension; do
     ###############################
     ### Start quality filtering ###
     ###############################
-    checkerror=$(trimmomatic SE \
+    checkerror=$(java -jar /Trimmomatic-0.39/trimmomatic-0.39.jar SE \
     $input.$newextension \
     $output_dir/$input.$newextension \
     -phred$phred \
@@ -110,7 +110,7 @@ printf "Check README.txt files in output directory for further information about
 printf "Total time: $runtime sec.\n\n"
 
 #variables for all services
-echo "workingDir=/$output_dir"
+echo "workingDir=$output_dir"
 echo "fileFormat=$newextension"
 echo "dataFormat=$dataFormat"
 echo "readType=single-end"
