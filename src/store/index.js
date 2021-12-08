@@ -2341,6 +2341,20 @@ export default new Vuex.Store({
         }
       }
       for (let i = 0; i < state.selectedSteps.length; i++) {
+        for (let j = 0; j < state.selectedSteps[i].services.length; j++) {
+          if (payload == "paired_end") {
+            state.selectedSteps[i].services[j].scriptName = state.selectedSteps[i].services[
+              j
+            ].scriptName.replace("single_end", "paired_end");
+          }
+          if (payload == "single_end") {
+            state.selectedSteps[i].services[j].scriptName = state.selectedSteps[i].services[
+              j
+            ].scriptName.replace("paired_end", "single_end");
+          }
+        }
+      }
+      for (let i = 0; i < state.selectedSteps.length; i++) {
         if (payload == "single_end") {
           state.selectedSteps = state.selectedSteps.filter(
             (item) => !(item.stepName == "assemble paired-end"),

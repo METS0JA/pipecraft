@@ -17,6 +17,7 @@ async function createWindow() {
   const win = new BrowserWindow({
     width: 1200,
     height: 700,
+    minWidth: 1200,
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
@@ -25,6 +26,7 @@ async function createWindow() {
       enableRemoteModule: true,
     },
   });
+  win.removeMenu();
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode

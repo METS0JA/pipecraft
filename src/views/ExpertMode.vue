@@ -37,7 +37,6 @@ term.onResize((size) => {
     Math.max(size ? size.rows : term.rows, 1),
   );
 });
-ptyProc.write("gc expertReadme.txt\r");
 
 export default {
   created() {

@@ -440,8 +440,8 @@ export default {
     },
     createCustomBinds(name, index, Input) {
       let Binds = [
-        `${process.cwd()}/src/pipecraft-core/service_scripts:/scripts`, // dev path
-        // `${process.cwd()}/resources/src/pipecraft-core/service_scripts:/scripts`, // build path
+        // `${process.cwd()}/src/pipecraft-core/service_scripts:/scripts`, // dev path
+        `${process.cwd()}/resources/src/pipecraft-core/service_scripts:/scripts`, // build path
         `${Input}:/input`,
       ];
       this.$store.state[name][index].Inputs.forEach((input) => {
@@ -464,8 +464,8 @@ export default {
     },
     createBinds(serviceIndex, stepIndex, Input) {
       let Binds = [
-        `${process.cwd()}/src/pipecraft-core/service_scripts:/scripts`, // dev path
-        // `${process.cwd()}/resources/src/pipecraft-core/service_scripts:/scripts`, // build path
+        //`${process.cwd()}/src/pipecraft-core/service_scripts:/scripts`, // dev path
+         `${process.cwd()}/resources/src/pipecraft-core/service_scripts:/scripts`, // build path
         `${Input}:/input`,
       ];
       this.selectedSteps[stepIndex].services[serviceIndex].Inputs.forEach(

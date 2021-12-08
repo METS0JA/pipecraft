@@ -9,7 +9,7 @@
       <rightNav />
     </v-navigation-drawer>
 
-    <v-main style="background-color:#9e9e9e">
+    <v-main>
       <transition name="fade">
         <router-view />
       </transition>
@@ -53,5 +53,10 @@ export default {
 .fade-enter,
 .fade-leave-to {
   opacity: 0;
+}
+#app {
+  background: url('assets/bg13.jpg')
+  no-repeat center center fixed !important;
+  background-size: cover;
 }
 </style>
