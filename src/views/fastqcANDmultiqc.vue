@@ -6,11 +6,11 @@
   >
     <div class="row" style="padding-left:25px; padding-top:25px">
       <div class="column">
-        <v-img class="white--text align-end" src="..\assets\MultiQC_logo.png">
+        <v-img class="white--text align-end" src="../assets/MultiQC_logo.png">
         </v-img>
       </div>
       <div class="column">
-        <v-img class="white--text align-end" src="..\assets\fastqc_icon.png">
+        <v-img class="white--text align-end" src="../assets/fastqc_icon.png">
         </v-img>
       </div>
     </div>
@@ -74,16 +74,18 @@
 <script>
 import { pullImageAsync } from "dockerode-utils";
 import { imageExists } from "dockerode-utils";
+import * as Dockerode from "dockerode";
+import os from "os";
 const shell = require("electron").shell;
 const { dialog } = require("@electron/remote");
 const slash = require("slash");
-// const fs = require("fs");
 const streams = require("memory-streams");
+const Swal = require("sweetalert2");
 var stdout = new streams.WritableStream();
 var stderr = new streams.WritableStream();
-const Swal = require("sweetalert2");
-import * as Dockerode from "dockerode";
-var dockerode = new Dockerode({ socketPath: "//./pipe/docker_engine" });
+var socketPath = os.platform() === "win32" ? "//./pipe/docker_engine" : "/var/run/docker.sock";
+var dockerode = new Dockerode({socketPath: socketPath});
+
 export default {
   name: "qualityPlots",
   data() {

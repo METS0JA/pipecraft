@@ -4,7 +4,7 @@
       style="margin: auto; background:transparent"
       max-height="350"
       max-width="350"
-      src="..\assets\PipeCraft2_logo.png"
+      src="../assets/PipeCraft2_logo.png"
     ></v-img>
   </div>
 </template>

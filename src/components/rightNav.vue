@@ -121,11 +121,14 @@
 </template>
 
 <script>
+import os from "os";
 const { dialog } = require("@electron/remote");
 const slash = require("slash");
 const fs = require("fs");
 var Docker = require("dockerode");
-var docker = new Docker({ socketPath: "//./pipe/docker_engine" });
+var socketPath = os.platform() === "win32" ? "//./pipe/docker_engine" : "/var/run/docker.sock";
+var docker = new Docker({socketPath: socketPath});
+
 export default {
   name: "rightNav",
   data() {

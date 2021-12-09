@@ -78,18 +78,20 @@
 const path = require("path");
 const slash = require("slash");
 const Swal = require("sweetalert2");
+const streams = require("memory-streams");
 import * as Dockerode from "dockerode";
-var dockerode = new Dockerode({ socketPath: "//./pipe/docker_engine" });
-// var dockerode = new Docker({socketPath: '/var/run/docker.sock'});
-// this is the socker path for linux builds
 import { pullImageAsync } from "dockerode-utils";
 import { imageExists } from "dockerode-utils";
-const streams = require("memory-streams");
-var stdout = new streams.WritableStream();
-var stderr = new streams.WritableStream();
 import { ipcRenderer } from "electron";
 import { mapState } from "vuex";
 import { stringify } from "envfile";
+import os from "os";
+var socketPath = os.platform() === "win32" ? "//./pipe/docker_engine" : "/var/run/docker.sock";
+var dockerode = new Dockerode({socketPath: socketPath});
+var stdout = new streams.WritableStream();
+var stderr = new streams.WritableStream();
+const isDevelopment = process.env.NODE_ENV !== "production";
+
 
 export default {
   name: "Run",
@@ -440,8 +442,8 @@ export default {
     },
     createCustomBinds(name, index, Input) {
       let Binds = [
-        // `${process.cwd()}/src/pipecraft-core/service_scripts:/scripts`, // dev path
-        `${process.cwd()}/resources/src/pipecraft-core/service_scripts:/scripts`, // build path
+         `${process.cwd()}/src/pipecraft-core/service_scripts:/scripts`, // dev path
+        // `${process.cwd()}/resources/src/pipecraft-core/service_scripts:/scripts`, // build path
         `${Input}:/input`,
       ];
       this.$store.state[name][index].Inputs.forEach((input) => {
@@ -463,9 +465,9 @@ export default {
       return Binds;
     },
     createBinds(serviceIndex, stepIndex, Input) {
+      let scriptsPath = isDevelopment == true ? "/src/pipecraft-core/service_scripts" : "/resources/src/pipecraft-core/service_scripts";
       let Binds = [
-        //`${process.cwd()}/src/pipecraft-core/service_scripts:/scripts`, // dev path
-         `${process.cwd()}/resources/src/pipecraft-core/service_scripts:/scripts`, // build path
+        `${process.cwd()}${scriptsPath}:/scripts`,
         `${Input}:/input`,
       ];
       this.selectedSteps[stepIndex].services[serviceIndex].Inputs.forEach(
