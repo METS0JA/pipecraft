@@ -3,7 +3,9 @@
   <v-row justify="center" style="padding-top:20px">
     <v-expansion-panels dark multiple popout>
       <v-expansion-panel v-for="(service, index) in services" :key="index">
-        <v-expansion-panel-header style="padding-left: 40%">
+       <v-tooltip top>
+        <template v-slot:activator="{ on }">
+        <v-expansion-panel-header v-on="on" style="padding-left: 40%">
           <v-checkbox
             @change="check_one($event, index)"
             @click.stop
@@ -12,6 +14,9 @@
           ></v-checkbox
           >{{ service.serviceName.toUpperCase() }}
         </v-expansion-panel-header>
+                </template>
+        <span>{{service.tooltip}}</span>
+      </v-tooltip>
         <v-expansion-panel-content>
           <v-row justify="center">
             <v-col

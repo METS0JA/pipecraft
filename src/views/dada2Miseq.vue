@@ -44,7 +44,10 @@
         :disabled="Object.values(inputData).includes(service.disabled)"
         :class="Object.values(inputData).includes(service.disabled) && hide"
       >
-        <v-expansion-panel-header
+      <v-tooltip top>
+        <template v-slot:activator="{ on }">
+           <v-expansion-panel-header
+           v-on="on"
           style="justify-content:left;"
           :class="[service.selected]"
           :disabled="Object.values(inputData).includes(service.disabled)"
@@ -90,6 +93,10 @@
             >
           </div>
         </v-expansion-panel-header>
+        </template>
+        <span>{{ service.tooltip }}</span>
+      </v-tooltip>
+       
         <v-expansion-panel-content>
           <v-row justify="center">
             <v-col
