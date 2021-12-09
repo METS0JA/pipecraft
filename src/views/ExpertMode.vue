@@ -1,11 +1,15 @@
 <template>
   <v-container pa-10 fluid>
     <div
-      style="overflow-y:scroll!important; min-width:800px!important; min-height:60%!important"
+      style="
+        overflow-y: scroll !important;
+        min-width: 800px !important;
+        min-height: 60% !important;
+      "
       id="terminal"
     ></div>
-    </v-container
-></template>
+  </v-container>
+</template>
 
 <script>
 const pty = require("@electron/remote").require("node-pty");
@@ -29,13 +33,13 @@ term.loadAddon(fitAddon);
 term.onData((data) => {
   ptyProc.write(data);
 });
-ptyProc.on("data", function(data) {
+ptyProc.on("data", function (data) {
   term.write(data);
 });
 term.onResize((size) => {
   ptyProc.resize(
     Math.max(size ? size.cols : term.cols, 1),
-    Math.max(size ? size.rows : term.rows, 1),
+    Math.max(size ? size.rows : term.rows, 1)
   );
 });
 

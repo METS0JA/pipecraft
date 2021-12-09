@@ -2,9 +2,9 @@
   <v-card
     class="mx-auto"
     max-width="90%"
-    style="margin-top:200px; background-color:grey; color:white"
+    style="margin-top: 200px; background-color: grey; color: white"
   >
-    <div class="row" style="padding-left:25px; padding-top:25px">
+    <div class="row" style="padding-left: 25px; padding-top: 25px">
       <div class="column">
         <v-img class="white--text align-end" src="../assets/MultiQC_logo.png">
         </v-img>
@@ -16,32 +16,30 @@
     </div>
 
     <v-card-title>FastQC and MultiQC</v-card-title>
-    <v-card-subtitle style="color:white" class="pb-0">
+    <v-card-subtitle style="color: white" class="pb-0">
       Check out their documentation for more info
     </v-card-subtitle>
-    <v-divider class="mt-1 "></v-divider>
+    <v-divider class="mt-1"></v-divider>
 
     <v-card-text class="text--primary">
       <div>
-        <a style="color:white" :href="'https://multiqc.info/'" target="_blank"
+        <a style="color: white" :href="'https://multiqc.info/'" target="_blank"
           >multiqc.info</a
         >
       </div>
       <div>
         <a
-          style="color:white"
+          style="color: white"
           :href="'https://www.bioinformatics.babraham.ac.uk/projects/fastqc/'"
           target="_blank"
           >bioinformatics.babraham.ac.uk/projects/fastqc</a
         >
       </div>
     </v-card-text>
-    <v-divider class="mt-1 "></v-divider>
+    <v-divider class="mt-1"></v-divider>
 
     <v-card-actions>
-      <v-btn @click="folderSelect()" color="orange" text>
-        Select Folder
-      </v-btn>
+      <v-btn @click="folderSelect()" color="orange" text> Select Folder </v-btn>
 
       <v-btn @click="fastQualityCheck()" color="orange" text>
         Create Report
@@ -63,9 +61,7 @@
             </v-btn>
           </div>
         </template>
-        <div>
-          No reports generated
-        </div>
+        <div>No reports generated</div>
       </v-tooltip>
     </v-card-actions>
   </v-card>
@@ -83,8 +79,9 @@ const streams = require("memory-streams");
 const Swal = require("sweetalert2");
 var stdout = new streams.WritableStream();
 var stderr = new streams.WritableStream();
-var socketPath = os.platform() === "win32" ? "//./pipe/docker_engine" : "/var/run/docker.sock";
-var dockerode = new Dockerode({socketPath: socketPath});
+var socketPath =
+  os.platform() === "win32" ? "//./pipe/docker_engine" : "/var/run/docker.sock";
+var dockerode = new Dockerode({ socketPath: socketPath });
 
 export default {
   name: "qualityPlots",
@@ -175,7 +172,7 @@ export default {
               Binds: [`${this.folderPath}:/input`],
             },
             Env: [`format=${this.fileExtension}`],
-          },
+          }
         )
         .then(async ([res, container]) => {
           console.log(stdout.toString());

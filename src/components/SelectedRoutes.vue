@@ -32,8 +32,8 @@
           <v-progress-circular
             v-if="
               $store.state.runInfo.active == true &&
-                $store.state.runInfo.type == 'workflow' &&
-                index == $store.state.runInfo.step
+              $store.state.runInfo.type == 'workflow' &&
+              index == $store.state.runInfo.step
             "
             indeterminate
             color="#1DE9B6"

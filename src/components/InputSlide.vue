@@ -4,15 +4,15 @@
       <template v-slot:activator="{ on }">
         <v-card-title
           v-on="on"
-          style="justify-content:center; padding:10px 0px;"
+          style="justify-content: center; padding: 10px 0px"
           >{{ input.name.replace(/_/g, " ") }}</v-card-title
         >
       </template>
       <span>{{ input.tooltip }}</span>
     </v-tooltip>
-    <v-card-actions style="justify-content:center;">
+    <v-card-actions style="justify-content: center">
       <v-row
-        ><v-col style="padding:0;" cols="8" offset="2">
+        ><v-col style="padding: 0" cols="8" offset="2">
           <v-slider
             @change="inputUpdate(input.value)"
             :min="input.min"
@@ -69,12 +69,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .v-text-field {
-    ::v-deep input {
-      text-align:center !important
-    }
+.v-text-field {
+  ::v-deep input {
+    text-align: center !important;
   }
-  .v-text-field input {
-    text-align: center;
+}
+.v-text-field input {
+  text-align: center;
 }
 </style>

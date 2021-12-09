@@ -1,10 +1,10 @@
 <template>
   <v-card light elevation="2">
-    <v-card-actions style="justify-content:center;">
-      <v-row style="justify-content:center;">
+    <v-card-actions style="justify-content: center">
+      <v-row style="justify-content: center">
         <v-tooltip top>
           <template v-slot:activator="{ on }">
-            <v-col v-on="on" style="padding:0;" cols="10" offset="0">
+            <v-col v-on="on" style="padding: 0" cols="10" offset="0">
               <v-select
                 @change="inputUpdate(input.value)"
                 v-model="input.value"
@@ -22,9 +22,7 @@
                       </v-icon>
                     </v-list-item-action>
                     <v-list-item-content>
-                      <v-list-item-title>
-                        Select All
-                      </v-list-item-title>
+                      <v-list-item-title> Select All </v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
                   <v-divider class="mt-2"></v-divider>
@@ -182,8 +180,8 @@ export default {
 </script>
 
 <style scoped>
-  .v-text-field input {
-    text-align: center;
+.v-text-field input {
+  text-align: center;
 }
 div >>> div.v-select__selections {
   margin-top: 8px;
@@ -192,5 +190,3 @@ div >>> div.v-select__selections {
   padding-top: 20px;
 }
 </style>
-
-

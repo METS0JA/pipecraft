@@ -6,7 +6,7 @@
           block
           outlined
           color="white"
-          style="background-color:#212121"
+          style="background-color: #212121"
           dark
           v-bind="attrs"
           v-on="on"

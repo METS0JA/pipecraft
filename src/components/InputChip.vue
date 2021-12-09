@@ -6,15 +6,15 @@
           :disabled="Object.values(inputData).includes(input.disabled)"
           light
           elevation="2"
-          style="height: fit-content; resize:auto; min-height: 145px"
+          style="height: fit-content; resize: auto; min-height: 145px"
         >
-          <v-card-title style="justify-content:center; padding:10px 0px; ">{{
+          <v-card-title style="justify-content: center; padding: 10px 0px">{{
             input.name.replace(/_/g, " ")
           }}</v-card-title>
 
-          <v-card-actions style="justify-content:center; ">
-            <v-row style="height: fit-content; resize:auto;"
-              ><v-col style="padding:0;" cols="10" offset="1">
+          <v-card-actions style="justify-content: center">
+            <v-row style="height: fit-content; resize: auto"
+              ><v-col style="padding: 0" cols="10" offset="1">
                 <v-combobox
                   type="text"
                   @change="inputUpdate(input.value)"
@@ -106,8 +106,8 @@ export default {
 </script>
 
 <style>
-  .v-text-field input {
-    text-align: center;
+.v-text-field input {
+  text-align: center;
 }
 .v-text-field__details {
   position: relative;
