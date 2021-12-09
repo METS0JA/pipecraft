@@ -34,7 +34,7 @@ export default new Vuex.Store({
         services: [
           {
             tooltip: "",
-            scriptname: "demux_paired_end_data.sh",
+            scriptName: "demux_paired_end_data.sh",
             imageName: "pipecraft/cutadapt:3.5",
             serviceName: "demultiplex",
             selected: false,
@@ -91,7 +91,7 @@ export default new Vuex.Store({
             ],
           },
           // {
-          //   tooltip: "",  scriptname: "exampleScript.sh",
+          //   tooltip: "",  scriptName: "exampleScript.sh",
           //   imageName: "exmaple:image",
           //   serviceName: "example inputs",
           //   selected: false,
@@ -183,7 +183,7 @@ export default new Vuex.Store({
         services: [
           {
             tooltip: "",
-            scriptname: "reorient_paired_end_reads.sh",
+            scriptName: "reorient_paired_end_reads.sh",
             imageName: "pipecraft/reorient:1",
             serviceName: "reorient",
             selected: false,
@@ -225,7 +225,7 @@ export default new Vuex.Store({
         services: [
           {
             tooltip: "",
-            scriptname: "cut_primers_paired_end_reads.sh",
+            scriptName: "cut_primers_paired_end_reads.sh",
             imageName: "pipecraft/cutadapt:3.5",
             serviceName: "cutadapt",
             selected: false,
@@ -317,7 +317,7 @@ export default new Vuex.Store({
         services: [
           {
             tooltip: "",
-            scriptname: "quality_filtering_paired_end_vsearch.sh",
+            scriptName: "quality_filtering_paired_end_vsearch.sh",
             imageName: "pipecraft/vsearch:2.18",
             serviceName: "vsearch",
             selected: false,
@@ -399,7 +399,7 @@ export default new Vuex.Store({
           },
           {
             tooltip: "",
-            scriptname: "quality_filtering_paired_end_trimmomatic.sh",
+            scriptName: "quality_filtering_paired_end_trimmomatic.sh",
             imageName: "pipecraft/trimmomatic:0.39",
             serviceName: "trimmomatic",
             selected: false,
@@ -472,7 +472,7 @@ export default new Vuex.Store({
         services: [
           {
             tooltip: "",
-            scriptname: "dada2-assemble.R",
+            scriptName: "dada2-assemble.R",
             imageName: "pipecraft/dada2:3.10",
             serviceName: "dada2",
             selected: false,
@@ -514,7 +514,7 @@ export default new Vuex.Store({
           },
           {
             tooltip: "",
-            scriptname: "assemble_paired_end_data_vsearch.sh",
+            scriptName: "assemble_paired_end_data_vsearch.sh",
             imageName: "pipecraft/vsearch:2.18",
             serviceName: "vsearch",
             disabled: "single_end",
@@ -602,7 +602,7 @@ export default new Vuex.Store({
         services: [
           {
             tooltip: "",
-            scriptname: "dada2-chimera.R",
+            scriptName: "dada2-chimera.R",
             imageName: "pipecraft/dada2:3.10",
             serviceName: "dada2",
             selected: false,
@@ -622,7 +622,7 @@ export default new Vuex.Store({
           },
           {
             tooltip: "",
-            scriptname: "chimera_filtering_vsearch.sh",
+            scriptName: "chimera_filtering_vsearch.sh",
             imageName: "pipecraft/vsearch:2.18",
             serviceName: "vsearch",
             selected: false,
@@ -703,7 +703,7 @@ export default new Vuex.Store({
         services: [
           {
             tooltip: "",
-            scriptname: "ITS_extractor.sh",
+            scriptName: "ITS_extractor.sh",
             imageName: "pipecraft/itsx:1.1.3",
             serviceName: "itsx",
             selected: false,
@@ -823,7 +823,7 @@ export default new Vuex.Store({
         services: [
           {
             tooltip: "",
-            scriptname: "clustering_vsearch.sh",
+            scriptName: "clustering_vsearch.sh",
             imageName: "pipecraft/vsearch:2.18",
             serviceName: "vsearch",
             selected: false,
@@ -947,7 +947,7 @@ export default new Vuex.Store({
         services: [
           {
             tooltip: "",
-            scriptname: "taxonomy_BLAST_xml.sh",
+            scriptName: "taxonomy_BLAST_xml.sh",
             imageName: "pipecraft/blast:2.12",
             serviceName: "assign taxonomy",
             selected: false,
@@ -1033,7 +1033,7 @@ export default new Vuex.Store({
           },
           {
             tooltip: "",
-            scriptname: "dada2-classifier.R",
+            scriptName: "dada2-classifier.R",
             imageName: "pipecraft/dada2:3.10",
             serviceName: "dada2",
             selected: false,
@@ -1073,7 +1073,7 @@ export default new Vuex.Store({
     OTU_Miseq: [
       {
         tooltip: "",
-        scriptname: "demux_paired_end_data.sh",
+        scriptName: "demux_paired_end_data.sh",
         imageName: "pipecraft/cutadapt:3.5",
         serviceName: "demultiplex",
         disabled: "demultiplexed",
@@ -1132,7 +1132,7 @@ export default new Vuex.Store({
       },
       {
         tooltip: "",
-        scriptname: "reorient_paired_end_reads.sh",
+        scriptName: "reorient_paired_end_reads.sh",
         imageName: "pipecraft/reorient:2",
         serviceName: "reorient",
         disabled: "never",
@@ -1169,7 +1169,7 @@ export default new Vuex.Store({
       },
       {
         tooltip: "",
-        scriptname: "cut_primers_paired_end_reads.sh",
+        scriptName: "cut_primers_paired_end_reads.sh",
         imageName: "pipecraft/cutadapt:3.5",
         serviceName: "cut primers",
         disabled: "never",
@@ -1256,7 +1256,7 @@ export default new Vuex.Store({
       },
       {
         tooltip: "",
-        scriptname: "assemble_paired_end_data_vsearch.sh",
+        scriptName: "assemble_paired_end_data_vsearch.sh",
         imageName: "pipecraft/vsearch:2.18",
         serviceName: "merge reads",
         selected: "always",
@@ -1338,7 +1338,7 @@ export default new Vuex.Store({
       },
       {
         tooltip: "",
-        scriptname: "quality_filtering_paired_end_vsearch.sh",
+        scriptName: "quality_filtering_paired_end_vsearch.sh",
         imageName: "pipecraft/vsearch:2.18",
         serviceName: "quality filtering",
         disabled: "never",
@@ -1421,7 +1421,7 @@ export default new Vuex.Store({
       },
       {
         tooltip: "",
-        scriptname: "chimera_filtering_vsearch.sh",
+        scriptName: "chimera_filtering_vsearch.sh",
         imageName: "pipecraft/vsearch:2.18",
         serviceName: "chimera filtering",
         disabled: "never",
@@ -1496,7 +1496,7 @@ export default new Vuex.Store({
       },
       {
         tooltip: "",
-        scriptname: "ITS_extractor.sh",
+        scriptName: "ITS_extractor.sh",
         imageName: "pipecraft/itsx:1.1.3",
         serviceName: "ITS extractor",
         disabled: "never",
@@ -1611,7 +1611,7 @@ export default new Vuex.Store({
       },
       {
         tooltip: "",
-        scriptname: "clustering_vsearch.sh",
+        scriptName: "clustering_vsearch.sh",
         imageName: "pipecraft/vsearch:2.18",
         serviceName: "clustering",
         disabled: "never",
@@ -1730,7 +1730,7 @@ export default new Vuex.Store({
       },
       {
         tooltip: "",
-        scriptname: "taxonomy_BLAST_xml.sh",
+        scriptName: "taxonomy_BLAST_xml.sh",
         imageName: "pipecraft/blast:2.12",
         serviceName: "assign taxonomy",
         disabled: "never",
@@ -1819,7 +1819,7 @@ export default new Vuex.Store({
     DADA2_Miseq: [
       {
         tooltip: "",
-        scriptname: "demux_paired_end_data.sh",
+        scriptName: "demux_paired_end_data.sh",
         imageName: "pipecraft/cutadapt:3.5",
         serviceName: "demultiplex",
         disabled: "demultiplexed",
@@ -1878,7 +1878,7 @@ export default new Vuex.Store({
       },
       {
         tooltip: "",
-        scriptname: "reorient_paired_end_reads.sh",
+        scriptName: "reorient_paired_end_reads.sh",
         imageName: "pipecraft/reorient:1",
         serviceName: "reorient",
         disabled: "never",
@@ -1915,7 +1915,7 @@ export default new Vuex.Store({
       },
       {
         tooltip: "",
-        scriptname: "cut_primers_paired_end_reads.sh",
+        scriptName: "cut_primers_paired_end_reads.sh",
         imageName: "pipecraft/cutadapt:3.5",
         serviceName: "cut primers",
         disabled: "never",
@@ -2002,7 +2002,7 @@ export default new Vuex.Store({
       },
       {
         tooltip: "",
-        scriptname: "dada2-quality.R",
+        scriptName: "dada2-quality.R",
         imageName: "pipecraft/dada2:3.10",
         serviceName: "quality filter",
         disabled: "never",
@@ -2105,7 +2105,7 @@ export default new Vuex.Store({
       },
       {
         tooltip: "",
-        scriptname: "dada2-assemble.R",
+        scriptName: "dada2-assemble.R",
         imageName: "pipecraft/dada2:3.10",
         serviceName: "denoise",
         selected: "always",
@@ -2143,7 +2143,7 @@ export default new Vuex.Store({
       },
       {
         tooltip: "",
-        scriptname: "dada2-assemble.R",
+        scriptName: "dada2-assemble.R",
         imageName: "pipecraft/dada2:3.10",
         serviceName: "merge Pairs",
         selected: "always",
@@ -2186,7 +2186,7 @@ export default new Vuex.Store({
       },
       {
         tooltip: "",
-        scriptname: "dada2-chimera.R",
+        scriptName: "dada2-chimera.R",
         imageName: "pipecraft/dada2:3.10",
         serviceName: "remove chimeras",
         disabled: "never",
@@ -2208,7 +2208,7 @@ export default new Vuex.Store({
 
       {
         tooltip: "",
-        scriptname: "dada2-classifier.R",
+        scriptName: "dada2-classifier.R",
         imageName: "pipecraft/dada2:3.10",
         serviceName: "assign Taxonomy",
         disabled: "never",
