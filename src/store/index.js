@@ -558,6 +558,7 @@ export default new Vuex.Store({
         disabled: "never",
         services: [
           {
+            tooltip: "tick the checkbox to filter chimeras with vsearch. Run only on single-end or assembled paired-end data",
             scriptName: "chimera_filtering_vsearch.sh",
             imageName: "pipecraft/vsearch:2.18",
             serviceName: "vsearch",
@@ -758,7 +759,7 @@ export default new Vuex.Store({
         disabled: "never",
         services: [
           {
-            tooltip: "",
+            tooltip: "tick the checkbox to cluster reads with vsearch",
             scriptname: "clustering_vsearch.sh",
             imageName: "pipecraft/vsearch:2.18",
             serviceName: "vsearch",
@@ -1321,7 +1322,7 @@ export default new Vuex.Store({
         ],
       },
       {
-        tooltip: "",
+        tooltip: "tick the checkbox to include chimera filtering step using vsearch",
         scriptname: "chimera_filtering_vsearch.sh",
         imageName: "pipecraft/vsearch:2.18",
         serviceName: "chimera filtering",
