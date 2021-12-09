@@ -5,7 +5,7 @@
 
 ##########################################################
 ###Third-party applications:
-#vsearch v2.17.0
+#vsearch v2.18.0
     #citation: Rognes T, Flouri T, Nichols B, Quince C, Mahé F (2016) VSEARCH: a versatile open source tool for metagenomics PeerJ 4:e2584
     #Copyright (C) 2014-2021, Torbjorn Rognes, Frederic Mahe and Tomas Flouri
     #Distributed under the GNU General Public License version 3 by the Free Software Foundation
@@ -82,7 +82,7 @@ for file in *.$extension; do
     $qmax \
     $qmin \
     $minsize \
-    $maxlen \
+    $max_length \
     $maxee_rate \
     --fastqout $output_dir/$input.$newextension \
     --fastaout $output_dir/FASTA/$input.fasta 2>&1)
