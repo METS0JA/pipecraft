@@ -1,9 +1,10 @@
 <template>
   <v-container pa-10 fluid>
     <div
-      style="overflow-y:scroll!important; min-width:800px!important"
+      style="overflow-y:scroll!important; min-width:800px!important; min-height:60%!important"
       id="terminal"
-    ></div></v-container
+    ></div>
+    </v-container
 ></template>
 
 <script>
