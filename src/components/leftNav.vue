@@ -6,7 +6,7 @@
           <template v-slot:activator="{ on }">
             <div v-on="on">
               <v-btn
-                style="background-color:#212121"
+                style="background-color: #212121"
                 block
                 :style="
                   $store.state.inputDir != ''
@@ -68,7 +68,11 @@
       <v-list-item-content v-if="$store.state.runInfo.active == true">
         <v-btn
           block
-          style="background-color:#212121; border:thin #E57373 solid; color: #E57373"
+          style="
+            background-color: #212121;
+            border: thin #e57373 solid;
+            color: #e57373;
+          "
           @click="stopWorkflow"
         >
           Stop workflow
@@ -117,9 +121,9 @@ export default {
   methods: {
     stopWorkflow() {
       var container = dockerode.getContainer(
-        this.$store.state.runInfo.containerID,
+        this.$store.state.runInfo.containerID
       );
-      container.kill(function(err, data) {
+      container.kill(function (err, data) {
         console.log(data);
       });
       this.$store.commit("resetRunInfo");

@@ -4,16 +4,16 @@
       <template v-slot:activator="{ on }">
         <v-card-title
           v-on="on"
-          style="justify-content:center; padding:10px 0px;"
+          style="justify-content: center; padding: 10px 0px"
           ><v-checkbox
             @change="toggleActive(input.active)"
             hide-details
             class="ma-0 pa-0"
-            style="padding:0"
+            style="padding: 0"
             v-model="input.active"
           >
             <template v-slot:label>
-              <div style="color:black">
+              <div style="color: black">
                 {{ input.name.replace(/_/g, " ") }}
               </div>
             </template></v-checkbox
@@ -22,15 +22,18 @@
       </template>
       <span>{{ input.tooltip }}</span>
     </v-tooltip>
-    <v-card-actions style="justify-content:center;">
+    <v-card-actions style="justify-content: center">
       <v-row>
-        <v-col style="padding:0;" cols="8" offset="2">
+        <v-col style="padding: 0" cols="8" offset="2">
           <v-tooltip right>
             <template v-slot:activator="{ on }">
               <div v-on="on">
                 <v-text-field
                   disabled
-                  style="border-bottom-right-radius: 0; border-bottom-left-radius:0;"
+                  style="
+                    border-bottom-right-radius: 0;
+                    border-bottom-left-radius: 0;
+                  "
                   hide-details="true"
                   v-model="fileName"
                   class="centered-input"
@@ -42,7 +45,12 @@
                 elevation="1"
                 :disabled="!input.active"
                 @click="fileSelect()"
-                style="justify-content:center; max-width:100px; border-top-right-radius:0; border-top-left-radius:0;"
+                style="
+                  justify-content: center;
+                  max-width: 100px;
+                  border-top-right-radius: 0;
+                  border-top-left-radius: 0;
+                "
                 block
                 >{{ input.btnName }}</v-btn
               >
@@ -136,12 +144,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .v-text-field {
-    ::v-deep input {
-      text-align:center !important
-    }
+.v-text-field {
+  ::v-deep input {
+    text-align: center !important;
   }
-  .v-text-field input {
-    text-align: center;
+}
+.v-text-field input {
+  text-align: center;
 }
 </style>

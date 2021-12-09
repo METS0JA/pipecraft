@@ -4,9 +4,7 @@
       <v-tooltip left nudge-left="10">
         <template v-slot:activator="{ on }">
           <v-list-item-content v-on="on">
-            <v-icon large :color="dockerActive">
-              mdi-docker
-            </v-icon>
+            <v-icon large :color="dockerActive"> mdi-docker </v-icon>
           </v-list-item-content>
         </template>
         <span v-if="dockerActive === '#1DE9B6'">docker desktop is running</span>
@@ -79,7 +77,7 @@
         <span>DADA2 workflow</span>
       </v-tooltip>
     </v-list-item>
-    <v-list-item style="padding:0" class="mt-5" ripple link>
+    <v-list-item style="padding: 0" class="mt-5" ripple link>
       <v-tooltip left nudge-left="10">
         <template v-slot:activator="{ on }">
           <v-list-item-content v-on="on" @click="push2premade('OTU_Miseq')">
@@ -126,8 +124,9 @@ const { dialog } = require("@electron/remote");
 const slash = require("slash");
 const fs = require("fs");
 var Docker = require("dockerode");
-var socketPath = os.platform() === "win32" ? "//./pipe/docker_engine" : "/var/run/docker.sock";
-var docker = new Docker({socketPath: socketPath});
+var socketPath =
+  os.platform() === "win32" ? "//./pipe/docker_engine" : "/var/run/docker.sock";
+var docker = new Docker({ socketPath: socketPath });
 
 export default {
   name: "rightNav",
@@ -164,7 +163,7 @@ export default {
   },
   created() {
     var self = this;
-    setInterval(async function() {
+    setInterval(async function () {
       self.dockerActive = await docker
         .version()
         .then(() => {

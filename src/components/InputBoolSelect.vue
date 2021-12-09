@@ -4,16 +4,16 @@
       <template v-slot:activator="{ on }">
         <v-card-title
           v-on="on"
-          style="justify-content:center; padding:10px 0px;"
+          style="justify-content: center; padding: 10px 0px"
           ><v-checkbox
             @change="toggleActive(input.active)"
             hide-details
             class="ma-0 pa-0"
-            style="padding:0"
+            style="padding: 0"
             v-model="input.active"
           >
             <template v-slot:label>
-              <div style="color:black">
+              <div style="color: black">
                 {{ input.name.replace(/_/g, " ") }}
               </div>
             </template></v-checkbox
@@ -22,14 +22,14 @@
       </template>
       <span>{{ input.tooltip }}</span>
     </v-tooltip>
-    <v-card-actions style="justify-content:center;">
-      <v-row style="justify-content:center;"
-        ><v-col style="padding:0;" cols="8" offset="0">
+    <v-card-actions style="justify-content: center">
+      <v-row style="justify-content: center"
+        ><v-col style="padding: 0" cols="8" offset="0">
           <v-select
             :placeholder="input.value"
             :disabled="!input.active"
             v-model="input.value"
-            style="padding-top:10%"
+            style="padding-top: 10%"
             @change="inputUpdate(input.value)"
             :items="input.items"
             outlined
@@ -100,12 +100,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .v-text-field {
-    ::v-deep input {
-      text-align:center !important
-    }
+.v-text-field {
+  ::v-deep input {
+    text-align: center !important;
   }
-  .v-text-field input {
-    text-align: center;
+}
+.v-text-field input {
+  text-align: center;
 }
 </style>

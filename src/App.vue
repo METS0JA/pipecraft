@@ -55,8 +55,7 @@ export default {
   opacity: 0;
 }
 #app {
-  background: url('assets/bg13.jpg')
-  no-repeat center center fixed !important;
+  background: url("assets/bg13.jpg") no-repeat center center fixed !important;
   background-size: cover;
 }
 </style>

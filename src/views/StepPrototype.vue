@@ -1,17 +1,22 @@
 <template>
   <!-- each sub component must recive -->
-  <v-row justify="center" style="padding-top:20px">
+  <v-row justify="center" style="padding-top: 20px">
     <v-expansion-panels dark multiple popout>
       <v-expansion-panel v-for="(service, index) in services" :key="index">
-        <v-expansion-panel-header style="padding-left: 40%">
-          <v-checkbox
-            @change="check_one($event, index)"
-            @click.stop
-            v-model="service.selected"
-            style="max-width:34px; padding-right:10px"
-          ></v-checkbox
-          >{{ service.serviceName.toUpperCase() }}
-        </v-expansion-panel-header>
+        <v-tooltip top>
+          <template v-slot:activator="{ on }">
+            <v-expansion-panel-header v-on="on" style="padding-left: 40%">
+              <v-checkbox
+                @change="check_one($event, index)"
+                @click.stop
+                v-model="service.selected"
+                style="max-width: 34px; padding-right: 10px"
+              ></v-checkbox
+              >{{ service.serviceName.toUpperCase() }}
+            </v-expansion-panel-header>
+          </template>
+          <span>{{ service.tooltip }}</span>
+        </v-tooltip>
         <v-expansion-panel-content>
           <v-row justify="center">
             <v-col
@@ -22,7 +27,7 @@
               :lg="input.type === 'combobox' ? 6 : 3"
               :md="input.type === 'combobox' ? 8 : 4"
               :sm="input.type === 'combobox' ? 12 : 3"
-              style="height:fit-content; width:fit-content"
+              style="height: fit-content; width: fit-content"
             >
               <v-container v-if="input.type === 'combobox'"
                 ><InputCombo
@@ -84,7 +89,7 @@
             <v-btn
               light
               class="mt-5 mb-8"
-              style="justify-content: center;"
+              style="justify-content: center"
               @click="toggleExtra(index)"
             >
               toggle advanced options
@@ -94,7 +99,7 @@
             v-if="service.extraInputs.length > 0 && service.showExtra == true"
           ></v-divider>
           <v-row
-            style="margin-top:10px"
+            style="margin-top: 10px"
             justify="center"
             v-if="service.extraInputs.length > 0 && service.showExtra == true"
           >
@@ -106,7 +111,7 @@
               :lg="input.type === 'combobox' ? 6 : 3"
               :md="input.type === 'combobox' ? 8 : 4"
               :sm="input.type === 'combobox' ? 12 : 3"
-              style="height:fit-content; width:fit-content"
+              style="height: fit-content; width: fit-content"
             >
               <v-container v-if="input.type === 'combobox'"
                 ><InputCombo

@@ -3,23 +3,23 @@
     right
     :disabled="
       $store.state.dockerStatus == 'running' &&
-        $store.state.inputDir != '' &&
-        (('workflowName' in $route.params &&
-          $store.getters.customWorkflowReady) ||
-          $store.getters.selectedStepsReady)
+      $store.state.inputDir != '' &&
+      (('workflowName' in $route.params &&
+        $store.getters.customWorkflowReady) ||
+        $store.getters.selectedStepsReady)
     "
   >
     <template v-slot:activator="{ on }">
       <div v-on="on">
         <v-btn
-          style="background-color:#212121"
+          style="background-color: #212121"
           :disabled="
             $store.state.dockerStatus == 'stopped' ||
-              $store.state.inputDir == '' ||
-              (!('workflowName' in $route.params) &&
-                !$store.getters.selectedStepsReady) ||
-              ('workflowName' in $route.params &&
-                !$store.getters.customWorkflowReady)
+            $store.state.inputDir == '' ||
+            (!('workflowName' in $route.params) &&
+              !$store.getters.selectedStepsReady) ||
+            ('workflowName' in $route.params &&
+              !$store.getters.customWorkflowReady)
           "
           block
           :style="
@@ -59,7 +59,7 @@
     <div
       v-if="
         !$store.getters.selectedStepsReady &&
-          $route.params.workflowName == undefined
+        $route.params.workflowName == undefined
       "
     >
       Missing selected services or mandatory inputs
@@ -86,12 +86,12 @@ import { ipcRenderer } from "electron";
 import { mapState } from "vuex";
 import { stringify } from "envfile";
 import os from "os";
-var socketPath = os.platform() === "win32" ? "//./pipe/docker_engine" : "/var/run/docker.sock";
-var dockerode = new Dockerode({socketPath: socketPath});
+var socketPath =
+  os.platform() === "win32" ? "//./pipe/docker_engine" : "/var/run/docker.sock";
+var dockerode = new Dockerode({ socketPath: socketPath });
 var stdout = new streams.WritableStream();
 var stderr = new streams.WritableStream();
 const isDevelopment = process.env.NODE_ENV !== "production";
-
 
 export default {
   name: "Run",
@@ -121,7 +121,7 @@ export default {
               this.$store.state[name][index[0]].selected == "always"
             ) {
               console.log(
-                `Startin step ${index[0] + 1}: ${index[1].serviceName}`,
+                `Startin step ${index[0] + 1}: ${index[1].serviceName}`
               );
               let Hostname = index[1].serviceName.replace(" ", "_");
               console.log(Hostname);
@@ -156,7 +156,7 @@ export default {
                 "\n",
                 `INPUT: ${Input}`,
                 "\n",
-                `WORKDIR: ${WorkingDir}`,
+                `WORKDIR: ${WorkingDir}`
               );
               console.log(envVariables);
               let result = await dockerode
@@ -174,7 +174,7 @@ export default {
                       // CpuCount: 6,
                     },
                     Env: envVariables,
-                  },
+                  }
                 )
                 .then(async ([res, container]) => {
                   console.log(stdout.toString());
@@ -200,7 +200,7 @@ export default {
               if (result.statusCode == 0) {
                 let newWorkingDir = this.getVariableFromLog(
                   result.log,
-                  "workingDir",
+                  "workingDir"
                 );
                 let newDataInfo = {
                   dataFormat: this.getVariableFromLog(result.log, "dataFormat"),
@@ -209,7 +209,7 @@ export default {
                 };
                 this.$store.commit(
                   "toggle_PE_SE_scripts",
-                  newDataInfo.readType,
+                  newDataInfo.readType
                 );
                 this.$store.commit("addInputInfo", newDataInfo);
                 this.$store.commit("addWorkingDir", newWorkingDir);
@@ -227,7 +227,7 @@ export default {
               stdout = new streams.WritableStream();
               stderr = new streams.WritableStream();
               console.log(
-                `Finished step ${index[0] + 1}: ${index[1].serviceName}`,
+                `Finished step ${index[0] + 1}: ${index[1].serviceName}`
               );
               this.$store.commit("resetRunInfo");
               if (
@@ -239,7 +239,7 @@ export default {
             }
           }
           let totalTime = this.millisToMinutesAndSeconds(
-            Date.now() - startTime,
+            Date.now() - startTime
           );
           console.log(totalTime);
           this.$store.commit("addWorkingDir", "/input");
@@ -270,10 +270,10 @@ export default {
               Hostname,
             ]);
             let serviceIndex = this.findSelectedService(index[0]);
-            let scriptName = this.selectedSteps[index[0]].services[serviceIndex]
-              .scriptName;
-            let imageName = this.selectedSteps[index[0]].services[serviceIndex]
-              .imageName;
+            let scriptName =
+              this.selectedSteps[index[0]].services[serviceIndex].scriptName;
+            let imageName =
+              this.selectedSteps[index[0]].services[serviceIndex].imageName;
             let Input = this.$store.state.inputDir;
             let WorkingDir = this.$store.state.workingDir;
             let envVariables;
@@ -296,7 +296,7 @@ export default {
               "\n",
               `INPUT: ${Input}`,
               "\n",
-              `WORKDIR: ${WorkingDir}`,
+              `WORKDIR: ${WorkingDir}`
             );
             console.log(envVariables);
             let result = await dockerode
@@ -313,7 +313,7 @@ export default {
                     Binds: Binds,
                   },
                   Env: envVariables,
-                },
+                }
               )
               .then(async ([res, container]) => {
                 console.log(stdout.toString());
@@ -338,7 +338,7 @@ export default {
             if (result.statusCode == 0) {
               let newWorkingDir = this.getVariableFromLog(
                 result.log,
-                "workingDir",
+                "workingDir"
               );
               let newDataInfo = {
                 dataFormat: this.getVariableFromLog(result.log, "dataFormat"),
@@ -370,7 +370,7 @@ export default {
             }
           }
           let totalTime = this.millisToMinutesAndSeconds(
-            Date.now() - startTime,
+            Date.now() - startTime
           );
           console.log(totalTime);
           this.$store.commit("addWorkingDir", "/input");
@@ -380,10 +380,7 @@ export default {
     },
     getVariableFromLog(log, varName) {
       var re = new RegExp(`(${varName}=.*)`, "g");
-      let value = log
-        .match(re)[0]
-        .replace('"', "")
-        .split("=")[1];
+      let value = log.match(re)[0].replace('"', "").split("=")[1];
       return value;
     },
     createVariableObj(stepIndex, serviceIndex) {
@@ -393,14 +390,14 @@ export default {
           let varObj = {};
           varObj[input.name] = input.value;
           envVariables.push(stringify(varObj).replace(/(\r\n|\n|\r)/gm, ""));
-        },
+        }
       );
       this.selectedSteps[stepIndex].services[serviceIndex].extraInputs.forEach(
         (input) => {
           let varObj = {};
           varObj[input.name] = input.value;
           envVariables.push(stringify(varObj).replace(/(\r\n|\n|\r)/gm, ""));
-        },
+        }
       );
       let dataInfo = {
         workingDir: this.$store.state.workingDir,
@@ -442,7 +439,7 @@ export default {
     },
     createCustomBinds(name, index, Input) {
       let Binds = [
-         `${process.cwd()}/src/pipecraft-core/service_scripts:/scripts`, // dev path
+        `${process.cwd()}/src/pipecraft-core/service_scripts:/scripts`, // dev path
         // `${process.cwd()}/resources/src/pipecraft-core/service_scripts:/scripts`, // build path
         `${Input}:/input`,
       ];
@@ -465,7 +462,10 @@ export default {
       return Binds;
     },
     createBinds(serviceIndex, stepIndex, Input) {
-      let scriptsPath = isDevelopment == true ? "/src/pipecraft-core/service_scripts" : "/resources/src/pipecraft-core/service_scripts";
+      let scriptsPath =
+        isDevelopment == true
+          ? "/src/pipecraft-core/service_scripts"
+          : "/resources/src/pipecraft-core/service_scripts";
       let Binds = [
         `${process.cwd()}${scriptsPath}:/scripts`,
         `${Input}:/input`,
@@ -478,7 +478,7 @@ export default {
             let bind = `${correctedPath}:/extraFiles`;
             Binds.push(bind);
           }
-        },
+        }
       );
       // this.selectedSteps[stepIndex].services[serviceIndex].extraInputs.forEach((input) => {
       //   if (input.type == "file" || input.type == "boolfile") {
@@ -506,7 +506,7 @@ export default {
         imageName,
         scriptName,
         envVariables,
-        this.$store.state.workingDir,
+        this.$store.state.workingDir
       );
       return result;
     },
