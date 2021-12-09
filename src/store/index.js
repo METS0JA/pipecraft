@@ -468,47 +468,6 @@ export default new Vuex.Store({
         disabled: "single_end",
         services: [
           {
-            scriptName: "dada2-assemble.R",
-            imageName: "pipecraft/dada2:3.10",
-            serviceName: "dada2",
-            selected: false,
-            showExtra: false,
-            extraInputs: [],
-            Inputs: [
-              {
-                name: "minOverlap",
-                value: 12,
-                disabled: "never",
-                tooltip:
-                  "The minimum length of the overlap required for mergingthe forward and reverse reads.",
-                type: "numeric",
-              },
-              {
-                name: "maxMismatch",
-                value: 0,
-                disabled: "never",
-                tooltip: "The maximum mismatches allowed in the overlap region",
-                type: "numeric",
-              },
-              {
-                name: "trimOverhang",
-                value: false,
-                disabled: "never",
-                tooltip:
-                  "If TRUE, overhangs in the alignment between the forwards and reverse read are trimmed off. Overhangs are when the reverse read extends past the start of the forward read, and vice-versa, as can happen when reads are longer than the amplicon and read into the other-direction primer region.",
-                type: "bool",
-              },
-              {
-                name: "justConcatenate",
-                value: false,
-                disabled: "never",
-                tooltip:
-                  "If TRUE, the forward and reverse-complemented reverse read are concatenated rather than merged, with a NNNNNNNNNN (10 Ns) spacer inserted between them",
-                type: "bool",
-              },
-            ],
-          },
-          {
             scriptName: "assemble_paired_end_data_vsearch.sh",
             imageName: "pipecraft/vsearch:2.18",
             serviceName: "vsearch",
@@ -595,25 +554,6 @@ export default new Vuex.Store({
         stepName: "remove chimeras",
         disabled: "never",
         services: [
-          {
-            scriptName: "dada2-chimera.R",
-            imageName: "pipecraft/dada2:3.10",
-            serviceName: "dada2",
-            selected: false,
-            showExtra: false,
-            extraInputs: [],
-            Inputs: [
-              {
-                name: "method",
-                items: ["consensus", "pooled", "per-sample"],
-                value: "consensus",
-                disabled: "never",
-                tooltip:
-                  "the samples in a sequence table are independently checked for chimeras. If 'pooled', the samples in the sequence table are all pooled together for chimera identification. If 'per-sample', the samples in a sequence table are independently checked for chimeras",
-                type: "select",
-              },
-            ],
-          },
           {
             scriptName: "chimera_filtering_vsearch.sh",
             imageName: "pipecraft/vsearch:2.18",
@@ -759,7 +699,7 @@ export default new Vuex.Store({
             ],
             Inputs: [
               {
-                name: "Organisms",
+                name: "organisms",
                 items: [
                   "Alveolata",
                   "Bryophyta",
@@ -789,12 +729,12 @@ export default new Vuex.Store({
                 type: "combobox",
               },
               {
-                name: "Regions",
-                items: ["SSU", "ITS1", "5.8S", "ITS2", "LSU"],
-                value: [],
+                name: "regions",
+                items: ["all", "SSU", "ITS1", "5.8S", "ITS2", "LSU"],
+                value: ["all"],
                 disabled: "never",
                 tooltip:
-                  "ITS regions to output (note that all will output also full ITS region [ITS1-5.8S-ITS2])",
+                  "ITS regions to output (note that 'all' will output also full ITS region [ITS1-5.8S-ITS2])",
                 type: "combobox",
               },
               {
@@ -810,7 +750,7 @@ export default new Vuex.Store({
         ],
       },
       {
-        stepName: "cluster | ASV",
+        stepName: "clustering",
         disabled: "never",
         services: [
           {
@@ -939,7 +879,7 @@ export default new Vuex.Store({
           {
             scriptName: "taxonomy_BLAST_xml.sh",
             imageName: "pipecraft/blast:2.12",
-            serviceName: "assign taxonomy",
+            serviceName: "BLAST",
             selected: false,
             showExtra: false,
             extraInputs: [
@@ -949,6 +889,7 @@ export default new Vuex.Store({
                 disabled: "never",
                 tooltip: "",
                 type: "numeric",
+                default: 10,
               },
               {
                 name: "word size",
@@ -1021,41 +962,7 @@ export default new Vuex.Store({
               },
             ],
           },
-          {
-            scriptName: "dada2-classifier.R",
-            imageName: "pipecraft/dada2:3.10",
-            serviceName: "dada2",
-            selected: false,
-            showExtra: false,
-            extraInputs: [],
-            Inputs: [
-              {
-                name: "dada2_database",
-                btnName: "select fasta",
-                value: "undefined",
-                disabled: "never",
-                tooltip:
-                  "Select a reference database fasta file for taxonomy annotation",
-                type: "file",
-              },
-              {
-                name: "minBoot",
-                value: 50,
-                disabled: "never",
-                tooltip:
-                  "The minimum bootstrap confidence for assigning a taxonomic level",
-                type: "numeric",
-              },
-              {
-                name: "tryRC",
-                value: false,
-                disabled: "never",
-                tooltip:
-                  "The reverse-complement of each sequences will be used for classification if it is a better match to the reference sequences than the forward sequence",
-                type: "bool",
-              },
-            ],
-          },
+
         ],
       },
     ],
@@ -1545,7 +1452,7 @@ export default new Vuex.Store({
         ],
         Inputs: [
           {
-            name: "Organisms",
+            name: "organisms",
             items: [
               "Alveolata",
               "Bryophyta",
@@ -1575,17 +1482,17 @@ export default new Vuex.Store({
             type: "combobox",
           },
           {
-            name: "Regions",
-            items: ["SSU", "ITS1", "5.8S", "ITS2", "LSU"],
-            value: [],
+            name: "regions",
+            items: ["all", "SSU", "ITS1", "5.8S", "ITS2", "LSU"],
+            value: ["all"],
             disabled: "never",
             tooltip:
-              "ITS regions to output (note that all will output also full ITS region [ITS1-5.8S-ITS2])",
+              "ITS regions to output (note that 'all' will output also full ITS region [ITS1-5.8S-ITS2])",
             type: "combobox",
           },
           {
             name: "partial",
-            value: 0,
+            value: 50,
             disabled: "never",
             tooltip:
               "if larger than 0, ITSx will save additional FASTA-files for full and partial ITS sequences longer than the specified cutoff value. If his setting is left to 0 (zero), it means OFF.",
