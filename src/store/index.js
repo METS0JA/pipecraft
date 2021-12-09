@@ -34,7 +34,7 @@ export default new Vuex.Store({
         services: [
           {
             scriptName: "demux_paired_end_data.sh",
-            imageName: "pipecraft/demux:0.1",
+            imageName: "pipecraft/cutadapt:3.5",
             serviceName: "demultiplex",
             selected: false,
             showExtra: false,
@@ -223,7 +223,7 @@ export default new Vuex.Store({
         services: [
           {
             scriptName: "cut_primers_paired_end_reads.sh",
-            imageName: "pipecraft/demux:0.1",
+            imageName: "pipecraft/cutadapt:3.5",
             serviceName: "cutadapt",
             selected: false,
             showExtra: false,
@@ -1062,7 +1062,7 @@ export default new Vuex.Store({
     OTU_Miseq: [
       {
         scriptName: "demux_paired_end_data.sh",
-        imageName: "pipecraft/demux:0.1",
+        imageName: "pipecraft/cutadapt:3.5",
         serviceName: "demultiplex",
         disabled: "demultiplexed",
         selected: false,
@@ -1156,7 +1156,7 @@ export default new Vuex.Store({
       },
       {
         scriptName: "cut_primers_paired_end_reads.sh",
-        imageName: "pipecraft/demux:0.1",
+        imageName: "pipecraft/cutadapt:3.5",
         serviceName: "cut primers",
         disabled: "never",
         selected: false,
@@ -1801,7 +1801,7 @@ export default new Vuex.Store({
     DADA2_Miseq: [
       {
         scriptName: "demux_paired_end_data.sh",
-        imageName: "pipecraft/demux:0.1",
+        imageName: "pipecraft/cutadapt:3.5",
         serviceName: "demultiplex",
         disabled: "demultiplexed",
         selected: false,
@@ -1896,7 +1896,7 @@ export default new Vuex.Store({
       },
       {
         scriptName: "cut_primers_paired_end_reads.sh",
-        imageName: "pipecraft/demux:0.1",
+        imageName: "pipecraft/cutadapt:3.5",
         serviceName: "cut primers",
         disabled: "never",
         selected: false,
