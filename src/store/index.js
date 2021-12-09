@@ -2221,10 +2221,15 @@ export default new Vuex.Store({
       },
     ],
     customWorkflowInfo: {
-      OTU_Miseq: { info: "OTUs workflow with vsearch", link: "https://github.com/torognes/vsearch" },
+      OTU_Miseq: { 
+        info: "OTUs workflow with vsearch", 
+        link: "https://github.com/torognes/vsearch", 
+        title: 'OTUs workflow' ,
+    },
       DADA2_Miseq: {
         info: "This workflow is based on DADA2 pipeline tutorial",
-        link: "https://benjjneb.github.io/dada2/tutorial.html",
+        link: "https://benjjneb.github.io/dada2/tutorial.html", 
+        title: 'ASVs workflow',
       },
     },
   },

@@ -13,7 +13,7 @@
           <v-card-title
             v-on="on"
             style="justify-content:center; padding:10px 0px;"
-            >{{ $route.params.workflowName.replace(/_/g, " ") }}</v-card-title
+            >{{ $store.state.customWorkflowInfo[$route.params.workflowName].title }}</v-card-title
           >
         </template>
         <span></span>
