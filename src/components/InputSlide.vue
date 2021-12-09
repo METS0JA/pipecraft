@@ -8,7 +8,7 @@
           >{{ input.name.replace(/_/g, " ") }}</v-card-title
         >
       </template>
-      <span>{{ "Default = ".concat(input.value, ": ", input.tooltip) }}</span>
+      <span>{{ input.tooltip }}</span>
     </v-tooltip>
     <v-card-actions style="justify-content:center;">
       <v-row

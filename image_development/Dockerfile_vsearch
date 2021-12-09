@@ -13,6 +13,6 @@ RUN apk add build-base \
     && apk add bzip2-dev \
     && wget https://github.com/shenwei356/seqkit/releases/download/v2.0.0/seqkit_linux_amd64.tar.gz -O /tmp/seqkit.tar.gz  \
     && tar zxvf /tmp/seqkit.tar.gz -C /usr/bin/ && rm /tmp/seqkit.tar.gz \
-    && git clone https://github.com/torognes/vsearch.git \
+    && git clone --branch v2.18.0 https://github.com/torognes/vsearch.git \
     && cd vsearch && ./autogen.sh && ./configure && make && make install
 RUN apk del git && apk del wget
