@@ -1323,67 +1323,84 @@ export default new Vuex.Store({
         ],
       },
       {
-        scriptName: "quality_filtering_single_end_trimmomatic.sh",
-        imageName: "pipecraft/trimmomatic:0.39",
-        serviceName: "quality filter",
+        scriptName: "quality_filtering_paired_end_vsearch.sh",
+        imageName: "pipecraft/vsearch:2.18",
+        serviceName: "quality filtering",
         disabled: "never",
         selected: "always",
         showExtra: false,
         extraInputs: [
           {
-            name: "leading_qual_threshold",
-            value: null,
-            disabled: "never",
-            tooltip:
-              "quality score threshold to remove low quality bases from the beginning of the read. As long as a base has a value below this threshold the base is removed and the next base will be investigated",
-            type: "numeric",
-          },
-          {
-            name: "trailing_qual_threshold",
-            value: null,
-            disabled: "never",
-            tooltip:
-              "quality score threshold to remove low quality bases from the end of the read. As long as a base has a value below this threshold the base is removed and the next base will be investigated",
-            type: "numeric",
-          },
-          {
             name: "cores",
             value: 1,
             disabled: "never",
-            tooltip: "number of cores to use",
+            tooltip:
+              "number of cores to use",
             type: "numeric",
           },
           {
-            name: "phred",
-            items: [33, 64],
-            value: 33,
+            name: "max_length",
+            value: null,
             disabled: "never",
             tooltip:
-              "phred quality scored encoding. Use phred64 if working with data from older Illumina (Solexa) machines",
-            type: "select",
+              "discard sequences with more than the specified number of bases",
+            type: "numeric",
+          },
+          {
+            name: "qmax",
+            value: 41,
+            disabled: "never",
+            tooltip:
+              "specify the maximum quality score accepted when reading FASTQ files. The default is 41, which is usual for recent Sanger/Illumina 1.8+ files. For PacBio data use 93.",
+            type: "numeric",
+          },
+          {
+            name: "qmin",
+            value: 0,
+            disabled: "never",
+            tooltip:
+              "the minimum quality score accepted for FASTQ files. The default is 0, which is usual for recent Sanger/Illumina 1.8+ files. Older formats may use scores between -5 and 2.",
+            type: "numeric",
+          },
+          {
+            name: "maxee_rate",
+            value: null,
+            disabled: "never",
+            tooltip:
+              "discard sequences with more than the specified number of expected errors per base",
+            type: "numeric",
+          },
+          {
+            name: "min_size",
+            value: 1,
+            disabled: "never",
+            tooltip:
+              "discard sequences with an abundance lower than the specified value",
+            type: "numeric",
           },
         ],
         Inputs: [
           {
-            name: "window_size",
-            value: 5,
+            name: "maxee",
+            value: 1,
             disabled: "never",
             tooltip:
-              "the number of bases to average base qualities. Starts scanning at the 5'-end of a sequence and trimms the read once the average required quality (required_qual) within the window size falls below the threshold",
+              "Maximum number of expected errors per sequence. Sequences with higher error rates will be discarded",
             type: "numeric",
           },
           {
-            name: "required_quality",
-            value: 27,
+            name: "maxNs",
+            value: 0,
             disabled: "never",
-            tooltip: "the average quality required for selected window size",
+            tooltip:
+              "Discard sequences with more than the specified number of N’s",
             type: "numeric",
           },
           {
             name: "min_length",
             value: 32,
             disabled: "never",
-            tooltip: "minimum length of the filtered output sequence",
+            tooltip: "Minimum length of the filtered output sequence",
             type: "numeric",
           },
         ],
@@ -1391,9 +1408,9 @@ export default new Vuex.Store({
       {
         scriptName: "chimera_filtering_vsearch.sh",
         imageName: "pipecraft/vsearch:2.18",
-        serviceName: "chimera filter",
+        serviceName: "chimera filtering",
         disabled: "never",
-        selected: "always",
+        selected: "false",
         showExtra: false,
         extraInputs: [
           {
@@ -1465,7 +1482,7 @@ export default new Vuex.Store({
       {
         scriptName: "ITS_extractor.sh",
         imageName: "pipecraft/itsx:1.1.3",
-        serviceName: "gene extraction",
+        serviceName: "ITS extractor",
         disabled: "never",
         selected: false,
         showExtra: false,
@@ -1568,7 +1585,7 @@ export default new Vuex.Store({
           },
           {
             name: "partial",
-            value: 50,
+            value: 0,
             disabled: "never",
             tooltip:
               "if larger than 0, ITSx will save additional FASTA-files for full and partial ITS sequences longer than the specified cutoff value. If his setting is left to 0 (zero), it means OFF.",
@@ -1699,7 +1716,7 @@ export default new Vuex.Store({
         imageName: "pipecraft/blast:2.12",
         serviceName: "assign taxonomy",
         disabled: "never",
-        selected: "always",
+        selected: "false",
         showExtra: false,
         extraInputs: [
           {
@@ -2204,7 +2221,7 @@ export default new Vuex.Store({
       },
     ],
     customWorkflowInfo: {
-      OTU_Miseq: { info: "placeholder", link: "placeholder" },
+      OTU_Miseq: { info: "OTUs workflow with vsearch", link: "https://github.com/torognes/vsearch" },
       DADA2_Miseq: {
         info: "This workflow is based on DADA2 pipeline tutorial",
         link: "https://benjjneb.github.io/dada2/tutorial.html",

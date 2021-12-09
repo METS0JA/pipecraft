@@ -5,7 +5,7 @@
 
 ##########################################################
 ###Third-party applications:
-#vsearch v2.17.0
+#vsearch v2.18.0
     #citation: Rognes T, Flouri T, Nichols B, Quince C, Mahé F (2016) VSEARCH: a versatile open source tool for metagenomics PeerJ 4:e2584
     #Copyright (C) 2014-2021, Torbjorn Rognes, Frederic Mahe and Tomas Flouri
     #Distributed under the GNU General Public License version 3 by the Free Software Foundation
@@ -74,8 +74,6 @@ while read LINE; do
     ###############################
     mkdir -p tempdir
 
-    echo "vsearch --fastq_filter $inputR1.$newextension $maxee $maxns $minlen $cores $qmax $qmin $minsize $max_length $maxee_rate --fastqout tempdir/$inputR1.$newextension"
-
     #R1
     checkerror=$(vsearch --fastq_filter \
     $inputR1.$newextension \
@@ -91,7 +89,6 @@ while read LINE; do
     --fastqout tempdir/$inputR1.$newextension 2>&1)
     check_app_error
 
-    echo "vsearch --fastq_filter $inputR2.$newextension $maxee $maxns $minlen $cores $qmax $qmin $minsize $max_length $maxee_rate --fastqout tempdir/$inputR2.$newextension"
     #R2
     checkerror=$(vsearch --fastq_filter \
     $inputR2.$newextension \
@@ -107,43 +104,40 @@ while read LINE; do
     --fastqout tempdir/$inputR2.$newextension 2>&1)
     check_app_error
 
-    #Synchronize R1 and R2
-    printf "\nSynchronizing R1 and R2 reads (matching order for paired-end reads merging)\n"
-    cd tempdir
-    checkerror=$(seqkit pair -1 $inputR1.$newextension -2 $inputR2.$newextension -w 0 2>&1)
-    check_app_error
+    #If outputs are not empty, then synchronize R1 and R2
+    if [ -s tempdir/$inputR1.$newextension ]; then
+        if [ -s tempdir/$inputR2.$newextension ]; then
+            printf "\nSynchronizing R1 and R2 reads (matching order for paired-end reads merging)\n"
+            cd tempdir
+            checkerror=$(seqkit pair -1 $inputR1.$newextension -2 $inputR2.$newextension 2>&1)
+            check_app_error
 
-    rm $inputR1.$newextension
-    rm $inputR2.$newextension
-    mv $inputR1.paired.$newextension $inputR1.$newextension
-    mv $inputR2.paired.$newextension $inputR2.$newextension
-    cd ..
+            rm $inputR1.$newextension
+            rm $inputR2.$newextension
+            mv $inputR1.paired.$newextension $inputR1.$newextension
+            mv $inputR2.paired.$newextension $inputR2.$newextension
+            cd ..
 
-    #Move final files to $output_dir
-    mv tempdir/$inputR1.$newextension $output_dir/$inputR1.$newextension
-    mv tempdir/$inputR2.$newextension $output_dir/$inputR2.$newextension
+            #Move final files to $output_dir
+            mv tempdir/$inputR1.$newextension $output_dir/$inputR1.$newextension
+            mv tempdir/$inputR2.$newextension $output_dir/$inputR2.$newextension
 
-    ### Check if output is empty; if yes, then report WARNING
-    if [ -s $output_dir/$inputR1.$newextension ]; then
-        :
+            #Convert output fastq files to FASTA
+            mkdir -p $output_dir/FASTA
+            checkerror=$(seqkit fq2fa -t dna --line-width 0 $output_dir/$inputR1.$newextension -o $output_dir/FASTA/$inputR1.fasta 2>&1)
+            check_app_error
+            checkerror=$(seqkit fq2fa -t dna --line-width 0 $output_dir/$inputR2.$newextension -o $output_dir/FASTA/$inputR2.fasta 2>&1)
+            check_app_error
+        else
+            printf '%s\n' "WARNING]: $inputR2 has 0 seqs after filtering (no output for that sample)"
+            rm tempdir/$inputR1.$newextension
+            rm tempdir/$inputR2.$newextension
+        fi
     else
-        printf '%s\n' "WARNING]: $inputR1 has 0 seqs (no output)"
-        rm $output_dir/$inputR1.$newextension
+        printf '%s\n' "WARNING]: $inputR1 has 0 seqs after filtering (no output for that sample)"
+        rm tempdir/$inputR1.$newextension
+        rm tempdir/$inputR2.$newextension
     fi
-    if [ -s $output_dir/$inputR2.$newextension ]; then
-        :
-    else
-        printf '%s\n' "WARNING]: $inputR2 has 0 seqs (no output)"
-        rm $output_dir/$inputR2.$newextension
-    fi
-
-    #Convert output fastq files to FASTA
-    mkdir -p $output_dir/FASTA
-    checkerror=$(seqkit fq2fa -t dna --line-width 0 $output_dir/$inputR1.$newextension -o $output_dir/FASTA/$inputR1.fasta 2>&1)
-    check_app_error
-    checkerror=$(seqkit fq2fa -t dna --line-width 0 $output_dir/$inputR2.$newextension -o $output_dir/FASTA/$inputR2.fasta 2>&1)
-    check_app_error
-
 done < tempdir2/paired_end_files.txt
 
 #################################################
