@@ -23,24 +23,21 @@
 ###############################
 ###############################
 #These variables are for testing (DELETE when implementing to PipeCraft)
-echo $Regions
-echo $Organisms
+echo $regions
+echo $organisms
 extension=$fileFormat
-#mandatory options
-organisms=$"-t all"             # list: A,B,C,D,E,F,G,H,I,L,M,O,P,Q,R,S,T,U,X,Y
-# organisms=$"-t ${Organisms}"             # list: A,B,C,D,E,F,G,H,I,L,M,O,P,Q,R,S,T,U,X,Y
-regions=$"--save_regions ${Regions}"   # list: all,SSU,ITS1,5.8S,ITS2,LSU
+organisms=$"-t ${Organisms}"
+regions=$"--save_regions ${Regions}"
 echo $regions
 echo $organisms
 partial=$"--partial ${partial}"
-#additional options
-cores=$"--cpu ${cores}"                # pos int
-eval=$"-E 1e4"                  # float (E)
-score=$"-S ${scores}"                   # pos int
-domains=$"-N ${domains}"                 # pos int
-complement=$complement         # or TRUE
-only_full=$only_full          # or TRUE
-truncate=$truncate           # or TRUE
+cores=$"--cpu ${cores}"
+eval=$"-E ${e-value}"
+score=$"-S ${scores}"
+domains=$"-N ${domains}" 
+complement=$complement
+only_full=$only_full
+truncate=$truncate
 ###############################
 ###############################
 
