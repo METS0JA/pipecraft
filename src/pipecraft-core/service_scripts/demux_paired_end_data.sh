@@ -43,6 +43,8 @@ printf "overlap = $overlap\n"
 source /scripts/framework.functions.sh
 #output dir
 output_dir=$"/input/demultiplex_out"
+#python module for assigning sample names as based on indexes file
+run_python_module=$"python3 /scripts/assign_sample_names.demuxModule.py $indexes_file"
 
 #############################
 ### Start of the workflow ###

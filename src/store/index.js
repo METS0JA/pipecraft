@@ -661,14 +661,16 @@ export default new Vuex.Store({
                 tooltip:
                   "domain E-value cutoff a sequence must obtain in the HMMER-based step to be included in the output",
                 type: "numeric",
+                rules: [(v) => v >= 0 || "ERROR: specify only values > 0"],
               },
               {
                 name: "scores",
                 value: 0,
                 disabled: "never",
                 tooltip:
-                  "domain score cutoff that a sequence must obtain in the HMMER-based step to be included in the output",
+                  "domain score cutoff that a sequence must obtain in the HMMER-based step to be included in the output. Leave as default if unsure how to set",
                 type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify only values > 0"],
               },
               {
                 name: "domains",
@@ -683,7 +685,7 @@ export default new Vuex.Store({
                 value: true,
                 disabled: "never",
                 tooltip:
-                  "If on, ITSx checks both DNA strands for matches to HMM-profiles",
+                  "if TRUE, then ITSx checks also reverse complementary strands for matches to HMM-profiles",
                 type: "bool",
               },
               {
@@ -691,7 +693,7 @@ export default new Vuex.Store({
                 value: false,
                 disabled: "never",
                 tooltip:
-                  "If true, the output is limited to full-length ITS1 and ITS2 regions only",
+                  "if TRUE, the output is limited to full-length ITS1 and ITS2 regions only",
                 type: "bool",
               },
               {
@@ -699,7 +701,7 @@ export default new Vuex.Store({
                 value: true,
                 disabled: "never",
                 tooltip:
-                  "removes ends of ITS sequences if they are outside of the ITS region. If off, the whole input sequence is saved",
+                  "if TRUE, ITSx removes ends of ITS sequences if they are outside of the ITS region. If off, the whole input sequence is saved when ITS region is detected",
                 type: "bool",
               },
             ],

@@ -16,6 +16,11 @@
     #Distributed under the MIT License
     #Copyright © 2016-2019 Wei Shen, 2019 Oxford Nanopore Technologies.
     #https://bioinf.shenwei.me/seqkit/
+#mothur 1.46.1
+    #citation: Schloss, P.D., et al., Introducing mothur: Open-source, platform-independent, community-supported software for describing and comparing microbial communities. Appl Environ Microbiol, 2009. 75(23):7537-41
+    #Distributed under the GNU GENERAL PUBLIC LICENSE
+    #Copyright © 2007 Free Software Foundation, Inc. http://fsf.org/
+    #https://github.com/mothur/mothur
 #pigz v2.4
 #perl v5.32.0
 ##########################################################
@@ -33,27 +38,27 @@ complement=${complement}
 only_full=${only_full}
 truncate=${truncate}
 
-echo $complement
-echo $only_full
-echo $truncate
-echo $eval
-
 #additional options, if selection != undefined
 if [[ $complement == "false" ]]; then
-    :
+    complement_in=$"--complement F"
 else
-    complement_in=$"--complement"
+    complement_in=$"--complement T"
 fi
 if [[ $only_full == "false" ]]; then
-    : 
+    only_full_in=$"--only_full F"
 else
-    only_full_in=$"--only_full"
+    only_full_in=$"--only_full T"
 fi
 if [[ $truncate == "false" ]]; then
-    :
+    truncate_in=$"--truncate F"
 else
-    truncate_in=$"--truncate"
+    truncate_in=$"--truncate T"
 fi
+
+echo $complement_in
+echo $only_full_in
+echo $truncate_in
+echo $eval
 
 # Source for functions
 source /scripts/framework.functions.sh
@@ -139,6 +144,16 @@ for file in *.$extension; do
         mkdir -p $output_dir/SSU
         mv $output_dir/$input.SSU.fasta $output_dir/SSU
     fi
+        #process for --partial SSU
+    if [[ -s tempdir/$input..SSU.full_and_partial.fasta ]]; then
+        checkerror=$(mothur "#deunique.seqs(fasta=tempdir/$input..SSU.full_and_partial.fasta, name=tempdir/$input.names)" 2>&1)
+        check_app_error
+        mv tempdir/$input..SSU.full_and_partial.redundant.fasta $output_dir
+        mv $output_dir/$input..SSU.full_and_partial.redundant.fasta $output_dir/$input.SSU.full_and_partial.fasta
+        mkdir -p $output_dir/SSU/full_and_partial
+        mv $output_dir/$input.SSU.full_and_partial.fasta $output_dir/SSU/full_and_partial
+    fi
+
     if [[ -s tempdir/$input..ITS1.fasta ]]; then
         checkerror=$(mothur "#deunique.seqs(fasta=tempdir/$input..ITS1.fasta, name=tempdir/$input.names)" 2>&1)
         check_app_error
@@ -147,6 +162,16 @@ for file in *.$extension; do
         mkdir -p $output_dir/ITS1
         mv $output_dir/$input.ITS1.fasta $output_dir/ITS1
     fi
+            #process for --partial ITS1
+    if [[ -s tempdir/$input..ITS1.full_and_partial.fasta ]]; then
+        checkerror=$(mothur "#deunique.seqs(fasta=tempdir/$input..ITS1.full_and_partial.fasta, name=tempdir/$input.names)" 2>&1)
+        check_app_error
+        mv tempdir/$input..ITS1.full_and_partial.redundant.fasta $output_dir
+        mv $output_dir/$input..ITS1.full_and_partial.redundant.fasta $output_dir/$input.ITS1.full_and_partial.fasta
+        mkdir -p $output_dir/ITS1/full_and_partial
+        mv $output_dir/$input.ITS1.full_and_partial.fasta $output_dir/ITS1/full_and_partial
+    fi
+
     if [[ -s tempdir/$input..5_8S.fasta ]]; then
         checkerror=$(mothur "#deunique.seqs(fasta=tempdir/$input..5_8S.fasta, name=tempdir/$input.names)" 2>&1)
         check_app_error
@@ -155,14 +180,34 @@ for file in *.$extension; do
         mkdir -p $output_dir/5_8S
         mv $output_dir/$input.5_8S.fasta $output_dir/5_8S
     fi
+                #process for --partial 5_8S
+    if [[ -s tempdir/$input..5_8S.full_and_partial.fasta ]]; then
+        checkerror=$(mothur "#deunique.seqs(fasta=tempdir/$input..5_8S.full_and_partial.fasta, name=tempdir/$input.names)" 2>&1)
+        check_app_error
+        mv tempdir/$input..5_8S.full_and_partial.redundant.fasta $output_dir
+        mv $output_dir/$input..5_8S.full_and_partial.redundant.fasta $output_dir/$input.5_8S.full_and_partial.fasta
+        mkdir -p $output_dir/5_8S/full_and_partial
+        mv $output_dir/$input.5_8S.full_and_partial.fasta $output_dir/5_8S/full_and_partial
+    fi
+
     if [[ -s tempdir/$input..ITS2.fasta ]]; then
         checkerror=$(mothur "#deunique.seqs(fasta=tempdir/$input..ITS2.fasta, name=tempdir/$input.names)" 2>&1)
-        check_app_error
-        mv tempdir/$input..ITS2.redundant.fasta $output_dir
+        check_app_error      
+        mv tempdir/$input..ITS2.redundant.fasta $output_dir        
         mv $output_dir/$input..ITS2.redundant.fasta $output_dir/$input.ITS2.fasta
         mkdir -p $output_dir/ITS2
         mv $output_dir/$input.ITS2.fasta $output_dir/ITS2
     fi
+        #process for --partial ITS2
+    if [[ -s tempdir/$input..ITS2.full_and_partial.fasta ]]; then
+        checkerror=$(mothur "#deunique.seqs(fasta=tempdir/$input..ITS2.full_and_partial.fasta, name=tempdir/$input.names)" 2>&1)
+        check_app_error
+        mv tempdir/$input..ITS2.full_and_partial.redundant.fasta $output_dir
+        mv $output_dir/$input..ITS2.full_and_partial.redundant.fasta $output_dir/$input.ITS2.full_and_partial.fasta
+        mkdir -p $output_dir/ITS2/full_and_partial
+        mv $output_dir/$input.ITS2.full_and_partial.fasta $output_dir/ITS2/full_and_partial
+    fi
+
     if [[ -s tempdir/$input..LSU.fasta ]]; then
         checkerror=$(mothur "#deunique.seqs(fasta=tempdir/$input..LSU.fasta, name=tempdir/$input.names)" 2>&1)
         check_app_error
@@ -171,6 +216,16 @@ for file in *.$extension; do
         mkdir -p $output_dir/LSU
         mv $output_dir/$input.LSU.fasta $output_dir/LSU
     fi
+            #process for --partial LSU
+    if [[ -s tempdir/$input..LSU.full_and_partial.fasta ]]; then
+        checkerror=$(mothur "#deunique.seqs(fasta=tempdir/$input..LSU.full_and_partial.fasta, name=tempdir/$input.names)" 2>&1)
+        check_app_error
+        mv tempdir/$input..LSU.full_and_partial.redundant.fasta $output_dir
+        mv $output_dir/$input..LSU.full_and_partial.redundant.fasta $output_dir/$input.LSU.full_and_partial.fasta
+        mkdir -p $output_dir/LSU/full_and_partial
+        mv $output_dir/$input.LSU.full_and_partial.fasta $output_dir/LSU/full_and_partial
+    fi
+
     if [[ -s tempdir/$input..full.fasta ]]; then
         checkerror=$(mothur "#deunique.seqs(fasta=tempdir/$input..full.fasta, name=tempdir/$input.names)" 2>&1)
         check_app_error
@@ -179,6 +234,16 @@ for file in *.$extension; do
         mkdir -p $output_dir/full_ITS
         mv $output_dir/$input.full.fasta $output_dir/full_ITS
     fi
+        #process for --partial full ITS
+    if [[ -s tempdir/$input..full_and_partial.fasta ]]; then
+        checkerror=$(mothur "#deunique.seqs(fasta=tempdir/$input..full_and_partial.fasta, name=tempdir/$input.names)" 2>&1)
+        check_app_error
+        mv tempdir/$input..full_and_partial.redundant.fasta $output_dir
+        mv $output_dir/$input..full_and_partial.redundant.fasta $output_dir/$input.full_and_partial.fasta
+        mkdir -p $output_dir/full_ITS/full_and_partial
+        mv $output_dir/$input.full_and_partial.fasta $output_dir/full_ITS/full_and_partial
+    fi
+        #no detections
     if [[ -s tempdir/$input._no_detections.fasta ]]; then
         checkerror=$(mothur "#deunique.seqs(fasta=tempdir/$input._no_detections.fasta, name=tempdir/$input.names)" 2>&1)
         check_app_error
