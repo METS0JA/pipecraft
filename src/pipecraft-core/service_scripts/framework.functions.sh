@@ -474,6 +474,8 @@ if [[ $newextension == "fasta" ]] || [[ $newextension == "fa" ]] || [[ $newexten
     fi
 fi
 ### Compile a track reads summary file (seq_count_summary.txt)
+echo "sed -e "s/\.$outfile_addition//" < tempdir2/seq_count_after.txt | sed -e "s/^$output_dir\///" | sed -e "s/^$subdir\///" > tempdir2/seq_count_after.temp"
+
 sed -e "s/\.$outfile_addition//" < tempdir2/seq_count_after.txt | \
 sed -e "s/^$output_dir\///" | sed -e "s/^$subdir\///" > tempdir2/seq_count_after.temp
 printf "File\tReads\tProcessed_reads\n" > $output_dir/$subdir/seq_count_summary.txt

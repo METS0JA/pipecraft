@@ -20,52 +20,50 @@
 #perl v5.32.0
 ##########################################################
 
-###############################
-###############################
-#These variables are for testing (DELETE when implementing to PipeCraft)
-echo $regions
-echo $organisms
+#load variables
 extension=$fileFormat
-organisms=$"-t ${Organisms}"
-regions=$"--save_regions ${Regions}"
-echo $regions
-echo $organisms
+organisms=$"-t ${organisms}"
+regions=$"--save_regions ${regions}"
 partial=$"--partial ${partial}"
 cores=$"--cpu ${cores}"
-eval=$"-E ${e-value}"
+eval=$"-E ${e_value}"
 score=$"-S ${scores}"
 domains=$"-N ${domains}" 
-complement=$complement
-only_full=$only_full
-truncate=$truncate
-###############################
-###############################
+complement=${complement}
+only_full=${only_full}
+truncate=${truncate}
 
-#############################
-### Start of the workflow ###
-#############################
+echo $complement
+echo $only_full
+echo $truncate
+echo $eval
+
 #additional options, if selection != undefined
-if [[ $complement == false ]]; then
+if [[ $complement == "false" ]]; then
     :
 else
     complement_in=$"--complement"
 fi
-if [[ $only_full == false ]]; then
-    :
+if [[ $only_full == "false" ]]; then
+    : 
 else
     only_full_in=$"--only_full"
 fi
-if [[ $truncate == false ]]; then
+if [[ $truncate == "false" ]]; then
     :
 else
     truncate_in=$"--truncate"
 fi
 
-start=$(date +%s)
 # Source for functions
 source /scripts/framework.functions.sh
 #output dir
 output_dir=$"/input/ITSx_out"
+
+#############################
+### Start of the workflow ###
+#############################
+start=$(date +%s)
 ### Check if files with specified extension exist in the dir
 first_file_check
 ### Prepare working env and check paired-end data
@@ -111,6 +109,8 @@ for file in *.$extension; do
     mv $input.names tempdir
 
     #Run ITSx
+    echo "ITSx -i tempdir/$input.unique.$newextension -o tempdir/$input. --preserve T --graphical F $organisms  $partial $regions $cores $eval  $score $domains  $complement_in $only_full_in $truncate_in"
+
     checkerror=$(ITSx -i tempdir/$input.unique.$newextension \
     -o tempdir/$input. \
     --preserve T \
@@ -192,7 +192,6 @@ done
 #################################################
 printf "\nCleaning up and compiling final stats files ...\n"
 
-
 #for each output separately (SSU,ITS1,5_8S,ITS2,LSU,full)
     #file identifier string after the process
 if [[ -d $output_dir/SSU ]]; then
@@ -237,22 +236,22 @@ if [[ $was_fastq == "TRUE" ]]; then
     mv *.fasta $output_dir/input_FASTA_files
 fi
 
+end=$(date +%s)
+runtime=$((end-start))
+
 #Make README.txt file
-printf "Files in /$output_dir directory represent sequences that passed ITS Extractor.
+printf "Files in 'ITSx_out' directory represent sequences that passed ITS Extractor.
 Regions are placed under corrseponding directory (i.e., ITS2 sequences are in 'ITS2' directory).
-Files in $output_dir/no_detections directory represent sequences where no ITS regions were identified.\n
+Files in /no_detections directory represent sequences where no ITS regions were identified.\n
 If input was FASTQ formatted file(s), then it was converted to FASTA, and only FASTA is outputted.
-Input FASTA files (converted from FASTQ) are in $output_dir/input_FASTA_files directory.
-\n" > $output_dir/README.txt
+Input FASTA files (converted from FASTQ) are in ITSx_out/input_FASTA_files directory.
+\nTotal time: $runtime sec.\n\n" > $output_dir/README.txt
 
 #Done
 printf "\nDONE\n"
 printf "Data in directory '$output_dir'\n"
 printf "Summary of sequence counts in 'seq_count_summary.txt'\n"
 printf "Check README.txt files in output directory for further information about the process.\n"
-
-end=$(date +%s)
-runtime=$((end-start))
 printf "Total time: $runtime sec.\n\n"
 
 #variables for all services

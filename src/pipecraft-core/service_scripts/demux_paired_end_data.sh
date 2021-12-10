@@ -7,7 +7,7 @@
 
 ##########################################################
 ###Third-party applications:
-#cutadapt v3.4
+#cutadapt v3.5
     #citation: Martin, Marcel (2011) Cutadapt removes adapter sequences from high-throughput sequencing reads. EMBnet.journal, 17(1), 10-12.
     #Distributed under the MIT license"
     #https://cutadapt.readthedocs.io/en/stable/index.html

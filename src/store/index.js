@@ -182,7 +182,7 @@ export default new Vuex.Store({
         disabled: "never",
         services: [
           {
-            tooltip: "",
+            tooltip: "reorient reads based on specified primer sequences",
             scriptName: "reorient_paired_end_reads.sh",
             imageName: "pipecraft/reorient:1",
             serviceName: "reorient",
@@ -224,7 +224,7 @@ export default new Vuex.Store({
         disabled: "never",
         services: [
           {
-            tooltip: "",
+            tooltip: "remove primers sequences from the reads",
             scriptName: "cut_primers_paired_end_reads.sh",
             imageName: "pipecraft/cutadapt:3.5",
             serviceName: "cutadapt",
@@ -639,7 +639,7 @@ export default new Vuex.Store({
         disabled: "never",
         services: [
           {
-            tooltip: "",
+            tooltip: "if data set consists of ITS sequences; identify and extract the ITS regions using ITSx",
             scriptName: "ITS_extractor.sh",
             imageName: "pipecraft/itsx:1.1.3",
             serviceName: "itsx",
@@ -654,7 +654,7 @@ export default new Vuex.Store({
                 type: "numeric",
               },
               {
-                name: "e-value",
+                name: "e_value",
                 value: (0.00001).toExponential(),
                 disabled: "never",
                 tooltip:
@@ -686,7 +686,7 @@ export default new Vuex.Store({
                 type: "bool",
               },
               {
-                name: "only full",
+                name: "only_full",
                 value: false,
                 disabled: "never",
                 tooltip:
@@ -727,7 +727,7 @@ export default new Vuex.Store({
                   "Apusozoa",
                   "Parabasalia",
                 ],
-                value: [],
+                value: ["Fungi"],
                 disabled: "never",
                 tooltip:
                   "set of profiles to use for the search. Can be used to restrict the search to only a few organism groups types to save time, if one or more of the origins are not relevant to the dataset under study",
@@ -974,7 +974,7 @@ export default new Vuex.Store({
     ],
     OTU_Miseq: [
       {
-        tooltip: "",
+        tooltip: "demultiplex data to per-sample files based on specified indexes",
         scriptName: "demux_paired_end_data.sh",
         imageName: "pipecraft/cutadapt:3.5",
         serviceName: "demultiplex",
@@ -1033,7 +1033,7 @@ export default new Vuex.Store({
         ],
       },
       {
-        tooltip: "",
+        tooltip: "reorient reads based on specified primer sequences",
         scriptName: "reorient_paired_end_reads.sh",
         imageName: "pipecraft/reorient:2",
         serviceName: "reorient",
@@ -1070,7 +1070,7 @@ export default new Vuex.Store({
         ],
       },
       {
-        tooltip: "",
+        tooltip: "remove primers sequences from the reads",
         scriptName: "cut_primers_paired_end_reads.sh",
         imageName: "pipecraft/cutadapt:3.5",
         serviceName: "cut primers",
@@ -1157,11 +1157,11 @@ export default new Vuex.Store({
         ],
       },
       {
-        tooltip: "",
+        tooltip: "assemble paired-end reads with vsearch",
         scriptName: "assemble_paired_end_data_vsearch.sh",
         imageName: "pipecraft/vsearch:2.18",
         serviceName: "merge reads",
-        selected: "always",
+        selected: "true",
         disabled: "single_end",
         showExtra: false,
         extraInputs: [
@@ -1239,7 +1239,7 @@ export default new Vuex.Store({
         ],
       },
       {
-        tooltip: "",
+        tooltip: "quality filtering with vsearch",
         scriptName: "quality_filtering_paired_end_vsearch.sh",
         imageName: "pipecraft/vsearch:2.18",
         serviceName: "quality filtering",
@@ -1322,12 +1322,12 @@ export default new Vuex.Store({
         ],
       },
       {
-        tooltip: "tick the checkbox to include chimera filtering step using vsearch",
+        tooltip: "chimera filtering with vsearch. Untick the checkbox to skip this step",
         scriptName: "chimera_filtering_vsearch.sh",
         imageName: "pipecraft/vsearch:2.18",
         serviceName: "chimera filtering",
         disabled: "never",
-        selected: "false",
+        selected: "true",
         showExtra: false,
         extraInputs: [
           {
@@ -1397,7 +1397,7 @@ export default new Vuex.Store({
         ],
       },
       {
-        tooltip: "",
+        tooltip: "if data set consists of ITS sequences; identify and extract the ITS regions using ITSx. NOTE THAT 'CLUSTERING' AND 'ASSIGN TAXONOMY' WILL BE DISABLED AT THIS STAGE if 'ITS EXTRACTOR' IS SELECTED; because ITSx outputs multiple directories for different ITS sub-regions; select appropriate ITSx output folder for CLUSTERING after the process is finished",
         scriptName: "ITS_extractor.sh",
         imageName: "pipecraft/itsx:1.1.3",
         serviceName: "ITS extractor",
@@ -1512,12 +1512,12 @@ export default new Vuex.Store({
         ],
       },
       {
-        tooltip: "",
+        tooltip: "cluster reads to OTUs with vsearch",
         scriptName: "clustering_vsearch.sh",
         imageName: "pipecraft/vsearch:2.18",
         serviceName: "clustering",
         disabled: "never",
-        selected: "always",
+        selected: "true",
         showExtra: false,
         extraInputs: [
           {
@@ -1631,7 +1631,7 @@ export default new Vuex.Store({
         ],
       },
       {
-        tooltip: "",
+        tooltip: "assign taxonomy with BLAST against selected database",
         scriptName: "taxonomy_BLAST_xml.sh",
         imageName: "pipecraft/blast:2.12",
         serviceName: "assign taxonomy",
@@ -1720,7 +1720,7 @@ export default new Vuex.Store({
     ],
     DADA2_Miseq: [
       {
-        tooltip: "",
+        tooltip: "demultiplex data to per-sample files based on specified indexes",
         scriptName: "demux_paired_end_data.sh",
         imageName: "pipecraft/cutadapt:3.5",
         serviceName: "demultiplex",
@@ -1779,7 +1779,7 @@ export default new Vuex.Store({
         ],
       },
       {
-        tooltip: "",
+        tooltip: "reorient reads based on specified primer sequences",
         scriptName: "reorient_paired_end_reads.sh",
         imageName: "pipecraft/reorient:1",
         serviceName: "reorient",
@@ -1816,7 +1816,7 @@ export default new Vuex.Store({
         ],
       },
       {
-        tooltip: "",
+        tooltip: "remove primers sequences from the reads",
         scriptName: "cut_primers_paired_end_reads.sh",
         imageName: "pipecraft/cutadapt:3.5",
         serviceName: "cut primers",
@@ -1903,10 +1903,10 @@ export default new Vuex.Store({
         ],
       },
       {
-        tooltip: "",
+        tooltip: "quality filtering with DADA2 'filterAndTrim' function",
         scriptName: "dada2-quality.R",
         imageName: "pipecraft/dada2:3.10",
-        serviceName: "quality filter",
+        serviceName: "quality filtering",
         disabled: "never",
         selected: "always",
         showExtra: false,
@@ -2006,7 +2006,7 @@ export default new Vuex.Store({
         ],
       },
       {
-        tooltip: "",
+        tooltip: "select the denoising options for DADA2 'dada' function",
         scriptName: "dada2-assemble.R",
         imageName: "pipecraft/dada2:3.10",
         serviceName: "denoise",
@@ -2044,7 +2044,7 @@ export default new Vuex.Store({
         ],
       },
       {
-        tooltip: "",
+        tooltip: "assemble paired-end reads (R1 and R2) with DADA2 'mergePairs' function",
         scriptName: "dada2-assemble.R",
         imageName: "pipecraft/dada2:3.10",
         serviceName: "merge Pairs",
@@ -2058,7 +2058,7 @@ export default new Vuex.Store({
             value: 12,
             disabled: "never",
             tooltip:
-              "The minimum length of the overlap required for mergingthe forward and reverse reads.",
+              "the minimum length of the overlap required for mergingthe forward and reverse reads.",
             type: "numeric",
           },
           {
@@ -2073,7 +2073,7 @@ export default new Vuex.Store({
             value: false,
             disabled: "never",
             tooltip:
-              "If TRUE, overhangs in the alignment between the forwards and reverse read are trimmed off. Overhangs are when the reverse read extends past the start of the forward read, and vice-versa, as can happen when reads are longer than the amplicon and read into the other-direction primer region.",
+              "if TRUE, overhangs in the alignment between the forwards and reverse read are trimmed off. Overhangs are when the reverse read extends past the start of the forward read, and vice-versa, as can happen when reads are longer than the amplicon and read into the other-direction primer region.",
             type: "bool",
           },
           {
@@ -2081,13 +2081,13 @@ export default new Vuex.Store({
             value: false,
             disabled: "never",
             tooltip:
-              "If TRUE, the forward and reverse-complemented reverse read are concatenated rather than merged, with a NNNNNNNNNN (10 Ns) spacer inserted between them",
+              "if TRUE, the forward and reverse-complemented reverse read are concatenated rather than merged, with a NNNNNNNNNN (10 Ns) spacer inserted between them",
             type: "bool",
           },
         ],
       },
       {
-        tooltip: "",
+        tooltip: "remove chimeras with DADA2 'removeBimeraDenovo' function",
         scriptName: "dada2-chimera.R",
         imageName: "pipecraft/dada2:3.10",
         serviceName: "remove chimeras",
@@ -2102,19 +2102,19 @@ export default new Vuex.Store({
             value: "consensus",
             disabled: "never",
             tooltip:
-              "the samples in a sequence table are independently checked for chimeras. If 'pooled', the samples in the sequence table are all pooled together for chimera identification. If 'per-sample', the samples in a sequence table are independently checked for chimeras",
+              "'consensus' - the samples are independently checked for chimeras, and a consensus decision on each sequence variant is made. If 'pooled', the samples are all pooled together for chimera identification. If 'per-sample', the samples are independently checked for chimeras",
             type: "select",
           },
         ],
       },
 
       {
-        tooltip: "",
+        tooltip: "assign taxonomy with DADA2 'assignTaxonomy' function against the selected database. Untick the checkbox to skip this step",
         scriptName: "dada2-classifier.R",
         imageName: "pipecraft/dada2:3.10",
         serviceName: "assign Taxonomy",
         disabled: "never",
-        selected: "always",
+        selected: "false",
         showExtra: false,
         extraInputs: [],
         Inputs: [
