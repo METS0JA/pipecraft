@@ -245,7 +245,7 @@ Regions are placed under corrseponding directory (i.e., ITS2 sequences are in 'I
 Files in /no_detections directory represent sequences where no ITS regions were identified.\n
 If input was FASTQ formatted file(s), then it was converted to FASTA, and only FASTA is outputted.
 Input FASTA files (converted from FASTQ) are in ITSx_out/input_FASTA_files directory.
-\nTotal time: $runtime sec.\n\n" > $output_dir/README.txt
+\nTotal run time was $runtime sec.\n\n" > $output_dir/README.txt
 
 #Done
 printf "\nDONE\n"

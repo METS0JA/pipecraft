@@ -652,6 +652,7 @@ export default new Vuex.Store({
                 disabled: "never",
                 tooltip: "number of cores to use",
                 type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify only values > 0"],
               },
               {
                 name: "e_value",
@@ -749,6 +750,7 @@ export default new Vuex.Store({
                 tooltip:
                   "if larger than 0, ITSx will save additional FASTA-files for full and partial ITS sequences longer than the specified cutoff value. If his setting is left to 0 (zero), it means OFF.",
                 type: "numeric",
+                rules: [(v) => v >= 0 || "ERROR: specify only values >= 0"],
               },
             ],
           },
