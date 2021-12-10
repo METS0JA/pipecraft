@@ -9,7 +9,7 @@
 ###Third-party applications:
 #cutadapt v3.5
     #citation: Martin, Marcel (2011) Cutadapt removes adapter sequences from high-throughput sequencing reads. EMBnet.journal, 17(1), 10-12.
-    #Distributed under the MIT license"
+    #Distributed under the MIT license
     #https://cutadapt.readthedocs.io/en/stable/index.html
 #seqkit v2.0.0
     #citation: Shen W, Le S, Li Y, Hu F (2016) SeqKit: A Cross-Platform and Ultrafast Toolkit for FASTA/Q File Manipulation. PLOS ONE 11(10): e0163962. https://doi.org/10.1371/journal.pone.0163962
@@ -17,6 +17,7 @@
     #Copyright © 2016-2019 Wei Shen, 2019 Oxford Nanopore Technologies.
     #https://bioinf.shenwei.me/seqkit/
 #pigz v2.4
+#python3 with biopython
 ##################################################################
 
 #Load variables
@@ -236,7 +237,19 @@ Output R1 and R2 reads are synchronized for merging paired-end data.
 IF SEQUENCE YIELD PER SAMPLE IS LOW (OR ZERO), DOUBLE-CHECK THE INDEXES FORMATTING.\n
 RUNNING THE PROCESS SEVERAL TIMES IN THE SAME DIRECTORY WILL OVERWRITE ALL THE OUTPUTS!\n
 \nSummary of sequence counts in 'seq_count_summary.txt'\n
-\n\n Total time was $runtime sec.\n" > $output_dir/README.txt
+\n\nTotal run time was $runtime sec.\n\n\n
+##########################################################
+###Third-party applications used for this process [PLEASE CITE]:
+#cutadapt v3.5
+    #citation: Martin, Marcel (2011) Cutadapt removes adapter sequences from high-throughput sequencing reads. EMBnet.journal, 17(1), 10-12.
+    #Distributed under the MIT license
+    #https://cutadapt.readthedocs.io/en/stable/index.html
+#seqkit v2.0.0
+    #citation: Shen W, Le S, Li Y, Hu F (2016) SeqKit: A Cross-Platform and Ultrafast Toolkit for FASTA/Q File Manipulation. PLOS ONE 11(10): e0163962. https://doi.org/10.1371/journal.pone.0163962
+    #Distributed under the MIT License
+    #Copyright © 2016-2019 Wei Shen, 2019 Oxford Nanopore Technologies.
+    #https://bioinf.shenwei.me/seqkit/
+##################################################################" > $output_dir/README.txt
 
 ###Done, files in $output_dir folder
 printf "\nDONE\n"

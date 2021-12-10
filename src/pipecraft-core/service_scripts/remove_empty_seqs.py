@@ -14,3 +14,5 @@ with open(output, "w") as output_handle:
     for record in SeqIO.parse(fasta_file, "fasta"):
         if record.seq != '':
             SeqIO.write(record, output_handle, "fasta-2line")
+            
+print("python module finished")

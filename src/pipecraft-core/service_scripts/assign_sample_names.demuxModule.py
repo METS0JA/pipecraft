@@ -50,3 +50,4 @@ for line in demux_files:
 												os.rename(line_R1, sampl_nameR1)
 											if os.path.isfile(line_R2):
 												os.rename(line_R2, sampl_nameR2)
+print("python module finished")
