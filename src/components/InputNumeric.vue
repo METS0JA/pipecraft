@@ -25,7 +25,7 @@
             class="centered-input"
             background-color="transparent"
             solo
-            :rules="input.rules ? input.rules : null"
+            :rules="input.rules ? input.rules : []"
           ></v-text-field>
         </v-col>
       </v-row>
