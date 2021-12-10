@@ -450,9 +450,6 @@ if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]]; then
             size=$(echo $(cat $file | wc -l) / 4 | bc)
             printf "$file\t$size\n" >> tempdir2/seq_count_after.txt
         done
-    else
-        printf '%s\n' "ERROR]: no output files generated ($output_dir). Check settings!" >&2
-        end_process
     fi
 fi
 if [[ $newextension == "fasta" ]] || [[ $newextension == "fa" ]] || [[ $newextension == "fas" ]]; then
@@ -468,16 +465,12 @@ if [[ $newextension == "fasta" ]] || [[ $newextension == "fa" ]] || [[ $newexten
             size=$(grep -c "^>" $file)
             printf "$file\t$size\n" >> tempdir2/seq_count_after.txt
         done
-    else
-        printf '%s\n' "ERROR]: no output files generated ($output_dir). Check settings!" >&2
-        end_process
     fi
 fi
 ### Compile a track reads summary file (seq_count_summary.txt)
-echo "sed -e "s/\.$outfile_addition//" < tempdir2/seq_count_after.txt | sed -e "s/^$output_dir\///" | sed -e "s/^$subdir\///" > tempdir2/seq_count_after.temp"
-
+output_dir_for_sed=$(echo $output_dir | sed -e "s/\//\\\\\//g")
 sed -e "s/\.$outfile_addition//" < tempdir2/seq_count_after.txt | \
-sed -e "s/^$output_dir\///" | sed -e "s/^$subdir\///" > tempdir2/seq_count_after.temp
+sed -e "s/^$output_dir_for_sed\///" | sed -e "s/^$subdir\///" > tempdir2/seq_count_after.temp
 printf "File\tReads\tProcessed_reads\n" > $output_dir/$subdir/seq_count_summary.txt
 while read LINE; do
     file1=$(echo $LINE | awk '{print $1}')
