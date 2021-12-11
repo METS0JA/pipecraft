@@ -152,7 +152,7 @@ for file in *.$extension; do
         checkerror=$(mothur "#deunique.seqs(fasta=tempdir/$input..SSU.full_and_partial.fasta, name=tempdir/$input.names)" 2>&1)
         check_app_error
         mv tempdir/$input..SSU.full_and_partial.redundant.fasta $output_dir
-        $run_python_module $output_dir/$input..SSU.full_and_partial.redundant.fasta > $output_dir/$input.SSU.full_and_partial.fasta
+        $run_python_module $output_dir/$input..SSU.full_and_partial.redundant.fasta $output_dir/$input.SSU.full_and_partial.fasta
         mkdir -p $output_dir/SSU/full_and_partial
         mv $output_dir/$input.SSU.full_and_partial.fasta $output_dir/SSU/full_and_partial
     fi
@@ -170,7 +170,7 @@ for file in *.$extension; do
         checkerror=$(mothur "#deunique.seqs(fasta=tempdir/$input..ITS1.full_and_partial.fasta, name=tempdir/$input.names)" 2>&1)
         check_app_error
         mv tempdir/$input..ITS1.full_and_partial.redundant.fasta $output_dir
-        $run_python_module $output_dir/$input..ITS1.full_and_partial.redundant.fasta > $output_dir/$input.ITS1.full_and_partial.fasta
+        $run_python_module $output_dir/$input..ITS1.full_and_partial.redundant.fasta $output_dir/$input.ITS1.full_and_partial.fasta
         mkdir -p $output_dir/ITS1/full_and_partial
         mv $output_dir/$input.ITS1.full_and_partial.fasta $output_dir/ITS1/full_and_partial
     fi
@@ -188,7 +188,7 @@ for file in *.$extension; do
         checkerror=$(mothur "#deunique.seqs(fasta=tempdir/$input..5_8S.full_and_partial.fasta, name=tempdir/$input.names)" 2>&1)
         check_app_error
         mv tempdir/$input..5_8S.full_and_partial.redundant.fasta $output_dir
-        $run_python_module $output_dir/$input..5_8S.full_and_partial.redundant.fasta > $output_dir/$input.5_8S.full_and_partial.fasta
+        $run_python_module $output_dir/$input..5_8S.full_and_partial.redundant.fasta $output_dir/$input.5_8S.full_and_partial.fasta
         mkdir -p $output_dir/5_8S/full_and_partial
         mv $output_dir/$input.5_8S.full_and_partial.fasta $output_dir/5_8S/full_and_partial
     fi
@@ -206,7 +206,7 @@ for file in *.$extension; do
         checkerror=$(mothur "#deunique.seqs(fasta=tempdir/$input..ITS2.full_and_partial.fasta, name=tempdir/$input.names)" 2>&1)
         check_app_error
         mv tempdir/$input..ITS2.full_and_partial.redundant.fasta $output_dir
-        $run_python_module $output_dir/$input..ITS2.full_and_partial.redundant.fasta > $output_dir/$input.ITS2.full_and_partial.fasta
+        $run_python_module $output_dir/$input..ITS2.full_and_partial.redundant.fasta $output_dir/$input.ITS2.full_and_partial.fasta
         mkdir -p $output_dir/ITS2/full_and_partial
         mv $output_dir/$input.ITS2.full_and_partial.fasta $output_dir/ITS2/full_and_partial
     fi
@@ -224,7 +224,7 @@ for file in *.$extension; do
         checkerror=$(mothur "#deunique.seqs(fasta=tempdir/$input..LSU.full_and_partial.fasta, name=tempdir/$input.names)" 2>&1)
         check_app_error
         mv tempdir/$input..LSU.full_and_partial.redundant.fasta $output_dir
-        $run_python_module $output_dir/$input..LSU.full_and_partial.redundant.fasta > $output_dir/$input.LSU.full_and_partial.fasta
+        $run_python_module $output_dir/$input..LSU.full_and_partial.redundant.fasta $output_dir/$input.LSU.full_and_partial.fasta
         mkdir -p $output_dir/LSU/full_and_partial
         mv $output_dir/$input.LSU.full_and_partial.fasta $output_dir/LSU/full_and_partial
     fi
@@ -242,7 +242,7 @@ for file in *.$extension; do
         checkerror=$(mothur "#deunique.seqs(fasta=tempdir/$input..full_and_partial.fasta, name=tempdir/$input.names)" 2>&1)
         check_app_error
         mv tempdir/$input..full_and_partial.redundant.fasta $output_dir
-        $run_python_module $output_dir/$input..full_and_partial.redundant.fasta > $output_dir/$input.full_and_partial.fasta
+        $run_python_module $output_dir/$input..full_and_partial.redundant.fasta $output_dir/$input.full_and_partial.fasta
         mkdir -p $output_dir/full_ITS/full_and_partial
         mv $output_dir/$input.full_and_partial.fasta $output_dir/full_ITS/full_and_partial
     fi

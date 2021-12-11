@@ -20,12 +20,12 @@
 
 #load variables
 extension=$fileFormat
-id=$"--id ${pre_cluster}" 
-minuniquesize=$"--minuniquesize ${min_unique_size}" 
+id=$"--id ${pre_cluster}" #float (0-1)
+minuniquesize=$"--minuniquesize ${min_unique_size}" #pos int >0
 denovo=${denovo} #FALSE or TRUE
-cores=$"--threads ${cores}" # pos int
-abskew=$"--abskew ${abundance_skew}" # pos int
-minh=$"--minh ${min_h}" # float (0-1)
+cores=$"--threads ${cores}" #pos int
+abskew=$"--abskew ${abundance_skew}" #pos int
+minh=$"--minh ${min_h}" #float (0-1)
 
 #Source for functions
 source /scripts/framework.functions.sh
@@ -33,16 +33,17 @@ source /scripts/framework.functions.sh
 output_dir=$"/input/chimera_Filtered_out"
 
 #load path to reference database (if specified)
-regex='[^\\]*$'
-if [[ $reference_based == undefined ]]; then
+if [[ $reference_based == "undefined" ]]; then
     :
 else
-    echo "OK"
-    ref=$(echo $reference_based | grep -oE "$regex")
-    reference_based=$(printf "/extraFiles/$ref")
-    database=$reference_based
+    regex='[^\\]*$'
+    ref=$(echo $reference_based | grep -oP "$regex")
+    db=$(printf "/extraFiles/$ref")
+    database=$db
 fi
-
+ls -l
+pwd
+ls -la /extraFiles
 #############################
 ### Start of the workflow ###
 #############################
@@ -87,7 +88,7 @@ for file in *.$extension; do
     ### Start chimera filtering ###
     ###############################
     #dereplicate sequences
-    if [[ $denovo_filt == "TRUE" ]]; then
+    if [[ $denovo == "true" ]]; then
         checkerror=$(vsearch --derep_fulllength $input.$newextension \
         $minuniquesize \
         --sizein --sizeout \
@@ -130,12 +131,12 @@ for file in *.$extension; do
             check_app_error
 
             #If input was fastq, then move all converted FASTA files to $output_dir/FASTA
-            if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]]; then
+            if [[ $was_fastq == "TRUE" ]]; then
                 mkdir -p $output_dir/FASTA
                 mv $input.fasta $output_dir/FASTA
             fi
-
         else
+            echo "time for ref"
             checkerror=$(vsearch --uchime_ref tempdir/$input.fasta \
             $cores \
             --db $database \
@@ -186,15 +187,29 @@ done
 ### COMPILE FINAL STATISTICS AND README FILES ###
 #################################################
 printf "\nCleaning up and compiling final stats files ...\n"
-
-clean_and_make_stats
+if [[ $was_fastq == "TRUE" ]]; then
+    cd $output_dir/FASTA
+    mkdir -p tempdir2
+    clean_and_make_stats
+    cd ..
+    cd .. 
+    #Delete tempdirs
+    if [ -d tempdir ]; then
+        rm -rf tempdir
+    fi
+    if [ -d tempdir2 ]; then
+        rm -rf tempdir2
+    fi
+else
+    clean_and_make_stats
+fi
 end=$(date +%s)
 runtime=$((end-start))
 
 #Make README.txt file
 printf "Files in 'chimeraFiltered_out' directory represent chimera filtered sequences.
 Files in 'chimeraFiltered_out/chimeras' directory represent identified putative chimeric sequences.
-In input was FASTQ formatted file(s), then it was converted to FASTA, and only FASTA is outputted.
+In input was FASTQ formatted file(s), then it was converted to FASTA (chimeraFiltered_out/FASTA), and only FASTA is outputted.
 \nSummary of sequence counts in 'seq_count_summary.txt'\n
 \n\nTotal run time was $runtime sec.\n" > $output_dir/README.txt
 

@@ -2,7 +2,7 @@
 
 #Remove records in fasta file with empty sequences.
 #ITSx reports empty sequences when using --partial option, use this script to clean the file.
-#usage: script.py $fasta_file > output.fasta
+#usage: script.py input.fasta output.fasta
 
 from Bio import SeqIO
 from sys import argv

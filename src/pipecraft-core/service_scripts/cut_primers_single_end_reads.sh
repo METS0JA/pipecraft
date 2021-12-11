@@ -103,7 +103,7 @@ for file in *.$extension; do
 
     #If input is compressed, then decompress (keeping the compressed file, but overwriting if filename exists!)
         #$extension will be $newextension
-    check_gz_zip_PE
+    check_gz_zip_SE
     ### Check input formats (only fastq/fasta supported)
     check_extension_fastx
 

@@ -1,10 +1,9 @@
 #!/bin/bash
 
-#Input = single-end fasta file.
-#Outputs: BLAST_1st_best_hit.txt, BLAST_10_best_hits.txt
-
-# Taxonomy annotation with BLAST
+#Taxonomy annotation with BLAST
+#Input = single-end fasta file + database file.
 #If database = fasta file, then makeblastdb with BLAST+, otherwise run BLAST
+#Outputs: BLAST_1st_best_hit.txt, BLAST_10_best_hits.txt
 
 ##########################################################
 ###Third-party applications:
@@ -14,28 +13,17 @@
 #gawk
 ##########################################################
 
-###############################
-###############################
-#These variables are for testing (DELETE when implementing to PipeCraft)
-extension=$"fasta"
-
-#input OTUs/ASVs
-if [[ -f "$workingDir/OTUs.fasta" ]]; then
-    IN=$"$workingDir/OTUs.fasta"
-fi
-if [[ -f "$workingDir/ASVs.fasta" ]]; then
-    IN=$"$workingDir/ASVs.fasta"
-fi
+#load variables
+extension=$fileFormat
 
 #database [# here, a possibility for multiple databases to be added: database=$"-db $db1 $db2 $db3 $db4 $db5"]
 regex='[^\\]*$'
 db1_temp=$(echo $database_file | grep -oP "$regex")
 db1=$(printf "/extraFiles/$db1_temp")
-
+echo "db1 = $db1"
 #mandatory options
 task=$"-task ${task}" # list: blastn, megablast
 strands=$"-strand ${strands}" #list: both, plus
-
 #additional options
 cores=$"-num_threads ${cores}" # positive integer
 evalue=$"-evalue=${e_value}" # float
@@ -44,19 +32,17 @@ reward=$"-reward=${reward}" # positive integer
 penalty=$"-penalty=${penalty}" # negative integer
 gapopen=$"-gapopen=${gap_open}" # positive integer
 gapextend=$"-gapextend=${gap_extend}" # positive integer
-###############################
+
+# Source for functions
+source /scripts/framework.functions.sh
+parseXML=$"/scripts/Blast_xml_parse.py"
+#output dir
+output_dir=$"/input/taxonomy_out"
 
 #############################
 ### Start of the workflow ###
 #############################
 start=$(date +%s)
-# Source for functions
-source /scripts/framework.functions.sh
-parseXML=$"/scripts/Blast_xml_parse.py"
-
-#output dir
-output_dir=$"/input/taxonomy_out"
-
 ### Check if files with specified extension exist in the dir
 first_file_check
 ### Prepare working env and check paired-end data
@@ -66,7 +52,11 @@ prepare_SE_env
 check_gz_zip_SE
 ### Check input formats (fasta supported)
 check_extension_fasta
-
+### Select last fasta file in the folder as input for BLAST
+for file in *.$newextension; do
+	IN=$(echo $file)
+done
+echo "input = $IN"
 
 ### Check BLAST database
 d1=$(echo $db1 | awk 'BEGIN{FS=OFS="."}{print $NF}') #get the extension
@@ -78,7 +68,7 @@ if [[ $check_db_presence != 0 ]]; then
 elif [[ $d1 == "fasta" ]] || [[ $d1 == "fa" ]] || [[ $d1 == "fas" ]] || [[ $d1 == "fna" ]] || [[ $d1 == "ffn" ]]; then
 	printf '%s\n' "Note: converting fasta formatted database for BLAST"
 	makeblastdb -in $db1 -input_type fasta -dbtype nucl
-	db1=$(echo $db1 | awk 'BEGIN{FS=OFS="."}NF{NF-=1};1')
+	#db1=$(echo $db1 | awk 'BEGIN{FS=OFS="."}NF{NF-=1};1')
 	database=$"-db $db1"
 else
 	#if database is already formatted, then remove last extention

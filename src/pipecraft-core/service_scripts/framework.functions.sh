@@ -296,7 +296,7 @@ if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]]; then
     if [ $outfile_check != 0 ]; then 
         for file in $output_dir/*.$newextension; do
             size=$(echo $(cat $file | wc -l) / 4 | bc)
-            filename=$(echo $file | sed -e "s/demultiplex_out\///;s/assembled_out\///")
+            filename=$(echo $file | sed -e "s/\/input\/demultiplex_out\///;s/\/input\/assembled_out\///")
             printf "$filename\t$size\n" >> tempdir2/seq_count_after.txt
         done
     else 
@@ -310,7 +310,7 @@ if [[ $newextension == "fasta" ]] || [[ $newextension == "fa" ]] || [[ $newexten
     if [ $outfile_check != 0 ]; then 
         for file in $output_dir/*.$newextension; do
             size=$(grep -c "^>" $file)
-            filename=$(echo $file | sed -e "s/demultiplex_out\///;s/assembled_out\///")
+            filename=$(echo $file | sed -e "s/\/input\/demultiplex_out\///;s/\/input\/assembled_out\///")
             printf "$filename\t$size\n" >> tempdir2/seq_count_after.txt
         done
     else 
@@ -428,7 +428,6 @@ if [ -d tempdir ]; then
     rm -rf tempdir
 fi
 }
-
 
 ########################################################################################
 ### Cleaning up and compiling final stats file, when outputting multiple directories ###

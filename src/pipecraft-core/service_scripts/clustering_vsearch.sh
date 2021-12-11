@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # Sequence clustering with vsearch
-
 #Input = single-end fasta/fastq files.
 #Output = FASTA formated representative OTU sequences and OTU_table.txt.
 
@@ -35,16 +34,14 @@ maxaccepts=$"--maxaccepts ${max_hits}" # pos int
 relabel=$relabel # list: none, sha1, md5
 mask=$"--qmask ${mask}" # list: --qmask dust, --qmask none
 dbmask=$"--dbmask ${dbmask}"  # list: --qmask dust, --qmask none
-uc=$output_UC # undefined or TRUE
+uc=$output_UC # false or true
 ###############################
-
-#############################
-### Start of the workflow ###
-#############################
+# Source for functions
+source /scripts/framework.functions.sh
 #output dir
 output_dir=$"/input/clustering_out"
 
-#additional options, if selection != undefined
+#additional options, if selection != undefined/false
 if [[ $centroid == "similarity" ]]; then
     centroid_in=$"" 
 else
@@ -57,17 +54,16 @@ elif [[ $relabel == "sha1" ]]; then
 elif [[ $relabel == "md5" ]]; then
     relabel_in=$"--relabel_md5"
 fi
-
-if [[ $uc == false ]]; then
+if [[ $uc == "false" ]]; then
     uc_in=$""
 else
     uc_in=$"--uc $output_dir/OTUs.uc"
 fi
 
+#############################
+### Start of the workflow ###
+#############################
 start=$(date +%s)
-# Source for functions
-source /scripts/framework.functions.sh
-
 ### Check if files with specified extension exist in the dir
 first_file_check
 ### Prepare working env and check paired-end data
@@ -81,7 +77,7 @@ for file in *.$extension; do
     #If input is compressed, then decompress (keeping the compressed file, but overwriting if filename exists!)
         #$extension will be $newextension
     check_gz_zip_SE
-    ### Check input formats (fastq supported)
+    ### Check input formats (fastq/fasta supported)
     check_extension_fastx
 done
 
@@ -181,7 +177,7 @@ size=$(grep -c "^>" $output_dir/OTUs.fasta)
 
 #Make README.txt file
 printf "Clustering formed $size OTUs;
-'$output_dir' directory contains FASTA formated representative OTU sequences (OTUs.fasta)
+'clustering_out' directory contains FASTA formated representative OTU sequences (OTUs.fasta)
 and an OTU distribution table per sample (per input file in the working directory), OTU_table.txt.
 \n" > $output_dir/README.txt
 

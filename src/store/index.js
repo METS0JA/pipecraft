@@ -554,7 +554,7 @@ export default new Vuex.Store({
         ],
       },
       {
-        stepName: "remove chimeras",
+        stepName: "chimera filtering",
         disabled: "never",
         services: [
           {
@@ -895,7 +895,7 @@ export default new Vuex.Store({
             showExtra: false,
             extraInputs: [
               {
-                name: "e-value",
+                name: "e_value",
                 value: 10,
                 disabled: "never",
                 tooltip: "",
@@ -903,7 +903,7 @@ export default new Vuex.Store({
                 default: 10,
               },
               {
-                name: "word size",
+                name: "word_size",
                 value: 11,
                 disabled: "never",
                 tooltip: "",
@@ -924,14 +924,14 @@ export default new Vuex.Store({
                 type: "numeric",
               },
               {
-                name: "gap open",
+                name: "gap_open",
                 value: 5,
                 disabled: "never",
                 tooltip: "",
                 type: "numeric",
               },
               {
-                name: "gap extend",
+                name: "gap_extend",
                 value: 2,
                 disabled: "never",
                 tooltip: "",
@@ -947,7 +947,7 @@ export default new Vuex.Store({
             ],
             Inputs: [
               {
-                name: "database file(s)",
+                name: "database_file",
                 btnName: "select file",
                 value: "undefined",
                 disabled: "never",
@@ -2094,7 +2094,7 @@ export default new Vuex.Store({
         tooltip: "remove chimeras with DADA2 'removeBimeraDenovo' function",
         scriptName: "dada2-chimera.R",
         imageName: "pipecraft/dada2:3.10",
-        serviceName: "remove chimeras",
+        serviceName: "chimera filtering",
         disabled: "never",
         selected: "always",
         showExtra: false,
