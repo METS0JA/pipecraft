@@ -58,22 +58,22 @@ for file in *.$newextension; do
 done
 echo "input = $IN"
 
-### Check BLAST database
+### Check and assign BLAST database
 d1=$(echo $db1 | awk 'BEGIN{FS=OFS="."}{print $NF}') #get the extension
 #make blast database if db is not formatted for BLAST
 db_dir=$(dirname $db1)
 check_db_presence=$(ls -1 $db_dir/*.nhr 2>/dev/null | wc -l)
 if [[ $check_db_presence != 0 ]]; then
-	database=$"-db $db1"
+	if [[ $d1 == "fasta" ]] || [[ $d1 == "fa" ]] || [[ $d1 == "fas" ]] || [[ $d1 == "fna" ]] || [[ $d1 == "ffn" ]]; then
+		database=$"-db $db1"
+	elif [[ $d1 == "ndb" ]] || [[ $d1 == "nhr" ]] || [[ $d1 == "nin" ]] || [[ $d1 == "not" ]] || [[ $d1 == "nsq" ]] || [[ $d1 == "ntf" ]] || [[ $d1 == "nto" ]]; then
+		db1=$(echo $db1 | awk 'BEGIN{FS=OFS="."}NF{NF-=1};1')
+		database=$"-db $db1"
+	fi
 elif [[ $d1 == "fasta" ]] || [[ $d1 == "fa" ]] || [[ $d1 == "fas" ]] || [[ $d1 == "fna" ]] || [[ $d1 == "ffn" ]]; then
-	printf '%s\n' "Note: converting fasta formatted database for BLAST"
-	makeblastdb -in $db1 -input_type fasta -dbtype nucl
-	#db1=$(echo $db1 | awk 'BEGIN{FS=OFS="."}NF{NF-=1};1')
-	database=$"-db $db1"
-else
-	#if database is already formatted, then remove last extention
-	db1=$(echo $db1 | awk 'BEGIN{FS=OFS="."}NF{NF-=1};1')
-	database=$"-db $db1"
+		printf '%s\n' "Note: converting fasta formatted database for BLAST"
+		makeblastdb -in $db1 -input_type fasta -dbtype nucl
+		database=$"-db $db1"
 fi
 
 ## Perform taxonomy annotation
