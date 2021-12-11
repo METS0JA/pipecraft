@@ -1939,7 +1939,7 @@ export default new Vuex.Store({
             value: ["_"],
             disabled: "never",
             tooltip:
-              "Identifyer string that separates the sample name for redundant charachters (e.g. file name = sampl84_S73_L001_R1_001.fastq, then underscore '_' would be the 'identifier string' (sample name = sampl84))",
+              "identifyer string that separates the sample name from redundant charachters (e.g. file name = sampl84_S73_L001_R1_001.fastq, then underscore '_' would be the 'identifier string' (sample name = sampl84))",
             type: "chip",
             rules: [(v) => v.length <= 1 || "ADD ONLY ONE IDENTIFIER"],
           },
@@ -1950,6 +1950,7 @@ export default new Vuex.Store({
             tooltip:
               "Discard sequences with more than the specified number of expected errors",
             type: "numeric",
+            rules: [(v) => v >= 0.1 || "ERROR: specify values >= 0.1"],
           },
           {
             name: "maxN",
@@ -1958,6 +1959,7 @@ export default new Vuex.Store({
             tooltip:
               "Discard sequences with more than the specified number of N’s (ambiguous bases)",
             type: "numeric",
+            rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
           },
           {
             name: "minLen",
@@ -1966,6 +1968,7 @@ export default new Vuex.Store({
             tooltip:
               "Remove reads with length less than minLen. minLen is enforced after all other trimming and truncation",
             type: "numeric",
+            rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
           {
             name: "truncQ",
@@ -1974,6 +1977,7 @@ export default new Vuex.Store({
             tooltip:
               "Truncate reads at the first instance of a quality score less than or equal to truncQ",
             type: "numeric",
+            rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
           {
             name: "truncLen",
@@ -1982,6 +1986,7 @@ export default new Vuex.Store({
             tooltip:
               "Truncate reads after truncLen bases (applies to R1 reads when working with paired-end data). Reads shorter than this are discarded. Explore quality profiles (with QualityCheck module) see whether poor quality ends needs to truncated",
             type: "numeric",
+            rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
           {
             name: "truncLen_R2",
@@ -1990,6 +1995,7 @@ export default new Vuex.Store({
             tooltip:
               "Truncate R2 reads after truncLen bases. Reads shorter than this are discarded. Explore quality profiles (with QualityCheck module) see whether poor quality ends needs to truncated",
             type: "numeric",
+            rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
           {
             name: "maxLen",
@@ -1998,6 +2004,7 @@ export default new Vuex.Store({
             tooltip:
               "Remove reads with length greater than maxLen. maxLen is enforced on the raw reads. In dada2, the default = Inf, but here set as 9999",
             type: "numeric",
+            rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
           {
             name: "minQ",
@@ -2006,6 +2013,7 @@ export default new Vuex.Store({
             tooltip:
               "After truncation, reads contain a quality score below minQ will be discarded",
             type: "numeric",
+            rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
           },
         ],
       },
@@ -2053,7 +2061,7 @@ export default new Vuex.Store({
         imageName: "pipecraft/dada2:3.10",
         serviceName: "merge Pairs",
         selected: "always",
-        disabled: "single_end",
+        disabled: "never",
         showExtra: false,
         extraInputs: [],
         Inputs: [
@@ -2064,6 +2072,7 @@ export default new Vuex.Store({
             tooltip:
               "the minimum length of the overlap required for mergingthe forward and reverse reads.",
             type: "numeric",
+            rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
           {
             name: "maxMismatch",
@@ -2071,6 +2080,7 @@ export default new Vuex.Store({
             disabled: "never",
             tooltip: "The maximum mismatches allowed in the overlap region",
             type: "numeric",
+            rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
           },
           {
             name: "trimOverhang",
@@ -2123,7 +2133,14 @@ export default new Vuex.Store({
         extraInputs: [],
         Inputs: [
           {
+            name: "download databases",
+            value: "https://benjjneb.github.io/dada2/training.html",
+            disabled: "never",
+            type: "numeric",
+          },
+          {
             name: "dada2_database",
+            link: "https://benjjneb.github.io/dada2/training.html",
             btnName: "select fasta",
             value: "undefined",
             disabled: "never",
@@ -2138,6 +2155,7 @@ export default new Vuex.Store({
             tooltip:
               "The minimum bootstrap confidence for assigning a taxonomic level",
             type: "numeric",
+            rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
           {
             name: "tryRC",
