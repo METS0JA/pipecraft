@@ -472,7 +472,7 @@ export default {
       ];
       this.selectedSteps[stepIndex].services[serviceIndex].Inputs.forEach(
         (input) => {
-          if (input.type == "file" || input.type == "boolFile") {
+          if (input.type == "file" || input.type == "boolfile") {
             let correctedPath = path.dirname(slash(input.value));
             // let fileName = path.parse(correctedPath).base;
             let bind = `${correctedPath}:/extraFiles`;
