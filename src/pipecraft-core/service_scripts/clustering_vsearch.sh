@@ -156,6 +156,19 @@ $cores \
 --otutabout $output_dir/OTU_table.txt  2>&1)
 check_app_error
 
+#Order the OTUs in fasta file accoring to OTU table
+if [[ -s "$output_dir/OTU_table.txt" ]]; then 
+    awk 'BEGIN{FS="\t"}{print $1}' < $output_dir/OTU_table.txt > $output_dir/OTUs.names
+    touch $output_dir/ordered.OTUs.fasta
+    while read ID; do
+        grep -A1 ">$ID" $output_dir/OTUs.fasta >> $output_dir/ordered.OTUs.fasta
+    done < $output_dir/OTUs.names
+    #remove and rename
+    rm $output_dir/OTUs.names
+    rm $output_dir/OTUs.fasta
+    mv $output_dir/ordered.OTUs.fasta $output_dir/OTUs.fasta
+fi
+
 #################################################
 ### COMPILE FINAL STATISTICS AND README FILES ###
 #################################################
