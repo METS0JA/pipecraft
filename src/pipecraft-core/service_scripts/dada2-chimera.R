@@ -4,6 +4,7 @@
 
 #load dada2
 library("dada2")
+library("base")
 
 #load env variables
 readType = Sys.getenv('readType')
@@ -35,7 +36,6 @@ ASV_tab.nochim <- removeBimeraDenovo(ASV_tab, method = method, multithread = TRU
 
 #save rds
 saveRDS(ASV_tab.nochim, file.path(path_results, "ASVs_table.denoised-merged.nochim.rds"))
-
 
 #seq count summary
 qfilt = readRDS("/input/qualFiltered_out.dada2/quality_filtered.rds")
@@ -91,30 +91,21 @@ for (i in 2:length(colnames(ASV_tab.nochim))){
     }
 }
 
-###paste out chimeric ASVs per sample
-#sequence headers
-# asv_seqs = colnames(ASV_tab)
-# asv_headers = vector(dim(ASV_tab)[2], mode="character")
-# for (i in 1:dim(ASV_tab)[2]) {
-# asv_headers[i] = paste(">ASV", i, sep="_")
-# }
-# #transpose sequence table
-# ASV_tab = t(ASV_tab)
-# #add sequences to 1st column
-# ASV_tab = cbind(row.names(ASV_tab), ASV_tab)
-# colnames(ASV_tab)[1] = "Sequence"
-# #row names as sequence headers
-# row.names(ASV_tab) = sub(">", "", asv_headers)
-# #write ASVs.fasta to path_ASVs
-# asv_fasta <- c(rbind(asv_headers, asv_seqs))
-# write(asv_fasta, file.path(path_results, "ASVs.nonChimFilt.fasta"))
-
-#run external script (for seqkit) to paste out chimeric ASVs per sample
-print("base::system(/scripts/paste_dada2_chimeras.sh)")
-base::system("/scripts/paste_dada2_chimeras.sh", wait = TRUE, invisible = FALSE)
-print("DONE")
+### run external script (for seqkit) to paste out chimeric ASVs per sample [R call fails!]
+# print("base::system(/scripts/paste_dada2_chimeras.sh)")
+# paste_chimeras="/scripts/paste_dada2_chimeras.sh"
+# base::system(paste_chimeras, wait = TRUE, invisible = FALSE)
+# print("DONE")
 #remove ASVs.nonChimFilt.fasta
 # file.remove(file.path(path_results, "ASVs.nonChimFilt.fasta"))
+
+#remove pipeline .rds objects
+if (file.exists("/input/qualFiltered_out.dada2/filtFs.rds")) {
+    unlink("/input/qualFiltered_out.dada2/*.rds")
+}
+if (file.exists("/input/denoised_assembled.dada2/dadaFs.rds")) {
+    unlink("/input/denoised_assembled.dada2/*.rds")
+}
 
 #DONE 
 

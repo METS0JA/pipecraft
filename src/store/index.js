@@ -2222,7 +2222,7 @@ export default new Vuex.Store({
         imageName: "pipecraft/dada2:3.10",
         serviceName: "assign Taxonomy",
         disabled: "never",
-        selected: "false",
+        selected: "true",
         showExtra: false,
         extraInputs: [],
         Inputs: [
