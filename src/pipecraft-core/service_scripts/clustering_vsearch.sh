@@ -65,7 +65,7 @@ fi
 #############################
 start=$(date +%s)
 ### Check if files with specified extension exist in the dir
-first_file_check
+first_file_check_clustering
 ### Prepare working env and check paired-end data
 prepare_SE_env
 

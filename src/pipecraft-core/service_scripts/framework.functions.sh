@@ -77,6 +77,17 @@ Please check the extension of your files and specify again.
     end_process
 fi 
 }
+function first_file_check_clustering () {
+count=$(ls -1 *.$extension 2>/dev/null | wc -l)
+if [ $count != 0 ]; then 
+    :
+else
+    printf '%s\n' "ERROR]: cannot find input.
+Please check and specify again; or NOTE THAT automated CLUSTERING is disabled after ITSx; because ITSx outputs multiple directories for different ITS sub-regions; select appropriate ITSx output folder for CLUSTERING after the process is finished
+>Quitting" >&2
+    end_process
+fi 
+}
 
 
 ####################################################

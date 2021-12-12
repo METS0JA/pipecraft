@@ -1475,7 +1475,7 @@ export default new Vuex.Store({
         tooltip: "if data set consists of ITS sequences; identify and extract the ITS regions using ITSx. NOTE THAT 'CLUSTERING' AND 'ASSIGN TAXONOMY' WILL BE DISABLED AT THIS STAGE if 'ITS EXTRACTOR' IS SELECTED; because ITSx outputs multiple directories for different ITS sub-regions; select appropriate ITSx output folder for CLUSTERING after the process is finished",
         scriptName: "ITS_extractor.sh",
         imageName: "pipecraft/itsx:1.1.3",
-        serviceName: "ITS extractor",
+        serviceName: "itsx",
         disabled: "never",
         selected: false,
         showExtra: false,
@@ -1489,11 +1489,11 @@ export default new Vuex.Store({
             rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
           {
-            name: "e-value",
+            name: "e_value",
             value: (0.00001).toExponential(),
             disabled: "never",
             tooltip:
-              "domain E-value cutoff a sequence must obtain in the HMMER-based step to be included in the output",
+              "domain e-value cutoff a sequence must obtain in the HMMER-based step to be included in the output",
             type: "numeric",
             rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
           },
@@ -1565,7 +1565,7 @@ export default new Vuex.Store({
               "Apusozoa",
               "Parabasalia",
             ],
-            value: [],
+            value: ["Fungi"],
             disabled: "never",
             tooltip:
               "set of profiles to use for the search. Can be used to restrict the search to only a few organism groups types to save time, if one or more of the origins are not relevant to the dataset under study",
