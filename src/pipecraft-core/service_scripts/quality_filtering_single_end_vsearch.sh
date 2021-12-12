@@ -104,7 +104,15 @@ Files in 'qualFiltered_out/FASTA' directory represent quality filtered sequences
 If the quality of the data is sufficent after this step (check with QualityCheck module), then
 you may proceed with FASTA files only.
 \nSummary of sequence counts in 'seq_count_summary.txt'\n
-\n\nTotal run time was $runtime sec.\n" > $output_dir/README.txt
+\n\nTotal run time was $runtime sec.\n\n\n
+##################################################################
+###Third-party applications for this process [PLEASE CITE]:
+#vsearch v2.18.0 for quality filtering
+    #citation: Rognes T, Flouri T, Nichols B, Quince C, Mahé F (2016) VSEARCH: a versatile open source tool for metagenomics PeerJ 4:e2584
+    #Copyright (C) 2014-2021, Torbjorn Rognes, Frederic Mahe and Tomas Flouri
+    #Distributed under the GNU General Public License version 3 by the Free Software Foundation
+    #https://github.com/torognes/vsearch
+##########################################################" > $output_dir/README.txt
 
 #Done
 printf "\nDONE\n"
