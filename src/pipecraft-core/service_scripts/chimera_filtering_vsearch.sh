@@ -188,11 +188,6 @@ done
 #################################################
 printf "\nCleaning up and compiling final stats files ...\n"
 if [[ $was_fastq == "TRUE" ]]; then
-    cd $output_dir/FASTA
-    mkdir -p tempdir2
-    clean_and_make_stats
-    cd ..
-    cd .. 
     #Delete tempdirs
     if [ -d tempdir ]; then
         rm -rf tempdir
@@ -200,6 +195,11 @@ if [[ $was_fastq == "TRUE" ]]; then
     if [ -d tempdir2 ]; then
         rm -rf tempdir2
     fi
+    #make stats
+    cd $output_dir/FASTA
+    mkdir -p tempdir2
+    clean_and_make_stats
+    cd ..
 else
     clean_and_make_stats
 fi

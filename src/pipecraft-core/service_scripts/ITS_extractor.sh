@@ -56,9 +56,9 @@ else
     truncate_in=$"--truncate T"
 fi
 
-echo $complement_in
-echo $only_full_in
-echo $truncate_in
+echo $complement
+echo $only_full
+echo $truncate
 echo $eval
 
 # Source for functions

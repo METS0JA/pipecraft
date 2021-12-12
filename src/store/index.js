@@ -1524,7 +1524,7 @@ export default new Vuex.Store({
             type: "bool",
           },
           {
-            name: "only full",
+            name: "only_full",
             value: false,
             disabled: "never",
             tooltip:
