@@ -1218,7 +1218,7 @@ export default new Vuex.Store({
         scriptName: "assemble_paired_end_data_vsearch.sh",
         imageName: "pipecraft/vsearch:2.18",
         serviceName: "merge reads",
-        selected: "true",
+        selected: "always",
         disabled: "single_end",
         showExtra: false,
         extraInputs: [
@@ -1307,7 +1307,7 @@ export default new Vuex.Store({
         imageName: "pipecraft/vsearch:2.18",
         serviceName: "quality filtering",
         disabled: "never",
-        selected: "true",
+        selected: "always",
         showExtra: false,
         extraInputs: [
           {
@@ -1399,7 +1399,7 @@ export default new Vuex.Store({
         imageName: "pipecraft/vsearch:2.18",
         serviceName: "chimera filtering",
         disabled: "never",
-        selected: "true",
+        selected: "always",
         showExtra: false,
         extraInputs: [
           {
@@ -1597,7 +1597,7 @@ export default new Vuex.Store({
         imageName: "pipecraft/vsearch:2.18",
         serviceName: "clustering",
         disabled: "never",
-        selected: "true",
+        selected: "always",
         showExtra: false,
         extraInputs: [
           {
