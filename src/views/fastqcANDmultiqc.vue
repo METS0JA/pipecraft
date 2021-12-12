@@ -39,9 +39,9 @@
     <v-divider class="mt-1"></v-divider>
 
     <v-card-actions>
-      <v-btn @click="folderSelect()" color="orange" text> Select Folder </v-btn>
+      <v-btn :disabled="reportLoading" @click="folderSelect()" color="orange" text> Select Folder </v-btn>
 
-      <v-btn @click="fastQualityCheck()" color="orange" text>
+      <v-btn :disabled="reportLoading" @click="fastQualityCheck()" color="orange" text>
         Create Report
       </v-btn>
       <v-tooltip right :disabled="reportReady">
