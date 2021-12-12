@@ -65,9 +65,9 @@ for primer in $rev_primer_array; do
     ((i=i+1))
 done
 # Reverse complement FWD and REV primers
-checkerror=$( seqkit seq --quiet -t dna -r -p tempdir2/fwd_primer.fasta >> tempdir2/fwd_primer_RC.fasta 2>&1)
+checkerror=$(seqkit seq --quiet -t dna -r -p tempdir2/fwd_primer.fasta >> tempdir2/fwd_primer_RC.fasta 2>&1)
 check_app_error
-checkerror=$( seqkit seq --quiet -t dna -r -p tempdir2/rev_primer.fasta >> tempdir2/rev_primer_RC.fasta 2>&1)
+checkerror=$(seqkit seq --quiet -t dna -r -p tempdir2/rev_primer.fasta >> tempdir2/rev_primer_RC.fasta 2>&1)
 check_app_error
 # Make linked primers files
 i=1
@@ -236,11 +236,11 @@ If no outputs were generated into /$output_dir, check your specified primer stin
 \n\nTotal run time was $runtime sec.\n\n\n
 ##########################################################
 ###Third-party applications used for this process [PLEASE CITE]:
-#cutadapt v3.5
+#cutadapt v3.5 for cutting the primers
     #citation: Martin, Marcel (2011) Cutadapt removes adapter sequences from high-throughput sequencing reads. EMBnet.journal, 17(1), 10-12.
     #Distributed under the MIT license
     #https://cutadapt.readthedocs.io/en/stable/index.html
-#seqkit v2.0.0
+#seqkit v2.0.0 for generating reverse complementary primer stings
     #citation: Shen W, Le S, Li Y, Hu F (2016) SeqKit: A Cross-Platform and Ultrafast Toolkit for FASTA/Q File Manipulation. PLOS ONE 11(10): e0163962. https://doi.org/10.1371/journal.pone.0163962
     #Distributed under the MIT License
     #Copyright © 2016-2019 Wei Shen, 2019 Oxford Nanopore Technologies.
