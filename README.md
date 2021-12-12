@@ -1,5 +1,3 @@
-![Alt text](C:/Users/stena/Desktop/pipecraft/icon.png?raw=true "PipeCraft")
-
 ## Try out the alpha release
 
 ### Prerequisites:
