@@ -1,4 +1,4 @@
-![PipeCraft2_logo](https://user-images.githubusercontent.com/18046232/145723441-51c3cbd0-7caf-485c-92d3-dbe253f6a73f.png)
+![PipeCraft2_logo](https://user-images.githubusercontent.com/18046232/145723441-51c3cbd0-7caf-485c-92d3-dbe253f6a73f.png | width=100)
 
 ## Try out the alpha release
 
