@@ -2230,11 +2230,11 @@ export default new Vuex.Store({
             name: "download databases",
             value: "https://benjjneb.github.io/dada2/training.html",
             disabled: "never",
-            type: "numeric",
+            type: "link",
+            tooltip: 'link to the database',
           },
           {
             name: "dada2_database",
-            link: "https://benjjneb.github.io/dada2/training.html",
             btnName: "select fasta",
             value: "undefined",
             disabled: "never",

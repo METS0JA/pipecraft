@@ -117,6 +117,12 @@
                   :inputIndex="i"
                   :list="'Inputs'"
               /></v-container>
+              <v-container v-if="input.type === 'link'"
+                ><InputLink
+                  :serviceIndex="index"
+                  :inputIndex="i"
+                  :list="'Inputs'"
+              /></v-container>
               <v-container v-if="input.type === 'bool'"
                 ><InputBool
                   :serviceIndex="index"
@@ -259,6 +265,7 @@
 
 <script>
 import InputNumeric from "../components/InputNumeric.vue";
+import InputLink from "../components/InputLink.vue";
 import InputBool from "../components/InputBool.vue";
 import InputSelect from "../components/InputSelect.vue";
 import InputFile from "../components/InputFile.vue";
@@ -271,6 +278,7 @@ import InputCombo from "../components/InputCombo.vue";
 export default {
   name: "Home",
   components: {
+    InputLink,
     InputChip,
     InputNumeric,
     InputBool,
