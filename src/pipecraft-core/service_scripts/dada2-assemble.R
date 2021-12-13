@@ -63,8 +63,8 @@ if (pool != ""){
     print(sample_names)
 
     #Learn the error rates
-    errF = learnErrors(filtFs, multithread=TRUE)
-    errR = learnErrors(filtRs, multithread=TRUE)
+    errF = learnErrors(filtFs, multithread = FALSE)
+    errR = learnErrors(filtRs, multithread = FALSE)
 
     #Error rate figures
     pdf(file.path(path_results, "Error_rates_R1.pdf"))
@@ -81,8 +81,8 @@ if (pool != ""){
     saveRDS(derepRs, (file.path(path_results, "derepRs.rds")))
 
     #denoise
-    dadaFs = dada(derepFs, err = errF, pool = pool, selfConsist = selfConsist, multithread = TRUE)
-    dadaRs = dada(derepRs, err = errR, pool = pool, selfConsist = selfConsist, multithread = TRUE)
+    dadaFs = dada(derepFs, err = errF, pool = pool, selfConsist = selfConsist, multithread = FALSE)
+    dadaRs = dada(derepRs, err = errR, pool = pool, selfConsist = selfConsist, multithread = FALSE)
     saveRDS(dadaFs, (file.path(path_results, "dadaFs.rds")))
     saveRDS(dadaRs, (file.path(path_results, "dadaRs.rds")))
 }

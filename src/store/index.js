@@ -2222,7 +2222,7 @@ export default new Vuex.Store({
         imageName: "pipecraft/dada2:3.10",
         serviceName: "assign Taxonomy",
         disabled: "never",
-        selected: "true",
+        selected: false,
         showExtra: false,
         extraInputs: [],
         Inputs: [
@@ -2231,7 +2231,7 @@ export default new Vuex.Store({
             value: "https://benjjneb.github.io/dada2/training.html",
             disabled: "never",
             type: "link",
-            tooltip: 'link to the database',
+            tooltip: 'link to download DADA2-formatted reference databases',
           },
           {
             name: "dada2_database",
