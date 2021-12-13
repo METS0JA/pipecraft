@@ -2312,6 +2312,7 @@ export default new Vuex.Store({
           if (input.selected == true || input.selected == "always") {
             input.Inputs.forEach((input) => {
               if (input.type == "file") {
+                console.log(input.value)
                 fileInputValues.push(input.value);
               }
             });
