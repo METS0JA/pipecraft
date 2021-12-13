@@ -214,7 +214,7 @@ export default {
                 this.$store.commit("addInputInfo", newDataInfo);
                 this.$store.commit("addWorkingDir", newWorkingDir);
               } else {
-                if (result.statusCode == 137 && result.log == "") {
+                if (result.statusCode == 137) {
                   Swal.fire("Workflow stopped");
                 } else {
                   Swal.fire(result.log);
@@ -348,7 +348,7 @@ export default {
               this.$store.commit("addInputInfo", newDataInfo);
               this.$store.commit("addWorkingDir", newWorkingDir);
             } else {
-              if (result.statusCode == 137 && result.log == "") {
+              if (result.statusCode == 137) {
                 Swal.fire("Workflow stopped");
               } else {
                 Swal.fire(result.log);
