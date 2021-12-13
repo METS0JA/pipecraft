@@ -354,7 +354,7 @@ export default new Vuex.Store({
                 value: 41,
                 disabled: "never",
                 tooltip:
-                  "specify the maximum quality score accepted when reading FASTQ files. The default is 41, which is usual for recent Sanger/Illumina 1.8+ files. For PacBio data use 93.",
+                  "specify the maximum quality score accepted when reading FASTQ files. The default is 41, which is usual for recent Sanger/Illumina 1.8+ files. For PacBio data use 93",
                 type: "numeric",
                 rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
               },
@@ -392,7 +392,7 @@ export default new Vuex.Store({
                 value: 1,
                 disabled: "never",
                 tooltip:
-                  "Maximum number of expected errors per sequence. Sequences with higher error rates will be discarded",
+                  "maximum number of expected errors per sequence. Sequences with higher error rates will be discarded",
                 type: "numeric",
                 rules: [(v) => v >= 0.1 || "ERROR: specify values >= 0.1"],
               },
@@ -401,7 +401,7 @@ export default new Vuex.Store({
                 value: 0,
                 disabled: "never",
                 tooltip:
-                  "Discard sequences with more than the specified number of Ns",
+                  "discard sequences with more than the specified number of Ns",
                 type: "numeric",
                 rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
               },
@@ -409,7 +409,7 @@ export default new Vuex.Store({
                 name: "min_length",
                 value: 32,
                 disabled: "never",
-                tooltip: "Minimum length of the filtered output sequence",
+                tooltip: "minimum length of the filtered output sequence",
                 type: "numeric",
                 rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
               },
