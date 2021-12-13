@@ -550,7 +550,7 @@ export default new Vuex.Store({
             Inputs: [
               {
                 name: "min_overlap",
-                value: 10,
+                value: 12,
                 disabled: "never",
                 tooltip: "minimum overlap between the merged reads",
                 type: "numeric",
@@ -669,7 +669,7 @@ export default new Vuex.Store({
         ],
       },
       {
-        stepName: "gene extraction",
+        stepName: "ITS Extractor",
         disabled: "never",
         services: [
           {
@@ -1269,7 +1269,7 @@ export default new Vuex.Store({
         Inputs: [
           {
             name: "min_overlap",
-            value: 10,
+            value: 12,
             disabled: "never",
             tooltip: "minimum overlap between the merged reads",
             type: "numeric",
@@ -2042,7 +2042,7 @@ export default new Vuex.Store({
             value: 2,
             disabled: "never",
             tooltip:
-              "Discard sequences with more than the specified number of expected errors",
+              "discard sequences with more than the specified number of expected errors",
             type: "numeric",
             rules: [(v) => v >= 0.1 || "ERROR: specify values >= 0.1"],
           },
@@ -2051,7 +2051,7 @@ export default new Vuex.Store({
             value: 0,
             disabled: "never",
             tooltip:
-              "Discard sequences with more than the specified number of N’s (ambiguous bases)",
+              "discard sequences with more than the specified number of N’s (ambiguous bases)",
             type: "numeric",
             rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
           },
@@ -2060,7 +2060,7 @@ export default new Vuex.Store({
             value: 20,
             disabled: "never",
             tooltip:
-              "Remove reads with length less than minLen. minLen is enforced after all other trimming and truncation",
+              "remove reads with length less than minLen. minLen is enforced after all other trimming and truncation",
             type: "numeric",
             rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
@@ -2069,7 +2069,7 @@ export default new Vuex.Store({
             value: 2,
             disabled: "never",
             tooltip:
-              "Truncate reads at the first instance of a quality score less than or equal to truncQ",
+              "truncate reads at the first instance of a quality score less than or equal to truncQ",
             type: "numeric",
             rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
@@ -2078,7 +2078,7 @@ export default new Vuex.Store({
             value: 0,
             disabled: "never",
             tooltip:
-              "Truncate reads after truncLen bases (applies to R1 reads when working with paired-end data). Reads shorter than this are discarded. Explore quality profiles (with QualityCheck module) see whether poor quality ends needs to truncated",
+              "truncate reads after truncLen bases (applies to R1 reads when working with paired-end data). Reads shorter than this are discarded. Explore quality profiles (with QualityCheck module) see whether poor quality ends needs to truncated",
             type: "numeric",
             rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
@@ -2087,7 +2087,7 @@ export default new Vuex.Store({
             value: 0,
             disabled: "single_end",
             tooltip:
-              "Truncate R2 reads after truncLen bases. Reads shorter than this are discarded. Explore quality profiles (with QualityCheck module) see whether poor quality ends needs to truncated",
+              "truncate R2 reads after truncLen bases. Reads shorter than this are discarded. Explore quality profiles (with QualityCheck module) see whether poor quality ends needs to truncated",
             type: "numeric",
             rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
@@ -2096,7 +2096,7 @@ export default new Vuex.Store({
             value: 9999,
             disabled: "never",
             tooltip:
-              "Remove reads with length greater than maxLen. maxLen is enforced on the raw reads. In dada2, the default = Inf, but here set as 9999",
+              "remove reads with length greater than maxLen. maxLen is enforced on the raw reads. In dada2, the default = Inf, but here set as 9999",
             type: "numeric",
             rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
@@ -2105,7 +2105,7 @@ export default new Vuex.Store({
             value: 0,
             disabled: "never",
             tooltip:
-              "After truncation, reads contain a quality score below minQ will be discarded",
+              "after truncation, reads contain a quality score below minQ will be discarded",
             type: "numeric",
             rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
           },
