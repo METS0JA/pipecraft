@@ -9,7 +9,7 @@
           cols="10"
           offset="1"
         >
-        <v-btn  @click="openLink(input.value)" style="margin-top: 30%" class="centered-input"  solo  block  :rules="input.rules ? input.rules : []"
+        <v-btn  @click="openLink(input.value)" style="margin-top: 30%; justify-content: center;" class="centered-input"  solo  block  :rules="input.rules ? input.rules : []"
         elevation="2"
       >{{input.name}}</v-btn>
     
