@@ -2421,7 +2421,7 @@ export default new Vuex.Store({
       for (let i = 0; i < state.selectedSteps.length; i++) {
         if (payload == "single_end") {
           state.selectedSteps = state.selectedSteps.filter(
-            (item) => !(item.stepName == "assemble paired_end")
+            (item) => !(item.stepName == "assemble paired-end")
           );
           if (router.currentRoute != "/home") {
             router.push("/home").catch(() => {
