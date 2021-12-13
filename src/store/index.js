@@ -2127,7 +2127,7 @@ export default new Vuex.Store({
             value: "FALSE",
             disabled: "never",
             tooltip:
-              "sample inference is performed on each sample individually. If pool = TRUE, the algorithm will pool together all samples prior to sample inference. Pooling improves the detection of rare variants, but is computationally more expensive. If pool = 'pseudo', the algorithm will perform pseudo-pooling between individually processed samples. This argument has no effect if only 1 sample is provided, and pool does not affect error rates, which are always estimated from pooled observations across samples.",
+              "if pool = TRUE, the algorithm will pool together all samples prior to sample inference. Pooling improves the detection of rare variants, but is computationally more expensive. If pool = 'pseudo', the algorithm will perform pseudo-pooling between individually processed samples. This argument has no effect if only 1 sample is provided, and pool does not affect error rates, which are always estimated from pooled observations across samples",
             type: "select",
           },
           {
@@ -2135,7 +2135,7 @@ export default new Vuex.Store({
             disabled: "never",
             value: false,
             tooltip:
-              "If selfConsist = TRUE, the algorithm will alternate between sample inference and error rate estimation until convergence",
+              "if selfConsist = TRUE, the algorithm will alternate between sample inference and error rate estimation until convergence",
             type: "bool",
           },
           {
@@ -2164,7 +2164,7 @@ export default new Vuex.Store({
             value: 12,
             disabled: "never",
             tooltip:
-              "the minimum length of the overlap required for mergingthe forward and reverse reads.",
+              "the minimum length of the overlap required for merging the forward and reverse reads",
             type: "numeric",
             rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
@@ -2172,7 +2172,7 @@ export default new Vuex.Store({
             name: "maxMismatch",
             value: 0,
             disabled: "never",
-            tooltip: "The maximum mismatches allowed in the overlap region",
+            tooltip: "the maximum mismatches allowed in the overlap region",
             type: "numeric",
             rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
           },
@@ -2181,7 +2181,7 @@ export default new Vuex.Store({
             value: false,
             disabled: "never",
             tooltip:
-              "if TRUE, overhangs in the alignment between the forwards and reverse read are trimmed off. Overhangs are when the reverse read extends past the start of the forward read, and vice-versa, as can happen when reads are longer than the amplicon and read into the other-direction primer region.",
+              "if TRUE, overhangs in the alignment between the forwards and reverse read are trimmed off. Overhangs are when the reverse read extends past the start of the forward read, and vice-versa, as can happen when reads are longer than the amplicon and read into the other-direction primer region",
             type: "bool",
           },
           {
@@ -2239,7 +2239,7 @@ export default new Vuex.Store({
             value: "undefined",
             disabled: "never",
             tooltip:
-              "Select a reference database fasta file for taxonomy annotation",
+              "select a reference database fasta file for taxonomy annotation",
             type: "file",
           },
           {
@@ -2247,7 +2247,7 @@ export default new Vuex.Store({
             value: 50,
             disabled: "never",
             tooltip:
-              "The minimum bootstrap confidence for assigning a taxonomic level",
+              "the minimum bootstrap confidence for assigning a taxonomic level",
             type: "numeric",
             rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
@@ -2256,7 +2256,7 @@ export default new Vuex.Store({
             value: false,
             disabled: "never",
             tooltip:
-              "The reverse-complement of each sequences will be used for classification if it is a better match to the reference sequences than the forward sequence",
+              "the reverse-complement of each sequences will be used for classification if it is a better match to the reference sequences than the forward sequence",
             type: "bool",
           },
         ],
