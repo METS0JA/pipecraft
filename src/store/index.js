@@ -363,7 +363,7 @@ export default new Vuex.Store({
                 value: 0,
                 disabled: "never",
                 tooltip:
-                  "the minimum quality score accepted for FASTQ files. The default is 0, which is usual for recent Sanger/Illumina 1.8+ files. Older formats may use scores between -5 and 2.",
+                  "the minimum quality score accepted for FASTQ files. The default is 0, which is usual for recent Sanger/Illumina 1.8+ files. Older formats may use scores between -5 and 2",
                 type: "numeric",
                 rules: [(v) => v >= -5 || "ERROR: specify values >= -5"],
               },
@@ -1144,7 +1144,7 @@ export default new Vuex.Store({
             name: "min_seq_length",
             value: 32,
             disabled: "never",
-            tooltip: "minimum length of the output sequence.",
+            tooltip: "minimum length of the output sequence",
             type: "numeric",
             rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
@@ -1153,7 +1153,7 @@ export default new Vuex.Store({
             value: true,
             disabled: "never",
             tooltip:
-              "do not allow insertions or deletions is primer search. Mismatches are the only type of errprs accounted in the error rate parameter. ",
+              "do not allow insertions or deletions is primer search. Mismatches are the only type of errprs accounted in the error rate parameter",
             type: "bool",
           },
         ],
@@ -1261,7 +1261,7 @@ export default new Vuex.Store({
             value: 41,
             disabled: "never",
             tooltip:
-              "maximum quality score accepted when reading FASTQ files. The default is 41, which is usual for recent Sanger/Illumina 1.8+ files.",
+              "maximum quality score accepted when reading FASTQ files. The default is 41, which is usual for recent Sanger/Illumina 1.8+ files",
             type: "numeric",
             rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
@@ -1288,7 +1288,7 @@ export default new Vuex.Store({
             value: true,
             disabled: "never",
             tooltip:
-              "allow to merge staggered read pairs. Staggered pairs are pairs where the 3’ end of the reverse read has an overhang to the left of the 5’ end of the forward read. This situation can occur when a very short fragment is sequenced.",
+              "allow to merge staggered read pairs. Staggered pairs are pairs where the 3’ end of the reverse read has an overhang to the left of the 5’ end of the forward read. This situation can occur when a very short fragment is sequenced",
             type: "bool",
           },
           {
@@ -1296,7 +1296,7 @@ export default new Vuex.Store({
             value: false,
             disabled: "never",
             tooltip:
-              "Include unassembled R1 reads to the set of assembled reads per sample. This may be relevant when working with e.g. ITS2 sequences, because the ITS2 region in some taxa is too long for assembly, therefore discarded completely after assembly process. Thus, including also unassembled R1 reads, partial ITS2 sequences for these taxa will be represented in the final output.",
+              "include unassembled R1 reads to the set of assembled reads per sample. This may be relevant when working with e.g. ITS2 sequences, because the ITS2 region in some taxa is too long for assembly, therefore discarded completely after assembly process. Thus, including also unassembled R1 reads, partial ITS2 sequences for these taxa will be represented in the final output",
             type: "bool",
           },
         ],
@@ -1415,7 +1415,7 @@ export default new Vuex.Store({
             value: 2,
             disabled: "never",
             tooltip:
-              "The abundance skew is used to distinguish in a threeway alignment which sequence is the chimera and which are the parents. The assumption is that chimeras appear later in the PCR amplification process and are therefore less abundant than their parents. The default value is 2.0, which means that the parents should be at least 2 times more abundant than their chimera. Any positive value equal or greater than 1.0 can be used",
+              "the abundance skew is used to distinguish in a threeway alignment which sequence is the chimera and which are the parents. The assumption is that chimeras appear later in the PCR amplification process and are therefore less abundant than their parents. The default value is 2.0, which means that the parents should be at least 2 times more abundant than their chimera. Any positive value equal or greater than 1.0 can be used",
             type: "numeric",
             rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
@@ -1424,7 +1424,7 @@ export default new Vuex.Store({
             value: 0.28,
             disabled: "never",
             tooltip:
-              "Minimum score (h). Increasing this value tends to reduce the number of false positives and to decrease sensitivity. Values ranging from 0.0 to 1.0 included are accepted",
+              "minimum score (h). Increasing this value tends to reduce the number of false positives and to decrease sensitivity. Values ranging from 0.0 to 1.0 included are accepted",
             max: 1,
             min: 0,
             step: 0.01,
@@ -1437,7 +1437,7 @@ export default new Vuex.Store({
             value: 0.98,
             disabled: "never",
             tooltip:
-              "Identity percentage when performing 'pre-clustering' with --cluster_size for denovo chimera filtering with --uchime_denovo",
+              "identity percentage when performing 'pre-clustering' with --cluster_size for denovo chimera filtering with --uchime_denovo",
             max: 1,
             min: 0,
             step: 0.01,
@@ -1448,7 +1448,7 @@ export default new Vuex.Store({
             value: 1,
             disabled: "never",
             tooltip:
-              "Minimum amount of a unique sequences in a fasta file. If value = 1, then no sequences are discarded after dereplication; if value = 2, then sequences, which are represented only once in a given file are discarded; and so on.",
+              "minimum amount of a unique sequences in a fasta file. If value = 1, then no sequences are discarded after dereplication; if value = 2, then sequences, which are represented only once in a given file are discarded; and so on",
             type: "numeric",
             rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
@@ -1456,7 +1456,7 @@ export default new Vuex.Store({
             name: "denovo",
             value: true,
             disabled: "never",
-            tooltip: "Perform denovo chimera filtering with --uchime_denovo",
+            tooltip: "if TRUE, then perform denovo chimera filtering with --uchime_denovo",
             type: "bool",
           },
           {
@@ -1466,7 +1466,7 @@ export default new Vuex.Store({
             value: "undefined",
             disabled: "never",
             tooltip:
-              "Perform reference database based chimera filtering with --uchime_ref. If denovo = TRUE, then reference based chimera filtering will be performed after denovo",
+              "perform reference database based chimera filtering with --uchime_ref. If denovo = TRUE, then reference based chimera filtering will be performed after denovo",
             type: "boolfile",
           },
         ],
@@ -1520,7 +1520,7 @@ export default new Vuex.Store({
             value: true,
             disabled: "never",
             tooltip:
-              "If on, ITSx checks both DNA strands for matches to HMM-profiles",
+              "if TRUE, ITSx checks both DNA strands for matches to HMM-profiles",
             type: "bool",
           },
           {
@@ -1528,7 +1528,7 @@ export default new Vuex.Store({
             value: false,
             disabled: "never",
             tooltip:
-              "If true, the output is limited to full-length ITS1 and ITS2 regions only",
+              "If TRUE, the output is limited to full-length ITS1 and ITS2 regions only",
             type: "bool",
           },
           {
@@ -1536,7 +1536,7 @@ export default new Vuex.Store({
             value: true,
             disabled: "never",
             tooltip:
-              "removes ends of ITS sequences if they are outside of the ITS region. If off, the whole input sequence is saved",
+              "if TRUE, ITSx removes ends of ITS sequences if they are outside of the ITS region. If off, the whole input sequence is saved when ITS region is detected",
             type: "bool",
           },
         ],
@@ -1585,7 +1585,7 @@ export default new Vuex.Store({
             value: 50,
             disabled: "never",
             tooltip:
-              "if larger than 0, ITSx will save additional FASTA-files for full and partial ITS sequences longer than the specified cutoff value. If his setting is left to 0 (zero), it means OFF.",
+              "if larger than 0, ITSx will save additional FASTA-files for full and partial ITS sequences longer than the specified cutoff value. If his setting is left to 0 (zero), it means OFF",
             type: "numeric",
             rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
           },
@@ -1650,7 +1650,7 @@ export default new Vuex.Store({
             value: "dust",
             disabled: "never",
             tooltip:
-              'mask regions in sequences using the "dust" method, or do not mask ("none").',
+              'mask regions in sequences using the "dust" method, or do not mask ("none")',
             type: "select",
           },
           {
@@ -1659,7 +1659,7 @@ export default new Vuex.Store({
             value: "dust",
             disabled: "never",
             tooltip:
-              'prior the OTU table creation, mask regions in sequences using the "dust" method, or do not mask ("none").',
+              'prior the OTU table creation, mask regions in sequences using the "dust" method, or do not mask ("none")',
             type: "select",
           },
           {
