@@ -996,7 +996,7 @@ export default new Vuex.Store({
                 value: "undefined",
                 disabled: "never",
                 tooltip:
-                  "database files, up to 5 files (may be fasta formated - automatically will convert to BLAST database format)",
+                  "database file (may be fasta formated - automatically will convert to BLAST database format)",
                 type: "file",
               },
               {
@@ -1785,7 +1785,7 @@ export default new Vuex.Store({
             value: "undefined",
             disabled: "never",
             tooltip:
-              "database files, up to 5 files (may be fasta formated - automatically will convert to BLAST database format)",
+              "database file (may be fasta formated - automatically will convert to BLAST database format)",
             type: "file",
           },
           {
