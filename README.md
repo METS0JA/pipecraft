@@ -1,7 +1,7 @@
 
 <a href="url"><img src="https://user-images.githubusercontent.com/18046232/145723441-51c3cbd0-7caf-485c-92d3-dbe253f6a73f.png" align="center" height="210" width="210" ></a>
 
-
+**Manual**: https://pipecraft2-manual.readthedocs.io/en/stable/
 
 ## Try out the alpha release
 
