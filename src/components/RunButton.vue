@@ -439,9 +439,12 @@ export default {
       return envVariables;
     },
     createCustomBinds(name, index, Input) {
+      let scriptsPath =
+        isDevelopment == true
+          ? "/src/pipecraft-core/service_scripts"
+          : "/resources/src/pipecraft-core/service_scripts";
       let Binds = [
-        `${process.cwd()}/src/pipecraft-core/service_scripts:/scripts`, // dev path
-        // `${process.cwd()}/resources/src/pipecraft-core/service_scripts:/scripts`, // build path
+        `${process.cwd()}${scriptsPath}:/scripts`,
         `${Input}:/input`,
       ];
       this.$store.state[name][index].Inputs.forEach((input) => {
