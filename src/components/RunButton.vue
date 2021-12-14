@@ -114,6 +114,8 @@ export default {
           console.log(name);
           this.$store.commit("addWorkingDir", "/input");
           let startTime = Date.now();
+          let steps2Run = this.$store.getters.steps2Run(name)
+          console.log(steps2Run)
           console.log(startTime);
           for (let index of this.$store.state[name].entries()) {
             if (
@@ -230,11 +232,11 @@ export default {
                 `Finished step ${index[0] + 1}: ${index[1].serviceName}`
               );
               this.$store.commit("resetRunInfo");
-              if (
-                this.$store.state[name].length == index[0] + 1 &&
-                result.statusCode == 0
-              ) {
-                Swal.fire("Workflow finished");
+              if (result.statusCode == 0) {
+                steps2Run -= 1 
+                if (steps2Run == 0) {
+                  Swal.fire("Workflow finished");
+                }  
               }
             }
           }

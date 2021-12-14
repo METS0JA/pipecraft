@@ -42,12 +42,12 @@
     <v-list-item style="padding: 0" class="mt-5" ripple link>
       <v-tooltip left nudge-left="10">
         <template v-slot:activator="{ on }">
-          <v-list-item-content v-on="on" @click="push2premade('DADA2_Miseq')">
+          <v-list-item-content v-on="on" @click="push2premade('ASVs_workflow')">
             <div>
               <v-icon
                 style="margin-right: -11px; margin-left: 11px"
                 :style="
-                  `/premade/DADA2_Miseq` == $route.path
+                  `/premade/ASVs_workflow` == $route.path
                     ? { color: '#1DE9B6' }
                     : { color: 'white' }
                 "
@@ -56,7 +56,7 @@
               <v-icon
                 style="margin-right: -11px"
                 :style="
-                  `/premade/DADA2_Miseq` == $route.path
+                  `/premade/ASVs_workflow` == $route.path
                     ? { color: '#1DE9B6' }
                     : { color: 'white' }
                 "
@@ -65,7 +65,7 @@
               <v-icon
                 style="margin-right: -11px"
                 :style="
-                  `/premade/DADA2_Miseq` == $route.path
+                  `/premade/ASVs_workflow` == $route.path
                     ? { color: '#1DE9B6' }
                     : { color: 'white' }
                 "
@@ -80,12 +80,12 @@
     <v-list-item style="padding: 0" class="mt-5" ripple link>
       <v-tooltip left nudge-left="10">
         <template v-slot:activator="{ on }">
-          <v-list-item-content v-on="on" @click="push2premade('OTU_Miseq')">
+          <v-list-item-content v-on="on" @click="push2premade('OTUs_workflow')">
             <div>
               <v-icon
                 style="margin-right: -11px; margin-left: 11px"
                 :style="
-                  `/premade/OTU_Miseq` == $route.path
+                  `/premade/OTUs_workflow` == $route.path
                     ? { color: '#1DE9B6' }
                     : { color: 'white' }
                 "
@@ -94,7 +94,7 @@
               <v-icon
                 style="margin-right: -11px"
                 :style="
-                  `/premade/OTU_Miseq` == $route.path
+                  `/premade/OTUs_workflow` == $route.path
                     ? { color: '#1DE9B6' }
                     : { color: 'white' }
                 "
@@ -103,7 +103,7 @@
               <v-icon
                 style="margin-right: -11px"
                 :style="
-                  `/premade/OTU_Miseq` == $route.path
+                  `/premade/OTUs_workflow` == $route.path
                     ? { color: '#1DE9B6' }
                     : { color: 'white' }
                 "

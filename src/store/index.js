@@ -1020,7 +1020,7 @@ export default new Vuex.Store({
         ],
       },
     ],
-    OTU_Miseq: [
+    OTUs_workflow: [
       {
         tooltip: "demultiplex data to per-sample files based on specified indexes",
         scriptName: "demux_paired_end_data.sh",
@@ -1807,7 +1807,7 @@ export default new Vuex.Store({
         ],
       },
     ],
-    DADA2_Miseq: [
+    ASVs_workflow: [
       {
         tooltip: "demultiplex data to per-sample files based on specified indexes",
         scriptName: "demux_paired_end_data.sh",
@@ -2263,12 +2263,12 @@ export default new Vuex.Store({
       },
     ],
     customWorkflowInfo: {
-      OTU_Miseq: {
+      OTUs_workflow: {
         info: "OTUs workflow with vsearch",
         link: "https://github.com/torognes/vsearch",
         title: "OTUs workflow",
       },
-      DADA2_Miseq: {
+      ASVs_workflow: {
         info: "This workflow is based on DADA2 pipeline tutorial",
         link: "https://benjjneb.github.io/dada2/tutorial.html",
         title: "ASVs workflow for PAIRED-END reads",
@@ -2276,6 +2276,10 @@ export default new Vuex.Store({
     },
   },
   getters: {
+    steps2Run: (state) => (id) => {
+      let steps = state[id].filter( (el) => el.selected == true || el.selected == 'always')
+      return steps.length
+    },
     selectedStepsReady: (state) => {
       let x = 0;
       let fileInputValues = [];
