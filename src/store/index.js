@@ -920,7 +920,7 @@ export default new Vuex.Store({
         ],
       },
       {
-        stepName: "assing taxonomy",
+        stepName: "assign taxonomy",
         disabled: "never",
         services: [
           {
