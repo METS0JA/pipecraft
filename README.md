@@ -12,7 +12,7 @@ Docker (https://www.docker.com/get-started)
         (https://docs.docker.com/engine/install/linux-postinstall/)
 
 Download the setup executable from this link  
-https://github.com/SuvalineVana/pipecraft/releases/download/0.2.2-beta/pipecraft.Setup.0.2.2.exe
+https://github.com/SuvalineVana/pipecraft/releases/download/0.1.0/pipecraft.Setup.0.1.0.exe
 
 ## For developers
 
