@@ -96,7 +96,7 @@ export default {
       dialog
         .showOpenDialog({
           title: "Select input files",
-          properties: ["multiSelections", "showHiddenFiles"],
+          properties: ["openFile", "multiSelections", "showHiddenFiles"],
         })
         .then((result) => {
           if (typeof result.filePaths[0] !== "undefined") {
