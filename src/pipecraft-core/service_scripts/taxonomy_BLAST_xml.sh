@@ -18,7 +18,8 @@ extension=$fileFormat
 
 #database [# here, a possibility for multiple databases to be added: database=$"-db $db1 $db2 $db3 $db4 $db5"]
 regex='[^\\]*$'
-db1_temp=$(echo $database_file | grep -oP "$regex")
+db1_path=$(echo $database_file | grep -oP "$regex")
+db1_temp=$(basename $db1_path) #basename, needed for macOS
 db1=$(printf "/extraFiles/$db1_temp")
 echo "db1 = $db1"
 #mandatory options
