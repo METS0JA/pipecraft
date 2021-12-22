@@ -11,6 +11,9 @@ module.exports = {
         linux: {
           icon: "build/icon.png",
         },
+        mac: {
+          target: 'pkg'
+        },
         appx: {
           applicationId: "pipecraft",
         },
