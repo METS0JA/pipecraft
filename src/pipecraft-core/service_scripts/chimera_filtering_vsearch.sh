@@ -36,7 +36,7 @@ output_dir=$"/input/chimera_Filtered_out"
 if [[ $reference_based == "undefined" ]]; then
     :
 else
-    regex='[^\\]*$'
+    regex='[^/]*$'
     ref=$(echo $reference_based | grep -oP "$regex")
     db=$(printf "/extraFiles/$ref")
     database=$db

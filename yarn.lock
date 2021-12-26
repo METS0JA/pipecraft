@@ -3701,7 +3701,7 @@ dmg-builder@22.14.5:
   optionalDependencies:
     dmg-license "^1.0.9"
 
-dmg-license@^1.0.9:
+dmg-license@^1.0.10, dmg-license@^1.0.9:
   version "1.0.10"
   resolved "https://registry.yarnpkg.com/dmg-license/-/dmg-license-1.0.10.tgz#89f52afae25d827fce8d818c13aff30af1c16bcc"
   integrity sha512-SVeeyiOeinV5JCPHXMdKOgK1YVbak/4+8WL2rBnfqRYpA5FaeFaQnQWb25x628am1w70CbipGDv9S51biph63A==
