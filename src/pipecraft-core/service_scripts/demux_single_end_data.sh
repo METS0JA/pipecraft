@@ -21,7 +21,8 @@
 
 #Load variables
 regex='[^\\]*$'
-oligos_file=$(echo $index_file | grep -oP "$regex")
+oligos_file_path=$(echo $index_file | grep -oP "$regex")
+oligos_file=$(basename $oligos_file_path) #basename, needed for macOS
 indexes_file=$(printf "/extraFiles/$oligos_file")
 extension=$fileFormat
 error_rate="-e ${index_mismatch}"
