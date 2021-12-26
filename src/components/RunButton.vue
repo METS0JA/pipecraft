@@ -446,7 +446,7 @@ export default {
           ? "/src/pipecraft-core/service_scripts"
           : "/resources/src/pipecraft-core/service_scripts";
       let Binds = [
-        `${process.cwd()}${scriptsPath}:/scripts`,
+        `${slash(process.cwd())}${scriptsPath}:/scripts`,
         `${Input}:/input`,
       ];
       this.$store.state[name][index].Inputs.forEach((input) => {
@@ -473,7 +473,7 @@ export default {
           ? "/src/pipecraft-core/service_scripts"
           : "/resources/src/pipecraft-core/service_scripts";
       let Binds = [
-        `${process.cwd()}${scriptsPath}:/scripts`,
+        `${slash(process.cwd())}${scriptsPath}:/scripts`,
         `${Input}:/input`,
       ];
       this.selectedSteps[stepIndex].services[serviceIndex].Inputs.forEach(

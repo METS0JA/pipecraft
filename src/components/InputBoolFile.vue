@@ -66,6 +66,7 @@
 <script>
 const { dialog } = require("@electron/remote");
 var path = require("path");
+var slash = require("slash");
 export default {
   computed: {
     input() {
@@ -132,7 +133,8 @@ export default {
         })
         .then((result) => {
           if (typeof result.filePaths[0] !== "undefined") {
-            this.inputUpdate(result.filePaths[0]);
+            let correctedPath = slash(result.filePaths[0])
+            this.inputUpdate(correctedPath);
           }
         })
         .catch((err) => {

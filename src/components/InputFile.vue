@@ -50,6 +50,7 @@
 </template>
 
 <script>
+const slash = require("slash");
 var path = require("path");
 const { dialog } = require("@electron/remote");
 
@@ -99,8 +100,10 @@ export default {
           properties: ["openFile", "multiSelections", "showHiddenFiles"],
         })
         .then((result) => {
+          console.log(result)
           if (typeof result.filePaths[0] !== "undefined") {
-            this.inputUpdate(result.filePaths[0]);
+            let correctedPath = slash(result.filePaths[0])
+            this.inputUpdate(correctedPath);
           }
         })
         .catch((err) => {
