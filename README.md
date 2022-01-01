@@ -1,21 +1,13 @@
 
 <a href="url"><img src="https://user-images.githubusercontent.com/18046232/145723441-51c3cbd0-7caf-485c-92d3-dbe253f6a73f.png" align="center" height="210" width="210" ></a>
 
+## Pre-release 0.1.0
+https://github.com/SuvalineVana/pipecraft/releases/tag/0.1.0
+
 **Manual**: https://pipecraft2-manual.readthedocs.io/en/stable/
-
-## Try out the alpha release
-
-### Prerequisites:
-
-Docker (https://www.docker.com/get-started)
-        (https://docs.docker.com/engine/install/ubuntu/)
-        (https://docs.docker.com/engine/install/linux-postinstall/)
-
-Download the setup executable from this link  
-https://github.com/SuvalineVana/pipecraft/releases/download/0.1.0/pipecraft.Setup.0.1.0.exe
+_________________________________
 
 ## For developers
-
 ### Prerequisites:
 
 NodeJS https://nodejs.org/en/download/ (make sure you lets node install build tools on windows and build-essential on ubuntu)
