@@ -2507,6 +2507,36 @@ export default new Vuex.Store({
     DraggableUpdate(state, value) {
       state.selectedSteps = value;
     },
+    blastSwitch(state, value) {
+      if(value == 'blastn') {
+        state.OTUs_workflow[8].extraInputs[1].value = 11
+        state.OTUs_workflow[8].extraInputs[2].value = 1
+        state.OTUs_workflow[8].extraInputs[3].value = -3
+        state.OTUs_workflow[8].extraInputs[4].value = 5
+        state.OTUs_workflow[8].extraInputs[5].value = 2
+      } else if (value == 'megablast') {
+        state.OTUs_workflow[8].extraInputs[1].value = 3
+        state.OTUs_workflow[8].extraInputs[2].value = undefined
+        state.OTUs_workflow[8].extraInputs[3].value = undefined
+        state.OTUs_workflow[8].extraInputs[4].value = 11
+        state.OTUs_workflow[8].extraInputs[5].value = 1
+      }
+    },
+    blastSwitch2(state, payload) {
+      if(payload.value == 'blastn') {
+        state.selectedSteps[payload.i1].services[payload.i2].extraInputs[1].value = 11
+        state.selectedSteps[payload.i1].services[payload.i2].extraInputs[2].value = 1
+        state.selectedSteps[payload.i1].services[payload.i2].extraInputs[3].value = -3
+        state.selectedSteps[payload.i1].services[payload.i2].extraInputs[4].value = 5
+        state.selectedSteps[payload.i1].services[payload.i2].extraInputs[5].value = 2
+      } else if (payload.value == 'megablast') {
+        state.selectedSteps[payload.i1].services[payload.i2].extraInputs[2].value = undefined
+        state.selectedSteps[payload.i1].services[payload.i2].extraInputs[3].value = undefined
+        state.selectedSteps[payload.i1].services[payload.i2].extraInputs[1].value = 3
+        state.selectedSteps[payload.i1].services[payload.i2].extraInputs[4].value = 11
+        state.selectedSteps[payload.i1].services[payload.i2].extraInputs[5].value = 1
+      }
+    },
     serviceInputUpdate(state, payload) {
       state.selectedSteps[payload.stepIndex].services[payload.serviceIndex] =
         payload.value;
