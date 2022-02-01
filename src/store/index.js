@@ -2558,7 +2558,13 @@ export default new Vuex.Store({
       }
     },
     checkCustomService(state, payload) {
-      state[payload.name][payload.serviceIndex].selected = payload.selected;
+      if(state[payload.name][payload.serviceIndex].serviceName == "itsx" && payload.selected == true) {
+        state[payload.name][7].selected = !payload.selected;
+        state[payload.name][8].selected = !payload.selected;
+      } else {
+        state[payload.name][payload.serviceIndex].selected = payload.selected;
+      }
+      
     },
   },
   actions: {},
