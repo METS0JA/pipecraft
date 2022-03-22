@@ -60,6 +60,7 @@ row.names(tax2) = sub(">", "", asv_headers)
 
 #write taxonomy to csv
 write.table(tax2, file.path(path_results, "taxonomy.csv"), sep = "\t", quote=F, col.names = NA)
+write.table(tax, file.path(path_results, "taxonomy_original.csv"), sep = "\t", quote=F, col.names = NA)
 
 #DONE
 
