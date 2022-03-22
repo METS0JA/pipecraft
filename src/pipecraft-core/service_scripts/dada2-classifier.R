@@ -53,7 +53,7 @@ for (i in 1:dim(ASV_tab.nochim)[2]) {
 asv_headers[i] = paste(">ASV", i, sep="_")
 }
 #add sequences to 1st column
-tax2 = cbind(row.names(tax$tax), tax$tax,tax$boot)
+tax2 = cbind(row.names(tax$tax), tax$tax, tax$boot)
 colnames(tax2)[1] = "Sequence"
 #row names as sequence headers
 row.names(tax2) = sub(">", "", asv_headers)
