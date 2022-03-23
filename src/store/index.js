@@ -2003,7 +2003,7 @@ export default new Vuex.Store({
       {
         tooltip: "quality filtering with DADA2 'filterAndTrim' function",
         scriptName: "dada2-quality.R",
-        imageName: "pipecraft/dada2:3.10",
+        imageName: "pipecraft/dada2:1.20",
         serviceName: "quality filtering",
         disabled: "never",
         selected: "always",
@@ -2114,7 +2114,7 @@ export default new Vuex.Store({
       {
         tooltip: "select the denoising options for DADA2 'dada' function",
         scriptName: "dada2-assemble.R",
-        imageName: "pipecraft/dada2:3.10",
+        imageName: "pipecraft/dada2:1.20",
         serviceName: "denoise",
         selected: "always",
         disabled: "never",
@@ -2152,7 +2152,7 @@ export default new Vuex.Store({
       {
         tooltip: "assemble paired-end reads (R1 and R2) with DADA2 'mergePairs' function",
         scriptName: "dada2-assemble.R",
-        imageName: "pipecraft/dada2:3.10",
+        imageName: "pipecraft/dada2:1.20",
         serviceName: "merge Pairs",
         selected: "always",
         disabled: "never",
@@ -2197,7 +2197,7 @@ export default new Vuex.Store({
       {
         tooltip: "remove chimeras with DADA2 'removeBimeraDenovo' function",
         scriptName: "dada2-chimera.R",
-        imageName: "pipecraft/dada2:3.10",
+        imageName: "pipecraft/dada2:1.20",
         serviceName: "chimera filtering",
         disabled: "never",
         selected: "always",
@@ -2219,7 +2219,7 @@ export default new Vuex.Store({
       {
         tooltip: "assign taxonomy with DADA2 'assignTaxonomy' function against the selected database. Untick the checkbox to skip this step",
         scriptName: "dada2-classifier.R",
-        imageName: "pipecraft/dada2:3.10",
+        imageName: "pipecraft/dada2:1.20",
         serviceName: "assign Taxonomy",
         disabled: "never",
         selected: false,
