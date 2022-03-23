@@ -33,7 +33,7 @@ export default new Vuex.Store({
         disabled: "demultiplexed",
         services: [
           {
-            tooltip: "demultiplex data to per-sample files based on specified indexes",
+            tooltip: "demultiplex data to per-sample files based on specified index file. Note that for read1 and read2 will get .R1 and .R2 identifiers when demultiplexing paired-end data",
             scriptName: "demux_paired_end_data.sh",
             imageName: "pipecraft/cutadapt:3.5",
             serviceName: "demultiplex",
@@ -249,7 +249,7 @@ export default new Vuex.Store({
                 name: "min_seq_length",
                 value: 32,
                 disabled: "never",
-                tooltip: "minimum length of the output sequence.",
+                tooltip: "minimum length of the output sequence",
                 type: "numeric",
                 rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
               },
@@ -258,7 +258,7 @@ export default new Vuex.Store({
                 value: true,
                 disabled: "never",
                 tooltip:
-                  "do not allow insertions or deletions is primer search. Mismatches are the only type of errprs accounted in the error rate parameter. ",
+                  "do not allow insertions or deletions is primer search. Mismatches are the only type of errors accounted in the error rate parameter. ",
                 type: "bool",
               },
             ],
@@ -542,7 +542,7 @@ export default new Vuex.Store({
                 value: 41,
                 disabled: "never",
                 tooltip:
-                  "maximum quality score accepted when reading FASTQ files. The default is 41, which is usual for recent Sanger/Illumina 1.8+ files.",
+                  "maximum quality score accepted when reading FASTQ files. The default is 41, which is usual for recent Sanger/Illumina 1.8+ files",
                 type: "numeric",
                 rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
               },
@@ -569,7 +569,7 @@ export default new Vuex.Store({
                 value: true,
                 disabled: "never",
                 tooltip:
-                  "allow to merge staggered read pairs. Staggered pairs are pairs where the 3’ end of the reverse read has an overhang to the left of the 5’ end of the forward read. This situation can occur when a very short fragment is sequenced.",
+                  "allow to merge staggered read pairs. Staggered pairs are pairs where the 3' end of the reverse read has an overhang to the left of the 5' end of the forward read. This situation can occur when a very short fragment is sequenced",
                 type: "bool",
               },
               {
@@ -577,7 +577,7 @@ export default new Vuex.Store({
                 value: false,
                 disabled: "never",
                 tooltip:
-                  "Include unassembled R1 reads to the set of assembled reads per sample. This may be relevant when working with e.g. ITS2 sequences, because the ITS2 region in some taxa is too long for assembly, therefore discarded completely after assembly process. Thus, including also unassembled R1 reads, partial ITS2 sequences for these taxa will be represented in the final output.",
+                  "Include unassembled R1 reads to the set of assembled reads per sample. This may be relevant when working with e.g. ITS2 sequences, because the ITS2 region in some taxa is too long for assembly, therefore discarded completely after assembly process. Thus, including also unassembled R1 reads, partial ITS2 sequences for these taxa will be represented in the final output",
                 type: "bool",
               },
             ],
@@ -642,7 +642,7 @@ export default new Vuex.Store({
                 value: 1,
                 disabled: "never",
                 tooltip:
-                  "Minimum amount of a unique sequences in a fasta file. If value = 1, then no sequences are discarded after dereplication; if value = 2, then sequences, which are represented only once in a given file are discarded; and so on.",
+                  "Minimum amount of a unique sequences in a fasta file. If value = 1, then no sequences are discarded after dereplication; if value = 2, then sequences, which are represented only once in a given file are discarded; and so on",
                 type: "numeric",
                 rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
               },
@@ -785,7 +785,7 @@ export default new Vuex.Store({
                 value: 50,
                 disabled: "never",
                 tooltip:
-                  "if larger than 0, ITSx will save additional FASTA-files for full and partial ITS sequences longer than the specified cutoff value. If his setting is left to 0 (zero), it means OFF.",
+                  "if larger than 0, ITSx will save additional FASTA-files for full and partial ITS sequences longer than the specified cutoff value. If his setting is left to 0 (zero), it means OFF",
                 type: "numeric",
                 rules: [(v) => v >= 0 || "ERROR: specify only values >= 0"],
               },
@@ -1022,7 +1022,7 @@ export default new Vuex.Store({
     ],
     OTUs_workflow: [
       {
-        tooltip: "demultiplex data to per-sample files based on specified indexes",
+        tooltip: "demultiplex data to per-sample files based on specified index file",
         scriptName: "demux_paired_end_data.sh",
         imageName: "pipecraft/cutadapt:3.5",
         serviceName: "demultiplex",
@@ -1153,7 +1153,7 @@ export default new Vuex.Store({
             value: true,
             disabled: "never",
             tooltip:
-              "do not allow insertions or deletions is primer search. Mismatches are the only type of errprs accounted in the error rate parameter",
+              "do not allow insertions or deletions is primer search. Mismatches are the only type of errors accounted in the error rate parameter",
             type: "bool",
           },
         ],
@@ -1288,7 +1288,7 @@ export default new Vuex.Store({
             value: true,
             disabled: "never",
             tooltip:
-              "allow to merge staggered read pairs. Staggered pairs are pairs where the 3’ end of the reverse read has an overhang to the left of the 5’ end of the forward read. This situation can occur when a very short fragment is sequenced",
+              "allow to merge staggered read pairs. Staggered pairs are pairs where the 3' end of the reverse read has an overhang to the left of the 5' end of the forward read. This situation can occur when a very short fragment is sequenced",
             type: "bool",
           },
           {
@@ -1332,7 +1332,7 @@ export default new Vuex.Store({
             value: 41,
             disabled: "never",
             tooltip:
-              "specify the maximum quality score accepted when reading FASTQ files. The default is 41, which is usual for recent Sanger/Illumina 1.8+ files. For PacBio data use 93.",
+              "specify the maximum quality score accepted when reading FASTQ files. The default is 41, which is usual for recent Sanger/Illumina 1.8+ files. For PacBio data use 93",
             type: "numeric",
             rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
@@ -1341,7 +1341,7 @@ export default new Vuex.Store({
             value: 0,
             disabled: "never",
             tooltip:
-              "the minimum quality score accepted for FASTQ files. The default is 0, which is usual for recent Sanger/Illumina 1.8+ files. Older formats may use scores between -5 and 2.",
+              "the minimum quality score accepted for FASTQ files. The default is 0, which is usual for recent Sanger/Illumina 1.8+ files. Older formats may use scores between -5 and 2",
             type: "numeric",
             rules: [(v) => v >= -5 || "ERROR: specify values >= -5"],
           },
@@ -1379,7 +1379,7 @@ export default new Vuex.Store({
             value: 0,
             disabled: "never",
             tooltip:
-              "Discard sequences with more than the specified number of N’s",
+              "Discard sequences with more than the specified number of Ns",
             type: "numeric",
             rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
           },
@@ -1809,7 +1809,7 @@ export default new Vuex.Store({
     ],
     ASVs_workflow: [
       {
-        tooltip: "demultiplex data to per-sample files based on specified indexes",
+        tooltip: "demultiplex data to per-sample files based on specified index file. Note that for read1 and read2 will get .R1 and .R2 identifiers when demultiplexing paired-end data",
         scriptName: "demux_paired_end_data.sh",
         imageName: "pipecraft/cutadapt:3.5",
         serviceName: "demultiplex",
@@ -1931,7 +1931,7 @@ export default new Vuex.Store({
             name: "min_seq_length",
             value: 32,
             disabled: "never",
-            tooltip: "minimum length of the output sequence.",
+            tooltip: "minimum length of the output sequence",
             type: "numeric",
             rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
@@ -1940,7 +1940,7 @@ export default new Vuex.Store({
             value: true,
             disabled: "never",
             tooltip:
-              "do not allow insertions or deletions is primer search. Mismatches are the only type of errprs accounted in the error rate parameter. ",
+              "do not allow insertions or deletions is primer search. Mismatches are the only type of errors accounted in the error rate parameter. ",
             type: "bool",
           },
         ],
@@ -2012,28 +2012,28 @@ export default new Vuex.Store({
         Inputs: [
           {
             name: "read_R1",
-            value: ["_R1"],
+            value: ["\\.R1"],
             disabled: "single_end",
             tooltip:
-              "(i.e. all R1 files have '_R1' string) Identifyer string that is common for all R1 reads ",
+              "identifyer string that is common for all R1 reads (e.g. when all R1 files have '.R1' string, then enter '\\.R1'. Note that backslash is only needed to escape dot regex; e.g. when all R1 files have '_R1' string, then enter '_R1'.). When demultiplexing data in during this workflow, then specify as '\\.R1'",
             type: "chip",
             rules: [(v) => v.length <= 1 || "ADD ONLY ONE IDENTIFIER"],
           },
           {
             name: "read_R2",
-            value: ["_R2"],
+            value: ["\\.R2"],
             disabled: "single_end",
             tooltip:
-              "(i.e. all R2 files have '_R2' string) Identifyer string that is common for all R2 reads ",
+              "identifyer string that is common for all R2 reads (e.g. when all R2 files have '.R2' string, then enter '\\.R2'. Note that backslash is only needed to escape dot regex; e.g. when all R2 files have '_R1' string, then enter '_R2'.). When demultiplexing data in during this workflow, then specify as '\\.R2'",
             type: "chip",
             rules: [(v) => v.length <= 1 || "ADD ONLY ONE IDENTIFIER"],
           },
           {
             name: "samp_ID",
-            value: ["_"],
+            value: ["\\."],
             disabled: "never",
             tooltip:
-              "identifyer string that separates the sample name from redundant charachters (e.g. file name = sampl84_S73_L001_R1_001.fastq, then underscore '_' would be the 'identifier string' (sample name = sampl84))",
+              "identifyer string that separates the sample name from redundant charachters (e.g. file name = sample1.R1.fastq, then underscore '\\.' would be the 'identifier string' (sample name = sampl84)); note that backslash is only needed to escape dot regex (e.g. when file name = sample1_R1.fastq then specify as '_')",
             type: "chip",
             rules: [(v) => v.length <= 1 || "ADD ONLY ONE IDENTIFIER"],
           },
