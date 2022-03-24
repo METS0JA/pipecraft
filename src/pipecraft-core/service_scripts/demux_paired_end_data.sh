@@ -218,7 +218,22 @@ if [[ $tag = "dual" ]]; then
     #Assign sample names
     export $newextension
     $run_python_module
+
+    # # Move un-named indexF-indexR combination fastq files to separate folder
+    cd $output_dir
+    for unnamed in indexF_*-indexR_*; do
+        if [[ -f $unnamed ]]; then
+            mkdir -p unnamed_index_combinations
+            mv $unnamed unnamed_index_combinations
+        fi
+    done
+    cd ..
+
+    cp tempdir2/barcodes_fwd.uniq.renamed.fasta $output_dir/unnamed_index_combinations && mv $output_dir/unnamed_index_combinations/barcodes_fwd.uniq.renamed.fasta $output_dir/unnamed_index_combinations/forward_indexed.fasta
+    cp tempdir2/barcodes_rev.uniq.renamed.fasta $output_dir/unnamed_index_combinations && mv $output_dir/unnamed_index_combinations/barcodes_rev.uniq.renamed.fasta $output_dir/unnamed_index_combinations/reverse_indexed.fasta
+
 fi
+
 
 
 #################################################

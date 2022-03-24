@@ -23,12 +23,9 @@ dir.create(path_results)
 database = Sys.getenv('dada2_database')
 database = gsub("\\\\", "/", database) #replace backslashes \ in the database path
 database = paste("/extraFiles", basename(database), sep = "/")
-minBoot = Sys.getenv('minBoot')
+minBoot = as.integer(Sys.getenv('minBoot'))
 tryRC = Sys.getenv('tryRC')
 print(database)
-
-#Convert minBoot var to integer
-minBoot_var = as.integer(minBoot)
 
 #"FALSE" or "TRUE" to FALSE or TRUE for dada2
 if (tryRC == "false" || tryRC == "FALSE"){
@@ -42,7 +39,7 @@ if (tryRC == "true" || tryRC == "TRUE"){
 ASV_tab.nochim = readRDS(file.path(workingDir, "ASVs_table.denoised-merged.nochim.rds"))
 
 #assign taxonomy
-tax = assignTaxonomy(ASV_tab.nochim , database, multithread = FALSE, minBoot = minBoot_var, tryRC = tryRC, outputBootstraps = TRUE)
+tax = assignTaxonomy(ASV_tab.nochim , database, multithread = FALSE, minBoot = minBoot, tryRC = tryRC, outputBootstraps = TRUE)
 
 ###format and save taxonomy results
 #sequence headers
@@ -60,6 +57,7 @@ row.names(tax2) = sub(">", "", asv_headers)
 write.table(tax2, file.path(path_results, "taxonomy.csv"), sep = "\t", quote=F, col.names = NA)
 
 #DONE
+
 print('workingDir=/input/taxonomy_out.dada2')
 print('fileFormat=taxtab')
 print('dataFormat=demultiplexed')

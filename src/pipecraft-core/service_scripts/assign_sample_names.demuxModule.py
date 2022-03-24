@@ -23,24 +23,32 @@ for line in demux_files:
 	#el[0] forward index name
 	#el[1] reverse index name
 
+
 	#open fwd index file and seach index seq for matching index name
 	with open("tempdir2/barcodes_fwd.uniq.renamed.fasta") as indexes_fwd:
-		for record in SeqIO.parse(indexes_fwd, "fasta"):
-			if el[0] in record.id:
+		for fwdrecord in SeqIO.parse(indexes_fwd, "fasta"):
+			#print(el[0])
+			if el[0] == fwdrecord.id:
 
 				#open rev index file and seach index seq for matching index name
 				with open("tempdir2/barcodes_rev.uniq.renamed.fasta") as indexes_rev:
-					for record2 in SeqIO.parse(indexes_rev, "fasta"):
-						if el[1] in record2.id:
+					for revrecord in SeqIO.parse(indexes_rev, "fasta"):
+						#print(el[1])
+						if el[1] == revrecord.id:
 
 							#open paired-indexes file
 							with open(indexes_file) as indexes_all:
-								for record3 in SeqIO.parse(indexes_all, "fasta"):
-									if record.seq in record3.seq:
-										if record2.seq in record3.seq:
-											#print(el[0] + " and " + el[1] + " combo ->  " + record3.id + ", with indexes " + record3.seq)
-											sampl_nameR1 = "demultiplex_out/" + str(record3.id) + ".R1." + str(extension)
-											sampl_nameR2 = "demultiplex_out/" + str(record3.id) + ".R2." + str(extension)
+								for indexfilerecord in SeqIO.parse(indexes_all, "fasta"):
+									
+									index_part = indexfilerecord.seq.split("...")
+									# index_part[0] -> forward index seq
+									# index_part[1] -> reverse index seq
+
+									if fwdrecord.seq in index_part[0]:
+										if revrecord.seq in index_part[1]:
+											#print(indexfilerecord.id + ", with indexes " + indexfilerecord.seq)
+											sampl_nameR1 = "demultiplex_out/" + str(indexfilerecord.id) + ".R1." + str(extension)
+											sampl_nameR2 = "demultiplex_out/" + str(indexfilerecord.id) + ".R2." + str(extension)
 
 											line_R1 = "demultiplex_out/" + line.strip() + ".R1." + str(extension)
 											line_R2 = "demultiplex_out/" + line.strip() + ".R2." + str(extension)
