@@ -81,7 +81,7 @@ chimera_filtering (){
   printf "Processing "$1" ...\n" >> "$2".log
 
   ## Dereplicate sequences
-  printf "Dereplicating ...\n" >> "$2".log
+  printf "\nDereplicating ...\n" >> "$2".log
   vsearch \
     --derep_fulllength "$1" \
     $minuniquesize \
@@ -92,7 +92,7 @@ chimera_filtering (){
     2>> "$2".log
 
   ## Pre-cluster sequences; sorts seqs automaticcaly by decreasing abundance
-  printf "Pre-clustering ...\n" >> "$2".log
+  printf "\nPre-clustering ...\n" >> "$2".log
   vsearch \
     --cluster_size tempdir/"$2".derep.fasta \
     $cores \
@@ -105,7 +105,7 @@ chimera_filtering (){
     2>> "$2".log
 
   ## Search chimeras
-  printf "Chimera removal ...\n" >> "$2".log
+  printf "\nChimera removal ...\n" >> "$2".log
   vsearch \
     --uchime_denovo tempdir/"$2".preclustered.fasta \
     $abskew \
@@ -120,7 +120,7 @@ chimera_filtering (){
 
   ## Merge non-chimeras with borderline sequences
   if [[ $inclborderline == "true" ]]; then
-    printf "Recovering borderline sequences ...\n" >> "$2".log
+    printf "\nRecovering borderline sequences ...\n" >> "$2".log
     cat \
       tempdir/"$2".nonchim.fasta \
       tempdir/"$2".borderline.fasta \
@@ -129,9 +129,8 @@ chimera_filtering (){
     mv $output_dir/"$2".nonchim.fasta tempdir/"$2".fasta
   fi
 
-  printf "Processing "$1" finished.\n" >> "$2".log
+  printf "\nProcessing "$1" finished.\n" >> "$2".log
 }
-
 
 
 ## Export the function
