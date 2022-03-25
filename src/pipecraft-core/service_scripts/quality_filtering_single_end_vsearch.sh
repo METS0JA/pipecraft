@@ -26,9 +26,10 @@ minlen=$"--fastq_minlen ${min_length}"
 cores=$"--threads ${cores}"
 qmax=$"--fastq_qmax ${qmax}"
 qmin=$"--fastq_qmin ${qmin}"
-minsize=$"--minsize ${min_size}"
 maxlen=$max_length
 maxeerate=$maxee_rate
+
+--fastq_stripright
 
 #Source for functions
 source /scripts/framework.functions.sh
@@ -81,7 +82,6 @@ for file in *.$extension; do
     $cores \
     $qmax \
     $qmin \
-    $minsize \
     $max_length \
     $maxee_rate \
     --fastqout $output_dir/$input.$newextension \

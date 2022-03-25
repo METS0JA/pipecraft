@@ -376,15 +376,15 @@ export default new Vuex.Store({
                 type: "numeric",
                 rules: [(v) => v >= 0.1 || "ERROR: specify values >= 0.1"],
               },
-              {
-                name: "min_size",
-                value: 1,
-                disabled: "never",
-                tooltip:
-                  "discard sequences with an abundance lower than the specified value",
-                type: "numeric",
-                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
-              },
+              // {
+              //   name: "min_size",
+              //   value: 1,
+              //   disabled: "never",
+              //   tooltip:
+              //     "discard sequences with an abundance lower than the specified value",
+              //   type: "numeric",
+              //   rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              // },
             ],
             Inputs: [
               {
@@ -1354,15 +1354,15 @@ export default new Vuex.Store({
             type: "numeric",
             rules: [(v) => v >= 0.1 || "ERROR: specify values >= 0.1"],
           },
-          {
-            name: "min_size",
-            value: 1,
-            disabled: "never",
-            tooltip:
-              "discard sequences with an abundance lower than the specified value",
-            type: "numeric",
-            rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
-          },
+          // {
+          //   name: "min_size",
+          //   value: 1,
+          //   disabled: "never",
+          //   tooltip:
+          //     "discard sequences with an abundance lower than the specified value",
+          //   type: "numeric",
+          //   rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+          // },
         ],
         Inputs: [
           {
