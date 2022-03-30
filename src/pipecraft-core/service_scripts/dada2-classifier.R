@@ -23,10 +23,9 @@ dir.create(path_results)
 database = Sys.getenv('dada2_database')
 database = gsub("\\\\", "/", database) #replace backslashes \ in the database path
 database = paste("/extraFiles", basename(database), sep = "/")
-minBoot = Sys.getenv('minBoot')
+minBoot = as.integer(Sys.getenv('minBoot'))
 tryRC = Sys.getenv('tryRC')
 print(database)
-
 
 #"FALSE" or "TRUE" to FALSE or TRUE for dada2
 if (tryRC == "false" || tryRC == "FALSE"){
@@ -38,13 +37,9 @@ if (tryRC == "true" || tryRC == "TRUE"){
 
 #load data
 ASV_tab.nochim = readRDS(file.path(workingDir, "ASVs_table.denoised-merged.nochim.rds"))
-print(ASV_tab.nochim)
-print(database)
 
 #assign taxonomy
-tax <- assignTaxonomy(ASV_tab.nochim , database, multithread = FALSE, minBoot = minBoot, tryRC = tryRC, outputBootstraps = TRUE)
-print('yo2')
-
+tax = assignTaxonomy(ASV_tab.nochim , database, multithread = FALSE, minBoot = minBoot, tryRC = tryRC, outputBootstraps = TRUE)
 
 ###format and save taxonomy results
 #sequence headers
@@ -60,7 +55,6 @@ row.names(tax2) = sub(">", "", asv_headers)
 
 #write taxonomy to csv
 write.table(tax2, file.path(path_results, "taxonomy.csv"), sep = "\t", quote=F, col.names = NA)
-write.table(tax, file.path(path_results, "taxonomy_original.csv"), sep = "\t", quote=F, col.names = NA)
 
 #DONE
 

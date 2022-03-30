@@ -122,11 +122,17 @@ rm $output_dir/10BestHits.xml
 if [[ -d tempdir2 ]];then
 	rm -r tempdir2
 fi
+
+end=$(date +%s)
+runtime=$((end-start))
+
+
 #Make README.txt file
-printf "Taxonomy annotation was done with BLAST.
+printf "Taxonomy annotation was done with BLAST. 
 Input = $IN
 BLAST_1st_best_hit.txt contains BLAST results for the 1st best hit in the used database(s).
 BLAST_10_best_hits.txt contains BLAST results for the 10 best hits in the used database(s).\n
+Total run time was $runtime sec.\n
 score -> blast score
 e-value -> blast e-value
 query len -> query (i.e. OTU/ASV) sequence length
@@ -145,9 +151,6 @@ id -> identity percentage against the target sequence.\n" > $output_dir/README.t
 printf "\nDONE\n"
 printf "Data in directory '$output_dir'\n"
 printf "Check README.txt files in output directory for further information about the process.\n"
-
-end=$(date +%s)
-runtime=$((end-start))
 printf "Total time: $runtime sec.\n\n"
 
 #variables for all services

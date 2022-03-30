@@ -26,7 +26,6 @@ minlen=$"--fastq_minlen ${min_length}"
 cores=$"--threads ${cores}"
 qmax=$"--fastq_qmax ${qmax}"
 qmin=$"--fastq_qmin ${qmin}"
-minsize=$"--minsize ${min_size}"
 maxlen=$max_length
 maxeerate=$maxee_rate
 
@@ -83,7 +82,6 @@ while read LINE; do
     $cores \
     $qmax \
     $qmin \
-    $minsize \
     $max_length \
     $maxee_rate \
     --fastqout tempdir/$inputR1.$newextension 2>&1)
@@ -98,7 +96,6 @@ while read LINE; do
     $cores \
     $qmax \
     $qmin \
-    $minsize \
     $max_length \
     $maxee_rate \
     --fastqout tempdir/$inputR2.$newextension 2>&1)

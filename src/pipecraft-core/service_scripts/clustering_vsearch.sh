@@ -188,6 +188,9 @@ if [ -d tempdir2 ]; then
 fi
 size=$(grep -c "^>" $output_dir/OTUs.fasta)
 
+end=$(date +%s)
+runtime=$((end-start))
+
 #Make README.txt file
 printf "Clustering formed $size OTUs;
 'clustering_out' directory contains FASTA formated representative OTU sequences (OTUs.fasta)
@@ -211,8 +214,7 @@ printf "\nDONE\n"
 printf "Data in directory '$output_dir'\n"
 printf "Check README.txt files in output directory for further information about the process.\n"
 
-end=$(date +%s)
-runtime=$((end-start))
+
 printf "Total time: $runtime sec.\n\n"
 
 #variables for all services

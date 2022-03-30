@@ -376,15 +376,15 @@ export default new Vuex.Store({
                 type: "numeric",
                 rules: [(v) => v >= 0.1 || "ERROR: specify values >= 0.1"],
               },
-              {
-                name: "min_size",
-                value: 1,
-                disabled: "never",
-                tooltip:
-                  "discard sequences with an abundance lower than the specified value",
-                type: "numeric",
-                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
-              },
+              // {
+              //   name: "min_size",
+              //   value: 1,
+              //   disabled: "never",
+              //   tooltip:
+              //     "discard sequences with an abundance lower than the specified value",
+              //   type: "numeric",
+              //   rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              // },
             ],
             Inputs: [
               {
@@ -1354,15 +1354,15 @@ export default new Vuex.Store({
             type: "numeric",
             rules: [(v) => v >= 0.1 || "ERROR: specify values >= 0.1"],
           },
-          {
-            name: "min_size",
-            value: 1,
-            disabled: "never",
-            tooltip:
-              "discard sequences with an abundance lower than the specified value",
-            type: "numeric",
-            rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
-          },
+          // {
+          //   name: "min_size",
+          //   value: 1,
+          //   disabled: "never",
+          //   tooltip:
+          //     "discard sequences with an abundance lower than the specified value",
+          //   type: "numeric",
+          //   rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+          // },
         ],
         Inputs: [
           {
@@ -1370,7 +1370,7 @@ export default new Vuex.Store({
             value: 1,
             disabled: "never",
             tooltip:
-              "Maximum number of expected errors per sequence. Sequences with higher error rates will be discarded",
+              "maximum number of expected errors per sequence. Sequences with higher error rates will be discarded",
             type: "numeric",
             rules: [(v) => v >= 0.1 || "ERROR: specify values >= 0.1"],
           },
@@ -1379,7 +1379,7 @@ export default new Vuex.Store({
             value: 0,
             disabled: "never",
             tooltip:
-              "Discard sequences with more than the specified number of Ns",
+              "discard sequences with more than the specified number of Ns",
             type: "numeric",
             rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
           },
@@ -1387,7 +1387,7 @@ export default new Vuex.Store({
             name: "min_length",
             value: 32,
             disabled: "never",
-            tooltip: "Minimum length of the filtered output sequence",
+            tooltip: "minimum length of the filtered output sequence",
             type: "numeric",
             rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
@@ -1434,7 +1434,7 @@ export default new Vuex.Store({
         Inputs: [
           {
             name: "pre_cluster",
-            value: 0.98,
+            value: 0.97,
             disabled: "never",
             tooltip:
               "identity percentage when performing 'pre-clustering' with --cluster_size for denovo chimera filtering with --uchime_denovo",
