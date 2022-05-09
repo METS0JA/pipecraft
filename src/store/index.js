@@ -920,6 +920,115 @@ export default new Vuex.Store({
         ],
       },
       {
+        stepName: "postclustering",
+        disabled: "never",
+        services: [
+          {
+            tooltip: "postclustering with LULU algorithm",
+            scriptName: "lulu.sh",
+            imageName: "pipecraft/blast:2.12", //edit container name
+            serviceName: "LULU",  //edit service name?
+            selected: false,
+            showExtra: false,
+            extraInputs: [
+              {
+                name: "match_list_soft",
+                items: ["vsearch", "blastn"],
+                value: "vsearch",
+                disabled: "never",
+                tooltip: "use either 'blastn' or 'vsearch' to generate match list for LULU. Default is 'vsearch' (much faster)",
+                type: "select",
+              },
+              {
+                name: "vsearch_similarity_type",
+                items: ["0", "1", "2", "3", "4"],
+                value: "2",
+                disabled: "never",
+                tooltip:
+                  "applies only when 'vsearch' is used for generating match list for LULU. Pairwise sequence identity definition (--iddef)",
+                type: "select",
+              },
+              {
+                name: "match_list_id",
+                value: 84,
+                disabled: "never",
+                tooltip: "percent identity cutoff. Exclude comparisons with lower id than specified threshold",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "match_list_cov",
+                value: 80,
+                disabled: "never",
+                tooltip: "percent query coverage per hit. Exclude comparisons with lower coverage than specified threshold",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "strands",
+                items: ["plus", "both"],
+                value: "both",
+                disabled: "never",
+                tooltip: "query strand to search against database. Both = search also reverse complement",
+                type: "select",
+              },
+              {
+                name: "cores",
+                value: 6,
+                disabled: "never",
+                tooltip: "number of cores to use for generating match list for LULU",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+            ],
+            Inputs: [
+              {
+                name: "rep_seqs",
+                btnName: "select file",
+                value: "undefined",
+                disabled: "never",
+                tooltip:
+                  "fasta formatted sequence file containing your OTU/ASV reads. SPECIFY ONLY WHEN USING THIS AS AN INDEPENDENT STEP. If no file is selected, then PipeCraft will look OTUs.fasta or ASVs.fasta from the last pipeline step",
+                type: "file",
+              },
+              {
+                name: "min_ratio_type",
+                items: ["min", "avg"],
+                value: "min",
+                disabled: "never",
+                tooltip:
+                  "sets whether a potential error must have lower abundance than the parent in all samples 'min' (default), or if an error just needs to have lower abundance on average 'avg'",
+                type: "select",
+              },
+              {
+                name: "min_ratio",
+                value: 1,
+                disabled: "never",
+                tooltip: "default = 1. Sets the minimim abundance ratio between a potential error and a potential parent to be identified as an error",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "min_match",
+                value: 95,
+                disabled: "never",
+                tooltip: "default = 95%. Specify minimum threshold of sequence similarity for considering any OTU as an error of another",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "min_rel_cooccurence",
+                value: 0.95,
+                disabled: "never",
+                tooltip: "minimum co-occurrence rate. Default = 0.95 (meaning that 1 in 20 samples are allowed to have no parent presence)",
+                type: "numeric",
+                rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
+              },
+            ],
+          },
+        ],
+      },
+      {
         stepName: "assign taxonomy",
         disabled: "never",
         services: [
