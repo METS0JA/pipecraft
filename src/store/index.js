@@ -926,8 +926,8 @@ export default new Vuex.Store({
           {
             tooltip: "postclustering with LULU algorithm",
             scriptName: "lulu.sh",
-            imageName: "pipecraft/blast:2.12", //edit container name
-            serviceName: "LULU",  //edit service name?
+            imageName: "pipecraft/dada2:1.20",
+            serviceName: "LULU",
             selected: false,
             showExtra: false,
             extraInputs: [
