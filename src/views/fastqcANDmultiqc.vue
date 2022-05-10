@@ -37,13 +37,31 @@
       </div>
     </v-card-text>
     <v-divider class="mt-1"></v-divider>
-
     <v-card-actions>
-      <v-btn :disabled="reportLoading" @click="folderSelect()" color="orange" text> Select Folder </v-btn>
-
-      <v-btn :disabled="reportLoading" @click="fastQualityCheck()" color="orange" text>
-        Create Report
+      <v-btn
+        :disabled="reportLoading"
+        @click="folderSelect()"
+        color="orange"
+        text
+      >
+        Select Folder
       </v-btn>
+      <v-tooltip bottom :disabled="dockerActive && folderPath != ''">
+        <template v-slot:activator="{ on }">
+          <div v-on="on">
+            <v-btn
+              :disabled="!dockerActive || reportLoading || folderPath == ''"
+              @click="fastQualityCheck()"
+              color="orange"
+              text
+            >
+              Create Report
+            </v-btn>
+          </div>
+        </template>
+        <div v-if="!dockerActive">Failed to find Docker</div>
+        <div v-if="folderPath == ''">No folder selected</div>
+      </v-tooltip>
       <v-tooltip right :disabled="reportReady">
         <template v-slot:activator="{ on }">
           <div v-on="on">
@@ -64,6 +82,12 @@
         <div>No reports generated</div>
       </v-tooltip>
     </v-card-actions>
+    <v-progress-linear
+      :active="reportLoading"
+      color="orange"
+      indeterminate
+      reverse
+    ></v-progress-linear>
   </v-card>
 </template>
 
@@ -91,7 +115,21 @@ export default {
       folderPath: "",
       reportReady: false,
       reportLoading: false,
+      dockerActive: false,
     };
+  },
+  created() {
+    var self = this;
+    setInterval(async function () {
+      self.dockerActive = await dockerode
+        .version()
+        .then(() => {
+          return true;
+        })
+        .catch(() => {
+          return false;
+        });
+    }, 1000);
   },
   methods: {
     folderSelect() {

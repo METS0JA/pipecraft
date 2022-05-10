@@ -71,7 +71,7 @@
           style="
             background-color: #212121;
             border: thin #e57373 solid;
-            color: #e57373;
+            color: red;
           "
           @click="stopWorkflow"
         >
@@ -124,6 +124,9 @@ export default {
         this.$store.state.runInfo.containerID
       );
       container.kill(function (err, data) {
+        console.log(data);
+      });
+      container.remove(function (err, data) {
         console.log(data);
       });
       this.$store.commit("resetRunInfo");

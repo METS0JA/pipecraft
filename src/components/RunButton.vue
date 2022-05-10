@@ -114,8 +114,8 @@ export default {
           console.log(name);
           this.$store.commit("addWorkingDir", "/input");
           let startTime = Date.now();
-          let steps2Run = this.$store.getters.steps2Run(name)
-          console.log(steps2Run)
+          let steps2Run = this.$store.getters.steps2Run(name);
+          console.log(steps2Run);
           console.log(startTime);
           for (let index of this.$store.state[name].entries()) {
             if (
@@ -233,10 +233,10 @@ export default {
               );
               this.$store.commit("resetRunInfo");
               if (result.statusCode == 0) {
-                steps2Run -= 1 
+                steps2Run -= 1;
                 if (steps2Run == 0) {
                   Swal.fire("Workflow finished");
-                }  
+                }
               }
             }
           }
@@ -348,6 +348,7 @@ export default {
                 fileFormat: this.getVariableFromLog(result.log, "fileFormat"),
                 readType: this.getVariableFromLog(result.log, "readType"),
               };
+              this.$store.commit("toggle_PE_SE_scripts", newDataInfo.readType);
               this.$store.commit("addInputInfo", newDataInfo);
               this.$store.commit("addWorkingDir", newWorkingDir);
             } else {
