@@ -2,10 +2,10 @@ module.exports = {
   transpileDependencies: ["vuetify"],
   pluginOptions: {
     electronBuilder: {
-      externals: ["node-pty"],
       nodeIntegration: true,
+      externals: ["node-pty"],
       builderOptions: {
-        publish: ['github'],
+        publish: ["github"],
         win: {
           icon: "build/icon.ico",
         },

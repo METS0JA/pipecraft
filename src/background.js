@@ -4,9 +4,13 @@ import { app, protocol, BrowserWindow } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
 const isDevelopment = process.env.NODE_ENV !== "production";
+const log = require("electron-log");
 import * as remoteMain from "@electron/remote/main";
-import { autoUpdater } from "electron-updater"
+import { autoUpdater } from "electron-updater";
 remoteMain.initialize();
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = "info";
+log.info("App starting...");
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -27,6 +31,7 @@ async function createWindow() {
       enableRemoteModule: true,
     },
   });
+  win.webContents.openDevTools();
   win.removeMenu();
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
@@ -37,7 +42,7 @@ async function createWindow() {
     createProtocol("app");
     // Load the index.html when not in development
     win.loadURL("app://./index.html");
-    autoUpdater.checkForUpdatesAndNotify()
+    autoUpdater.checkForUpdates();
   }
 }
 
@@ -60,6 +65,7 @@ app.on("activate", () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", async () => {
+  autoUpdater.checkForUpdatesAndNotify();
   if (isDevelopment && !process.env.IS_TEST) {
     // Install Vue Devtools
     try {
