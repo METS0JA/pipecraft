@@ -18,6 +18,8 @@
     #Distributed under the GNU General Public License version 3 by the Free Software Foundation
     #https://github.com/torognes/vsearch
 ##################################################################
+#Source for functions
+source /scripts/framework.functions.sh
 
 #specify input table and OTUs/ASVs fasta file
 regex='[^/]*$'
@@ -25,9 +27,22 @@ otu_table_temp=$(echo $table | grep -oP "$regex")
 otu_table=$(printf "/extraFiles/$otu_table_temp")
 echo "table = $otu_table"
 
-input_fasta_temp=$(echo $rep_seqs | grep -oP "$regex")
-input_fasta=$(printf "/extraFiles/$input_fasta_temp")
-echo "rep seqs = $input_fasta"
+# Duplicate mount point ERROR -> read fasta file inside the folder, specify only the OTU table?
+# input_fasta_temp=$(echo $rep_seqs | grep -oP "$regex")
+# input_fasta=$(printf "/extraFiles/$input_fasta_temp")
+# echo "rep seqs = $input_fasta"
+extension=$fileFormat
+i=$"0"
+for file in *.$extension; do
+    input_fasta=$(echo $file)
+    i=$((i + 1))
+done
+# if [[ $i > 1 ]]; then 
+#     printf '%s\n' "ERROR]: more than one representative sequence file ($extension) in the working folder" >&2
+#     end_process
+# else
+#     printf "\n input fasta = $input_fasta \n\n"
+# fi
 
 #variables for match list
 match_list_soft=${match_list_soft}
@@ -36,6 +51,10 @@ match_list_id=${match_list_id}
 match_list_cov=${match_list_cov}
 strands=${strands}
 cores=${cores}
+
+
+### Check if files with specified extension exist in the dir
+first_file_check
 
 ### Generate match list for LULU
 if [[ match_list_soft == "blastn" ]]; then

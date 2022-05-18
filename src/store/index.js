@@ -954,7 +954,7 @@ export default new Vuex.Store({
                 disabled: "never",
                 tooltip: "percent identity cutoff. Exclude comparisons with lower id than specified threshold",
                 type: "numeric",
-                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1", (v) => v <= 100 || "ERROR: specify values <= 100"],
               },
               {
                 name: "match_list_cov",
@@ -962,7 +962,7 @@ export default new Vuex.Store({
                 disabled: "never",
                 tooltip: "percent query coverage per hit. Exclude comparisons with lower coverage than specified threshold",
                 type: "numeric",
-                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1", (v) => v <= 100 || "ERROR: specify values <= 100"],
               },
               {
                 name: "strands",
@@ -991,15 +991,15 @@ export default new Vuex.Store({
                   "select OTU/ASV table. SPECIFY ONLY WHEN USING THIS AS AN INDEPENDENT STEP. If no file is selected, then PipeCraft will look OTU_table.txt or ASV_table.txt from the last pipeline step",
                 type: "file",
               },
-              {
-                name: "rep_seqs",
-                btnName: "select file",
-                value: "undefined",
-                disabled: "never",
-                tooltip:
-                  "select fasta formatted sequence file containing your OTU/ASV reads. SPECIFY ONLY WHEN USING THIS AS AN INDEPENDENT STEP. If no file is selected, then PipeCraft will look OTUs.fasta or ASVs.fasta from the last pipeline step",
-                type: "file",
-              },
+              // {
+              //   name: "rep_seqs",
+              //   btnName: "select file",
+              //   value: "undefined",
+              //   disabled: "never",
+              //   tooltip:
+              //     "select fasta formatted sequence file containing your OTU/ASV reads. SPECIFY ONLY WHEN USING THIS AS AN INDEPENDENT STEP. If no file is selected, then PipeCraft will look OTUs.fasta or ASVs.fasta from the last pipeline step",
+              //   type: "file",
+              // },
               {
                 name: "min_ratio_type",
                 items: ["min", "avg"],
@@ -1023,7 +1023,7 @@ export default new Vuex.Store({
                 disabled: "never",
                 tooltip: "default = 95%. Specify minimum threshold of sequence similarity for considering any OTU as an error of another",
                 type: "numeric",
-                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1", (v) => v <= 100 || "ERROR: specify values <= 100"],
               },
               {
                 name: "min_rel_cooccurence",
@@ -1031,7 +1031,7 @@ export default new Vuex.Store({
                 disabled: "never",
                 tooltip: "minimum co-occurrence rate. Default = 0.95 (meaning that 1 in 20 samples are allowed to have no parent presence)",
                 type: "numeric",
-                rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
+                rules: [(v) => v >= 0 || "ERROR: specify values >= 0", (v) => v <= 1.0 || "ERROR: specify values <= 1.0"],
               },
             ],
           },
