@@ -1,5 +1,8 @@
 #!/bin/bash
 
+##### TESTING !!!
+
+
 ## TO fix: output smaple names! And new OTUs.fasta file, when some are discarded
 
 #Post-clustering with LULU 
@@ -22,9 +25,11 @@
 source /scripts/framework.functions.sh
 
 #specify input table and OTUs/ASVs fasta file
-regex='[^/]*$'
-otu_table_temp=$(echo $table | grep -oP "$regex")
-otu_table=$(printf "/extraFiles/$otu_table_temp")
+# regex='[^/]*$'
+# otu_table_temp=$(echo $table | grep -oP "$regex")
+# otu_table=$(printf "/extraFiles/$otu_table_temp")
+
+otu_table=$"otutable_test.txt"
 echo "table = $otu_table"
 
 # Duplicate mount point ERROR -> read fasta file inside the folder, specify only the OTU table?
@@ -37,12 +42,14 @@ for file in *.$extension; do
     input_fasta=$(echo $file)
     i=$((i + 1))
 done
-# if [[ $i > 1 ]]; then 
+# if [[ $i > 1 ]]; then
 #     printf '%s\n' "ERROR]: more than one representative sequence file ($extension) in the working folder" >&2
 #     end_process
 # else
 #     printf "\n input fasta = $input_fasta \n\n"
 # fi
+
+printf "\n input fasta = $input_fasta \n\n"
 
 #variables for match list
 match_list_soft=${match_list_soft}
@@ -54,7 +61,7 @@ cores=${cores}
 
 
 ### Check if files with specified extension exist in the dir
-first_file_check
+# first_file_check
 
 ### Generate match list for LULU
 if [[ match_list_soft == "blastn" ]]; then
@@ -87,6 +94,9 @@ if [[ match_list_soft == "vsearch" ]]; then
             --query_cov $vsearch_qcov_hsp_perc \
             --threads $cores
 fi
+
+
+# LULU supposed to run in R script below... 
 
 # #Run LULU in R
 # printf "Running lulu\n"

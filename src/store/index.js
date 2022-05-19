@@ -982,15 +982,15 @@ export default new Vuex.Store({
               },
             ],
             Inputs: [
-              {
-                name: "table",
-                btnName: "select file",
-                value: "undefined",
-                disabled: "never",
-                tooltip:
-                  "select OTU/ASV table. SPECIFY ONLY WHEN USING THIS AS AN INDEPENDENT STEP. If no file is selected, then PipeCraft will look OTU_table.txt or ASV_table.txt from the last pipeline step",
-                type: "file",
-              },
+              // {
+              //   name: "table",
+              //   btnName: "select file",
+              //   value: "undefined",
+              //   disabled: "never",
+              //   tooltip:
+              //     "select OTU/ASV table. SPECIFY ONLY WHEN USING THIS AS AN INDEPENDENT STEP. If no file is selected, then PipeCraft will look OTU_table.txt or ASV_table.txt from the last pipeline step",
+              //   type: "file",
+              // },
               // {
               //   name: "rep_seqs",
               //   btnName: "select file",
@@ -1029,9 +1029,12 @@ export default new Vuex.Store({
                 name: "min_rel_cooccurence",
                 value: 0.95,
                 disabled: "never",
-                tooltip: "minimum co-occurrence rate. Default = 0.95 (meaning that 1 in 20 samples are allowed to have no parent presence)",
-                type: "numeric",
-                rules: [(v) => v >= 0 || "ERROR: specify values >= 0", (v) => v <= 1.0 || "ERROR: specify values <= 1.0"],
+                tooltip:
+                  "minimum co-occurrence rate. Default = 0.95 (meaning that 1 in 20 samples are allowed to have no parent presence)",
+                max: 1,
+                min: 0,
+                step: 0.01,
+                type: "slide",
               },
             ],
           },
