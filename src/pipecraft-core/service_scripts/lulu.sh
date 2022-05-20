@@ -21,88 +21,127 @@
     #Distributed under the GNU General Public License version 3 by the Free Software Foundation
     #https://github.com/torognes/vsearch
 ##################################################################
-#Source for functions
-source /scripts/framework.functions.sh
 
-#specify input table and OTUs/ASVs fasta file
-# regex='[^/]*$'
-# otu_table_temp=$(echo $table | grep -oP "$regex")
-# otu_table=$(printf "/extraFiles/$otu_table_temp")
-
-otu_table=$"otutable_test.txt"
-echo "table = $otu_table"
-
-# Duplicate mount point ERROR -> read fasta file inside the folder, specify only the OTU table?
-# input_fasta_temp=$(echo $rep_seqs | grep -oP "$regex")
-# input_fasta=$(printf "/extraFiles/$input_fasta_temp")
-# echo "rep seqs = $input_fasta"
-extension=$fileFormat
-i=$"0"
-for file in *.$extension; do
-    input_fasta=$(echo $file)
-    i=$((i + 1))
-done
-# if [[ $i > 1 ]]; then
-#     printf '%s\n' "ERROR]: more than one representative sequence file ($extension) in the working folder" >&2
-#     end_process
-# else
-#     printf "\n input fasta = $input_fasta \n\n"
-# fi
-
-printf "\n input fasta = $input_fasta \n\n"
-
-#variables for match list
+#load variables
 match_list_soft=${match_list_soft}
 vsearch_similarity_type=${vsearch_similarity_type}
-match_list_id=${match_list_id}
-match_list_cov=${match_list_cov}
+perc_identity=${perc_identity}
+coverage_perc=${coverage_perc}
 strands=${strands}
 cores=${cores}
 
+#specify input OTU table file
+regex='[^/]*$'
+otu_table_temp=$(echo $table | grep -oP "$regex")
+otu_table=$(printf "/extraFiles/$otu_table_temp")
 
-### Check if files with specified extension exist in the dir
-# first_file_check
+# otu_table=$"otutable_test.txt"
+echo "table = $otu_table"
+#input_fasta=$"centroids_test.fasta"
+#printf "\n input fasta = $input_fasta \n\n"
 
-### Generate match list for LULU
-if [[ match_list_soft == "blastn" ]]; then
-    printf "\n#Making blast database from the input fasta\n"
-    makeblastdb -in $input_fasta -parse_seqids -dbtype nucl
+# input_fasta_temp=$(echo $rep_seqs | grep -oP "$regex")
+# input_fasta=$(printf "/extraFiles/$input_fasta_temp")
+# echo "rep seqs = $input_fasta"
 
-    printf "#Generating match list for lulu using BLASTn"
-    blastn -db $input_fasta \
-            -outfmt '6 qseqid sseqid pident' \
-            -out match_list.lulu \
-            -qcov_hsp_perc $qcov_hsp_perc \
-            -perc_identity $perc_identity \
-            -query $input_fasta \
-            -num_threads $cores
+#Write that only fasta files are allowed, not fastq
+extension=$fileFormat
+i=$"0"
+for file in *.$extension; do
+    echo $file
+    input_fasta=$(echo $file)
+    i=$((i + 1))
+done
+if [[ $i > 1 ]]; then
+    printf '%s\n' "ERROR]: more than one representative sequence file ($extension file) in the working folder" >&2
+    end_process
+else
+    printf "\n input fasta = $input_fasta \n\n"
 fi
 
-if [[ match_list_soft == "vsearch" ]]; then
-    printf "#Generating match list for lulu using vsearch"
-    vsearch_perc_identity=$(awk "BEGIN {print $perc_identity/100}")
-    vsearch_qcov_hsp_perc=$(awk "BEGIN {print $qcov_hsp_perc/100}")
+#Source for functions
+source /scripts/framework.functions.sh
+#output dir
+output_dir=$"/input/lulu_out"
 
-    vsearch --usearch_global $input_fasta \
+#############################
+### Start of the workflow ###
+#############################
+start=$(date +%s)
+### Check if files with specified extension exist in the dir
+first_file_check
+### Prepare working env and check paired-end data
+prepare_SE_env
+
+### Generate match list for LULU
+if [[ $match_list_soft == "blastn" ]]; then
+    printf "\n#Making blast database from the input fasta \n"
+    checkerror=$(makeblastdb -in $input_fasta -parse_seqids -dbtype nucl 2>&1)
+    check_app_error
+
+    printf "# Generating match list for lulu using BLASTn \n"
+    checkerror=$(blastn -db $input_fasta \
+            -outfmt '6 qseqid sseqid pident' \
+            -out $output_dir/match_list.lulu \
+            -qcov_hsp_perc $coverage_perc \
+            -perc_identity $perc_identity \
+            -query $input_fasta \
+            -num_threads $cores 2>&1)
+            check_app_error
+fi
+
+if [[ $match_list_soft == "vsearch" ]]; then
+    printf "# Generating match list for lulu using vsearch \n"
+    #convert perc_identity and coverage_perc for vsearch
+    vsearch_perc_identity=$(awk "BEGIN {print $perc_identity/100}")
+    vsearch_coverage_perc=$(awk "BEGIN {print $coverage_perc/100}")
+    #run vsearch
+    checkerror=$(vsearch --usearch_global $input_fasta \
             --db $input_fasta \
             --strand both --self \
             --id $vsearch_perc_identity \
-            --iddef $iddef \
-            --userout match_list.lulu \
+            --iddef $vsearch_similarity_type \
+            --userout $output_dir/match_list.lulu \
             --userfields query+target+id \
             --maxaccepts 0 \
-            --query_cov $vsearch_qcov_hsp_perc \
-            --threads $cores
+            --query_cov $vsearch_coverage_perc \
+            --threads $cores 2>&1)
+            check_app_error
 fi
 
-
-# LULU supposed to run in R script below... 
+#copy OTU table to $output_dir
+cp $otu_table $output_dir/OTU_tab_for_lulu.txt
 
 # #Run LULU in R
-# printf "Running lulu\n"
-# ./lulu.R
-# wait
 
-# #remove db files
-# rm $input_fasta.n*
-# rm lulu.log_*
+printf "# Running lulu\n"
+errormessage=$(Rscript /scripts/lulu.R 2>&1)
+echo $errormessage > $output_dir/R_run.txt
+
+if [ $? -eq 0 ]; then
+    echo "lulu run OK"
+else
+    echo "lulu run FAIL"
+fi
+
+wait
+
+#Clean up
+if [[ -s $input_fasta.n* ]]; then
+    rm $input_fasta.n*
+fi 
+if [[ -s lulu.log_* ]]; then
+    rm lulu.log_*
+fi
+
+#Delete tempdir
+if [ -d tempdir2 ]; then
+    rm -rf tempdir2
+fi
+
+#DONE 
+#variables for all services
+echo "workingDir=$output_dir"
+echo "fileFormat=$newextension"
+echo "dataFormat=$dataFormat"
+echo "readType=single_end"

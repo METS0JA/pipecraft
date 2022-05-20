@@ -949,18 +949,18 @@ export default new Vuex.Store({
                 type: "select",
               },
               {
-                name: "match_list_id",
+                name: "perc_identity",
                 value: 84,
                 disabled: "never",
-                tooltip: "percent identity cutoff. Exclude comparisons with lower id than specified threshold",
+                tooltip: "percent identity cutoff for match list. Excluding pairwise comparisons with lower sequence identity percentage than specified threshold",
                 type: "numeric",
                 rules: [(v) => v >= 1 || "ERROR: specify values >= 1", (v) => v <= 100 || "ERROR: specify values <= 100"],
               },
               {
-                name: "match_list_cov",
+                name: "coverage_perc",
                 value: 80,
                 disabled: "never",
-                tooltip: "percent query coverage per hit. Exclude comparisons with lower coverage than specified threshold",
+                tooltip: "percent query coverage per hit. Excluding pairwise comparisons with lower sequence coverage than specified threshold",
                 type: "numeric",
                 rules: [(v) => v >= 1 || "ERROR: specify values >= 1", (v) => v <= 100 || "ERROR: specify values <= 100"],
               },
@@ -982,15 +982,15 @@ export default new Vuex.Store({
               },
             ],
             Inputs: [
-              // {
-              //   name: "table",
-              //   btnName: "select file",
-              //   value: "undefined",
-              //   disabled: "never",
-              //   tooltip:
-              //     "select OTU/ASV table. SPECIFY ONLY WHEN USING THIS AS AN INDEPENDENT STEP. If no file is selected, then PipeCraft will look OTU_table.txt or ASV_table.txt from the last pipeline step",
-              //   type: "file",
-              // },
+              {
+                name: "table",
+                btnName: "select file",
+                value: "undefined",
+                disabled: "never",
+                tooltip:
+                  "select OTU/ASV table. SPECIFY ONLY WHEN USING THIS AS AN INDEPENDENT STEP. If no file is selected, then PipeCraft will look OTU_table.txt or ASV_table.txt from the last pipeline step",
+                type: "file",
+              },
               // {
               //   name: "rep_seqs",
               //   btnName: "select file",

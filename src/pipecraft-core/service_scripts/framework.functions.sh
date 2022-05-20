@@ -431,11 +431,11 @@ if [[ $check_compress == "gz" ]] || [[ $check_compress == "zip" ]]; then
 fi
 #Remove mothur logfiles
 mothur_logfiles=$(ls -1 *.logfile 2>/dev/null | wc -l)
-if [ $mothur_logfiles != 0 ]; then 
+if [[ $mothur_logfiles != 0 ]]; then 
     rm mothur.*.logfile 
 fi
 #Delete tempdir
-if [ -d tempdir ]; then
+if [[ -d tempdir ]]; then
     rm -rf tempdir
 fi
 }
