@@ -345,9 +345,9 @@ export default new Vuex.Store({
                 value: null,
                 disabled: "never",
                 tooltip:
-                  "discard sequences with more than the specified number of bases",
+                  "discard sequences with more than the specified number of bases. Note that if 'trunc length' setting is specified, then 'max length' SHOULD NOT be lower than 'trunc lenght' (otherwise all reads are discared)",
                 type: "numeric",
-                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+                rules: [(v) => (v >= 1 | v == "") || "ERROR: specify values >= 1"],
               },
               {
                 name: "qmax",
@@ -374,7 +374,7 @@ export default new Vuex.Store({
                 tooltip:
                   "discard sequences with more than the specified number of expected errors per base",
                 type: "numeric",
-                rules: [(v) => v >= 0.1 || "ERROR: specify values >= 0.1"],
+                rules: [(v) => (v >= 0.1 | v == "") || "ERROR: specify values >= 0.1"],
               },
               // {
               //   name: "min_size",
@@ -409,9 +409,18 @@ export default new Vuex.Store({
                 name: "min_length",
                 value: 32,
                 disabled: "never",
-                tooltip: "minimum length of the filtered output sequence",
+                tooltip: "minimum length of the filtered output sequence. Note that if 'trunc length' setting is specified, then 'min length' SHOULD BE lower than 'trunc lenght' (otherwise all reads are discared)",
                 type: "numeric",
                 rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "trunc_length",
+                value: null,
+                disabled: "never",
+                tooltip:
+                  "truncate sequences to the specified length. Shorter sequences are discarded; thus if specified, check that 'min length' setting is lower than 'trunc length' ('min lenght' therefore has basically no effect)",
+                type: "numeric",
+                rules: [(v) => (v >= 5 | v == "") || "ERROR: specify values >= 5"],
               },
             ],
           },
@@ -430,7 +439,7 @@ export default new Vuex.Store({
                 tooltip:
                   "quality score threshold to remove low quality bases from the beginning of the read. As long as a base has a value below this threshold the base is removed and the next base will be investigated",
                 type: "numeric",
-                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+                rules: [(v) => (v >= 1 | v == "") || "ERROR: specify values >= 1"],
               },
               {
                 name: "trailing_qual_threshold",
@@ -439,7 +448,7 @@ export default new Vuex.Store({
                 tooltip:
                   "quality score threshold to remove low quality bases from the end of the read. As long as a base has a value below this threshold the base is removed and the next base will be investigated",
                 type: "numeric",
-                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+                rules: [(v) => (v >= 1 | v == "") || "ERROR: specify values >= 1"],
               },
               {
                 name: "cores",
@@ -1444,9 +1453,9 @@ export default new Vuex.Store({
             value: null,
             disabled: "never",
             tooltip:
-              "discard sequences with more than the specified number of bases",
+              "discard sequences with more than the specified number of bases. Note that if 'trunc length' setting is specified, then 'max length' SHOULD NOT be lower than 'trunc lenght' (otherwise all reads are discared)",
             type: "numeric",
-            rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+            rules: [(v) => (v >= 1 | v == "") || "ERROR: specify values >= 1"],
           },
           {
             name: "qmax",
@@ -1473,7 +1482,7 @@ export default new Vuex.Store({
             tooltip:
               "discard sequences with more than the specified number of expected errors per base",
             type: "numeric",
-            rules: [(v) => v >= 0.1 || "ERROR: specify values >= 0.1"],
+            rules: [(v) => (v >= 0.1 | v == "") || "ERROR: specify values >= 0.1"],
           },
           // {
           //   name: "min_size",
@@ -1508,9 +1517,18 @@ export default new Vuex.Store({
             name: "min_length",
             value: 32,
             disabled: "never",
-            tooltip: "minimum length of the filtered output sequence",
+            tooltip: "minimum length of the filtered output sequence. Note that if 'trunc length' setting is specified, then 'min length' SHOULD BE lower than 'trunc lenght' (otherwise all reads are discared)",
             type: "numeric",
             rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+          },
+          {
+            name: "trunc_length",
+            value: null,
+            disabled: "never",
+            tooltip:
+              "truncate sequences to the specified length. Shorter sequences are discarded; thus if specified, check that 'min length' setting is lower than 'trunc length' ('min lenght' therefore has basically no effect)",
+            type: "numeric",
+            rules: [(v) => (v >= 5 | v == "") || "ERROR: specify values >= 5"],
           },
         ],
       },

@@ -26,6 +26,7 @@ minlen=$"--fastq_minlen ${min_length}"
 cores=$"--threads ${cores}"
 qmax=$"--fastq_qmax ${qmax}"
 qmin=$"--fastq_qmin ${qmin}"
+trunclen=$trunc_length
 maxlen=$max_length
 maxeerate=$maxee_rate
 
@@ -44,6 +45,11 @@ if [[ $maxeerate == null ]]; then
     maxee_rate=$""
 else
     maxee_rate=$"--fastq_maxee_rate $maxeerate"
+fi
+if [[ $trunclen == null ]]; then
+    trunc_length=$""
+else
+    trunc_length=$"--fastq_trunclen $trunc_length"
 fi
 
 #############################
@@ -76,6 +82,7 @@ for file in *.$extension; do
     $input.$newextension \
     $maxee \
     $maxns \
+    $trunc_length \
     $minlen \
     $cores \
     $qmax \
@@ -100,7 +107,8 @@ runtime=$((end-start))
 printf "Files in 'qualFiltered_out' directory represent quality filtered sequences in FASTQ format according to the selected options.
 Files in 'qualFiltered_out/FASTA' directory represent quality filtered sequences in FASTA format.
 If the quality of the data is sufficent after this step (check with QualityCheck module), then
-you may proceed with FASTA files only.
+you may proceed with FASTA files only.\n
+Core command: vsearch --fastq_filter input_file $maxee $maxns $trunc_length $minlen $cores $qmax $qmin $max_length $maxee_rate --fastqout $output_dir/output_file.fastq --fastaout $output_dir/FASTA/output_file.fasta \n
 \nSummary of sequence counts in 'seq_count_summary.txt'\n
 \n\nTotal run time was $runtime sec.\n\n\n
 ##################################################################
