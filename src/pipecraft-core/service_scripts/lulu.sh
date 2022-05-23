@@ -4,6 +4,7 @@
 
 
 ## TO fix: output smaple names! And new OTUs.fasta file, when some are discarded
+#Automatic search for OTU_table.txt or ASVs_table.txt 
 
 #Post-clustering with LULU 
 
@@ -34,15 +35,6 @@ cores=${cores}
 regex='[^/]*$'
 otu_table_temp=$(echo $table | grep -oP "$regex")
 otu_table=$(printf "/extraFiles/$otu_table_temp")
-
-# otu_table=$"otutable_test.txt"
-echo "table = $otu_table"
-#input_fasta=$"centroids_test.fasta"
-#printf "\n input fasta = $input_fasta \n\n"
-
-# input_fasta_temp=$(echo $rep_seqs | grep -oP "$regex")
-# input_fasta=$(printf "/extraFiles/$input_fasta_temp")
-# echo "rep seqs = $input_fasta"
 
 #Write that only fasta files are allowed, not fastq
 extension=$fileFormat
@@ -113,7 +105,6 @@ fi
 cp $otu_table $output_dir/OTU_tab_for_lulu.txt
 
 # #Run LULU in R
-
 printf "# Running lulu\n"
 errormessage=$(Rscript /scripts/lulu.R 2>&1)
 echo $errormessage > $output_dir/R_run.txt
