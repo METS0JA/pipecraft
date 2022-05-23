@@ -99,8 +99,13 @@ printf "Files in 'qualFiltered_out' directory represent quality filtered sequenc
 Files in $output_dir/FASTA directory represent quality filtered sequences in FASTA format.
 If the quality of the data is sufficent after this step (check with QualityCheck module), then
 you may proceed with FASTA files only.\n
+
+Core commands ->
+quality filtering: trimmomatic-0.39.jar SE input_file output_file -phred$phred $LEADING $TRAILING SLIDINGWINDOW:$window_size:$required_qual MINLEN:$min_length -threads $threads
+convert output fastq files to FASTA: seqkit fq2fa -t dna --line-width 0 input_file -o FASTA/output_file.fasta
+
 \nSummary of sequence counts in 'seq_count_summary.txt'\n
-\n\nTotal run time was $runtime sec.\n\n\n
+\nTotal run time was $runtime sec.\n\n
 ##################################################################
 ###Third-party applications for this process [PLEASE CITE]:
 #trimmomatic v0.39 for quality filtering

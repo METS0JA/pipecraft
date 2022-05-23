@@ -171,7 +171,7 @@ Output R1 and R2 reads have been synchronized for merging paired-end data.
 This does not affect merging paired-end reads using PipeCraft implemented software.\n
 RUNNING THE PROCESS SEVERAL TIMES IN THE SAME DIRECTORY WILL OVERWRITE ALL OUTPUTS!
 \nSummary of sequence counts in 'seq_count_summary.txt'\n
-\n\nTotal run time was $runtime sec.\n\n\n
+\n\nTotal run time was $runtime sec.\n\n
 ##################################################################
 ###Third-party applications for this process [PLEASE CITE]:
 #seqkit v2.0.0 for manipulating reads and synchronizing R1 and R2

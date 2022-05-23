@@ -210,8 +210,13 @@ runtime=$((end-start))
 printf "Files in 'chimeraFiltered_out' directory represent chimera filtered sequences.
 Files in 'chimeraFiltered_out/chimeras' directory represent identified putative chimeric sequences.
 In input was FASTQ formatted file(s), then it was converted to FASTA (chimeraFiltered_out/FASTA), and only FASTA is outputted.
+
+Core commands -> 
+denovo filtering: vsearch --uchime_denovo input.preclustered.fasta $abskew $minh --sizein --sizeout --fasta_width 0 --chimeras chimeras/output.denovo.chimeras.fasta --nonchimeras output.fasta
+reference based filtering: vsearch --uchime_ref input.fasta $cores --db database_file --sizein --sizeout --fasta_width 0 --chimeras chimeras/output.ref.chimeras.fasta --nonchimeras output.fasta
+
 \nSummary of sequence counts in 'seq_count_summary.txt'\n
-\n\nTotal run time was $runtime sec.\n\n\n
+\nTotal run time was $runtime sec.\n\n
 ##################################################################
 ###Third-party applications for this process [PLEASE CITE]:
 #vsearch v2.18.0 for chimera filtering
