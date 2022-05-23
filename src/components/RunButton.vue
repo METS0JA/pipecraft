@@ -126,7 +126,14 @@ export default {
                 `Startin step ${index[0] + 1}: ${index[1].serviceName}`
               );
               let Hostname = index[1].serviceName.replace(" ", "_");
-              console.log(Hostname);
+              let container = await dockerode.getContainer(Hostname);
+              let nameConflicts = await container.remove({force: true}).then(async () => {
+                  return 'Removed conflicting duplicate container'
+                })
+                .catch(() => {
+                  return 'No conflicting container names'
+                });
+              console.log(nameConflicts)
               this.$store.commit("addRunInfo", [
                 true,
                 "customWorkflow",
@@ -161,6 +168,7 @@ export default {
                 `WORKDIR: ${WorkingDir}`
               );
               console.log(envVariables);
+              let userInfo = os.userInfo()
               let result = await dockerode
                 .run(
                   imageName,
@@ -176,6 +184,7 @@ export default {
                       CpuCount: 6,
                     },
                     Env: envVariables,
+                    User: `${userInfo.uid}`
                   }
                 )
                 .then(async ([res, container]) => {
@@ -263,7 +272,14 @@ export default {
           for (let index of this.selectedSteps.entries()) {
             console.log(`Startin step: ${index[0] + 1} ${index[1].stepName}`);
             let Hostname = index[1].stepName.replace(/[ |]/g, "_");
-            console.log(Hostname);
+            let container = await dockerode.getContainer(Hostname);
+              let nameConflicts = await container.remove({force: true}).then(async () => {
+                  return 'Removed conflicting duplicate container'
+                })
+                .catch(() => {
+                  return 'No conflicting container names'
+                });
+              console.log(nameConflicts)
             this.$store.commit("addRunInfo", [
               true,
               "workflow",
@@ -301,6 +317,7 @@ export default {
               `WORKDIR: ${WorkingDir}`
             );
             console.log(envVariables);
+            let userInfo = os.userInfo()
             let result = await dockerode
               .run(
                 imageName,
@@ -316,6 +333,7 @@ export default {
                     CpuCount: 6,
                   },
                   Env: envVariables,
+                  User: `${userInfo.uid}`
                 }
               )
               .then(async ([res, container]) => {
@@ -442,12 +460,14 @@ export default {
       return envVariables;
     },
     createCustomBinds(name, index, Input) {
+      console.log(isDevelopment)
+      console.log(process.resourcesPath)
       let scriptsPath =
         isDevelopment == true
-          ? "/src/pipecraft-core/service_scripts"
-          : "/resources/src/pipecraft-core/service_scripts";
+          ? `${slash(process.cwd())}/src/pipecraft-core/service_scripts`
+          : `${process.resourcesPath}/src/pipecraft-core/service_scripts`;
       let Binds = [
-        `${slash(process.cwd())}${scriptsPath}:/scripts`,
+        `${scriptsPath}:/scripts`,
         `${Input}:/input`,
       ];
       this.$store.state[name][index].Inputs.forEach((input) => {
@@ -471,10 +491,10 @@ export default {
     createBinds(serviceIndex, stepIndex, Input) {
       let scriptsPath =
         isDevelopment == true
-          ? "/src/pipecraft-core/service_scripts"
-          : "/resources/src/pipecraft-core/service_scripts";
+          ? `${slash(process.cwd())}/src/pipecraft-core/service_scripts`
+          : `${process.resourcesPath}/src/pipecraft-core/service_scripts`;
       let Binds = [
-        `${slash(process.cwd())}${scriptsPath}:/scripts`,
+        `${scriptsPath}:/scripts`,
         `${Input}:/input`,
       ];
       this.selectedSteps[stepIndex].services[serviceIndex].Inputs.forEach(
@@ -497,7 +517,8 @@ export default {
       // });
       return Binds;
     },
-
+    findAndRemoveContainer() {
+    },
     findSelectedService(i) {
       let result;
       this.selectedSteps[i].services.forEach((input, index) => {

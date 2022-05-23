@@ -1,5 +1,10 @@
 {
   "name": "pipecraft_v0.1.2",
+  "author": {
+       "name" : "Martin Metsoja",
+        "email" : "martin.metsoja@gmail.com",
+        "url" : "https://github.com/SuvalineVana/pipecraft"
+      },
   "productName": "pipecraft",
   "version": "0.1.2",
   "private": true,
