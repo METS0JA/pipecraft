@@ -29,8 +29,6 @@ qmin=$"--fastq_qmin ${qmin}"
 maxlen=$max_length
 maxeerate=$maxee_rate
 
---fastq_stripright
-
 #Source for functions
 source /scripts/framework.functions.sh
 #output dir
