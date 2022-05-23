@@ -108,7 +108,10 @@ printf "Files in 'qualFiltered_out' directory represent quality filtered sequenc
 Files in 'qualFiltered_out/FASTA' directory represent quality filtered sequences in FASTA format.
 If the quality of the data is sufficent after this step (check with QualityCheck module), then
 you may proceed with FASTA files only.\n
-Core command: vsearch --fastq_filter input_file $maxee $maxns $trunc_length $minlen $cores $qmax $qmin $max_length $maxee_rate --fastqout $output_dir/output_file.fastq --fastaout $output_dir/FASTA/output_file.fasta \n
+
+Core command -> 
+vsearch --fastq_filter input_file $maxee $maxns $trunc_length $minlen $cores $qmax $qmin $max_length $maxee_rate --fastqout $output_dir/output_file.fastq --fastaout $output_dir/FASTA/output_file.fasta
+
 \nSummary of sequence counts in 'seq_count_summary.txt'\n
 \n\nTotal run time was $runtime sec.\n\n\n
 ##################################################################
