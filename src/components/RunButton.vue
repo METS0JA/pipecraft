@@ -127,13 +127,15 @@ export default {
               );
               let Hostname = index[1].serviceName.replace(" ", "_");
               let container = await dockerode.getContainer(Hostname);
-              let nameConflicts = await container.remove({force: true}).then(async () => {
-                  return 'Removed conflicting duplicate container'
+              let nameConflicts = await container
+                .remove({ force: true })
+                .then(async () => {
+                  return "Removed conflicting duplicate container";
                 })
                 .catch(() => {
-                  return 'No conflicting container names'
+                  return "No conflicting container names";
                 });
-              console.log(nameConflicts)
+              console.log(nameConflicts);
               this.$store.commit("addRunInfo", [
                 true,
                 "customWorkflow",
@@ -168,7 +170,7 @@ export default {
                 `WORKDIR: ${WorkingDir}`
               );
               console.log(envVariables);
-              let userInfo = os.userInfo()
+              let userInfo = os.userInfo();
               let result = await dockerode
                 .run(
                   imageName,
@@ -184,7 +186,7 @@ export default {
                       CpuCount: 6,
                     },
                     Env: envVariables,
-                    User: `${userInfo.uid}`
+                    User: `${Math.abs(userInfo.uid)}`,
                   }
                 )
                 .then(async ([res, container]) => {
@@ -273,13 +275,15 @@ export default {
             console.log(`Startin step: ${index[0] + 1} ${index[1].stepName}`);
             let Hostname = index[1].stepName.replace(/[ |]/g, "_");
             let container = await dockerode.getContainer(Hostname);
-              let nameConflicts = await container.remove({force: true}).then(async () => {
-                  return 'Removed conflicting duplicate container'
-                })
-                .catch(() => {
-                  return 'No conflicting container names'
-                });
-              console.log(nameConflicts)
+            let nameConflicts = await container
+              .remove({ force: true })
+              .then(async () => {
+                return "Removed conflicting duplicate container";
+              })
+              .catch(() => {
+                return "No conflicting container names";
+              });
+            console.log(nameConflicts);
             this.$store.commit("addRunInfo", [
               true,
               "workflow",
@@ -317,7 +321,7 @@ export default {
               `WORKDIR: ${WorkingDir}`
             );
             console.log(envVariables);
-            let userInfo = os.userInfo()
+            let userInfo = os.userInfo();
             let result = await dockerode
               .run(
                 imageName,
@@ -333,7 +337,7 @@ export default {
                     CpuCount: 6,
                   },
                   Env: envVariables,
-                  User: `${userInfo.uid}`
+                  User: `${Math.abs(userInfo.uid)}`,
                 }
               )
               .then(async ([res, container]) => {
@@ -460,16 +464,13 @@ export default {
       return envVariables;
     },
     createCustomBinds(name, index, Input) {
-      console.log(isDevelopment)
-      console.log(process.resourcesPath)
+      console.log(isDevelopment);
+      console.log(process.resourcesPath);
       let scriptsPath =
         isDevelopment == true
           ? `${slash(process.cwd())}/src/pipecraft-core/service_scripts`
           : `${process.resourcesPath}/src/pipecraft-core/service_scripts`;
-      let Binds = [
-        `${scriptsPath}:/scripts`,
-        `${Input}:/input`,
-      ];
+      let Binds = [`${scriptsPath}:/scripts`, `${Input}:/input`];
       this.$store.state[name][index].Inputs.forEach((input) => {
         if (input.type == "file" || input.type == "boolFile") {
           let correctedPath = path.dirname(slash(input.value));
@@ -493,10 +494,7 @@ export default {
         isDevelopment == true
           ? `${slash(process.cwd())}/src/pipecraft-core/service_scripts`
           : `${process.resourcesPath}/src/pipecraft-core/service_scripts`;
-      let Binds = [
-        `${scriptsPath}:/scripts`,
-        `${Input}:/input`,
-      ];
+      let Binds = [`${scriptsPath}:/scripts`, `${Input}:/input`];
       this.selectedSteps[stepIndex].services[serviceIndex].Inputs.forEach(
         (input) => {
           if (input.type == "file" || input.type == "boolfile") {
@@ -517,8 +515,7 @@ export default {
       // });
       return Binds;
     },
-    findAndRemoveContainer() {
-    },
+    findAndRemoveContainer() {},
     findSelectedService(i) {
       let result;
       this.selectedSteps[i].services.forEach((input, index) => {

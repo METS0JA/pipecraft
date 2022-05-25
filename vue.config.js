@@ -6,7 +6,9 @@ module.exports = {
       externals: ["node-pty"],
       builderOptions: {
         publish: ["github"],
-        win: {},
+        win: {
+          icon: "build/icon.ico",
+        },
         linux: {
           target: "deb",
         },

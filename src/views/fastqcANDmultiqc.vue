@@ -201,7 +201,11 @@ export default {
       let result = await dockerode
         .run(
           "staphb/fastqc:0.11.9",
-          ["sh", "-c", `fastqc *$format`],
+          [
+            "sh",
+            "-c",
+            `mkdir quality_check | fastqc --outdir quality_check *$format`,
+          ],
           [stdout, stderr],
           {
             Tty: false,
@@ -239,7 +243,7 @@ export default {
           Tty: false,
           WorkingDir: "/input",
           HostConfig: {
-            Binds: [`${this.folderPath}:/input`],
+            Binds: [`${this.folderPath}/quality_check:/input`],
           },
           Env: [`format=${this.fileExtension}`],
         })
@@ -266,7 +270,9 @@ export default {
       this.reportLoading = false;
     },
     openReport() {
-      shell.openExternal(`file://${this.folderPath}/multiqc_report.html`);
+      shell.openExternal(
+        `file://${this.folderPath}/quality_check/multiqc_report.html`
+      );
     },
   },
 };

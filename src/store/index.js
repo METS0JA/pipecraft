@@ -18,6 +18,9 @@ export default new Vuex.Store({
     pullLoader: {
       active: false,
     },
+    pullLoader2: {
+      active: false,
+    },
     workingDir: "/input",
     inputDir: "",
     data: {
@@ -33,7 +36,8 @@ export default new Vuex.Store({
         disabled: "demultiplexed",
         services: [
           {
-            tooltip: "demultiplex data to per-sample files based on specified index file. Note that for read1 and read2 will get .R1 and .R2 identifiers when demultiplexing paired-end data",
+            tooltip:
+              "demultiplex data to per-sample files based on specified index file. Note that for read1 and read2 will get .R1 and .R2 identifiers when demultiplexing paired-end data",
             scriptName: "demux_paired_end_data.sh",
             imageName: "pipecraft/cutadapt:3.5",
             serviceName: "demultiplex",
@@ -347,7 +351,9 @@ export default new Vuex.Store({
                 tooltip:
                   "discard sequences with more than the specified number of bases",
                 type: "numeric",
-                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+                rules: [
+                  (v) => v >= 1 || v == "" || "ERROR: specify values >= 1",
+                ],
               },
               {
                 name: "qmax",
@@ -589,7 +595,8 @@ export default new Vuex.Store({
         disabled: "never",
         services: [
           {
-            tooltip: "tick the checkbox to filter chimeras with vsearch. Run only on single-end or assembled paired-end data",
+            tooltip:
+              "tick the checkbox to filter chimeras with vsearch. Run only on single-end or assembled paired-end data",
             scriptName: "chimera_filtering_vsearch.sh",
             imageName: "pipecraft/vsearch:2.18",
             serviceName: "vsearch",
@@ -673,7 +680,8 @@ export default new Vuex.Store({
         disabled: "never",
         services: [
           {
-            tooltip: "if data set consists of ITS sequences; identify and extract the ITS regions using ITSx",
+            tooltip:
+              "if data set consists of ITS sequences; identify and extract the ITS regions using ITSx",
             scriptName: "ITS_extractor.sh",
             imageName: "pipecraft/itsx:1.1.3",
             serviceName: "itsx",
@@ -810,8 +818,7 @@ export default new Vuex.Store({
                 items: ["0", "1", "2", "3", "4"],
                 value: "2",
                 disabled: "never",
-                tooltip:
-                  "pairwise sequence identity definition (--iddef)",
+                tooltip: "pairwise sequence identity definition (--iddef)",
                 type: "select",
               },
               {
@@ -936,7 +943,8 @@ export default new Vuex.Store({
                 items: ["vsearch", "blastn"],
                 value: "vsearch",
                 disabled: "never",
-                tooltip: "use either 'blastn' or 'vsearch' to generate match list for LULU. Default is 'vsearch' (much faster)",
+                tooltip:
+                  "use either 'blastn' or 'vsearch' to generate match list for LULU. Default is 'vsearch' (much faster)",
                 type: "select",
               },
               {
@@ -952,31 +960,41 @@ export default new Vuex.Store({
                 name: "perc_identity",
                 value: 84,
                 disabled: "never",
-                tooltip: "percent identity cutoff for match list. Excluding pairwise comparisons with lower sequence identity percentage than specified threshold",
+                tooltip:
+                  "percent identity cutoff for match list. Excluding pairwise comparisons with lower sequence identity percentage than specified threshold",
                 type: "numeric",
-                rules: [(v) => v >= 1 || "ERROR: specify values >= 1", (v) => v <= 100 || "ERROR: specify values <= 100"],
+                rules: [
+                  (v) => v >= 1 || "ERROR: specify values >= 1",
+                  (v) => v <= 100 || "ERROR: specify values <= 100",
+                ],
               },
               {
                 name: "coverage_perc",
                 value: 80,
                 disabled: "never",
-                tooltip: "percent query coverage per hit. Excluding pairwise comparisons with lower sequence coverage than specified threshold",
+                tooltip:
+                  "percent query coverage per hit. Excluding pairwise comparisons with lower sequence coverage than specified threshold",
                 type: "numeric",
-                rules: [(v) => v >= 1 || "ERROR: specify values >= 1", (v) => v <= 100 || "ERROR: specify values <= 100"],
+                rules: [
+                  (v) => v >= 1 || "ERROR: specify values >= 1",
+                  (v) => v <= 100 || "ERROR: specify values <= 100",
+                ],
               },
               {
                 name: "strands",
                 items: ["plus", "both"],
                 value: "both",
                 disabled: "never",
-                tooltip: "query strand to search against database. Both = search also reverse complement",
+                tooltip:
+                  "query strand to search against database. Both = search also reverse complement",
                 type: "select",
               },
               {
                 name: "cores",
                 value: 6,
                 disabled: "never",
-                tooltip: "number of cores to use for generating match list for LULU",
+                tooltip:
+                  "number of cores to use for generating match list for LULU",
                 type: "numeric",
                 rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
               },
@@ -1013,7 +1031,8 @@ export default new Vuex.Store({
                 name: "min_ratio",
                 value: 1,
                 disabled: "never",
-                tooltip: "default = 1. Sets the minimim abundance ratio between a potential error and a potential parent to be identified as an error",
+                tooltip:
+                  "default = 1. Sets the minimim abundance ratio between a potential error and a potential parent to be identified as an error",
                 type: "numeric",
                 rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
               },
@@ -1021,9 +1040,13 @@ export default new Vuex.Store({
                 name: "min_match",
                 value: 95,
                 disabled: "never",
-                tooltip: "default = 95%. Specify minimum threshold of sequence similarity for considering any OTU as an error of another",
+                tooltip:
+                  "default = 95%. Specify minimum threshold of sequence similarity for considering any OTU as an error of another",
                 type: "numeric",
-                rules: [(v) => v >= 1 || "ERROR: specify values >= 1", (v) => v <= 100 || "ERROR: specify values <= 100"],
+                rules: [
+                  (v) => v >= 1 || "ERROR: specify values >= 1",
+                  (v) => v <= 100 || "ERROR: specify values <= 100",
+                ],
               },
               {
                 name: "min_rel_cooccurence",
@@ -1056,7 +1079,8 @@ export default new Vuex.Store({
                 name: "e_value",
                 value: 10,
                 disabled: "never",
-                tooltip: "a parameter that describes the number of hits one can expect to see by chance when searching a database of a particular size. The lower the e-value the more 'significant' the match is",
+                tooltip:
+                  "a parameter that describes the number of hits one can expect to see by chance when searching a database of a particular size. The lower the e-value the more 'significant' the match is",
                 type: "numeric",
                 default: 10,
                 rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
@@ -1065,7 +1089,8 @@ export default new Vuex.Store({
                 name: "word_size",
                 value: 11,
                 disabled: "never",
-                tooltip: "the size of the initial word that must be matched between the database and the query sequence",
+                tooltip:
+                  "the size of the initial word that must be matched between the database and the query sequence",
                 type: "numeric",
                 rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
               },
@@ -1133,7 +1158,8 @@ export default new Vuex.Store({
                 items: ["plus", "both"],
                 value: "both",
                 disabled: "never",
-                tooltip: "query strand to search against database. Both = search also reverse complement",
+                tooltip:
+                  "query strand to search against database. Both = search also reverse complement",
                 type: "select",
               },
             ],
@@ -1143,7 +1169,8 @@ export default new Vuex.Store({
     ],
     OTUs_workflow: [
       {
-        tooltip: "demultiplex data to per-sample files based on specified index file",
+        tooltip:
+          "demultiplex data to per-sample files based on specified index file",
         scriptName: "demux_paired_end_data.sh",
         imageName: "pipecraft/cutadapt:3.5",
         serviceName: "demultiplex",
@@ -1515,7 +1542,8 @@ export default new Vuex.Store({
         ],
       },
       {
-        tooltip: "chimera filtering with vsearch. Untick the checkbox to skip this step",
+        tooltip:
+          "chimera filtering with vsearch. Untick the checkbox to skip this step",
         scriptName: "chimera_filtering_vsearch.sh",
         imageName: "pipecraft/vsearch:2.18",
         serviceName: "chimera filtering",
@@ -1577,7 +1605,8 @@ export default new Vuex.Store({
             name: "denovo",
             value: true,
             disabled: "never",
-            tooltip: "if TRUE, then perform denovo chimera filtering with --uchime_denovo",
+            tooltip:
+              "if TRUE, then perform denovo chimera filtering with --uchime_denovo",
             type: "bool",
           },
           {
@@ -1593,7 +1622,8 @@ export default new Vuex.Store({
         ],
       },
       {
-        tooltip: "if data set consists of ITS sequences; identify and extract the ITS regions using ITSx. NOTE THAT 'CLUSTERING' AND 'ASSIGN TAXONOMY' WILL BE DISABLED AT THIS STAGE if 'ITS EXTRACTOR' IS SELECTED; because ITSx outputs multiple directories for different ITS sub-regions; select appropriate ITSx output folder for CLUSTERING after the process is finished",
+        tooltip:
+          "if data set consists of ITS sequences; identify and extract the ITS regions using ITSx. NOTE THAT 'CLUSTERING' AND 'ASSIGN TAXONOMY' WILL BE DISABLED AT THIS STAGE if 'ITS EXTRACTOR' IS SELECTED; because ITSx outputs multiple directories for different ITS sub-regions; select appropriate ITSx output folder for CLUSTERING after the process is finished",
         scriptName: "ITS_extractor.sh",
         imageName: "pipecraft/itsx:1.1.3",
         serviceName: "itsx",
@@ -1726,8 +1756,7 @@ export default new Vuex.Store({
             items: ["0", "1", "2", "3", "4"],
             value: "2",
             disabled: "never",
-            tooltip:
-              "pairwise sequence identity definition (--iddef)",
+            tooltip: "pairwise sequence identity definition (--iddef)",
             type: "select",
           },
           {
@@ -1845,7 +1874,8 @@ export default new Vuex.Store({
             name: "e_value",
             value: 10,
             disabled: "never",
-            tooltip: "a parameter that describes the number of hits one can expect to see by chance when searching a database of a particular size. The lower the e-value the more 'significant' the match is",
+            tooltip:
+              "a parameter that describes the number of hits one can expect to see by chance when searching a database of a particular size. The lower the e-value the more 'significant' the match is",
             type: "numeric",
             default: 10,
             rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
@@ -1854,7 +1884,8 @@ export default new Vuex.Store({
             name: "word_size",
             value: 11,
             disabled: "never",
-            tooltip: "the size of the initial word that must be matched between the database and the query sequence",
+            tooltip:
+              "the size of the initial word that must be matched between the database and the query sequence",
             type: "numeric",
             rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
@@ -1922,7 +1953,8 @@ export default new Vuex.Store({
             items: ["plus", "both"],
             value: "both",
             disabled: "never",
-            tooltip: "query strand to search against database. Both = search also reverse complement",
+            tooltip:
+              "query strand to search against database. Both = search also reverse complement",
             type: "select",
           },
         ],
@@ -1930,7 +1962,8 @@ export default new Vuex.Store({
     ],
     ASVs_workflow: [
       {
-        tooltip: "demultiplex data to per-sample files based on specified index file. Note that for read1 and read2 will get .R1 and .R2 identifiers when demultiplexing paired-end data",
+        tooltip:
+          "demultiplex data to per-sample files based on specified index file. Note that for read1 and read2 will get .R1 and .R2 identifiers when demultiplexing paired-end data",
         scriptName: "demux_paired_end_data.sh",
         imageName: "pipecraft/cutadapt:3.5",
         serviceName: "demultiplex",
@@ -2271,7 +2304,8 @@ export default new Vuex.Store({
         ],
       },
       {
-        tooltip: "assemble paired-end reads (R1 and R2) with DADA2 'mergePairs' function",
+        tooltip:
+          "assemble paired-end reads (R1 and R2) with DADA2 'mergePairs' function",
         scriptName: "dada2-assemble.R",
         imageName: "pipecraft/dada2:1.20",
         serviceName: "merge Pairs",
@@ -2338,7 +2372,8 @@ export default new Vuex.Store({
       },
 
       {
-        tooltip: "assign taxonomy with DADA2 'assignTaxonomy' function against the selected database. Untick the checkbox to skip this step",
+        tooltip:
+          "assign taxonomy with DADA2 'assignTaxonomy' function against the selected database. Untick the checkbox to skip this step",
         scriptName: "dada2-classifier.R",
         imageName: "pipecraft/dada2:1.20",
         serviceName: "assign Taxonomy",
@@ -2352,7 +2387,7 @@ export default new Vuex.Store({
             value: "https://benjjneb.github.io/dada2/training.html",
             disabled: "never",
             type: "link",
-            tooltip: 'link to download DADA2-formatted reference databases',
+            tooltip: "link to download DADA2-formatted reference databases",
           },
           {
             name: "dada2_database",
@@ -2398,8 +2433,10 @@ export default new Vuex.Store({
   },
   getters: {
     steps2Run: (state) => (id) => {
-      let steps = state[id].filter( (el) => el.selected == true || el.selected == 'always')
-      return steps.length
+      let steps = state[id].filter(
+        (el) => el.selected == true || el.selected == "always"
+      );
+      return steps.length;
     },
     selectedStepsReady: (state) => {
       let x = 0;
@@ -2629,33 +2666,53 @@ export default new Vuex.Store({
       state.selectedSteps = value;
     },
     blastSwitch(state, value) {
-      if(value == 'blastn') {
-        state.OTUs_workflow[8].extraInputs[1].value = 11
-        state.OTUs_workflow[8].extraInputs[2].value = 2
-        state.OTUs_workflow[8].extraInputs[3].value = -3
-        state.OTUs_workflow[8].extraInputs[4].value = 5
-        state.OTUs_workflow[8].extraInputs[5].value = 2
-      } else if (value == 'megablast') {
-        state.OTUs_workflow[8].extraInputs[1].value = 28
-        state.OTUs_workflow[8].extraInputs[2].value = 1
-        state.OTUs_workflow[8].extraInputs[3].value = -2
-        state.OTUs_workflow[8].extraInputs[4].value = 0
-        state.OTUs_workflow[8].extraInputs[5].value = undefined
+      if (value == "blastn") {
+        state.OTUs_workflow[8].extraInputs[1].value = 11;
+        state.OTUs_workflow[8].extraInputs[2].value = 2;
+        state.OTUs_workflow[8].extraInputs[3].value = -3;
+        state.OTUs_workflow[8].extraInputs[4].value = 5;
+        state.OTUs_workflow[8].extraInputs[5].value = 2;
+      } else if (value == "megablast") {
+        state.OTUs_workflow[8].extraInputs[1].value = 28;
+        state.OTUs_workflow[8].extraInputs[2].value = 1;
+        state.OTUs_workflow[8].extraInputs[3].value = -2;
+        state.OTUs_workflow[8].extraInputs[4].value = 0;
+        state.OTUs_workflow[8].extraInputs[5].value = undefined;
       }
     },
     blastSwitch2(state, payload) {
-      if(payload.value == 'blastn') {
-        state.selectedSteps[payload.i1].services[payload.i2].extraInputs[1].value = 11
-        state.selectedSteps[payload.i1].services[payload.i2].extraInputs[2].value = 2
-        state.selectedSteps[payload.i1].services[payload.i2].extraInputs[3].value = -3
-        state.selectedSteps[payload.i1].services[payload.i2].extraInputs[4].value = 5
-        state.selectedSteps[payload.i1].services[payload.i2].extraInputs[5].value = 2
-      } else if (payload.value == 'megablast') {
-        state.selectedSteps[payload.i1].services[payload.i2].extraInputs[1].value = 28
-        state.selectedSteps[payload.i1].services[payload.i2].extraInputs[2].value = 1
-        state.selectedSteps[payload.i1].services[payload.i2].extraInputs[3].value = -2
-        state.selectedSteps[payload.i1].services[payload.i2].extraInputs[4].value = 0
-        state.selectedSteps[payload.i1].services[payload.i2].extraInputs[5].value = undefined
+      if (payload.value == "blastn") {
+        state.selectedSteps[payload.i1].services[
+          payload.i2
+        ].extraInputs[1].value = 11;
+        state.selectedSteps[payload.i1].services[
+          payload.i2
+        ].extraInputs[2].value = 2;
+        state.selectedSteps[payload.i1].services[
+          payload.i2
+        ].extraInputs[3].value = -3;
+        state.selectedSteps[payload.i1].services[
+          payload.i2
+        ].extraInputs[4].value = 5;
+        state.selectedSteps[payload.i1].services[
+          payload.i2
+        ].extraInputs[5].value = 2;
+      } else if (payload.value == "megablast") {
+        state.selectedSteps[payload.i1].services[
+          payload.i2
+        ].extraInputs[1].value = 28;
+        state.selectedSteps[payload.i1].services[
+          payload.i2
+        ].extraInputs[2].value = 1;
+        state.selectedSteps[payload.i1].services[
+          payload.i2
+        ].extraInputs[3].value = -2;
+        state.selectedSteps[payload.i1].services[
+          payload.i2
+        ].extraInputs[4].value = 0;
+        state.selectedSteps[payload.i1].services[
+          payload.i2
+        ].extraInputs[5].value = undefined;
       }
     },
     serviceInputUpdate(state, payload) {
@@ -2709,13 +2766,15 @@ export default new Vuex.Store({
       }
     },
     checkCustomService(state, payload) {
-      if(state[payload.name][payload.serviceIndex].serviceName == "itsx" && payload.selected == true) {
+      if (
+        state[payload.name][payload.serviceIndex].serviceName == "itsx" &&
+        payload.selected == true
+      ) {
         state[payload.name][7].selected = !payload.selected;
         state[payload.name][8].selected = !payload.selected;
       } else {
         state[payload.name][payload.serviceIndex].selected = payload.selected;
       }
-      
     },
   },
   actions: {},
