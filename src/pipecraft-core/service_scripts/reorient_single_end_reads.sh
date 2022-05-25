@@ -127,7 +127,7 @@ Reverse primer(s) [has to be 3'-5']: $rev_tempprimer
 [If primers were not specified in orientations noted above, please run this step again].\n
 RUNNING THE PROCESS SEVERAL TIMES IN THE SAME DIRECTORY WILL OVERWRITE ALL OUTPUTS!
 \nSummary of sequence counts in 'seq_count_summary.txt'\n
-\n\nTotal run time was $runtime sec.\n\n\n
+\n\nTotal run time was $runtime sec.\n\n
 ##################################################################
 ###Third-party applications for this process [PLEASE CITE]:
 #seqkit v2.0.0 for manipulating reads

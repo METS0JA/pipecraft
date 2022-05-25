@@ -26,6 +26,7 @@ minlen=$"--fastq_minlen ${min_length}"
 cores=$"--threads ${cores}"
 qmax=$"--fastq_qmax ${qmax}"
 qmin=$"--fastq_qmin ${qmin}"
+trunclen=$trunc_length
 maxlen=$max_length
 maxeerate=$maxee_rate
 
@@ -44,6 +45,11 @@ if [[ $maxeerate == null ]]; then
     maxee_rate=$""
 else
     maxee_rate=$"--fastq_maxee_rate $maxeerate"
+fi
+if [[ $trunclen == null ]]; then
+    trunc_length=$""
+else
+    trunc_length=$"--fastq_trunclen $trunc_length"
 fi
 
 #############################
@@ -72,12 +78,13 @@ while read LINE; do
     ### Start quality filtering ###
     ###############################
     mkdir -p tempdir
-
+ 
     #R1
     checkerror=$(vsearch --fastq_filter \
     $inputR1.$newextension \
     $maxee \
     $maxns \
+    $trunc_length \
     $minlen \
     $cores \
     $qmax \
@@ -92,6 +99,7 @@ while read LINE; do
     $inputR2.$newextension \
     $maxee \
     $maxns \
+    $trunc_length \
     $minlen \
     $cores \
     $qmax \
@@ -141,7 +149,6 @@ done < tempdir2/paired_end_files.txt
 ### COMPILE FINAL STATISTICS AND README FILES ###
 #################################################
 printf "\nCleaning up and compiling final stats files ...\n"
-#file identifier string after the process
 clean_and_make_stats
 end=$(date +%s)
 runtime=$((end-start))
@@ -151,6 +158,11 @@ printf "Files in 'qualFiltered_out' directory represent quality filtered sequenc
 Files in 'qualFiltered_out/FASTA' directory represent quality filtered sequences in FASTA format.
 If the quality of the data is sufficent after this step (check with QualityCheck module), then
 you may proceed with FASTA files only (however, note that FASTQ files are needed to assemble paired-end data).\n
+
+Core commands -> 
+quality filtering: vsearch --fastq_filter input_file $maxee $maxns $trunc_length $minlen $cores $qmax $qmin $max_length $maxee_rate --fastqout output_file
+Synchronizing R1 and R2 reads: seqkit pair -1 inputR1 -2 inputR2
+
 \nSummary of sequence counts in 'seq_count_summary.txt'\n
 \n\nTotal run time was $runtime sec.\n\n\n
 ##################################################################

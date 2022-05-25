@@ -118,6 +118,10 @@ If include only R1 option = TRUE, then other specified options (lenght, max erro
 applied to R1 reads in the 'assembled' file. Thus, additional quality filtering (if this was done before assembling) 
 should be run on the 'assembled' data.\n
 NOTE RUNNING THE PROCESS SEVERAL TIMES IN THE SAME DIRECTORY WILL OVERWRITE ALL THE OUTPUTS!
+
+Core command -> 
+vsearch --fastq_mergepairs inputR1 --reverse inputR2 $fastq_minoverlen $fastq_minmergelen $allowmergestagger $fastq_maxdiffs $fastq_maxns $fastq_maxmergelen $fastqout_notmerged_fwd $fastqout_notmerged_rev --fastq_qmax $fastq_qmax --fastq_qmaxout $fastq_qmax --fastqout output_file
+
 \nSummary of sequence counts in 'seq_count_summary.txt'\n
 \n\nTotal run time was $runtime sec.\n\n\n
 ##################################################################

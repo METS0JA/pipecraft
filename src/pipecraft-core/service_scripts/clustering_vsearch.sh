@@ -195,7 +195,12 @@ runtime=$((end-start))
 printf "Clustering formed $size OTUs;
 'clustering_out' directory contains FASTA formated representative OTU sequences (OTUs.fasta)
 and an OTU distribution table per sample (per input file in the working directory), OTU_table.txt.\n
-Total run time was $runtime sec.\n\n\n
+
+Core commands -> 
+clustering: vsearch $seqsort Glob_derep.fasta $id $simtype $strands $relabel_in $mask $centroid_in $maxaccepts $cores $otutype OTUs.fasta $uc_in --fasta_width 0 --sizein --sizeout
+make OTU table: vsearch --usearch_global Dereplicated_samples.fasta --db OTUs.fasta $id $strands $mask $dbmask --sizein --sizeout $cores --otutabout OTU_table.txt
+
+Total run time was $runtime sec.\n\n
 ##################################################################
 ###Third-party applications for this process [PLEASE CITE]:
 #vsearch v2.18.0 for clustering
