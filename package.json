@@ -1,10 +1,10 @@
 {
   "name": "pipecraft_v0.1.2",
   "author": {
-       "name" : "Martin Metsoja",
-        "email" : "martin.metsoja@gmail.com",
-        "url" : "https://github.com/SuvalineVana/pipecraft"
-      },
+    "name": "Martin Metsoja",
+    "email": "martin.metsoja@gmail.com",
+    "url": "https://github.com/SuvalineVana/pipecraft"
+  },
   "productName": "pipecraft",
   "version": "0.1.2",
   "private": true,
@@ -21,6 +21,7 @@
   "dependencies": {
     "@electron/remote": "^2.0.1",
     "core-js": "^3.6.5",
+    "dmg-license": "^1.0.11",
     "dockerode": "^3.2.1",
     "dockerode-utils": "^0.0.7",
     "electron-log": "^4.4.7",

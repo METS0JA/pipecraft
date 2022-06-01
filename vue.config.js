@@ -12,7 +12,7 @@ module.exports = {
         linux: {
           target: "deb",
         },
-        mac: {},
+        mac: {target: "pkg", icon: "build/icon.icns"},
         appx: {
           applicationId: "pipecraft",
         },
