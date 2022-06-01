@@ -6,8 +6,8 @@ RUN mamba install  -y -c conda-forge deicode=0.2.4 biom-format=2.1.12
 RUN apt-get update -y
 RUN apt-get install wget -y
 RUN apt-get install r-base -y
-RUN wget -O  usr/local/lib/python3.8/site-packages/deicode/rpca.py https://github.com/SuvalineVana/pipecraft/blob/main/src/pipecraft-core/service_scripts/rpca.py
-RUN wget -O /usr/local/lib/python3.8/site-packages/deicode/scripts/_standalone_rpca.py https://github.com/SuvalineVana/pipecraft/blob/main/src/pipecraft-core/service_scripts/_standalone_rpca.py
+RUN wget -O /usr/local/lib/python3.8/site-packages/deicode/rpca.py https://raw.githubusercontent.com/SuvalineVana/pipecraft/main/src/pipecraft-core/service_scripts/rpca.py
+RUN wget -O /usr/local/lib/python3.8/site-packages/deicode/scripts/_standalone_rpca.py https://raw.githubusercontent.com/SuvalineVana/pipecraft/main/src/pipecraft-core/service_scripts/_standalone_rpca.py
 RUN conda clean --all --yes
 RUN apt remove wget -y
 RUN apt-get clean
