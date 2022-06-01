@@ -472,7 +472,7 @@ export default {
           : `${process.resourcesPath}/src/pipecraft-core/service_scripts`;
       let Binds = [`${scriptsPath}:/scripts`, `${Input}:/input`];
       this.$store.state[name][index].Inputs.forEach((input) => {
-        if (input.type == "file" || input.type == "boolFile") {
+        if (input.type == "file" || (input.type == "boolfile" && input.active == true)) {
           let correctedPath = path.dirname(slash(input.value));
           // let fileName = path.parse(correctedPath).base;
           let bind = `${correctedPath}:/extraFiles`;
@@ -480,7 +480,7 @@ export default {
         }
       });
       this.$store.state[name][index].extraInputs.forEach((input) => {
-        if (input.type == "file" || input.type == "boolfile") {
+        if (input.type == "file" || (input.type == "boolfile" && input.active == true)) {
           let correctedPath = path.dirname(slash(input.value));
           // let fileName = path.parse(correctedPath).base;
           let bind = `${correctedPath}:/extraFiles`;
@@ -497,7 +497,7 @@ export default {
       let Binds = [`${scriptsPath}:/scripts`, `${Input}:/input`];
       this.selectedSteps[stepIndex].services[serviceIndex].Inputs.forEach(
         (input) => {
-          if (input.type == "file" || input.type == "boolfile") {
+          if (input.type == "file" || (input.type == "boolfile" && input.active == true)) {
             let correctedPath = path.dirname(slash(input.value));
             // let fileName = path.parse(correctedPath).base;
             let bind = `${correctedPath}:/extraFiles`;
@@ -505,14 +505,14 @@ export default {
           }
         }
       );
-      // this.selectedSteps[stepIndex].services[serviceIndex].extraInputs.forEach((input) => {
-      //   if (input.type == "file" || input.type == "boolfile") {
-      //     let correctedPath = path.dirname(slash(input.value));
-      //     // let fileName = path.parse(correctedPath).base;
-      //     let bind = `${correctedPath}:/extraFiles`;
-      //     Binds.push(bind);
-      //   }
-      // });
+       this.selectedSteps[stepIndex].services[serviceIndex].extraInputs.forEach((input) => {
+         if (input.type == "file" || (input.type == "boolfile" && input.active == true)) {
+           let correctedPath = path.dirname(slash(input.value));
+           // let fileName = path.parse(correctedPath).base;
+           let bind = `${correctedPath}:/extraFiles`;
+           Binds.push(bind);
+         }
+       });
       return Binds;
     },
     findAndRemoveContainer() {},
