@@ -11,3 +11,4 @@ RUN wget -O /usr/local/lib/python3.8/site-packages/deicode/scripts/_standalone_r
 RUN conda clean --all --yes
 RUN apt remove wget -y
 RUN apt-get clean
+RUN R -e "install.packages('optparse',dependencies=TRUE, repos='http://cran.rstudio.com/')"
