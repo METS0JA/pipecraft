@@ -41,9 +41,7 @@ else
     db=$(printf "/extraFiles/$ref")
     database=$db
 fi
-ls -l
-pwd
-ls -la /extraFiles
+
 #############################
 ### Start of the workflow ###
 #############################

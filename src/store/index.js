@@ -1155,12 +1155,13 @@ export default new Vuex.Store({
             Inputs: [
               {
                 name: "table",
+                active: false,
                 btnName: "select file",
                 value: "undefined",
                 disabled: "never",
                 tooltip:
-                  "select OTU/ASV table. SPECIFY ONLY WHEN USING THIS AS AN INDEPENDENT STEP. If no file is selected, then PipeCraft will look OTU_table.txt or ASV_table.txt from the last pipeline step",
-                type: "file",
+                  "select OTU/ASV table. SPECIFY ONLY WHEN USING THIS AS AN INDEPENDENT STEP. If no file is selected, then PipeCraft will look OTU_table.txt or ASV_table.txt in the working directory",
+                type: "boolfile",
               },
               // {
               //   name: "rep_seqs",
