@@ -73,7 +73,7 @@ output_rclr="$output_deicode_full"/rclr.tsv
 if [[ $otu_subset != null ]]; then
     printf "# Preparing a subset of rCLR-transformed OTU table\n"
 
-    ./subset_otu_table.R \
+    Rscript subset_otu_table.R \
       --input "$output_rclr" \
       --subset "$otu_subset" \
       --output "$otu_table_subs"
@@ -84,3 +84,17 @@ if [[ $otu_subset != null ]]; then
 else 
     printf "# No OTU IDs specified\n"
 fi
+
+## Output
+# DEICODE/
+#   - otutab.biom          =  full OTU table in BIOM format
+#   - rclr_subset.tsv      =  rCLR-transformed subset of OTU table *
+# DEICODE/full/
+#   - distance-matrix.tsv  =  distance matrix between the samples, based on full OTU table
+#   - ordination.txt       =  ordination scores for samples and OTUs, based on full OTU table
+#   - rclr.tsv             =  rCLR-transformed OTU table
+# DEICODE/subs/
+#   - distance-matrix.tsv  =  distance matrix between the samples, based on a subset of OTU table *
+#   - ordination.txt       =  ordination scores for samples and OTUs, based a subset of OTU table *
+#
+# *, files are present only if $otu_subset variable was specified
