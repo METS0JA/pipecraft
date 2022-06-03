@@ -1160,7 +1160,7 @@ export default new Vuex.Store({
                 value: "undefined",
                 disabled: "never",
                 tooltip:
-                  "select OTU/ASV table. SPECIFY ONLY WHEN USING THIS AS AN INDEPENDENT STEP. If no file is selected, then PipeCraft will look OTU_table.txt or ASV_table.txt in the working directory",
+                  "select OTU/ASV table. If no file is selected, then PipeCraft will look OTU_table.txt or ASV_table.txt in the working directory",
                 type: "boolfile",
               },
               // {
@@ -1315,6 +1315,62 @@ export default new Vuex.Store({
                 tooltip:
                   "query strand to search against database. Both = search also reverse complement",
                 type: "select",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        stepName: "postprocessing",
+        disabled: "never",
+        services: [
+          {
+            tooltip: "DEICODE (Robust Aitchison PCA on sparse compositional metabarcoding data)",
+            scriptName: "DEICODE.sh",
+            imageName: "pipecraft/deicode:0.2.4",
+            serviceName: "DEICODE",
+            selected: false,
+            showExtra: false,
+            extraInputs: [
+            ],
+            Inputs: [
+              {
+                name: "table",
+                active: false,
+                btnName: "select file",
+                value: "undefined",
+                disabled: "never",
+                tooltip:
+                  "select OTU/ASV table. If no file is selected, then PipeCraft will look OTU_table.txt or ASV_table.txt in the working directory",
+                type: "boolfile",
+              },
+              {
+                name: "subset_IDs",
+                active: false,
+                btnName: "select file",
+                value: "undefined",
+                disabled: "never",
+                tooltip:
+                  "specify list of OTU/ASV IDs for analysing a subset from the full table",
+                type: "boolfile",
+              },
+              {
+                name: "min_otu_reads",
+                value: 10,
+                disabled: "never",
+                tooltip:
+                  "default = 10. ",
+                type: "numeric",
+                rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
+              },
+              {
+                name: "min_sample_reads",
+                value: 500,
+                disabled: "never",
+                tooltip:
+                  "default = 500. ",
+                type: "numeric",
+                rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
               },
             ],
           },

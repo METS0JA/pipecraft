@@ -138,7 +138,7 @@ cp $otu_table $output_dir/OTU_tab_for_lulu.txt
 
 ###Run LULU in R
 printf "# Running lulu\n"
-errormessage=$(Rscript /scripts/lulu.R 2>&1)
+errormessage=$(Rscript /scripts/submodules/lulu.R 2>&1)
 echo $errormessage > $output_dir/R_run.log 
 wait
 printf "\n LULU completed \n"
@@ -187,11 +187,11 @@ printf "Total of $merged_units molecular units (OTUs or ASVs) were merged.
 Curated table consists of $curated_units molecular units (OTUs or ASVs).
 
 Files in 'lulu_out' directory:
-lulu_out_table.csv - curated table in csv format
-lulu_out_table.txt - curated table in tab delimited txt format
-lulu_out_RepSeqs.fasta - fasta file for the molecular units (OTUs or ASVs) in the curated table
-match_list.lulu - match list file that was used by LULU to merge 'daughter molecular units'
-discarded_units.lulu - molecular units (OTUs or ASVs) that were merged with other units based on specified thresholds)
+# lulu_out_table.csv     = curated table in csv format
+# lulu_out_table.txt     = curated table in tab delimited txt format
+# lulu_out_RepSeqs.fasta = fasta file for the molecular units (OTUs or ASVs) in the curated table
+# match_list.lulu        = match list file that was used by LULU to merge 'daughter molecular units'
+# discarded_units.lulu   = molecular units (OTUs or ASVs) that were merged with other units based on specified thresholds)
 
 Core commands -> 
 match list for LULU (match_list.lulu): $match_list_generation
