@@ -464,33 +464,28 @@ export default {
       return envVariables;
     },
     createCustomBinds(name, index, Input) {
-      console.log(isDevelopment);
-      console.log(process.resourcesPath);
       let scriptsPath =
         isDevelopment == true
           ? `${slash(process.cwd())}/src/pipecraft-core/service_scripts`
           : `${process.resourcesPath}/src/pipecraft-core/service_scripts`;
       let Binds = [`${scriptsPath}:/scripts`, `${Input}:/input`];
-      this.$store.state[name][index].Inputs.forEach((input) => {
+      let serviceInputs = this.$store.state[name][index].Inputs.concat(
+        this.$store.state[name][index].extraInputs
+      );
+      serviceInputs.forEach((input, index) => {
         if (
           input.type == "file" ||
           (input.type == "boolfile" && input.active == true)
         ) {
           let correctedPath = path.dirname(slash(input.value));
           // let fileName = path.parse(correctedPath).base;
-          let bind = `${correctedPath}:/extraFiles`;
-          Binds.push(bind);
-        }
-      });
-      this.$store.state[name][index].extraInputs.forEach((input) => {
-        if (
-          input.type == "file" ||
-          (input.type == "boolfile" && input.active == true)
-        ) {
-          let correctedPath = path.dirname(slash(input.value));
-          // let fileName = path.parse(correctedPath).base;
-          let bind = `${correctedPath}:/extraFiles`;
-          Binds.push(bind);
+          if (index == 0) {
+            let bind = `${correctedPath}:/extraFiles`;
+            Binds.push(bind);
+          } else {
+            let bind = `${correctedPath}:/extraFiles${index + 1}`;
+            Binds.push(bind);
+          }
         }
       });
       return Binds;
@@ -501,42 +496,27 @@ export default {
           ? `${slash(process.cwd())}/src/pipecraft-core/service_scripts`
           : `${process.resourcesPath}/src/pipecraft-core/service_scripts`;
       let Binds = [`${scriptsPath}:/scripts`, `${Input}:/input`];
-      this.selectedSteps[stepIndex].services[serviceIndex].Inputs.forEach(
-        (input, index) => {
-          if (
-            input.type == "file" ||
-            (input.type == "boolfile" && input.active == true)
-          ) {
-            let correctedPath = path.dirname(slash(input.value));
-            // let fileName = path.parse(correctedPath).base;
-            if (index == 0) {
-              let bind = `${correctedPath}:/extraFiles`;
-              Binds.push(bind);
-            } else {
-              let bind = `${correctedPath}:/extraFiles${index + 1}`;
-              Binds.push(bind);
-            }
+      let serviceInputs = this.selectedSteps[stepIndex].services[
+        serviceIndex
+      ].Inputs.concat(
+        this.selectedSteps[stepIndex].services[serviceIndex].extraInputs
+      );
+      serviceInputs.forEach((input, index) => {
+        if (
+          input.type == "file" ||
+          (input.type == "boolfile" && input.active == true)
+        ) {
+          let correctedPath = path.dirname(slash(input.value));
+          // let fileName = path.parse(correctedPath).base;
+          if (index == 0) {
+            let bind = `${correctedPath}:/extraFiles`;
+            Binds.push(bind);
+          } else {
+            let bind = `${correctedPath}:/extraFiles${index + 1}`;
+            Binds.push(bind);
           }
         }
-      );
-      this.selectedSteps[stepIndex].services[serviceIndex].extraInputs.forEach(
-        (input, index) => {
-          if (
-            input.type == "file" ||
-            (input.type == "boolfile" && input.active == true)
-          ) {
-            let correctedPath = path.dirname(slash(input.value));
-            // let fileName = path.parse(correctedPath).base;
-            if (index == 0) {
-              let bind = `${correctedPath}:/extraFiles`;
-              Binds.push(bind);
-            } else {
-              let bind = `${correctedPath}:/extraFiles${index + 1}`;
-              Binds.push(bind);
-            }
-          }
-        }
-      );
+      });
       return Binds;
     },
     findAndRemoveContainer() {},
