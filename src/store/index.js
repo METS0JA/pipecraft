@@ -1093,7 +1093,7 @@ export default new Vuex.Store({
             extraInputs: [
               {
                 name: "match_list_soft",
-                items: ["vsearch", "blastn"],
+                items: ["vsearch", "BLAST"],
                 value: "vsearch",
                 disabled: "never",
                 tooltip:
@@ -1106,7 +1106,7 @@ export default new Vuex.Store({
                 value: "2",
                 disabled: "never",
                 tooltip:
-                  "applies only when 'vsearch' is used for generating match list for LULU. Pairwise sequence identity definition (--iddef)",
+                  "applies only when 'vsearch' is used as 'match_list_soft'. Pairwise sequence identity definition (--iddef)",
                 type: "select",
               },
               {
@@ -1144,7 +1144,7 @@ export default new Vuex.Store({
               },
               {
                 name: "cores",
-                value: 6,
+                value: 4,
                 disabled: "never",
                 tooltip:
                   "number of cores to use for generating match list for LULU",
