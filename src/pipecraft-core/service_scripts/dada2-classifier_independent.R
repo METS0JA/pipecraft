@@ -38,38 +38,24 @@ if (tryRC == "true" || tryRC == "TRUE"){
 #load sequences
 seqs_file = list.files(file.path(workingDir), pattern = fileFormat)
 
-#assign taxonomy
-tax = assignTaxonomy(seqs_file, database, multithread = FALSE, minBoot = minBoot, tryRC = tryRC, outputBootstraps = TRUE)
+#ERROR if multiple fasta files in the folder
+if (length(seqs_file) > 1) {
+    write("Multiple inputa fasta files in the workingDir, QUITTING", stderr())
+    quit(save = "no")
 
-### TODO --> write sequence names to output file. How? Output samas järjekorras mis input. Read fasta headers 
-
-for (line in readLines(seqs_file))
-{
-  a = grepl(">", line)
-  if (a == TRUE) {
-      print(line)
-  }
+} else {
+    print(paste0("input = ", seqs_file))
 }
 
-
-
-# ###format and save taxonomy results
-# #sequence headers
-# asv_headers = vector(dim(ASV_tab.nochim)[2], mode="character")
-# for (i in 1:dim(ASV_tab.nochim)[2]) {
-# asv_headers[i] = paste(">ASV", i, sep="_")
-# }
-# #add sequences to 1st column
-# tax2 = cbind(row.names(tax$tax), tax$tax, tax$boot)
-# colnames(tax2)[1] = "Sequence"
-# #row names as sequence headers
-# row.names(tax2) = sub(">", "", asv_headers)
-
+#assign taxonomy
+tax = assignTaxonomy(seqs_file, database, multithread = FALSE, minBoot = minBoot, tryRC = tryRC, outputBootstraps = TRUE)
+#add sequence names to tax table
+tax2 = cbind(row.names(tax$tax), tax$tax, tax$boot)
+colnames(tax2)[1] = "Sequence"
 #write taxonomy to csv
-write.table(tax, file.path(path_results, "taxonomy.csv"), sep = "\t", quote=F, col.names = NA)
+write.table(tax2, file.path(path_results, "taxonomy.csv"), sep = "\t", quote=F, col.names = NA)
 
 #DONE
-
 print('workingDir=/input/taxonomy_out.dada2')
 print('fileFormat=taxtab')
 print('dataFormat=demultiplexed')
