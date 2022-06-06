@@ -1498,14 +1498,14 @@ export default new Vuex.Store({
             ],
           },
           {
-            tooltip: "DEICODE (Robust Aitchison PCA on sparse compositional metabarcoding data)",
+            tooltip:
+              "DEICODE (Robust Aitchison PCA on sparse compositional metabarcoding data)",
             scriptName: "DEICODE.sh",
             imageName: "pipecraft/deicode:0.2.4",
             serviceName: "DEICODE",
             selected: false,
             showExtra: false,
-            extraInputs: [
-            ],
+            extraInputs: [],
             Inputs: [
               {
                 name: "table",
@@ -2855,11 +2855,13 @@ export default new Vuex.Store({
       }
       for (let index of state.selectedSteps.entries()) {
         state.selectedSteps[index[0]].services.forEach((input) => {
-          input.Inputs.forEach((input) => {
-            if (input.type == "file") {
-              fileInputValues.push(input.value);
-            }
-          });
+          if (input.selected === true || input.selected == "always") {
+            input.Inputs.forEach((input) => {
+              if (input.type == "file") {
+                fileInputValues.push(input.value);
+              }
+            });
+          }
         });
       }
       if (
@@ -2889,24 +2891,10 @@ export default new Vuex.Store({
         } else {
           return true;
         }
-      } else { 
+      } else {
         return false;
       }
     },
-    // customWorkflowReady: (state) => {
-    //   if (state.route.params.workflowName) {
-    //     let fileInputValues = [];
-    //     state[state.route.params.workflowName].forEach((input) => {
-    //       if (input.selected == true || input.selected == "always") {
-    //         input.Inputs.forEach((input) => {
-    //           if (input.type == "file") {
-    //             fileInputValues.push(input.value);
-    //           }
-    //         });
-    //       }
-    //     });
-    //   }
-    // },
   },
   mutations: {
     activatePullLoader(state) {
