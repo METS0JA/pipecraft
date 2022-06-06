@@ -313,7 +313,11 @@ Regions are placed under corrseponding directory (i.e., ITS2 sequences are in 'I
 Files in /no_detections directory represent sequences where no ITS regions were identified.\n
 If input was FASTQ formatted file(s), then it was converted to FASTA, and only FASTA is outputted.
 Input FASTA files (converted from FASTQ) are in ITSx_out/input_FASTA_files directory.
-\nTotal run time was $runtime sec.\n\n\n
+
+Core command -> 
+ITSx -i input.unique.seqs -o output --preserve T --graphical F $organisms $partial $regions $cores $eval $score $domains $complement_in $only_full_in $truncate_in
+
+\nTotal run time was $runtime sec.\n\n
 ##################################################################
 ###Third-party applications for this process [PLEASE CITE]:
 #ITSx v1.1.3 for extracting ITS regions
@@ -321,7 +325,7 @@ Input FASTA files (converted from FASTQ) are in ITSx_out/input_FASTA_files direc
     #Copyright (C) 2012-2021 Johan Bengtsson-Palme et al.
     #Distributed under the GNU General Public License
     #microbiology.se/software/itsx/
-#seqkit v2.0.0 for converting fastq to fasta (if input was fasta)
+#seqkit v2.0.0 for converting fastq to fasta (if input was fastq)
     #citation: Shen W, Le S, Li Y, Hu F (2016) SeqKit: A Cross-Platform and Ultrafast Toolkit for FASTA/Q File Manipulation. PLOS ONE 11(10): e0163962. https://doi.org/10.1371/journal.pone.0163962
     #Distributed under the MIT License
     #Copyright © 2016-2019 Wei Shen, 2019 Oxford Nanopore Technologies.

@@ -3,7 +3,7 @@ RUN conda update --all -y
 RUN conda install -y -c conda-forge mamba
 RUN mamba install -y -c conda-forge -c qiime2 python=3.8 qiime2=2022.2.0
 RUN mamba install  -y -c conda-forge deicode=0.2.4 biom-format=2.1.12
-RUN apt-get update -y
+RUN apt-get update -y 
 RUN apt-get install wget -y
 RUN apt-get install r-base -y
 RUN wget -O /usr/local/lib/python3.8/site-packages/deicode/rpca.py https://raw.githubusercontent.com/SuvalineVana/pipecraft/main/src/pipecraft-core/service_scripts/rpca.py
@@ -11,4 +11,4 @@ RUN wget -O /usr/local/lib/python3.8/site-packages/deicode/scripts/_standalone_r
 RUN conda clean --all --yes
 RUN apt remove wget -y
 RUN apt-get clean
-RUN R -e "install.packages('optparse',dependencies=TRUE, repos='http://cran.rstudio.com/')"
+RUN R -e "install.packages('optparse', dependencies=TRUE, repos='http://cran.rstudio.com/')"
