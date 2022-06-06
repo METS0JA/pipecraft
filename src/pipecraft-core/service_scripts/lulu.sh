@@ -79,35 +79,11 @@ else
     printf "\n input fasta = $input_fasta \n"
 fi
 
-#start time
-start=$(date +%s)
-
-### Check if files with specified extension exist in the dir
-# first_file_check
-### Check if single-end files are compressed (decompress and check)
-# check_gz_zip_SE
-
-### Get input rep seqs (OTUs.fasta) and give ERROR when multiple rep seqs files are in the working folder
-# i=$"0"
-# for file in *.$newextension; do
-#     input_fasta=$(echo $file)
-#     i=$((i + 1))
-# done
-# if [[ $i > 1 ]]; then
-#     printf '%s\n' "ERROR]: more than one representative sequence file ($newextension file) in the working folder" >&2
-#     end_process
-# else
-#     printf "\n input fasta = $input_fasta \n"
-# fi
-
 #############################
 ### Start of the workflow ###
 #############################
-### Check if files with specified extension exist in the dir
-# first_file_check
-### Prepare working env and check paired-end data
-prepare_SE_env
-
+#start time
+start=$(date +%s)
 ### Generate match list for LULU
 if [[ $match_list_soft == "BLAST" ]]; then
     printf "\n#Making blast database from the input fasta \n"
@@ -181,10 +157,6 @@ if [[ -f $output_dir/R_run.log ]]; then
 fi
 if [[ -f $output_dir/lulu_out_OTUids.txt ]]; then
     rm -f $output_dir/lulu_out_OTUids.txt
-fi
-#Delete tempdir
-if [[ -d tempdir2 ]]; then
-    rm -rf tempdir2
 fi
 
 end=$(date +%s)
