@@ -2,7 +2,7 @@
 
 #Post-clustering of OTU/ASV table with LULU 
 #Input = specified table (if not specified, then OTU_table.txt or ASVs_table.txt will be searched from the workingDir)
-#Representative sequeces are searched from the workingDir as based on the specidied file extension
+#Representative sequeces are searched from the workingDir as based on the specified file extension
 
 ##########################################################
 ###Third-party applications:
