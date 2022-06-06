@@ -1163,15 +1163,16 @@ export default new Vuex.Store({
                   "select OTU/ASV table. If no file is selected, then PipeCraft will look OTU_table.txt or ASV_table.txt in the working directory",
                 type: "boolfile",
               },
-              // {
-              //   name: "rep_seqs",
-              //   btnName: "select file",
-              //   value: "undefined",
-              //   disabled: "never",
-              //   tooltip:
-              //     "select fasta formatted sequence file containing your OTU/ASV reads. SPECIFY ONLY WHEN USING THIS AS AN INDEPENDENT STEP. If no file is selected, then PipeCraft will look OTUs.fasta or ASVs.fasta from the last pipeline step",
-              //   type: "file",
-              // },
+              {
+                name: "rep_seqs",
+                active: false,
+                btnName: "select file",
+                value: "undefined",
+                disabled: "never",
+                tooltip:
+                  "select fasta formatted sequence file containing your OTU/ASV reads",
+                type: "boolfile",
+              },
               {
                 name: "min_ratio_type",
                 items: ["min", "avg"],
@@ -1363,6 +1364,139 @@ export default new Vuex.Store({
         stepName: "postprocessing",
         disabled: "never",
         services: [
+          {
+            tooltip: "postclustering with LULU algorithm",
+            scriptName: "lulu.sh",
+            imageName: "pipecraft/dada2:1.20",
+            serviceName: "LULU",
+            selected: false,
+            showExtra: false,
+            extraInputs: [
+              {
+                name: "match_list_soft",
+                items: ["vsearch", "BLAST"],
+                value: "vsearch",
+                disabled: "never",
+                tooltip:
+                  "use either 'blastn' or 'vsearch' to generate match list for LULU. Default is 'vsearch' (much faster)",
+                type: "select",
+              },
+              {
+                name: "vsearch_similarity_type",
+                items: ["0", "1", "2", "3", "4"],
+                value: "2",
+                disabled: "never",
+                tooltip:
+                  "applies only when 'vsearch' is used as 'match_list_soft'. Pairwise sequence identity definition (--iddef)",
+                type: "select",
+              },
+              {
+                name: "perc_identity",
+                value: 84,
+                disabled: "never",
+                tooltip:
+                  "percent identity cutoff for match list. Excluding pairwise comparisons with lower sequence identity percentage than specified threshold",
+                type: "numeric",
+                rules: [
+                  (v) => v >= 1 || "ERROR: specify values >= 1",
+                  (v) => v <= 100 || "ERROR: specify values <= 100",
+                ],
+              },
+              {
+                name: "coverage_perc",
+                value: 80,
+                disabled: "never",
+                tooltip:
+                  "percent query coverage per hit. Excluding pairwise comparisons with lower sequence coverage than specified threshold",
+                type: "numeric",
+                rules: [
+                  (v) => v >= 1 || "ERROR: specify values >= 1",
+                  (v) => v <= 100 || "ERROR: specify values <= 100",
+                ],
+              },
+              {
+                name: "strands",
+                items: ["plus", "both"],
+                value: "both",
+                disabled: "never",
+                tooltip:
+                  "query strand to search against database. Both = search also reverse complement",
+                type: "select",
+              },
+              {
+                name: "cores",
+                value: 4,
+                disabled: "never",
+                tooltip:
+                  "number of cores to use for generating match list for LULU",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+            ],
+            Inputs: [
+              {
+                name: "table",
+                active: false,
+                btnName: "select file",
+                value: "undefined",
+                disabled: "never",
+                tooltip:
+                  "select OTU/ASV table. If no file is selected, then PipeCraft will look OTU_table.txt or ASV_table.txt in the working directory",
+                type: "boolfile",
+              },
+              {
+                name: "rep_seqs",
+                active: false,
+                btnName: "select file",
+                value: "undefined",
+                disabled: "never",
+                tooltip:
+                  "select fasta formatted sequence file containing your OTU/ASV reads",
+                type: "boolfile",
+              },
+              {
+                name: "min_ratio_type",
+                items: ["min", "avg"],
+                value: "min",
+                disabled: "never",
+                tooltip:
+                  "sets whether a potential error must have lower abundance than the parent in all samples 'min' (default), or if an error just needs to have lower abundance on average 'avg'",
+                type: "select",
+              },
+              {
+                name: "min_ratio",
+                value: 1,
+                disabled: "never",
+                tooltip:
+                  "default = 1. Sets the minimim abundance ratio between a potential error and a potential parent to be identified as an error",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "min_match",
+                value: 95,
+                disabled: "never",
+                tooltip:
+                  "default = 95%. Specify minimum threshold of sequence similarity for considering any OTU as an error of another",
+                type: "numeric",
+                rules: [
+                  (v) => v >= 1 || "ERROR: specify values >= 1",
+                  (v) => v <= 100 || "ERROR: specify values <= 100",
+                ],
+              },
+              {
+                name: "min_rel_cooccurence",
+                value: 0.95,
+                disabled: "never",
+                tooltip:
+                  "minimum co-occurrence rate. Default = 0.95 (meaning that 1 in 20 samples are allowed to have no parent presence)",
+                max: 1,
+                min: 0,
+                step: 0.01,
+                type: "slide",
+              },
+            ],
+          },
           {
             tooltip: "DEICODE (Robust Aitchison PCA on sparse compositional metabarcoding data)",
             scriptName: "DEICODE.sh",

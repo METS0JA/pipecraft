@@ -60,32 +60,51 @@ else
     printf "\n input table = $otu_table \n"
 fi
 
+#Automatic search for OTUs.fasta or ASVs.fasta (standard PipeCraft2 output file names), otherwise use the file that was specified in the panel
+if [[ -e "$workingDir/OTUs.fasta" ]]; then
+    input_fasta=$"$workingDir/OTUs.fasta"
+    printf "\n input table = $input_fasta \n"
+elif [[ -e "$workingDir/ASVs.fasta" ]]; then
+    input_fasta=$"$workingDir/ASVs.fasta"
+    printf "\n input fasta = $input_fasta \n"
+elif [[ $rep_seqs == "undefined" ]]; then
+    printf '%s\n' "ERROR]: rep seqs (input fasta) was not specified and cannot find OTUs.fasta or ASVs.fasta in the working dir.
+    >Quitting" >&2
+    end_process
+else
+    #get input fasta file
+    regex='[^/]*$'
+    input_fasta_temp=$(echo $rep_seqs | grep -oP "$regex")
+    input_fasta=$(printf "/extraFiles2/$input_fasta_temp")
+    printf "\n input fasta = $input_fasta \n"
+fi
+
 #start time
 start=$(date +%s)
 
 ### Check if files with specified extension exist in the dir
-first_file_check
+# first_file_check
 ### Check if single-end files are compressed (decompress and check)
-check_gz_zip_SE
+# check_gz_zip_SE
 
 ### Get input rep seqs (OTUs.fasta) and give ERROR when multiple rep seqs files are in the working folder
-i=$"0"
-for file in *.$newextension; do
-    input_fasta=$(echo $file)
-    i=$((i + 1))
-done
-if [[ $i > 1 ]]; then
-    printf '%s\n' "ERROR]: more than one representative sequence file ($newextension file) in the working folder" >&2
-    end_process
-else
-    printf "\n input fasta = $input_fasta \n"
-fi
+# i=$"0"
+# for file in *.$newextension; do
+#     input_fasta=$(echo $file)
+#     i=$((i + 1))
+# done
+# if [[ $i > 1 ]]; then
+#     printf '%s\n' "ERROR]: more than one representative sequence file ($newextension file) in the working folder" >&2
+#     end_process
+# else
+#     printf "\n input fasta = $input_fasta \n"
+# fi
 
 #############################
 ### Start of the workflow ###
 #############################
 ### Check if files with specified extension exist in the dir
-first_file_check
+# first_file_check
 ### Prepare working env and check paired-end data
 prepare_SE_env
 
@@ -217,6 +236,6 @@ printf "Total time: $runtime sec.\n\n"
 
 #variables for all services
 echo "workingDir=$output_dir"
-echo "fileFormat=$newextension"
+echo "fileFormat=$extension"
 echo "dataFormat=$dataFormat"
 echo "readType=single_end"
