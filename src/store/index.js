@@ -1318,6 +1318,45 @@ export default new Vuex.Store({
               },
             ],
           },
+          {
+            tooltip:
+              "assign taxonomy with DADA2 'assignTaxonomy' function against the selected database",
+            scriptName: "dada2-classifier_independent.R",
+            imageName: "pipecraft/dada2:1.20",
+            serviceName: "DADA2_classifier",
+            disabled: "never",
+            selected: false,
+            showExtra: false,
+            extraInputs: [],
+            Inputs: [
+              {
+                name: "dada2_database",
+                btnName: "select fasta",
+                value: "undefined",
+                disabled: "never",
+                tooltip:
+                  "select a reference database fasta file for taxonomy annotation",
+                type: "file",
+              },
+              {
+                name: "minBoot",
+                value: 50,
+                disabled: "never",
+                tooltip:
+                  "the minimum bootstrap confidence for assigning a taxonomic level",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "tryRC",
+                value: false,
+                disabled: "never",
+                tooltip:
+                  "the reverse-complement of each sequences will be used for classification if it is a better match to the reference sequences than the forward sequence",
+                type: "bool",
+              },
+            ],
+          },
         ],
       },
       {
@@ -1351,7 +1390,7 @@ export default new Vuex.Store({
                 value: "undefined",
                 disabled: "never",
                 tooltip:
-                  "specify list of OTU/ASV IDs for analysing a subset from the full table",
+                  "select list of OTU/ASV IDs for analysing a subset from the full table",
                 type: "boolfile",
               },
               {
@@ -1359,7 +1398,7 @@ export default new Vuex.Store({
                 value: 10,
                 disabled: "never",
                 tooltip:
-                  "default = 10. ",
+                  "cutoff for reads per OTU/ASV. OTUs/ASVs with lower reads then specified cutoff will be excluded from the analysis",
                 type: "numeric",
                 rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
               },
@@ -1368,7 +1407,7 @@ export default new Vuex.Store({
                 value: 500,
                 disabled: "never",
                 tooltip:
-                  "default = 500. ",
+                  "cutoff for reads per sample. Samples with lower reads then specified cutoff will be excluded from the analysis",
                 type: "numeric",
                 rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
               },
