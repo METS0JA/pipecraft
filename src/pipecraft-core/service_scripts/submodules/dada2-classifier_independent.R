@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 
-#DADA2 sequence classifier.
+#DADA2 sequence classifier (module for taxonomy_dada2.sh).
 
 #load dada2
 library("dada2")
@@ -38,15 +38,6 @@ if (tryRC == "true" || tryRC == "TRUE"){
 #load sequences
 seqs_file = list.files(file.path(workingDir), pattern = fileFormat)
 
-#ERROR if multiple fasta files in the folder
-if (length(seqs_file) > 1) {
-    write("Multiple inputa fasta files in the workingDir, QUITTING", stderr())
-    quit(save = "no")
-
-} else {
-    print(paste0("input = ", seqs_file))
-}
-
 #assign taxonomy
 tax = assignTaxonomy(seqs_file, database, multithread = FALSE, minBoot = minBoot, tryRC = tryRC, outputBootstraps = TRUE)
 #add sequence names to tax table
@@ -55,8 +46,4 @@ colnames(tax2)[1] = "Sequence"
 #write taxonomy to csv
 write.table(tax2, file.path(path_results, "taxonomy.csv"), sep = "\t", quote=F, col.names = NA)
 
-#DONE
-print('workingDir=/input/taxonomy_out.dada2')
-print('fileFormat=taxtab')
-print('dataFormat=demultiplexed')
-print('readType=single_end')
+#DONE, proceed with taxonomy_dada2.sh to clean up make readme

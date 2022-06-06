@@ -128,11 +128,11 @@ runtime=$((end-start))
 
 
 #Make README.txt file
-printf "Taxonomy annotation was done with BLAST. 
+printf "Taxonomy annotation with BLAST. 
 Input = $IN
 BLAST_1st_best_hit.txt contains BLAST results for the 1st best hit in the used database(s).
-BLAST_10_best_hits.txt contains BLAST results for the 10 best hits in the used database(s).\n
-Total run time was $runtime sec.\n
+BLAST_10_best_hits.txt contains BLAST results for the 10 best hits in the used database(s).
+
 score -> blast score
 e-value -> blast e-value
 query len -> query (i.e. OTU/ASV) sequence length
@@ -145,7 +145,15 @@ align len -> alignment length of query and target
 identities -> number of identical matches
 gaps -> number of gaps in the alignment
 coverage -> query coverage percentage against the target sequence (100 percent is full-length match; low coverage may indicate presence of chimeric sequence/OTU)
-id -> identity percentage against the target sequence.\n" > $output_dir/README.txt
+id -> identity percentage against the target sequence.
+
+Total run time was $runtime sec.
+
+##########################################################
+###Third-party applications [PLEASE CITE]:
+    #BLAST 2.11.0+
+    #citation: Camacho C., Coulouris G., Avagyan V., Ma N., Papadopoulos J., Bealer K., & Madden T.L. (2008) BLAST+: architecture and applications. BMC Bioinformatics 10:421. 
+#####################################################" > $output_dir/README.txt
 
 #Done
 printf "\nDONE\n"

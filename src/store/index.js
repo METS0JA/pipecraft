@@ -1321,7 +1321,7 @@ export default new Vuex.Store({
           {
             tooltip:
               "assign taxonomy with DADA2 'assignTaxonomy' function against the selected database",
-            scriptName: "dada2-classifier_independent.R",
+            scriptName: "taxonomy_dada2.sh",
             imageName: "pipecraft/dada2:1.20",
             serviceName: "DADA2_classifier",
             disabled: "never",
