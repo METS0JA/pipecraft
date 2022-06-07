@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 
-#DADA2 sequence classifier.
+#DADA2 sequence classifier (module for taxonomy_dada2.sh).
 
 #load dada2
 library("dada2")
@@ -35,30 +35,16 @@ if (tryRC == "true" || tryRC == "TRUE"){
     tryRC = TRUE
 }
 
-#load data
-ASV_tab.nochim = readRDS(file.path(workingDir, "ASVs_table.denoised-merged.nochim.rds"))
+#load sequences
+seqs_file = list.files(file.path(workingDir), pattern = fileFormat)
+print(seqs_file)
 
 #assign taxonomy
-tax = assignTaxonomy(ASV_tab.nochim , database, multithread = FALSE, minBoot = minBoot, tryRC = tryRC, outputBootstraps = TRUE)
-
-###format and save taxonomy results
-#sequence headers
-asv_headers = vector(dim(ASV_tab.nochim)[2], mode="character")
-for (i in 1:dim(ASV_tab.nochim)[2]) {
-asv_headers[i] = paste(">ASV", i, sep="_")
-}
-#add sequences to 1st column
+tax = assignTaxonomy(seqs_file, database, multithread = FALSE, minBoot = minBoot, tryRC = tryRC, outputBootstraps = TRUE)
+#add sequence names to tax table
 tax2 = cbind(row.names(tax$tax), tax$tax, tax$boot)
 colnames(tax2)[1] = "Sequence"
-#row names as sequence headers
-row.names(tax2) = sub(">", "", asv_headers)
-
 #write taxonomy to csv
 write.table(tax2, file.path(path_results, "taxonomy.csv"), sep = "\t", quote=F, col.names = NA)
 
-#DONE
-
-print('workingDir=/input/taxonomy_out.dada2')
-print('fileFormat=taxtab')
-print('dataFormat=demultiplexed')
-print('readType=single_end')
+#DONE, proceed with taxonomy_dada2.sh to clean up make readme

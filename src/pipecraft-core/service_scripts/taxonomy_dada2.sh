@@ -55,7 +55,7 @@ prepare_SE_env
 
 ###Run DADA2 classifier in R
 printf "# Running DADA2 classifier \n"
-errormessage=$(Rscript /scripts/submodules/dada2-classifier_independent.R 2>&1)
+errormessage=$(Rscript /scripts/submodules/dada2-classifier.R 2>&1)
 echo $errormessage > $output_dir/R_run.log 
 wait
 printf "\n DADA2 classifier completed \n"
@@ -63,9 +63,9 @@ printf "\n DADA2 classifier completed \n"
 ########################################
 ### CLEAN UP AND COMPILE README FILE ###
 ########################################
-if [[ -f $output_dir/R_run.log ]]; then
-    rm -f $output_dir/R_run.log
-fi
+# if [[ -f $output_dir/R_run.log ]]; then
+#     rm -f $output_dir/R_run.log
+# fi
 #Delete tempdir
 if [[ -d tempdir2 ]]; then
     rm -rf tempdir2
