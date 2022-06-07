@@ -1347,6 +1347,13 @@ export default new Vuex.Store({
                 type: "file",
               },
               {
+                name: "download_database",
+                value: "https://benjjneb.github.io/dada2/training.html",
+                disabled: "never",
+                tooltip: "link to download DADA2-formatted reference databases",
+                type: "link",
+              },
+              {
                 name: "minBoot",
                 value: 50,
                 disabled: "never",
@@ -2786,7 +2793,7 @@ export default new Vuex.Store({
       {
         tooltip:
           "assign taxonomy with DADA2 'assignTaxonomy' function against the selected database. Untick the checkbox to skip this step",
-        scriptName: "dada2-classifier.R",
+        scriptName: "taxonomy_dada2.sh",
         imageName: "pipecraft/dada2:1.20",
         serviceName: "assign Taxonomy",
         disabled: "never",
@@ -2795,13 +2802,6 @@ export default new Vuex.Store({
         extraInputs: [],
         Inputs: [
           {
-            name: "download databases",
-            value: "https://benjjneb.github.io/dada2/training.html",
-            disabled: "never",
-            type: "link",
-            tooltip: "link to download DADA2-formatted reference databases",
-          },
-          {
             name: "dada2_database",
             btnName: "select fasta",
             value: "undefined",
@@ -2809,6 +2809,13 @@ export default new Vuex.Store({
             tooltip:
               "select a reference database fasta file for taxonomy annotation",
             type: "file",
+          },
+          {
+            name: "download databases",
+            value: "https://benjjneb.github.io/dada2/training.html",
+            disabled: "never",
+            type: "link",
+            tooltip: "link to download DADA2-formatted reference databases",
           },
           {
             name: "minBoot",

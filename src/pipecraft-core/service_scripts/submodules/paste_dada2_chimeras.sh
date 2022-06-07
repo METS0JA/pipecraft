@@ -11,7 +11,7 @@
 
 #Compare 'chimera filtered fasta files per sample' and 'NOT chimera filtered fasta files per sample' to paste out only chimeric sequences per sample
 
-echo "dada2 bash module for pasting cimeric seqs running"
+echo "dada2 bash module for pasting chimeric seqs"
 
 #path to denoised-assembled fastas
 path_denoised=$"/input/denoised_assembled.dada2"

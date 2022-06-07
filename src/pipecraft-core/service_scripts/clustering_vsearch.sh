@@ -156,6 +156,9 @@ $cores \
 --otutabout $output_dir/OTU_table.txt  2>&1)
 check_app_error
 
+# rename #OTU ID -> OTU_id (LULU does not like # for outputting sample names)
+sed -i 's/#OTU ID/OTU_id/' $output_dir/OTU_table.txt
+
 #Order the OTUs in fasta file accoring to OTU table
 if [[ -s "$output_dir/OTU_table.txt" ]]; then 
     awk 'BEGIN{FS="\t"}{print $1}' < $output_dir/OTU_table.txt > $output_dir/OTUs.names
@@ -192,9 +195,11 @@ end=$(date +%s)
 runtime=$((end-start))
 
 #Make README.txt file
-printf "Clustering formed $size OTUs;
-'clustering_out' directory contains FASTA formated representative OTU sequences (OTUs.fasta)
-and an OTU distribution table per sample (per input file in the working directory), OTU_table.txt.\n
+printf "Clustering formed $size OTUs.
+
+Files in 'clustering_out' directory:
+# OTUs.fasta = FASTA formated representative OTU sequences (OTUs.fasta)
+# OTU_table.txt = OTU distribution table per sample (per input file in the working directory)
 
 Core commands -> 
 clustering: vsearch $seqsort Glob_derep.fasta $id $simtype $strands $relabel_in $mask $centroid_in $maxaccepts $cores $otutype OTUs.fasta $uc_in --fasta_width 0 --sizein --sizeout

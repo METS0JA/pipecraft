@@ -40,6 +40,10 @@ min_rel_cooccurence=${min_rel_cooccurence}
 source /scripts/framework.functions.sh
 #output dir
 output_dir=$"/input/lulu_out"
+if [ -d $output_dir ]; then
+    rm -rf $output_dir
+fi
+mkdir -p $output_dir
 
 #Automatic search for OTU_table.txt or ASVs_table.txt (standard PipeCraft2 output file names), otherwise use the file that was specified in the panel
 if [[ -e "$workingDir/OTU_table.txt" ]]; then
@@ -84,6 +88,16 @@ fi
 #############################
 #start time
 start=$(date +%s)
+
+### Check if input table col.names contain #
+firstline=$(awk 'NR==1 {print; exit}' $otu_table)
+if echo "$firstline" | grep -q "#"; then
+    printf '%s\n' "ERROR]: first line of input table has # sign.
+Please remove and try again.
+>Quitting" >&2
+    end_process
+fi
+
 ### Generate match list for LULU
 if [[ $match_list_soft == "BLAST" ]]; then
     printf "\n#Making blast database from the input fasta \n"
@@ -171,11 +185,20 @@ if [[ $match_list_soft == "vsearch" ]]; then
     match_list_generation=$"vsearch --usearch_global $input_fasta --db $input_fasta --strand both --self --id $vsearch_perc_identity --iddef $vsearch_similarity_type --userout $output_dir/match_list.lulu --userfields query+target+id --maxaccepts 0 --query_cov $vsearch_coverage_perc --threads $cores"
 fi
 #count merged units and curated units
-merged_units=$(wc -l $output_dir/discarded_units.lulu | awk '{print $1}')
 curated_units=$(grep -c "^>" $output_dir/lulu_out_RepSeqs.fasta)
+merged_units=$(wc -l $output_dir/discarded_units.lulu | awk '{print $1}')
+if [[ $merged_units == 0 ]]; then
+    info=$"No output table generated; OTU/ASV counts remained the same with the selected settings."
+    rm $output_dir/discarded_units.lulu
+    rm $output_dir/lulu_out_RepSeqs.fasta
+    rm $output_dir/lulu_out_table.txt
+    rm $output_dir/lulu_out_table.csv
+else
+    info=$"Output table consists of $curated_units molecular units (OTUs or ASVs)."
+fi
 
 printf "Total of $merged_units molecular units (OTUs or ASVs) were merged.
-Curated table consists of $curated_units molecular units (OTUs or ASVs).
+$info
 
 Files in 'lulu_out' directory:
 # lulu_out_table.csv     = curated table in csv format

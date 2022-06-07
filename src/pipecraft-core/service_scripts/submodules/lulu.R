@@ -8,7 +8,7 @@ min_match = as.numeric(Sys.getenv('min_match'))
 min_rel_cooccurence = as.numeric(Sys.getenv('min_rel_cooccurence'))
 
 #load OTU table and match list
-otutable_name = read.table(file.path("/input/lulu_out", "OTU_tab_for_lulu.txt"), header = T, row.names = 1)
+otutable_name = read.table(file.path("/input/lulu_out", "OTU_tab_for_lulu.txt"), header = T, row.names = 1, sep = "\t")
 matchlist_name = read.table(file.path("/input/lulu_out", "match_list.lulu"))
 
 curated_result <- lulu::lulu(otutable_name, matchlist_name, 

@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 
-#DADA2 sequence classifier (module for taxonomy_dada2.sh).
+#DADA2 sequence classifier.
 
 #load dada2
 library("dada2")
@@ -26,6 +26,7 @@ database = paste("/extraFiles", basename(database), sep = "/")
 minBoot = as.integer(Sys.getenv('minBoot'))
 tryRC = Sys.getenv('tryRC')
 print(database)
+print(workingDir)
 
 #"FALSE" or "TRUE" to FALSE or TRUE for dada2
 if (tryRC == "false" || tryRC == "FALSE"){
@@ -35,15 +36,30 @@ if (tryRC == "true" || tryRC == "TRUE"){
     tryRC = TRUE
 }
 
-#load sequences
-seqs_file = list.files(file.path(workingDir), pattern = fileFormat)
+#load data
+ASVs_fasta = readRDS(file.path(workingDir, "ASVs.fasta"))
 
 #assign taxonomy
-tax = assignTaxonomy(seqs_file, database, multithread = FALSE, minBoot = minBoot, tryRC = tryRC, outputBootstraps = TRUE)
-#add sequence names to tax table
+tax = assignTaxonomy(ASVs_fasta, database, multithread = FALSE, minBoot = minBoot, tryRC = tryRC, outputBootstraps = TRUE)
+
+###format and save taxonomy results
+#sequence headers
+asv_headers = vector(dim(ASVs_fasta)[2], mode="character")
+for (i in 1:dim(ASVs_fasta)[2]) {
+asv_headers[i] = paste(">ASV", i, sep="_")
+}
+#add sequences to 1st column
 tax2 = cbind(row.names(tax$tax), tax$tax, tax$boot)
 colnames(tax2)[1] = "Sequence"
+#row names as sequence headers
+row.names(tax2) = sub(">", "", asv_headers)
+
 #write taxonomy to csv
 write.table(tax2, file.path(path_results, "taxonomy.csv"), sep = "\t", quote=F, col.names = NA)
 
-#DONE, proceed with taxonomy_dada2.sh to clean up make readme
+#DONE
+
+print('workingDir=/input/taxonomy_out.dada2')
+print('fileFormat=taxtab')
+print('dataFormat=demultiplexed')
+print('readType=single_end')

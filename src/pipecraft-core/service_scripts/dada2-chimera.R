@@ -72,6 +72,7 @@ asv_fasta <- c(rbind(asv_headers, asv_seqs))
 write(asv_fasta, file.path(path_ASVs, "ASVs.fasta"))
 #write ASVs table to path_ASVs
 write.csv(ASV_tab.nochim, file.path(path_ASVs, "ASVs_table.csv"))
+write.table(ASV_tab.nochim, file.path(path_ASVs, "ASVs_table.txt"), sep = "\t", col.names = NA, row.names = TRUE, quote = FALSE)
 
 #Loop through each sample in the table and write per-sample fasta files containin non-chimeric ASVs
 for (i in 2:length(colnames(ASV_tab.nochim))){
@@ -92,11 +93,11 @@ for (i in 2:length(colnames(ASV_tab.nochim))){
 }
 
 ### run external script (for seqkit) to paste out chimeric ASVs per sample [R call fails!]
-# print("base::system(/scripts/paste_dada2_chimeras.sh)")
-# paste_chimeras="/scripts/paste_dada2_chimeras.sh"
-# base::system(paste_chimeras, wait = TRUE, invisible = FALSE)
-# print("DONE")
-#remove ASVs.nonChimFilt.fasta
+print("paste chimeras")
+paste_chimeras="./scripts/submodules/paste_dada2_chimeras.sh"
+base::system(paste_chimeras, wait = TRUE, invisible = FALSE)
+print("paste chimeras DONE")
+# remove ASVs.nonChimFilt.fasta
 # file.remove(file.path(path_results, "ASVs.nonChimFilt.fasta"))
 
 #remove pipeline .rds objects
@@ -109,7 +110,7 @@ if (file.exists("/input/denoised_assembled.dada2/dadaFs.rds")) {
 
 #DONE 
 
-print('workingDir=/input/chimeraFiltered_out.dada2')
-print('fileFormat=seqtab')
+print('workingDir=/input/ASVs_out.dada2')
+print('fileFormat=fasta')
 print('dataFormat=demultiplexed')
 print('readType=single_end')
