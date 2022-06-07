@@ -38,8 +38,8 @@ ASV_tab.nochim <- removeBimeraDenovo(ASV_tab, method = method, multithread = FAL
 saveRDS(ASV_tab.nochim, file.path(path_results, "ASVs_table.denoised-merged.nochim.rds"))
 
 #seq count summary
-qfilt = readRDS("/input/qualFiltered_out.dada2/quality_filtered.rds")
-sample_names = readRDS("/input/qualFiltered_out.dada2/sample_names.rds")
+qfilt = readRDS("/input/qualFiltered_out/quality_filtered.rds")
+sample_names = readRDS("/input/qualFiltered_out/sample_names.rds")
 
 no_of_ASVs_list = list() #add ASVs per sample count
 for (i in 1:nrow(ASV_tab.nochim)){
@@ -101,8 +101,8 @@ print("paste chimeras DONE")
 # file.remove(file.path(path_results, "ASVs.nonChimFilt.fasta"))
 
 #remove pipeline .rds objects
-if (file.exists("/input/qualFiltered_out.dada2/filtFs.rds")) {
-    unlink("/input/qualFiltered_out.dada2/*.rds")
+if (file.exists("/input/qualFiltered_out/filtFs.rds")) {
+    unlink("/input/qualFiltered_out/*.rds")
 }
 if (file.exists("/input/denoised_assembled.dada2/dadaFs.rds")) {
     unlink("/input/denoised_assembled.dada2/*.rds")

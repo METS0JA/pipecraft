@@ -95,8 +95,8 @@ if (pool == ""){
     dadaRs = readRDS(file.path(path_results, "dadaRs.rds"))
     derepFs = readRDS(file.path(path_results, "derepFs.rds"))
     derepRs = readRDS(file.path(path_results, "derepRs.rds"))
-    sample_names = readRDS("/input/qualFiltered_out.dada2/sample_names.rds")
-    qfilt = readRDS("/input/qualFiltered_out.dada2/quality_filtered.rds")
+    sample_names = readRDS("/input/qualFiltered_out/sample_names.rds")
+    qfilt = readRDS("/input/qualFiltered_out/quality_filtered.rds")
 
     #merge paired-end reads
     merge = mergePairs(dadaFs, derepFs, dadaRs, derepRs, 
@@ -151,8 +151,8 @@ if (pool == ""){
     write.csv(seq_count, file.path(path_results, "seq_count_summary.csv"), row.names = TRUE)
 
     #remove R objects
-    # if (file.exists("/input/qualFiltered_out.dada2/filtFs.rds"){file.remove("/input/qualFiltered_out.dada2/filtFs.rds")}
-    # if (file.exists("/input/qualFiltered_out.dada2/filtRs.rds"){file.remove("/input/qualFiltered_out.dada2/filtRs.rds")}
+    # if (file.exists("/input/qualFiltered_out/filtFs.rds"){file.remove("/input/qualFiltered_out/filtFs.rds")}
+    # if (file.exists("/input/qualFiltered_out/filtRs.rds"){file.remove("/input/qualFiltered_out/filtRs.rds")}
     # if (file.exists(file.path(path_results, "dadaFs.rds"){file.remove(file.path(path_results, "dadaFs.rds"))}
     # if (file.exists(file.path(path_results, "dadaRs.rds"){file.remove(file.path(path_results, "dadaRs.rds"))}
     # if (file.exists(file.path(path_results, "derepFs.rds"){file.remove(file.path(path_results, "derepFs.rds"))}

@@ -104,7 +104,8 @@ end=$(date +%s)
 runtime=$((end-start))
 
 #Make README.txt file
-printf "Files in 'qualFiltered_out' directory represent quality filtered sequences in FASTQ format according to the selected options.\n
+printf "# Quality filtering of PAIRED-END sequencing data with fastp.
+Files in 'qualFiltered_out' directory represent quality filtered sequences in FASTQ format according to the selected options.\n
 
 Core command -> 
 fastp --in1 inputR1 --in2 inputR2 --out1 outputR1 --out2 outputR2 $window_size $required_qual $min_qual $min_qual_thresh $maxNs $min_length $max_length $trunc_length_R1 $trunc_length_R2 $aver_qual $cores --html fastp_report/sample_name.html --disable_adapter_trimming $low_complexity_filter

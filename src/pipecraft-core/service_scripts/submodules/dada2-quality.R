@@ -6,10 +6,10 @@
 library('dada2')
 
 #load env variables
-readType = Sys.getenv('readType')
+# readType = Sys.getenv('readType')
 fileFormat = Sys.getenv('fileFormat')
-dataFormat = Sys.getenv('dataFormat')
-workingDir = Sys.getenv('workingDir')
+# dataFormat = Sys.getenv('dataFormat')
+# workingDir = Sys.getenv('workingDir')
 
 #load variables
 read_R1 = Sys.getenv('read_R1')
@@ -25,16 +25,18 @@ maxLen = as.numeric(Sys.getenv('maxLen'))
 minQ = as.numeric(Sys.getenv('minQ'))
 
 #check for output dir and delete if needed
-if (dir.exists("/input/qualFiltered_out.dada2")) {
-    unlink("/input/qualFiltered_out.dada2", recursive=TRUE)
-}
+# if (dir.exists("/input/qualFiltered_out")) {
+#     unlink("/input/qualFiltered_out", recursive=TRUE)
+# }
 #create output dir
-path_results = "/input/qualFiltered_out.dada2"
-dir.create(path_results)
+path_results = "/input/qualFiltered_out"
+# dir.create(path_results)
 
 #define input and output file paths
 fnFs = sort(list.files(pattern = read_R1, full.names = TRUE))
 fnRs = sort(list.files(pattern = read_R2, full.names = TRUE))
+print(fnFs)
+print(fnRs)
 #sample names
 sample_names = sapply(strsplit(basename(fnFs), samp_ID), `[`, 1)
 
@@ -43,6 +45,8 @@ filtFs = file.path(path_results, paste0(sample_names, "_R1_filt.", fileFormat))
 filtRs = file.path(path_results, paste0(sample_names, "_R2_filt.", fileFormat))
 names(filtFs) = sample_names
 names(filtRs) = sample_names
+print(filtFs)
+print(filtRs)
 
 #quality filter
 qfilt = filterAndTrim(fnFs, filtFs, fnRs, filtRs, 
@@ -69,10 +73,12 @@ seq_count <- cbind(qfilt)
 colnames(seq_count) <- c("input", "qualFiltered")
 rownames(seq_count) <- sample_names
 write.csv(seq_count, file.path(path_results, "seq_count_summary.csv"), row.names = TRUE)
+write.table(seq_count, file.path(path_results, "seq_count_summary.txt"), sep = "\t", col.names = NA, row.names = TRUE, quote = FALSE)
 
-#DONE
 
-print('workingDir=/input/qualFiltered_out.dada2')
-print('fileFormat=fastq')
-print('dataFormat=demultiplexed')
-print('readType=paired_end')
+#DONE, proceed with quality_filtering_paired_end_dada2.sh to clean up make readme
+
+# print('workingDir=/input/qualFiltered_out')
+# print('fileFormat=fastq')
+# print('dataFormat=demultiplexed')
+# print('readType=paired_end')

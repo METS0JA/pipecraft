@@ -1331,13 +1331,6 @@ export default new Vuex.Store({
             extraInputs: [],
             Inputs: [
               {
-                name: "download databases",
-                value: "https://benjjneb.github.io/dada2/training.html",
-                disabled: "never",
-                type: "link",
-                tooltip: "link to download DADA2-formatted reference databases",
-              },
-              {
                 name: "dada2_database",
                 btnName: "select fasta",
                 value: "undefined",
@@ -1347,11 +1340,11 @@ export default new Vuex.Store({
                 type: "file",
               },
               {
-                name: "download_database",
+                name: "download databases",
                 value: "https://benjjneb.github.io/dada2/training.html",
                 disabled: "never",
-                tooltip: "link to download DADA2-formatted reference databases",
                 type: "link",
+                tooltip: "link to download DADA2-formatted reference databases",
               },
               {
                 name: "minBoot",
@@ -2575,7 +2568,7 @@ export default new Vuex.Store({
       },
       {
         tooltip: "quality filtering with DADA2 'filterAndTrim' function",
-        scriptName: "dada2-quality.R",
+        scriptName: "quality_filtering_paired_end_dada2.sh",
         imageName: "pipecraft/dada2:1.20",
         serviceName: "quality filtering",
         disabled: "never",
