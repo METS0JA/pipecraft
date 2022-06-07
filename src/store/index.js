@@ -1331,6 +1331,13 @@ export default new Vuex.Store({
             extraInputs: [],
             Inputs: [
               {
+                name: "download databases",
+                value: "https://benjjneb.github.io/dada2/training.html",
+                disabled: "never",
+                type: "link",
+                tooltip: "link to download DADA2-formatted reference databases",
+              },
+              {
                 name: "dada2_database",
                 btnName: "select fasta",
                 value: "undefined",

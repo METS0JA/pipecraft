@@ -208,6 +208,7 @@ import InputBoolSelect from "../components/InputBoolSelect.vue";
 import InputChip from "../components/InputChip.vue";
 import InputSlide from "../components/InputSlide.vue";
 import InputCombo from "../components/InputCombo.vue";
+import InputLink from "../components/InputLink.vue";
 
 export default {
   name: "Home",
@@ -221,6 +222,7 @@ export default {
     InputBoolFile,
     InputBoolSelect,
     InputSlide,
+    InputLink,
   },
   computed: {
     services() {
