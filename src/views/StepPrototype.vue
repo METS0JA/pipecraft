@@ -58,6 +58,12 @@
                   :inputIndex="i"
                   :list="'Inputs'"
               /></v-container>
+              <v-container v-if="input.type === 'link'"
+                ><InputLink
+                  :serviceIndex="index"
+                  :inputIndex="i"
+                  :list="'Inputs'"
+              /></v-container>
               <v-container v-if="input.type === 'bool'"
                 ><InputBool
                   :serviceIndex="index"
