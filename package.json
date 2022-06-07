@@ -14,7 +14,7 @@
     "lint": "vue-cli-service lint",
     "electron:build": "vue-cli-service electron:build",
     "electron:serve": "vue-cli-service electron:serve",
-    "yarn install": "yarn install --ignore-optional --ignore-platform",
+    "install_pipe": "yarn install --ignore-optional --ignore-platform",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps"
   },
