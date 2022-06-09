@@ -62,11 +62,11 @@ echo $truncate
 echo $eval
 
 # Source for functions
-source /scripts/framework.functions.sh
+source /scripts/submodules/framework.functions.sh
 #output dir
 output_dir=$"/input/ITSx_out"
 #python module for removing empty fasta records if using --partial
-run_python_module=$"python3 /scripts/remove_empty_seqs.py"
+run_python_module=$"python3 /scripts/submodules/remove_empty_seqs.py"
 
 #############################
 ### Start of the workflow ###

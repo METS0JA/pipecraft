@@ -37,7 +37,7 @@ dbmask=$"--dbmask ${dbmask}"  # list: --qmask dust, --qmask none
 uc=$output_UC # false or true
 ###############################
 # Source for functions
-source /scripts/framework.functions.sh
+source /scripts/submodules/framework.functions.sh
 #output dir
 output_dir=$"/input/clustering_out"
 
@@ -198,8 +198,8 @@ runtime=$((end-start))
 printf "Clustering formed $size OTUs.
 
 Files in 'clustering_out' directory:
-# OTUs.fasta = FASTA formated representative OTU sequences (OTUs.fasta)
-# OTU_table.txt = OTU distribution table per sample (per input file in the working directory)
+# OTUs.fasta = FASTA formated representative OTU sequences
+# OTU_table.txt = OTU distribution table per sample (tab delimited file)
 
 Core commands -> 
 clustering: vsearch $seqsort Glob_derep.fasta $id $simtype $strands $relabel_in $mask $centroid_in $maxaccepts $cores $otutype OTUs.fasta $uc_in --fasta_width 0 --sizein --sizeout

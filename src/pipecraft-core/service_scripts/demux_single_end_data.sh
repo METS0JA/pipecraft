@@ -38,7 +38,7 @@ overlap=$"--overlap ${overlap}"
 ###############################
 
 # Source for functions
-source /scripts/framework.functions.sh
+source /scripts/submodules/framework.functions.sh
 #output dir
 output_dir=$"/input/demultiplex_out"
 

@@ -28,7 +28,7 @@ abskew=$"--abskew ${abundance_skew}" #pos int
 minh=$"--minh ${min_h}" #float (0-1)
 
 #Source for functions
-source /scripts/framework.functions.sh
+source /scripts/submodules/framework.functions.sh
 #output dir
 output_dir=$"/input/chimera_Filtered_out"
 

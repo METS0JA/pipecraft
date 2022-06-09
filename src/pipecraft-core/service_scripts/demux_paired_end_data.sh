@@ -42,11 +42,11 @@ printf "cores = $cores\n"
 printf "overlap = $overlap\n"
 
 # Source for functions
-source /scripts/framework.functions.sh
+source /scripts/submodules/framework.functions.sh
 #output dir
 output_dir=$"/input/demultiplex_out"
 #python module for assigning sample names as based on indexes file
-run_python_module=$"python3 /scripts/assign_sample_names.demuxModule.py $indexes_file"
+run_python_module=$"python3 /scripts/submodules/assign_sample_names.demuxModule.py $indexes_file"
 
 #############################
 ### Start of the workflow ###

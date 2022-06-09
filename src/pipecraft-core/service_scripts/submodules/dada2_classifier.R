@@ -44,7 +44,7 @@ tax = assignTaxonomy(seqs_file, database, multithread = FALSE, minBoot = minBoot
 #add sequence names to tax table
 tax2 = cbind(row.names(tax$tax), tax$tax, tax$boot)
 colnames(tax2)[1] = "Sequence"
-#write taxonomy to csv
-write.table(tax2, file.path(path_results, "taxonomy.csv"), sep = "\t", quote=F, col.names = NA)
+#write taxonomy
+write.table(tax2, file.path(path_results, "taxonomy.txt"), sep = "\t", col.names = NA, row.names = TRUE, quote = FALSE)
 
 #DONE, proceed with taxonomy_dada2.sh to clean up make readme

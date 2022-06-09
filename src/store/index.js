@@ -647,6 +647,125 @@ export default new Vuex.Store({
               },
             ],
           },
+          {
+            tooltip: "quality filtering with DADA2 'filterAndTrim' function",
+            scriptName: "quality_filtering_paired_end_dada2.sh",
+            imageName: "pipecraft/dada2:1.20",
+            serviceName: "DADA2",
+            selected: false,
+            showExtra: false,
+            extraInputs: [
+              {
+                name: "truncQ",
+                value: 2,
+                disabled: "never",
+                tooltip:
+                  "truncate reads at the first instance of a quality score less than or equal to truncQ",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "truncLen",
+                value: 0,
+                disabled: "never",
+                tooltip:
+                  "truncate reads after truncLen bases (applies to R1 reads when working with paired-end data). Reads shorter than this are discarded. Explore quality profiles (with QualityCheck module) and see whether poor quality ends needs to be truncated",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "truncLen_R2",
+                value: 0,
+                disabled: "single_end",
+                tooltip:
+                  "applies only for paired-end data. Truncate R2 reads after truncLen bases. Reads shorter than this are discarded. Explore quality profiles (with QualityCheck module) and see whether poor quality ends needs to be truncated",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "maxLen",
+                value: 9999,
+                disabled: "never",
+                tooltip:
+                  "remove reads with length greater than maxLen. maxLen is enforced on the raw reads. In dada2, the default = Inf, but here set as 9999",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "minQ",
+                value: 0,
+                disabled: "never",
+                tooltip:
+                  "after truncation, reads contain a quality score below minQ will be discarded",
+                type: "numeric",
+                rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
+              },
+              {
+                name: "matchIDs",
+                value: true,
+                disabled: "single_end",
+                tooltip:
+                  "applies only for paired-end data. If TRUE, only paired reads that share ids are outputted",
+                  type: "bool",
+              },
+            ],
+            Inputs: [
+              {
+                name: "read_R1",
+                value: ["\\.R1"],
+                disabled: "single_end",
+                tooltip:
+                  "applies only for paired-end data. Identifyer string that is common for all R1 reads (e.g. when all R1 files have '.R1' string, then enter '\\.R1'. Note that backslash is only needed to escape dot regex; e.g. when all R1 files have '_R1' string, then enter '_R1'.)'",
+                type: "chip",
+                rules: [(v) => v.length <= 1 || "ADD ONLY ONE IDENTIFIER"],
+              },
+              {
+                name: "read_R2",
+                value: ["\\.R2"],
+                disabled: "single_end",
+                tooltip:
+                  "applies only for paired-end data. Identifyer string that is common for all R2 reads (e.g. when all R2 files have '.R2' string, then enter '\\.R2'. Note that backslash is only needed to escape dot regex; e.g. when all R2 files have '_R1' string, then enter '_R2'.)",
+                type: "chip",
+                rules: [(v) => v.length <= 1 || "ADD ONLY ONE IDENTIFIER"],
+              },
+              {
+                name: "samp_ID",
+                value: ["\\."],
+                disabled: "single_end",
+                tooltip:
+                  "applies only for paired-end data. Identifyer string that separates the sample name from redundant charachters (e.g. file name = sample1.R1.fastq, then underscore '\\.' would be the 'identifier string' (sample name = sampl84)); note that backslash is only needed to escape dot regex (e.g. when file name = sample1_R1.fastq then specify as '_')",
+                type: "chip",
+                rules: [(v) => v.length <= 1 || "ADD ONLY ONE IDENTIFIER"],
+              },
+              {
+                name: "maxEE",
+                value: 2,
+                disabled: "never",
+                tooltip:
+                  "discard sequences with more than the specified number of expected errors",
+                type: "numeric",
+                rules: [(v) => v >= 0.1 || "ERROR: specify values >= 0.1"],
+              },
+              {
+                name: "maxN",
+                value: 0,
+                disabled: "never",
+                tooltip:
+                  "discard sequences with more than the specified number of N’s (ambiguous bases)",
+                type: "numeric",
+                rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
+              },
+              {
+                name: "minLen",
+                value: 20,
+                disabled: "never",
+                tooltip:
+                  "remove reads with length less than minLen. minLen is enforced after all other trimming and truncation",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+            ],
+          },
         ],
       },
       {
@@ -741,6 +860,106 @@ export default new Vuex.Store({
               },
             ],
           },
+          {
+            tooltip:
+              "assemble paired-end reads with DADA2 'mergePairs' function. This step performs also dada denoising!",
+            scriptName: "assemble_paired_end_data_dada2.sh",
+            imageName: "pipecraft/dada2:1.20",
+            serviceName: "DADA2 denoise and merge",
+            selected: false,
+            disabled: "single_end",
+            showExtra: false,
+            extraInputs: [
+              {
+                name: "pool",
+                items: ["FALSE", "TRUE", "psuedo"],
+                value: "FALSE",
+                disabled: "never",
+                tooltip:
+                  "Denoising option. If pool = TRUE, the algorithm will pool together all samples prior to sample inference. Pooling improves the detection of rare variants, but is computationally more expensive. If pool = 'pseudo', the algorithm will perform pseudo-pooling between individually processed samples. This argument has no effect if only 1 sample is provided, and pool does not affect error rates, which are always estimated from pooled observations across samples",
+                type: "select",
+              },
+              {
+                name: "selfConsist",
+                disabled: "never",
+                value: false,
+                tooltip:
+                  "Denoising option. If selfConsist = TRUE, the algorithm will alternate between sample inference and error rate estimation until convergence",
+                type: "bool",
+              },
+              {
+                name: "qualityType",
+                items: ["Auto", "FastqQuality"],
+                value: "Auto",
+                disabled: "never",
+                tooltip:
+                  "Auto means to attempt to auto-detect the fastq quality encoding. This may fail for PacBio files with uniformly high quality scores, in which case use 'FastqQuality'",
+                type: "select",
+              },
+            ],
+            Inputs: [
+              {
+                name: "read_R1",
+                value: ["\\.R1"],
+                disabled: "single_end",
+                tooltip:
+                  "identifyer string that is common for all R1 reads (e.g. when all R1 files have '.R1' string, then enter '\\.R1'. Note that backslash is only needed to escape dot regex; e.g. when all R1 files have '_R1' string, then enter '_R1'.)",
+                type: "chip",
+                rules: [(v) => v.length <= 1 || "ADD ONLY ONE IDENTIFIER"],
+              },
+              {
+                name: "read_R2",
+                value: ["\\.R2"],
+                disabled: "single_end",
+                tooltip:
+                  "identifyer string that is common for all R2 reads (e.g. when all R2 files have '.R2' string, then enter '\\.R2'. Note that backslash is only needed to escape dot regex; e.g. when all R2 files have '_R1' string, then enter '_R2'.)",
+                type: "chip",
+                rules: [(v) => v.length <= 1 || "ADD ONLY ONE IDENTIFIER"],
+              },
+              {
+                name: "samp_ID",
+                value: ["\\."],
+                disabled: "never",
+                tooltip:
+                  "identifyer string that separates the sample name from redundant charachters (e.g. file name = sample1.R1.fastq, then underscore '\\.' would be the 'identifier string' (sample name = sampl84)); note that backslash is only needed to escape dot regex (e.g. when file name = sample1_R1.fastq then specify as '_')",
+                type: "chip",
+                rules: [(v) => v.length <= 1 || "ADD ONLY ONE IDENTIFIER"],
+              },
+              {
+                name: "minOverlap",
+                value: 12,
+                disabled: "never",
+                tooltip:
+                  "the minimum length of the overlap required for merging the forward and reverse reads",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "maxMismatch",
+                value: 0,
+                disabled: "never",
+                tooltip: "the maximum mismatches allowed in the overlap region",
+                type: "numeric",
+                rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
+              },
+              {
+                name: "trimOverhang",
+                value: false,
+                disabled: "never",
+                tooltip:
+                  "if TRUE, overhangs in the alignment between the forwards and reverse read are trimmed off. Overhangs are when the reverse read extends past the start of the forward read, and vice-versa, as can happen when reads are longer than the amplicon and read into the other-direction primer region",
+                type: "bool",
+              },
+              {
+                name: "justConcatenate",
+                value: false,
+                disabled: "never",
+                tooltip:
+                  "if TRUE, the forward and reverse-complemented reverse read are concatenated rather than merged, with a NNNNNNNNNN (10 Ns) spacer inserted between them",
+                type: "bool",
+              },
+            ],
+          },    
         ],
       },
       {
@@ -2581,7 +2800,7 @@ export default new Vuex.Store({
             value: ["\\.R1"],
             disabled: "single_end",
             tooltip:
-              "identifyer string that is common for all R1 reads (e.g. when all R1 files have '.R1' string, then enter '\\.R1'. Note that backslash is only needed to escape dot regex; e.g. when all R1 files have '_R1' string, then enter '_R1'.). When demultiplexing data in during this workflow, then specify as '\\.R1'",
+              "identifyer string that is common for all R1 reads (e.g. when all R1 files have '.R1' string, then enter '\\.R1'. Note that backslash is only needed to escape dot regex; e.g. when all R1 files have '_R1' string, then enter '_R1'.). When demultiplexing data during this workflow, then specify as '\\.R1'",
             type: "chip",
             rules: [(v) => v.length <= 1 || "ADD ONLY ONE IDENTIFIER"],
           },
@@ -2590,7 +2809,7 @@ export default new Vuex.Store({
             value: ["\\.R2"],
             disabled: "single_end",
             tooltip:
-              "identifyer string that is common for all R2 reads (e.g. when all R2 files have '.R2' string, then enter '\\.R2'. Note that backslash is only needed to escape dot regex; e.g. when all R2 files have '_R1' string, then enter '_R2'.). When demultiplexing data in during this workflow, then specify as '\\.R2'",
+              "identifyer string that is common for all R2 reads (e.g. when all R2 files have '.R2' string, then enter '\\.R2'. Note that backslash is only needed to escape dot regex; e.g. when all R2 files have '_R1' string, then enter '_R2'.). When demultiplexing data during this workflow, then specify as '\\.R2'",
             type: "chip",
             rules: [(v) => v.length <= 1 || "ADD ONLY ONE IDENTIFIER"],
           },
@@ -2617,7 +2836,7 @@ export default new Vuex.Store({
             value: 0,
             disabled: "never",
             tooltip:
-              "discard sequences with more than the specified number of N’s (ambiguous bases)",
+              "discard sequences with more than the specified number of Ns (ambiguous bases)",
             type: "numeric",
             rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
           },
@@ -2675,11 +2894,19 @@ export default new Vuex.Store({
             type: "numeric",
             rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
           },
+          {
+            name: "matchIDs",
+            value: true,
+            disabled: "single_end",
+            tooltip:
+              "applies only for paired-end data. If TRUE, only paired reads that share ids are outputted",
+              type: "bool",
+          },
         ],
       },
       {
         tooltip: "select the denoising options for DADA2 'dada' function",
-        scriptName: "dada2-assemble.R",
+        scriptName: "assemble_paired_end_data_dada2_wf.sh",
         imageName: "pipecraft/dada2:1.20",
         serviceName: "denoise",
         selected: "always",
@@ -2710,7 +2937,7 @@ export default new Vuex.Store({
             value: "Auto",
             disabled: "never",
             tooltip:
-              "means to attempt to auto-detect the fastq quality encoding. This may fail for PacBio files with uniformly high quality scores, in which case use 'FastqQuality'",
+              "Auto means to attempt to auto-detect the fastq quality encoding. This may fail for PacBio files with uniformly high quality scores, in which case use 'FastqQuality'",
             type: "select",
           },
         ],
@@ -2718,7 +2945,7 @@ export default new Vuex.Store({
       {
         tooltip:
           "assemble paired-end reads (R1 and R2) with DADA2 'mergePairs' function",
-        scriptName: "dada2-assemble.R",
+        scriptName: "assemble_paired_end_data_dada2_wf.sh",
         imageName: "pipecraft/dada2:1.20",
         serviceName: "merge Pairs",
         selected: "always",
@@ -2763,7 +2990,7 @@ export default new Vuex.Store({
       },
       {
         tooltip: "remove chimeras with DADA2 'removeBimeraDenovo' function",
-        scriptName: "dada2-chimera.R",
+        scriptName: "chimera_filtering_dada2_wf.sh",
         imageName: "pipecraft/dada2:1.20",
         serviceName: "chimera filtering",
         disabled: "never",

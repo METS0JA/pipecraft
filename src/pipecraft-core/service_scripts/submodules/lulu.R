@@ -21,7 +21,6 @@ curated_result <- lulu::lulu(otutable_name, matchlist_name,
 write.table(rownames(curated_result$curated_table), file ="/input/lulu_out/lulu_out_OTUids.txt", row.names = FALSE, quote = FALSE)
 
 #write post-clustered OTU table to file
-write.csv(curated_result$curated_table, file ="/input/lulu_out/lulu_out_table.csv")
 write.table(curated_result$curated_table, file ="/input/lulu_out/lulu_out_table.txt", sep = "\t", col.names = NA, row.names = TRUE, quote = FALSE)
 write.table(curated_result$discarded_otus, file ="/input/lulu_out/discarded_units.lulu", col.names = FALSE, quote = FALSE)
 

@@ -29,7 +29,7 @@ aver_qual=$"--average_qual ${aver_qual}"
 cores=$"--thread ${cores}"
 
 #Source for functions
-source /scripts/framework.functions.sh
+source /scripts/submodules/framework.functions.sh
 #output dir
 output_dir=$"/input/qualFiltered_out"
 

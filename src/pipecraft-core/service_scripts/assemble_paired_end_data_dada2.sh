@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# Quality filter PAIRED-END sequencing data with dada2
-# Input = paired-end fastq files
+# ASSEMBLE PAIRED-END data with dada2
+# Input = paired-end fastq files.
 
 ##########################################################
 ###Third-party applications:
 #dada2 v1.20
-    #citation: Callahan, B., McMurdie, P., Rosen, M. et al. (2016) DADA2: High-resolution sample inference from Illumina amplicon data. Nat Methods 13, 581–583. https://doi.org/10.1038/nmeth.3869
+    #citation: Callahan, B., McMurdie, P., Rosen, M. et al. (2016) DADA2: High-resolution sample inference from Illumina amplicon data. Nat Methods 13, 581-583. https://doi.org/10.1038/nmeth.3869
     #Copyright (C) 2007 Free Software Foundation, Inc.
     #Distributed under the GNU LESSER GENERAL PUBLIC LICENSE
     #https://github.com/benjjneb/dada2
@@ -22,20 +22,18 @@ workingDir=${workingDir}
 read_R1=${read_R1}
 read_R2=${read_R2}
 samp_ID=${samp_ID}
-maxEE=${maxEE}
-maxN=${maxN}
-truncQ=${truncQ}
-truncLen_R1=${truncLen}
-truncLen_R2=${truncLen_R2}
-minLen=${minLen}
-maxLen=${maxLen}
-minQ=${minQ}
-matchIDs=${matchIDs}
+minOverlap=${minOverlap}
+maxMismatch=${maxMismatch}
+trimOverhang=${trimOverhang}
+justConcatenate=${justConcatenate}
+pool=${pool}
+selfConsist=${selfConsist}
+qualityType=${qualityType}
 
 #Source for functions
 source /scripts/submodules/framework.functions.sh
 #output dir
-output_dir=$"/input/qualFiltered_out"
+output_dir=$"/input/denoised_assembled.dada2"
 
 #############################
 ### Start of the workflow ###
@@ -45,6 +43,16 @@ start=$(date +%s)
 first_file_check
 ### Prepare working env and check paired-end data
 prepare_PE_env
+
+#Check file formatting for FASTQ
+if [[ $extension == "fastq" ]] || [[ $extension == "fq" ]] || [[ $extension == "fastq.gz" ]] || [[ $extension == "fq.gz" ]]; then
+    :
+else
+    printf '%s\n' "ERROR]: $file formatting not supported here!
+Supported extensions: fastq, fq (and gz or zip compressed formats).
+>Quitting" >&2
+    end_process
+fi
 
 #Check identifiers
 if [[ -z $read_R1 ]] || [[ -z $read_R2 ]] || [[ -z $samp_ID ]]; then
@@ -63,12 +71,33 @@ while read file; do
     fi
 done < tempdir2/paired_end_files.txt
 
+#Check Ns in the fastq files (not allowed for DADA2 denoising)
+while read file; do
+    find_Ns=$(seqkit grep --quiet --by-seq --pattern 'N' $file | wc -l)
+    if [[ $find_Ns == 0 ]]; then
+        :
+    else
+        printf '%s\n' "ERROR]: sequences must be made up only of A/C/G/T. Supply quality filtered fastq files.
+        >Quitting" >&2
+        end_process
+    fi
+done < tempdir2/files_in_folder.txt
+
+
 ### Process samples with dada2 filterAndTrim function in R
-printf "# Running DADA2 filterAndTrim \n"
-Rlog=$(Rscript /scripts/submodules/dada2_PE_filterAndTrim.R 2>&1)
+printf "# Running DADA2 mergePairs \n"
+Rlog=$(Rscript /scripts/submodules/dada2_mergePairs.R 2>&1)
 echo $Rlog > $output_dir/R_run.log 
 wait
-printf "\n DADA2 filterAndTrim completed \n"
+printf "\n DADA2 mergePairs completed \n"
+
+# Rereplicate sequences per sample
+for file in $output_dir/*.fasta; do
+    samp_name=$(basename $file | awk -F "$samp_ID" '{print $1}')
+    echo $samp_name
+    vsearch --rereplicate $file --fasta_width 0 --output $output_dir/$samp_name.fasta -relabel $samp_name.
+    rm $file
+done
 
 #################################################
 ### COMPILE FINAL STATISTICS AND README FILES ###
@@ -83,13 +112,19 @@ end=$(date +%s)
 runtime=$((end-start))
 
 #Make README.txt file
-printf "# Quality filtering of PAIRED-END sequencing data with dada2.
+printf "# Denoising and assembling of PAIRED-END sequencing data with dada2.
 
-Files in 'qualFiltered_out' directory represent quality filtered sequences in FASTQ format according to the selected options.
-# seq_count_summary.txt = summary of sequence counts per sample
+Files in 'denoised_assembled.dada2':
+# *.merged_ASVs.fasta   = denoised and assembled ASVs per sample. 'Size' denotes the abundance of the ASV sequence.  
+# Error_rates_R1.pdf    = plots for estimated R1 error rates
+# Error_rates_R2.pdf    = plots for estimated R2 error rates
+# seq_count_summary.txt = summary of sequence and ASV counts per sample
 
-Core command -> 
-filterAndTrim(inputR1, outputR1, inputR2, outputR2, maxN = $maxN, maxEE = c($maxEE, $maxEE), truncQ = $truncQ, truncLen= c($truncLen_R1, $truncLen_R2), maxLen = $maxLen, minLen = $minLen, minQ=$minQ, rm.phix = TRUE, compress = FALSE, multithread = TRUE)
+Core commands -> 
+learn errors: err = learnErrors(input)
+dereplicate:  derep = derepFastq(input, qualityType = $qualityType)
+denoise:      dadaFs = dada(input, err = err, pool = $pool, selfConsist = $selfConsist)
+assemble:     mergePairs(inputR1, dereplicatedR1, inputR2, dereplicatedR2, maxMismatch = $maxMismatch, minOverlap = $minOverlap, justConcatenate = $justConcatenate, trimOverhang = $trimOverhang)
 
 Total run time was $runtime sec.
 ##################################################################
@@ -110,5 +145,6 @@ printf "Total time: $runtime sec.\n\n"
 echo "workingDir=$output_dir"
 echo "fileFormat=$fileFormat"
 echo "dataFormat=$dataFormat"
-echo "readType=paired_end"
+#echo "readType=paired_end"
+echo "readType=single_end"
 

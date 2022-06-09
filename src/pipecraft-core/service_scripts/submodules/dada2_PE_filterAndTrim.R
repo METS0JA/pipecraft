@@ -1,15 +1,12 @@
 #!/usr/bin/env Rscript
 
-#DADA2 quality filtering.
+#DADA2 PE data quality filtering.
 
 #load dada2
 library('dada2')
 
 #load env variables
-# readType = Sys.getenv('readType')
 fileFormat = Sys.getenv('fileFormat')
-# dataFormat = Sys.getenv('dataFormat')
-# workingDir = Sys.getenv('workingDir')
 
 #load variables
 read_R1 = Sys.getenv('read_R1')
@@ -23,14 +20,18 @@ truncLen_R2 = as.numeric(Sys.getenv('truncLen_R2'))
 minLen = as.numeric(Sys.getenv('minLen'))
 maxLen = as.numeric(Sys.getenv('maxLen'))
 minQ = as.numeric(Sys.getenv('minQ'))
+matchIDs = Sys.getenv('matchIDs')
 
-#check for output dir and delete if needed
-# if (dir.exists("/input/qualFiltered_out")) {
-#     unlink("/input/qualFiltered_out", recursive=TRUE)
-# }
-#create output dir
+#"FALSE" or "TRUE" to FALSE or TRUE for dada2
+if (matchIDs == "false" || matchIDs == "FALSE"){
+    matchIDs = FALSE
+}
+if (matchIDs == "true" || matchIDs == "TRUE"){
+    matchIDs = TRUE
+}
+
+#output path
 path_results = "/input/qualFiltered_out"
-# dir.create(path_results)
 
 #define input and output file paths
 fnFs = sort(list.files(pattern = read_R1, full.names = TRUE))
@@ -53,11 +54,12 @@ qfilt = filterAndTrim(fnFs, filtFs, fnRs, filtRs,
                     maxN = maxN, 
                     maxEE = c(maxEE, maxEE), 
                     truncQ = truncQ,  
-                    truncLen= c(truncLen_R1, truncLen_R2),
-                    maxLen=maxLen, 
+                    truncLen = c(truncLen_R1, truncLen_R2),
+                    maxLen = maxLen, 
                     minLen = minLen, 
-                    minQ=minQ, 
+                    minQ = minQ, 
                     rm.phix = TRUE, 
+                    matchIDs = matchIDs,
                     compress = FALSE, 
                     multithread = TRUE)
 
@@ -72,13 +74,6 @@ getN <- function(x) sum(getUniques(x))
 seq_count <- cbind(qfilt)
 colnames(seq_count) <- c("input", "qualFiltered")
 rownames(seq_count) <- sample_names
-write.csv(seq_count, file.path(path_results, "seq_count_summary.csv"), row.names = TRUE)
 write.table(seq_count, file.path(path_results, "seq_count_summary.txt"), sep = "\t", col.names = NA, row.names = TRUE, quote = FALSE)
 
-
 #DONE, proceed with quality_filtering_paired_end_dada2.sh to clean up make readme
-
-# print('workingDir=/input/qualFiltered_out')
-# print('fileFormat=fastq')
-# print('dataFormat=demultiplexed')
-# print('readType=paired_end')

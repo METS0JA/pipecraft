@@ -37,7 +37,7 @@ min_match=${min_match}
 min_rel_cooccurence=${min_rel_cooccurence}
 
 #Source for functions
-source /scripts/framework.functions.sh
+source /scripts/submodules/framework.functions.sh
 #output dir
 output_dir=$"/input/lulu_out"
 if [ -d $output_dir ]; then
@@ -201,7 +201,6 @@ printf "Total of $merged_units molecular units (OTUs or ASVs) were merged.
 $info
 
 Files in 'lulu_out' directory:
-# lulu_out_table.csv     = curated table in csv format
 # lulu_out_table.txt     = curated table in tab delimited txt format
 # lulu_out_RepSeqs.fasta = fasta file for the molecular units (OTUs or ASVs) in the curated table
 # match_list.lulu        = match list file that was used by LULU to merge 'daughter molecular units'

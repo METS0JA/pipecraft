@@ -19,18 +19,17 @@ dataFormat=${dataFormat}
 workingDir=${workingDir}
 
 #load variables
-read_R1=${read_R1}
-read_R2=${read_R2}
+#read_R1=${read_R1}
+#read_R2=${read_R2}
 samp_ID=${samp_ID}
 maxEE=${maxEE}
 maxN=${maxN}
 truncQ=${truncQ}
 truncLen_R1=${truncLen}
-truncLen_R2=${truncLen_R2}
+#truncLen_R2=${truncLen_R2}
 minLen=${minLen}
 maxLen=${maxLen}
 minQ=${minQ}
-matchIDs=${matchIDs}
 
 #Source for functions
 source /scripts/submodules/framework.functions.sh
@@ -44,28 +43,11 @@ start=$(date +%s)
 ### Check if files with specified extension exist in the dir
 first_file_check
 ### Prepare working env and check paired-end data
-prepare_PE_env
-
-#Check identifiers
-if [[ -z $read_R1 ]] || [[ -z $read_R2 ]] || [[ -z $samp_ID ]]; then
-    printf '%s\n' "ERROR]: 'read R1/R2' or 'samp_ID' are not specified.
-    >Quitting" >&2
-    end_process
-fi
-while read file; do
-    if [[ $file == *"$read_R1"* ]]; then
-        :
-    else
-        printf '%s\n' "ERROR]: 'read R1/R2' identifiers are incorrectly specified.
-        Check also 'samp ID' setting.
-        >Quitting" >&2
-        end_process
-    fi
-done < tempdir2/paired_end_files.txt
+prepare_SE_env
 
 ### Process samples with dada2 filterAndTrim function in R
 printf "# Running DADA2 filterAndTrim \n"
-Rlog=$(Rscript /scripts/submodules/dada2_PE_filterAndTrim.R 2>&1)
+Rlog=$(Rscript /scripts/submodules/dada2_SE_filterAndTrim.R 2>&1)
 echo $Rlog > $output_dir/R_run.log 
 wait
 printf "\n DADA2 filterAndTrim completed \n"
@@ -89,7 +71,7 @@ Files in 'qualFiltered_out' directory represent quality filtered sequences in FA
 # seq_count_summary.txt = summary of sequence counts per sample
 
 Core command -> 
-filterAndTrim(inputR1, outputR1, inputR2, outputR2, maxN = $maxN, maxEE = c($maxEE, $maxEE), truncQ = $truncQ, truncLen= c($truncLen_R1, $truncLen_R2), maxLen = $maxLen, minLen = $minLen, minQ=$minQ, rm.phix = TRUE, compress = FALSE, multithread = TRUE)
+filterAndTrim(inputR1, outputR1, maxN = $maxN, maxEE = $maxEE, truncQ = $truncQ, truncLen = $truncLen_R1, maxLen = $maxLen, minLen = $minLen, minQ=$minQ, rm.phix = TRUE, compress = FALSE, multithread = TRUE)
 
 Total run time was $runtime sec.
 ##################################################################
@@ -110,5 +92,5 @@ printf "Total time: $runtime sec.\n\n"
 echo "workingDir=$output_dir"
 echo "fileFormat=$fileFormat"
 echo "dataFormat=$dataFormat"
-echo "readType=paired_end"
+echo "readType=single_end"
 

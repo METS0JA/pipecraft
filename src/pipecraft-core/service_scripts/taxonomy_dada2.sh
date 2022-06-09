@@ -20,7 +20,7 @@ tryRC=${tryRC}
 dada2_database=${dada2_database}
 
 #Source for functions
-source /scripts/framework.functions.sh
+source /scripts/submodules/framework.functions.sh
 #output dir
 output_dir=$"/input/taxonomy_out.dada2"
 
@@ -55,17 +55,17 @@ prepare_SE_env
 
 ###Run DADA2 classifier in R
 printf "# Running DADA2 classifier \n"
-errormessage=$(Rscript /scripts/submodules/dada2-classifier.R 2>&1)
-echo $errormessage > $output_dir/R_run.log 
+Rlog=$(Rscript /scripts/submodules/dada2_classifier.R 2>&1)
+echo $Rlog > $output_dir/R_run.log 
 wait
 printf "\n DADA2 classifier completed \n"
 
 ########################################
 ### CLEAN UP AND COMPILE README FILE ###
 ########################################
-# if [[ -f $output_dir/R_run.log ]]; then
-#     rm -f $output_dir/R_run.log
-# fi
+if [[ -f $output_dir/R_run.log ]]; then
+    rm -f $output_dir/R_run.log
+fi
 #Delete tempdir
 if [[ -d tempdir2 ]]; then
     rm -rf tempdir2
@@ -76,7 +76,7 @@ runtime=$((end-start))
 
 ###Make README.txt file
 printf "Taxonomy annotation with DADA2 classifier (function assignTaxonomy).
-# taxonomy.csv = classifier results with bootstrap values.
+# taxonomy.txt = classifier results with bootstrap values.
 
 Core command -> 
 tax = assignTaxonomy($input_fasta, $dada2_database, multithread = FALSE, minBoot = $minBoot, tryRC = $tryRC, outputBootstraps = TRUE)
@@ -86,7 +86,7 @@ Total run time was $runtime sec.
 ##########################################################
 ###Third-party applications [PLEASE CITE]:
 #dada2 v1.20
-    #citation: Callahan, B., McMurdie, P., Rosen, M. et al. (2016) DADA2: High-resolution sample inference from Illumina amplicon data. Nat Methods 13, 581–583. https://doi.org/10.1038/nmeth.3869
+#citation: Callahan, B., McMurdie, P., Rosen, M. et al. (2016) DADA2: High-resolution sample inference from Illumina amplicon data. Nat Methods 13, 581-583. https://doi.org/10.1038/nmeth.3869
 ##################################################################" > $output_dir/README.txt
 
 #Done

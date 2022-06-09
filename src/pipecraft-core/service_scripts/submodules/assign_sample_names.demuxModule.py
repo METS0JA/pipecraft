@@ -23,7 +23,6 @@ for line in demux_files:
 	#el[0] forward index name
 	#el[1] reverse index name
 
-
 	#open fwd index file and seach index seq for matching index name
 	with open("tempdir2/barcodes_fwd.uniq.renamed.fasta") as indexes_fwd:
 		for fwdrecord in SeqIO.parse(indexes_fwd, "fasta"):

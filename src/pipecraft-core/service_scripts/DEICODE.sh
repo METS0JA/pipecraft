@@ -40,7 +40,7 @@ min_otu_reads=${min_otu_reads}
 min_sample_reads=${min_sample_reads}
 
 #Source for functions
-source /scripts/framework.functions.sh
+source /scripts/submodules/framework.functions.sh
 #output dir
 output_dir=$"/input/DEICODE_out"
 

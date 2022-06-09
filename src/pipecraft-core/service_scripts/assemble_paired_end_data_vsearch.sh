@@ -26,7 +26,7 @@ fastq_qmax=$fastq_qmax
 notmerged_files=$keep_disjointed
 
 #Source for functions
-source /scripts/framework.functions.sh
+source /scripts/submodules/framework.functions.sh
 #output dir
 output_dir=$"/input/assembled_out"
 

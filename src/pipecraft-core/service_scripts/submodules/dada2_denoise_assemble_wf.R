@@ -148,24 +148,8 @@ if (pool == ""){
     seq_count <- cbind(qfilt, sapply(dadaFs, getN), sapply(dadaRs, getN), sapply(merge, getN))
     colnames(seq_count) <- c("input", "qualFiltered", "denoised_R1", "denoised_R2", "merged")
     rownames(seq_count) <- sample_names
-    write.csv(seq_count, file.path(path_results, "seq_count_summary.csv"), row.names = TRUE)
-
-    #remove R objects
-    # if (file.exists("/input/qualFiltered_out/filtFs.rds"){file.remove("/input/qualFiltered_out/filtFs.rds")}
-    # if (file.exists("/input/qualFiltered_out/filtRs.rds"){file.remove("/input/qualFiltered_out/filtRs.rds")}
-    # if (file.exists(file.path(path_results, "dadaFs.rds"){file.remove(file.path(path_results, "dadaFs.rds"))}
-    # if (file.exists(file.path(path_results, "dadaRs.rds"){file.remove(file.path(path_results, "dadaRs.rds"))}
-    # if (file.exists(file.path(path_results, "derepFs.rds"){file.remove(file.path(path_results, "derepFs.rds"))}
-    # if (file.exists(file.remove(file.path(path_results, "derepRs.rds"){file.remove(file.path(path_results, "derepRs.rds"))}
+    write.table(seq_count, file.path(path_results, "seq_count_summary.txt"), sep = "\t", col.names = NA, row.names = TRUE, quote = FALSE)
 }
 
 #DONE 
-if (pool != ""){
-    print('readType=paired_end')
-    } else {
-        print('readType=single_end')
-        }
-print('workingDir=/input/denoised_assembled.dada2')
-print('fileFormat=fasta')
-print('dataFormat=demultiplexed')
 

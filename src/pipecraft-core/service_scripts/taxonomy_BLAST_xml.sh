@@ -34,8 +34,8 @@ gapopen=$"-gapopen=${gap_open}" # positive integer
 gapextend=$"-gapextend=${gap_extend}" # positive integer
 
 # Source for functions
-source /scripts/framework.functions.sh
-parseXML=$"/scripts/Blast_xml_parse.py"
+source /scripts/submodules/framework.functions.sh
+parseXML=$"/scripts/submodules/Blast_xml_parse.py"
 #output dir
 output_dir=$"/input/taxonomy_out"
 
@@ -98,7 +98,7 @@ check_app_error
 
 ### Parse BLAST xml file
 cd $output_dir
-python /scripts/Blast_xml_parse.py 10BestHits.xml
+python /scripts/submodules/Blast_xml_parse.py 10BestHits.xml
 
 #Extract first best hit from 10 best hits file
 gawk 'BEGIN{FS=OFS="\t"}{print $1,$4}' < 10hits.txt | \

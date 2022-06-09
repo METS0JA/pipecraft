@@ -28,7 +28,7 @@ leading_qual_threshold=$leading_qual_threshold
 trailing_qual_threshold=$trailing_qual_threshold
 
 #Source for functions
-source /scripts/framework.functions.sh
+source /scripts/submodules/framework.functions.sh
 #output dir
 output_dir=$"/input/qualFiltered_out"
 
