@@ -706,7 +706,7 @@ export default new Vuex.Store({
                 disabled: "single_end",
                 tooltip:
                   "applies only for paired-end data. If TRUE, then double-checking (with seqkit pair) that only paired reads that share ids are outputted",
-                  type: "bool",
+                type: "bool",
               },
             ],
             Inputs: [
@@ -959,7 +959,7 @@ export default new Vuex.Store({
                 type: "bool",
               },
             ],
-          },    
+          },
         ],
       },
       {
@@ -1844,7 +1844,7 @@ export default new Vuex.Store({
       {
         tooltip: "reorient reads based on specified primer sequences",
         scriptName: "reorient_paired_end_reads.sh",
-        imageName: "pipecraft/reorient:2",
+        imageName: "pipecraft/reorient:1",
         serviceName: "reorient",
         disabled: "never",
         selected: false,
@@ -2900,7 +2900,7 @@ export default new Vuex.Store({
             disabled: "single_end",
             tooltip:
               "applies only for paired-end data. If TRUE, then double-checking (with seqkit pair) that only paired reads that share ids are outputted",
-              type: "bool",
+            type: "bool",
           },
         ],
       },
