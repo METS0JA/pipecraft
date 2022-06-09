@@ -1,5 +1,9 @@
 <template>
-  <v-card light elevation="2">
+  <v-card
+    light
+    elevation="2"
+    :disabled="Object.values(inputData).includes(input.disabled)"
+  >
     <v-tooltip top>
       <template v-slot:activator="{ on }">
         <v-card-title
@@ -68,6 +72,9 @@ export default {
         ];
       }
     },
+    inputData() {
+      return this.$store.state.data;
+    },
     fileName() {
       var filename = path.parse(this.input.value).base;
       return filename;
@@ -100,9 +107,9 @@ export default {
           properties: ["openFile", "multiSelections", "showHiddenFiles"],
         })
         .then((result) => {
-          console.log(result)
+          console.log(result);
           if (typeof result.filePaths[0] !== "undefined") {
-            let correctedPath = slash(result.filePaths[0])
+            let correctedPath = slash(result.filePaths[0]);
             this.inputUpdate(correctedPath);
           }
         })

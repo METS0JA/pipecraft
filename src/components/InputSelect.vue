@@ -1,5 +1,9 @@
 <template>
-  <v-card light elevation="2">
+  <v-card
+    light
+    elevation="2"
+    :disabled="Object.values(inputData).includes(input.disabled)"
+  >
     <v-tooltip top>
       <template v-slot:activator="{ on }">
         <v-card-title
@@ -41,11 +45,14 @@ export default {
         ];
       }
     },
+    inputData() {
+      return this.$store.state.data;
+    },
   },
   methods: {
     inputUpdate(value) {
       if (this.$route.params.workflowName) {
-        this.blastSwitch(value)
+        this.blastSwitch(value);
         this.$store.commit("premadeInputUpdate", {
           workflowName: this.$route.params.workflowName,
           serviceIndex: this.$attrs.serviceIndex,
@@ -54,7 +61,11 @@ export default {
           value: value,
         });
       } else {
-        this.blastSwitch2(value, this.$route.params.order, this.$attrs.serviceIndex)
+        this.blastSwitch2(
+          value,
+          this.$route.params.order,
+          this.$attrs.serviceIndex
+        );
         this.$store.commit("inputUpdate", {
           stepIndex: this.$route.params.order,
           serviceIndex: this.$attrs.serviceIndex,
@@ -65,15 +76,15 @@ export default {
       }
     },
     blastSwitch(value) {
-      if(value == 'blastn' || value == 'megablast') {
-        this.$store.commit('blastSwitch', value)
-      }        
+      if (value == "blastn" || value == "megablast") {
+        this.$store.commit("blastSwitch", value);
+      }
     },
     blastSwitch2(value, i1, i2) {
-      if(value == 'blastn' || value == 'megablast') {
-        this.$store.commit('blastSwitch2', {value: value, i1 : i1, i2: i2})
-      }        
-    }
+      if (value == "blastn" || value == "megablast") {
+        this.$store.commit("blastSwitch2", { value: value, i1: i1, i2: i2 });
+      }
+    },
   },
 };
 </script>

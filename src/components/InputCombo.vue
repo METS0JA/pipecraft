@@ -1,5 +1,9 @@
 <template>
-  <v-card light elevation="2">
+  <v-card
+    light
+    elevation="2"
+    :disabled="Object.values(inputData).includes(input.disabled)"
+  >
     <v-card-actions style="justify-content: center">
       <v-row style="justify-content: center">
         <v-tooltip top>
@@ -130,6 +134,9 @@ export default {
           this.$attrs.inputIndex
         ];
       }
+    },
+    inputData() {
+      return this.$store.state.data;
     },
     All() {
       return this.input.value.length === this.input.items.length;

@@ -1,5 +1,10 @@
 <template>
-  <v-card light elevation="2" width="400px">
+  <v-card
+    light
+    elevation="2"
+    width="400px"
+    :disabled="Object.values(inputData).includes(input.disabled)"
+  >
     <v-tooltip top>
       <template v-slot:activator="{ on }">
         <v-card-title
@@ -42,6 +47,9 @@ export default {
           this.$attrs.inputIndex
         ];
       }
+    },
+    inputData() {
+      return this.$store.state.data;
     },
   },
   methods: {

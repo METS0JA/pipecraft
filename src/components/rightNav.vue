@@ -127,6 +127,7 @@ var Docker = require("dockerode");
 var socketPath =
   os.platform() === "win32" ? "//./pipe/docker_engine" : "/var/run/docker.sock";
 var docker = new Docker({ socketPath: socketPath });
+var JSONfn = require("json-fn");
 
 export default {
   name: "rightNav",
@@ -193,9 +194,9 @@ export default {
             if (this.$route.params.workflowName) {
               conf.push(this.$store.state[this.$route.params.workflowName]);
               conf.push(this.$route.params.workflowName);
-              confJson = JSON.stringify(conf);
+              confJson = JSONfn.stringify(conf);
             } else {
-              confJson = JSON.stringify(this.$store.state.selectedSteps);
+              confJson = JSONfn.stringify(this.$store.state.selectedSteps);
             }
             fs.writeFileSync(configSavePath, confJson);
           }
@@ -214,7 +215,7 @@ export default {
           if (result.canceled !== true) {
             let configLoadPath = slash(result.filePaths[0]);
             let configJSON = fs.readFileSync(configLoadPath);
-            let configObj = JSON.parse(configJSON);
+            let configObj = JSONfn.parse(configJSON);
             if (Object.keys(this.$store.state).includes(configObj[1])) {
               this.$store.commit("loadCustomWorkflow", configObj);
               this.$router.push(`/premade/${configObj[1]}`);
