@@ -26,9 +26,9 @@ minlen=$"--fastq_minlen ${min_length}"
 cores=$"--threads ${cores}"
 qmax=$"--fastq_qmax ${qmax}"
 qmin=$"--fastq_qmin ${qmin}"
-trunclen=$trunc_length
-maxlen=$max_length
-maxeerate=$maxee_rate
+trunc_length=${trunc_length}
+max_length=${max_length}
+maxee_rate=${maxee_rate}
 
 #Source for functions
 source /scripts/submodules/framework.functions.sh
@@ -36,17 +36,17 @@ source /scripts/submodules/framework.functions.sh
 output_dir=$"/input/qualFiltered_out"
 
 #additional options, if selection != undefined
-if [[ $maxlen == null ]]; then
+if [[ $max_length == null ]] || [[ -z $max_length ]]; then
     max_length=$""
 else
-    max_length=$"--fastq_maxlen $maxlen"
+    max_length=$"--fastq_maxlen $max_length"
 fi
-if [[ $maxeerate == null ]]; then
+if [[ $maxee_rate == null ]] || [[ -z $maxee_rate ]]; then
     maxee_rate=$""
 else
-    maxee_rate=$"--fastq_maxee_rate $maxeerate"
+    maxee_rate=$"--fastq_maxee_rate $maxee_rate"
 fi
-if [[ $trunclen == null ]]; then
+if [[ $trunc_length == null ]] || [[ -z $trunc_length ]]; then
     trunc_length=$""
 else
     trunc_length=$"--fastq_trunclen $trunc_length"
@@ -79,6 +79,19 @@ while read LINE; do
     ###############################
     mkdir -p tempdir
  
+    printf "vsearch --fastq_filter \
+    $inputR1.$newextension \
+    $maxee \
+    $maxns \
+    $trunc_length \
+    $minlen \
+    $cores \
+    $qmax \
+    $qmin \
+    $max_length \
+    $maxee_rate \
+    --fastqout tempdir/$inputR1.$newextension"
+
     #R1
     checkerror=$(vsearch --fastq_filter \
     $inputR1.$newextension \
@@ -154,17 +167,20 @@ end=$(date +%s)
 runtime=$((end-start))
 
 #Make README.txt file
-printf "Files in 'qualFiltered_out' directory represent quality filtered sequences in FASTQ format according to the selected options.
-Files in 'qualFiltered_out/FASTA' directory represent quality filtered sequences in FASTA format.
-If the quality of the data is sufficent after this step (check with QualityCheck module), then
-you may proceed with FASTA files only (however, note that FASTQ files are needed to assemble paired-end data).\n
+printf "# Quality filtering with vsearch.
+
+Files in 'qualFiltered_out':
+# *.$newextension           = quality filtered sequences in FASTQ format.
+# seq_count_summary.txt     = summary of sequence counts per sample.
+Files in 'qualFiltered_out/FASTA':
+# *.fasta                   = quality filtered sequences in FASTA format.
 
 Core commands -> 
 quality filtering: vsearch --fastq_filter input_file $maxee $maxns $trunc_length $minlen $cores $qmax $qmin $max_length $maxee_rate --fastqout output_file
 Synchronizing R1 and R2 reads: seqkit pair -1 inputR1 -2 inputR2
 
-\nSummary of sequence counts in 'seq_count_summary.txt'\n
-\n\nTotal run time was $runtime sec.\n\n\n
+Total run time was $runtime sec.
+
 ##################################################################
 ###Third-party applications for this process [PLEASE CITE]:
 #vsearch v2.18.0 for quality filtering

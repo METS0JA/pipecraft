@@ -33,10 +33,24 @@ output_dir=$"/input/qualFiltered_out"
 
 #additional options, if selection != undefined
 low_complex_filt=$low_complexity_filter
-if [[ $low_complex_filt == null ]]; then
+if [[ $low_complex_filt == null ]] || [[ -z $low_complex_filt ]]; then
     low_complexity_filter=$""
 else
     low_complexity_filter=$"--low_complexity_filter --complexity_threshold $low_complex_filt"
+fi
+
+trim_polyG=${trim_polyG}
+if [[ $trim_polyG == null ]] || [[ -z $trim_polyG ]]; then
+    trim_polyG=$"--disable_trim_poly_g "
+else
+    trim_polyG=$"--trim_poly_g --poly_g_min_len $trim_polyG"
+fi
+
+trim_polyX=${trim_polyX}
+if [[ $trim_polyX == null ]] || [[ -z $trim_polyX ]]; then
+    trim_polyX=$""
+else
+    trim_polyX=$"--trim_poly_x --poly_x_min_len $trim_polyX"
 fi
 
 #############################
@@ -69,6 +83,8 @@ for file in *.$extension; do
                        $required_qual \
                        $min_qual \
                        $min_qual_thresh \
+                       $trim_polyG \
+                       $trim_polyX \
                        $maxNs \
                        $min_length \
                        $max_length \
@@ -90,14 +106,17 @@ end=$(date +%s)
 runtime=$((end-start))
 
 #Make README.txt file
-printf "Files in 'qualFiltered_out' directory represent quality filtered sequences in FASTQ format according to the selected options.\n
+printf "# Quality filtering with fastp.
+
+Files in 'qualFiltered_out':
+# *.fastq               = quality filtered sequences per sample.
+# seq_count_summary.txt = summary of sequence counts per sample.
 
 Core command -> 
-fastp --in1 input --out1 output $window_size $required_qual $min_qual $min_qual_thresh $maxNs $min_length $max_length $trunc_length $aver_qual $cores --html fastp_report/sample_name.html --disable_adapter_trimming $low_complexity_filter
+fastp --in1 input --out1 output $window_size $required_qual $min_qual $min_qual_thresh $trim_polyG $trim_polyX $maxNs $min_length $max_length $trunc_length $aver_qual $cores --html fastp_report/sample_name.html --disable_adapter_trimming $low_complexity_filter
 
-\nSummary of sequence counts in 'seq_count_summary.txt'\n
+Total run time was $runtime sec.
 
-\nTotal run time was $runtime sec.\n
 ##################################################################
 ###Third-party applications for this process [PLEASE CITE]:
 #fastp v0.23.2

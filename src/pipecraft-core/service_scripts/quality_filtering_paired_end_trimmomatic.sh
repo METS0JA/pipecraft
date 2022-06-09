@@ -19,14 +19,14 @@
 ##########################################################
 
 #load variables
-extension=$fileFormat
-window_size=$window_size
-required_qual=$required_quality
-min_length=$min_length
-threads=$cores
-phred=$phred
-leading_qual_threshold=$leading_qual_threshold
-trailing_qual_threshold=$trailing_qual_threshold
+extension=${fileFormat}
+window_size=${window_size}
+required_qual=${required_quality}
+min_length=${min_length}
+threads=${cores}
+phred=${phred}
+leading_qual_threshold=${leading_qual_threshold}
+trailing_qual_threshold=${trailing_qual_threshold}
 
 #Source for functions
 source /scripts/submodules/framework.functions.sh
@@ -34,13 +34,13 @@ source /scripts/submodules/framework.functions.sh
 output_dir=$"/input/qualFiltered_out"
 
 #additional options, if selection != undefined
-if [[ $leading_qual_threshold == null ]]; then
-    :
+if [[ $leading_qual_threshold == null ]] || [[ -z $leading_qual_threshold ]]; then
+    LEADING=$""
 else
     LEADING=$"LEADING:$leading_qual_threshold"
 fi
-if [[ $trailing_qual_threshold == null ]]; then
-    :
+if [[ $trailing_qual_threshold == null ]] || [[ -z $trailing_qual_threshold ]]; then
+    TRAILING=$""
 else
     TRAILING=$"TRAILING:$trailing_qual_threshold"
 fi
@@ -106,17 +106,22 @@ printf "Files in /discarded folder represent sequences that did not pass quality
 If no files in this folder, then all sequences were passed to files in $output_dir directory" > $output_dir/untrimmed/README.txt
 
 #Make README.txt file
-printf "Files in 'qualFiltered_out' directory represent quality filtered sequences in FASTQ format according to the selected options.
-Files in 'qualFiltered_out/FASTA' directory represent quality filtered sequences in FASTA format.
-If the quality of the data is sufficent after this step (check with QualityCheck module), then
-you may proceed with FASTA files only (however, note that FASTQ files are needed to assemble paired-end data).\n
+printf "# Quality filtering with trimmomatic.
+
+Files in 'qualFiltered_out':
+# *.$newextension           = quality filtered sequences in FASTQ format.
+# seq_count_summary.txt     = summary of sequence counts per sample.
+Files in 'qualFiltered_out/FASTA':
+# *.fasta                   = quality filtered sequences in FASTA format.
+Files in 'qualFiltered_out/discarded':
+# *.discarded.$newextension = discarded sequences.
 
 Core commands -> 
 quality filtering: trimmomatic-0.39.jar PE inputR1 inputR2 outputR1 discarded/outputR1.discarded outputR2 discarded/outputR2.discarded $LEADING $TRAILING -phred$phred SLIDINGWINDOW:$window_size:$required_qual MINLEN:$min_length -threads $threads
 convert output fastq files to FASTA: seqkit fq2fa -t dna --line-width 0 input_file -o FASTA/output_file.fasta
 
-\nSummary of sequence counts in 'seq_count_summary.txt'\n
-\nTotal run time was $runtime sec.\n\n
+Total run time was $runtime sec.
+
 ##################################################################
 ###Third-party applications for this process [PLEASE CITE]:
 #trimmomatic v0.39 for quality filtering

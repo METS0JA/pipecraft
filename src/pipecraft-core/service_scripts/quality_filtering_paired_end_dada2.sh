@@ -140,13 +140,13 @@ end=$(date +%s)
 runtime=$((end-start))
 
 #Make README.txt file
-printf "# Quality filtering of PAIRED-END sequencing data with dada2.
+printf "# Quality filtering with dada2.
 
 Files in 'qualFiltered_out':
-# *_filt.fastq          = quality filtered sequences per sample in FASTQ format
-# seq_count_summary.txt = summary of sequence counts per sample
-# FASTA/*_filt.fasta    = quality filtered sequences per sample in FASTA format
-# (*.rds = R objects for dada2, you may delete these files if present)
+# *_filt.fastq          = quality filtered sequences per sample in FASTQ format.
+# seq_count_summary.txt = summary of sequence counts per sample.
+# FASTA/*_filt.fasta    = quality filtered sequences per sample in FASTA format.
+# (*.rds = R objects for dada2, you may delete these files if present).
 
 Core command -> 
 filterAndTrim(inputR1, outputR1, inputR2, outputR2, maxN = $maxN, maxEE = c($maxEE, $maxEE), truncQ = $truncQ, truncLen= c($truncLen_R1, $truncLen_R2), maxLen = $maxLen, minLen = $minLen, minQ=$minQ, rm.phix = TRUE, compress = FALSE, multithread = TRUE)
