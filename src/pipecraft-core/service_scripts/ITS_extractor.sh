@@ -61,7 +61,7 @@ source /scripts/submodules/framework.functions.sh
 #output dir
 output_dir=$"/input/ITSx_out"
 #python module for removing empty fasta records if using --partial
-run_python_module=$"python /scripts/submodules/remove_empty_seqs.py"
+run_python_module=$"python3 /scripts/submodules/remove_empty_seqs.py"
 
 #############################
 ### Start of the workflow ###
@@ -148,9 +148,8 @@ for file in *.$extension; do
         check_app_error
         mv tempdir/$input..SSU.full_and_partial.redundant.fasta $output_dir
         mkdir -p $output_dir/SSU/full_and_partial
-        Rlog=$($run_python_module $output_dir/$input..SSU.full_and_partial.redundant.fasta $output_dir/SSU/full_and_partial/$input.SSU.full_and_partial.fasta 2>&1)
-        echo $Rlog > $output_dir/python.log 
-        # rm $output_dir/$input..SSU.full_and_partial.redundant.fasta
+        $run_python_module $output_dir/$input..SSU.full_and_partial.redundant.fasta $output_dir/SSU/full_and_partial/$input.SSU.full_and_partial.fasta
+        rm $output_dir/$input..SSU.full_and_partial.redundant.fasta
     fi
 
     if [[ -s tempdir/$input..ITS1.fasta ]]; then
@@ -168,7 +167,7 @@ for file in *.$extension; do
         mv tempdir/$input..ITS1.full_and_partial.redundant.fasta $output_dir
         mkdir -p $output_dir/ITS1/full_and_partial
         $run_python_module $output_dir/$input..ITS1.full_and_partial.redundant.fasta $output_dir/ITS1/full_and_partial/$input.ITS1.full_and_partial.fasta
-        # rm $output_dir/$input..ITS1.full_and_partial.redundant.fasta
+        rm $output_dir/$input..ITS1.full_and_partial.redundant.fasta
     fi
 
     if [[ -s tempdir/$input..5_8S.fasta ]]; then
@@ -186,7 +185,7 @@ for file in *.$extension; do
         mv tempdir/$input..5_8S.full_and_partial.redundant.fasta $output_dir
         mkdir -p $output_dir/5_8S/full_and_partial
         $run_python_module $output_dir/$input..5_8S.full_and_partial.redundant.fasta $output_dir/5_8S/full_and_partial/$input.5_8S.full_and_partial.fasta
-        # rm $output_dir/$input..5_8S.full_and_partial.redundant.fasta
+        rm $output_dir/$input..5_8S.full_and_partial.redundant.fasta
     fi
 
     if [[ -s tempdir/$input..ITS2.fasta ]]; then
@@ -204,7 +203,7 @@ for file in *.$extension; do
         mv tempdir/$input..ITS2.full_and_partial.redundant.fasta $output_dir
         mkdir -p $output_dir/ITS2/full_and_partial
         $run_python_module $output_dir/$input..ITS2.full_and_partial.redundant.fasta $output_dir/ITS2/full_and_partial/$input.ITS2.full_and_partial.fasta
-        # rm $output_dir/$input..ITS2.full_and_partial.redundant.fasta
+        rm $output_dir/$input..ITS2.full_and_partial.redundant.fasta
     fi
 
     if [[ -s tempdir/$input..LSU.fasta ]]; then
@@ -222,7 +221,7 @@ for file in *.$extension; do
         mv tempdir/$input..LSU.full_and_partial.redundant.fasta $output_dir
         mkdir -p $output_dir/LSU/full_and_partial
         $run_python_module $output_dir/$input..LSU.full_and_partial.redundant.fasta $output_dir/LSU/full_and_partial/$input.LSU.full_and_partial.fasta
-        # rm $output_dir/$input..LSU.full_and_partial.redundant.fasta
+        rm $output_dir/$input..LSU.full_and_partial.redundant.fasta
     fi
 
     if [[ -s tempdir/$input..full.fasta ]]; then
@@ -240,7 +239,7 @@ for file in *.$extension; do
         mv tempdir/$input..full_and_partial.redundant.fasta $output_dir
         mkdir -p $output_dir/full_ITS/full_and_partial
         $run_python_module $output_dir/$input..full_and_partial.redundant.fasta $output_dir/full_ITS/full_and_partial/$input.full_and_partial.fasta
-        # rm $output_dir/$input..full_and_partial.redundant.fasta
+        rm $output_dir/$input..full_and_partial.redundant.fasta
     fi
         #no detections
     if [[ -s tempdir/$input._no_detections.fasta ]]; then
@@ -313,7 +312,7 @@ Input FASTA files (converted from FASTQ) are in ITSx_out/input_FASTA_files direc
 Core command -> 
 ITSx -i input.unique.seqs -o output --preserve T --graphical F $organisms $partial $regions $cores $eval $score $domains $complement_in $only_full_in $truncate_in
 
-\nTotal run time was $runtime sec.\n\n
+Total run time was $runtime sec.\n\n
 ##################################################################
 ###Third-party applications for this process [PLEASE CITE]:
 #ITSx v1.1.3 for extracting ITS regions
