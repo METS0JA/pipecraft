@@ -349,7 +349,7 @@ export default new Vuex.Store({
                 value: null,
                 disabled: "never",
                 tooltip:
-                  "discard sequences with more than the specified number of bases. Note that if 'trunc length' setting is specified, then 'max length' SHOULD NOT be lower than 'trunc lenght' (otherwise all reads are discared)",
+                  "discard sequences with more than the specified number of bases. Note that if 'trunc length' setting is specified, then 'max length' SHOULD NOT be lower than 'trunc lenght' (otherwise all reads are discared) [empty field = no action taken]",
                 type: "numeric",
                 rules: [
                   (v) =>
@@ -380,7 +380,7 @@ export default new Vuex.Store({
                 value: null,
                 disabled: "never",
                 tooltip:
-                  "discard sequences with more than the specified number of expected errors per base",
+                  "discard sequences with more than the specified number of expected errors per base (empty field = no action taken)",
                 type: "numeric",
                 rules: [
                   (v) =>
@@ -431,7 +431,7 @@ export default new Vuex.Store({
                 value: null,
                 disabled: "never",
                 tooltip:
-                  "truncate sequences to the specified length. Shorter sequences are discarded; thus if specified, check that 'min length' setting is lower than 'trunc length' ('min lenght' therefore has basically no effect)",
+                  "truncate sequences to the specified length. Shorter sequences are discarded; thus if specified, check that 'min length' setting is lower than 'trunc length' ('min lenght' therefore has basically no effect) [empty field = no action taken]",
                 type: "numeric",
                 rules: [
                   (v) =>
@@ -454,7 +454,7 @@ export default new Vuex.Store({
                 value: null,
                 disabled: "never",
                 tooltip:
-                  "quality score threshold to remove low quality bases from the beginning of the read. As long as a base has a value below this threshold the base is removed and the next base will be investigated",
+                  "quality score threshold to remove low quality bases from the beginning of the read. As long as a base has a value below this threshold the base is removed and the next base will be investigated (empty field = no action taken)",
                 type: "numeric",
                 rules: [
                   (v) =>
@@ -467,7 +467,7 @@ export default new Vuex.Store({
                 value: null,
                 disabled: "never",
                 tooltip:
-                  "quality score threshold to remove low quality bases from the end of the read. As long as a base has a value below this threshold the base is removed and the next base will be investigated",
+                  "quality score threshold to remove low quality bases from the end of the read. As long as a base has a value below this threshold the base is removed and the next base will be investigated (empty field = no action taken)",
                 type: "numeric",
                 rules: [
                   (v) =>
@@ -530,6 +530,32 @@ export default new Vuex.Store({
             selected: false,
             showExtra: false,
             extraInputs: [
+              {
+                name: "trim_polyG",
+                value: 12,
+                disabled: "never",
+                tooltip:
+                  "specify the minimum length for polyG tail trimming. Useful for Illumina NextSeq/NovaSeq data, where read tails contain multiple Gs, which means no signal in the Illumina two-color systems (empty field = disable_trim_poly_g)",
+                type: "numeric",
+                rules: [
+                  (v) =>
+                    (v >= 1) | (v == "") ||
+                    "ERROR: specify values >= 1 or leave it empty (=> --disable_trim_poly_g)",
+                ],
+              },
+              {
+                name: "trim_polyX",
+                value: null,
+                disabled: "never",
+                tooltip:
+                  "specify the minimum length to trim polyX (i.e. multiple A, T or Cs) in the read tail (empty field = no action taken)",
+                type: "numeric",
+                rules: [
+                  (v) =>
+                    (v >= 1) | (v == "") ||
+                    "ERROR: specify values >= 1 or leave it empty (= no action)",
+                ],
+              },
               {
                 name: "max_length",
                 value: 0,
