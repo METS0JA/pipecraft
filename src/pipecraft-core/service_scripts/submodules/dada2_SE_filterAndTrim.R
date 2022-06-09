@@ -27,7 +27,7 @@ print(fnFs)
 sample_names = sapply(strsplit(basename(fnFs), fileFormat), `[`, 1)
 
 #filtered files path
-filtFs = file.path(path_results, paste0(sample_names, "filt.", fileFormat))
+filtFs = file.path(path_results, paste0(sample_names, "filt.", "fastq"))
 
 names(filtFs) = sample_names
 print(filtFs)

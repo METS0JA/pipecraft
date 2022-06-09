@@ -86,7 +86,7 @@ Total run time was $runtime sec.
 ##########################################################
 ###Third-party applications [PLEASE CITE]:
 #dada2 v1.20
-#citation: Callahan, B., McMurdie, P., Rosen, M. et al. (2016) DADA2: High-resolution sample inference from Illumina amplicon data. Nat Methods 13, 581-583. https://doi.org/10.1038/nmeth.3869
+    #citation: Callahan, B., McMurdie, P., Rosen, M. et al. (2016) DADA2: High-resolution sample inference from Illumina amplicon data. Nat Methods 13, 581-583. https://doi.org/10.1038/nmeth.3869
 ##################################################################" > $output_dir/README.txt
 
 #Done

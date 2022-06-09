@@ -162,7 +162,7 @@ Total run time was $runtime sec.
 ###Third-party applications [PLEASE CITE]:
 #DEICODE v0.2.4
     #citation: Martino C., Morton J.T., Marotz C.A., Thompson L.R., Tripathi A., Knight R., et al. (2019). A Novel Sparse Compositional Technique Reveals Microbial Perturbations. mSystems. doi: 10.1128/mSystems.00016-19. 
-#biom-format v2.1.12
+#biom-format v2.1.12 (for preparing BIOM file)
     #citation: McDonald D., Clemente J.C., Kuczynski J., Rideout J.R., Stombaugh J., Wendel D., et al. (2012). The Biological Observation Matrix (BIOM) format or: how I learned to stop worrying and love the ome-ome. GigaScience 1, 2047-217X-1–7. doi: 10.1186/2047-217X-1-7.
 ##################################################################" > $output_dir/README.txt
 

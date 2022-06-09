@@ -31,6 +31,14 @@ source /scripts/submodules/framework.functions.sh
 #output dirs
 output_dir=$"/input/denoised_assembled.dada2"
 
+### Check that at least 2 samples are provided
+files=$(ls $workingDir | grep -c "$extension")
+if [[ $files < 4 ]]; then
+    printf '%s\n' "ERROR]: please provide at least 2 samples for the ASVs workflow
+>Quitting" >&2
+    end_process
+fi
+
 #############################
 ### Start of the workflow ###
 #############################

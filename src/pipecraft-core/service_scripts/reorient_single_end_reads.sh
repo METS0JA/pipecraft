@@ -132,8 +132,6 @@ RUNNING THE PROCESS SEVERAL TIMES IN THE SAME DIRECTORY WILL OVERWRITE ALL OUTPU
 ###Third-party applications for this process [PLEASE CITE]:
 #seqkit v2.0.0 for manipulating reads
     #citation: Shen W, Le S, Li Y, Hu F (2016) SeqKit: A Cross-Platform and Ultrafast Toolkit for FASTA/Q File Manipulation. PLOS ONE 11(10): e0163962. https://doi.org/10.1371/journal.pone.0163962
-    #Distributed under the MIT License
-    #Copyright © 2016-2019 Wei Shen, 2019 Oxford Nanopore Technologies.
     #https://bioinf.shenwei.me/seqkit/
 #fqgrep v0.4.4 for finding primer strings
     #Copyright (c) 2011-2016, Indraniel Das

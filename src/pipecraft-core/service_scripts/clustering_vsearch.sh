@@ -210,13 +210,9 @@ Total run time was $runtime sec.\n\n
 ###Third-party applications for this process [PLEASE CITE]:
 #vsearch v2.18.0 for clustering
     #citation: Rognes T, Flouri T, Nichols B, Quince C, Mahé F (2016) VSEARCH: a versatile open source tool for metagenomics PeerJ 4:e2584
-    #Copyright (C) 2014-2021, Torbjorn Rognes, Frederic Mahe and Tomas Flouri
-    #Distributed under the GNU General Public License version 3 by the Free Software Foundation
     #https://github.com/torognes/vsearch
 #GNU Parallel 20210422 for job parallelisation 
     #Citation: Tange, O. (2021, April 22). GNU Parallel 20210422 ('Ever Given'). Zenodo. https://doi.org/10.5281/zenodo.4710607
-    #Copyright (C) 2007-2021 Ole Tange, http://ole.tange.dk and Free Software Foundation, Inc.
-    #Distributed under the License GPLv3+
 ##########################################################" > $output_dir/README.txt
 
 #Done

@@ -20,15 +20,6 @@ truncLen_R2 = as.numeric(Sys.getenv('truncLen_R2'))
 minLen = as.numeric(Sys.getenv('minLen'))
 maxLen = as.numeric(Sys.getenv('maxLen'))
 minQ = as.numeric(Sys.getenv('minQ'))
-matchIDs = Sys.getenv('matchIDs')
-
-#"FALSE" or "TRUE" to FALSE or TRUE for dada2
-if (matchIDs == "false" || matchIDs == "FALSE"){
-    matchIDs = FALSE
-}
-if (matchIDs == "true" || matchIDs == "TRUE"){
-    matchIDs = TRUE
-}
 
 #output path
 path_results = "/input/qualFiltered_out"
@@ -42,8 +33,8 @@ print(fnRs)
 sample_names = sapply(strsplit(basename(fnFs), samp_ID), `[`, 1)
 
 #filtered files path
-filtFs = file.path(path_results, paste0(sample_names, "_R1_filt.", fileFormat))
-filtRs = file.path(path_results, paste0(sample_names, "_R2_filt.", fileFormat))
+filtFs = file.path(path_results, paste0(sample_names, "_R1_filt.", "fastq"))
+filtRs = file.path(path_results, paste0(sample_names, "_R2_filt.", "fastq"))
 names(filtFs) = sample_names
 names(filtRs) = sample_names
 print(filtFs)
@@ -59,7 +50,7 @@ qfilt = filterAndTrim(fnFs, filtFs, fnRs, filtRs,
                     minLen = minLen, 
                     minQ = minQ, 
                     rm.phix = TRUE, 
-                    matchIDs = matchIDs,
+                    matchIDs = FALSE,
                     compress = FALSE, 
                     multithread = TRUE)
 

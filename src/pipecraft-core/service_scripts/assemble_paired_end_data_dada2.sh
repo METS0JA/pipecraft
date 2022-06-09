@@ -35,6 +35,14 @@ source /scripts/submodules/framework.functions.sh
 #output dir
 output_dir=$"/input/denoised_assembled.dada2"
 
+### Check that at least 2 samples are provided
+files=$(ls $workingDir | grep -c "$extension")
+if [[ $files < 4 ]]; then
+    printf '%s\n' "ERROR]: please provide at least 2 samples for the ASVs workflow
+>Quitting" >&2
+    end_process
+fi
+
 #############################
 ### Start of the workflow ###
 #############################
@@ -115,10 +123,10 @@ runtime=$((end-start))
 printf "# Denoising and assembling of PAIRED-END sequencing data with dada2.
 
 Files in 'denoised_assembled.dada2':
-# *.merged_ASVs.fasta   = denoised and assembled ASVs per sample. 'Size' denotes the abundance of the ASV sequence.  
+# *.fasta   = denoised and assembled sequences per sample in FASTA format (no fastq output). 'Size' denotes the abundance of the ASV sequence.  
 # Error_rates_R1.pdf    = plots for estimated R1 error rates
 # Error_rates_R2.pdf    = plots for estimated R2 error rates
-# seq_count_summary.txt = summary of sequence and ASV counts per sample
+# seq_count_summary.txt = summary of sequence counts per sample
 
 Core commands -> 
 learn errors: err = learnErrors(input)

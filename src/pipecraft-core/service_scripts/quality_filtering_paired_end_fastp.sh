@@ -117,8 +117,6 @@ fastp --in1 inputR1 --in2 inputR2 --out1 outputR1 --out2 outputR2 $window_size $
 ###Third-party applications for this process [PLEASE CITE]:
 #fastp v0.23.2
     #citation: Shifu Chen, Yanqing Zhou, Yaru Chen, Jia Gu; fastp: an ultra-fast all-in-one FASTQ preprocessor, Bioinformatics, Volume 34, Issue 17, 1 September 2018, Pages i884–i890, https://doi.org/10.1093/bioinformatics/bty560
-    #Copyright (c) 2016 OpenGene - Open Source Genetics Toolbox
-    #Distributed under the MIT License
     #https://github.com/OpenGene/fastp
 ########################################################" > $output_dir/README.txt
 

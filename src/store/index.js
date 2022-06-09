@@ -705,7 +705,7 @@ export default new Vuex.Store({
                 value: true,
                 disabled: "single_end",
                 tooltip:
-                  "applies only for paired-end data. If TRUE, only paired reads that share ids are outputted",
+                  "applies only for paired-end data. If TRUE, then double-checking (with seqkit pair) that only paired reads that share ids are outputted",
                   type: "bool",
               },
             ],
@@ -862,7 +862,7 @@ export default new Vuex.Store({
           },
           {
             tooltip:
-              "assemble paired-end reads with DADA2 'mergePairs' function. This step performs also dada denoising!",
+              "assemble paired-end reads with DADA2 'mergePairs' function. This step performs also dada denoising! Note that only FASTA is outputted!",
             scriptName: "assemble_paired_end_data_dada2.sh",
             imageName: "pipecraft/dada2:1.20",
             serviceName: "DADA2 denoise and merge",
@@ -2899,7 +2899,7 @@ export default new Vuex.Store({
             value: true,
             disabled: "single_end",
             tooltip:
-              "applies only for paired-end data. If TRUE, only paired reads that share ids are outputted",
+              "applies only for paired-end data. If TRUE, then double-checking (with seqkit pair) that only paired reads that share ids are outputted",
               type: "bool",
           },
         ],

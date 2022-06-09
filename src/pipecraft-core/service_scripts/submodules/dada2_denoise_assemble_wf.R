@@ -7,7 +7,7 @@ library('dada2')
 
 #load env variables
 readType = Sys.getenv('readType')
-fileFormat = Sys.getenv('fileFormat')
+fileFormat=" Sys.getenv('fileFormat')"
 dataFormat = Sys.getenv('dataFormat')
 workingDir = Sys.getenv('workingDir')
 

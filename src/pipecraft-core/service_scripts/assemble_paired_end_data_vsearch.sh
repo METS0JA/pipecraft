@@ -128,8 +128,6 @@ vsearch --fastq_mergepairs inputR1 --reverse inputR2 $fastq_minoverlen $fastq_mi
 ###Third-party applications for this process [PLEASE CITE]:
 #vsearch v2.18.0 for assembling paired-end reads
     #citation: Rognes T, Flouri T, Nichols B, Quince C, Mahé F (2016) VSEARCH: a versatile open source tool for metagenomics PeerJ 4:e2584
-    #Copyright (C) 2014-2021, Torbjorn Rognes, Frederic Mahe and Tomas Flouri
-    #Distributed under the GNU General Public License version 3 by the Free Software Foundation
     #https://github.com/torognes/vsearch
 ##########################################################" > $output_dir/README.txt
 

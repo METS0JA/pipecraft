@@ -56,17 +56,12 @@ else
     truncate_in=$"--truncate T"
 fi
 
-echo $complement
-echo $only_full
-echo $truncate
-echo $eval
-
 # Source for functions
 source /scripts/submodules/framework.functions.sh
 #output dir
 output_dir=$"/input/ITSx_out"
 #python module for removing empty fasta records if using --partial
-run_python_module=$"python3 /scripts/submodules/remove_empty_seqs.py"
+run_python_module=$"python /scripts/submodules/remove_empty_seqs.py"
 
 #############################
 ### Start of the workflow ###
@@ -152,9 +147,10 @@ for file in *.$extension; do
         checkerror=$(mothur "#deunique.seqs(fasta=tempdir/$input..SSU.full_and_partial.fasta, name=tempdir/$input.names)" 2>&1)
         check_app_error
         mv tempdir/$input..SSU.full_and_partial.redundant.fasta $output_dir
-        $run_python_module $output_dir/$input..SSU.full_and_partial.redundant.fasta $output_dir/$input.SSU.full_and_partial.fasta
         mkdir -p $output_dir/SSU/full_and_partial
-        mv $output_dir/$input.SSU.full_and_partial.fasta $output_dir/SSU/full_and_partial
+        Rlog=$($run_python_module $output_dir/$input..SSU.full_and_partial.redundant.fasta $output_dir/SSU/full_and_partial/$input.SSU.full_and_partial.fasta 2>&1)
+        echo $Rlog > $output_dir/python.log 
+        # rm $output_dir/$input..SSU.full_and_partial.redundant.fasta
     fi
 
     if [[ -s tempdir/$input..ITS1.fasta ]]; then
@@ -170,9 +166,9 @@ for file in *.$extension; do
         checkerror=$(mothur "#deunique.seqs(fasta=tempdir/$input..ITS1.full_and_partial.fasta, name=tempdir/$input.names)" 2>&1)
         check_app_error
         mv tempdir/$input..ITS1.full_and_partial.redundant.fasta $output_dir
-        $run_python_module $output_dir/$input..ITS1.full_and_partial.redundant.fasta $output_dir/$input.ITS1.full_and_partial.fasta
         mkdir -p $output_dir/ITS1/full_and_partial
-        mv $output_dir/$input.ITS1.full_and_partial.fasta $output_dir/ITS1/full_and_partial
+        $run_python_module $output_dir/$input..ITS1.full_and_partial.redundant.fasta $output_dir/ITS1/full_and_partial/$input.ITS1.full_and_partial.fasta
+        # rm $output_dir/$input..ITS1.full_and_partial.redundant.fasta
     fi
 
     if [[ -s tempdir/$input..5_8S.fasta ]]; then
@@ -188,9 +184,9 @@ for file in *.$extension; do
         checkerror=$(mothur "#deunique.seqs(fasta=tempdir/$input..5_8S.full_and_partial.fasta, name=tempdir/$input.names)" 2>&1)
         check_app_error
         mv tempdir/$input..5_8S.full_and_partial.redundant.fasta $output_dir
-        $run_python_module $output_dir/$input..5_8S.full_and_partial.redundant.fasta $output_dir/$input.5_8S.full_and_partial.fasta
         mkdir -p $output_dir/5_8S/full_and_partial
-        mv $output_dir/$input.5_8S.full_and_partial.fasta $output_dir/5_8S/full_and_partial
+        $run_python_module $output_dir/$input..5_8S.full_and_partial.redundant.fasta $output_dir/5_8S/full_and_partial/$input.5_8S.full_and_partial.fasta
+        # rm $output_dir/$input..5_8S.full_and_partial.redundant.fasta
     fi
 
     if [[ -s tempdir/$input..ITS2.fasta ]]; then
@@ -206,9 +202,9 @@ for file in *.$extension; do
         checkerror=$(mothur "#deunique.seqs(fasta=tempdir/$input..ITS2.full_and_partial.fasta, name=tempdir/$input.names)" 2>&1)
         check_app_error
         mv tempdir/$input..ITS2.full_and_partial.redundant.fasta $output_dir
-        $run_python_module $output_dir/$input..ITS2.full_and_partial.redundant.fasta $output_dir/$input.ITS2.full_and_partial.fasta
         mkdir -p $output_dir/ITS2/full_and_partial
-        mv $output_dir/$input.ITS2.full_and_partial.fasta $output_dir/ITS2/full_and_partial
+        $run_python_module $output_dir/$input..ITS2.full_and_partial.redundant.fasta $output_dir/ITS2/full_and_partial/$input.ITS2.full_and_partial.fasta
+        # rm $output_dir/$input..ITS2.full_and_partial.redundant.fasta
     fi
 
     if [[ -s tempdir/$input..LSU.fasta ]]; then
@@ -224,9 +220,9 @@ for file in *.$extension; do
         checkerror=$(mothur "#deunique.seqs(fasta=tempdir/$input..LSU.full_and_partial.fasta, name=tempdir/$input.names)" 2>&1)
         check_app_error
         mv tempdir/$input..LSU.full_and_partial.redundant.fasta $output_dir
-        $run_python_module $output_dir/$input..LSU.full_and_partial.redundant.fasta $output_dir/$input.LSU.full_and_partial.fasta
         mkdir -p $output_dir/LSU/full_and_partial
-        mv $output_dir/$input.LSU.full_and_partial.fasta $output_dir/LSU/full_and_partial
+        $run_python_module $output_dir/$input..LSU.full_and_partial.redundant.fasta $output_dir/LSU/full_and_partial/$input.LSU.full_and_partial.fasta
+        # rm $output_dir/$input..LSU.full_and_partial.redundant.fasta
     fi
 
     if [[ -s tempdir/$input..full.fasta ]]; then
@@ -242,9 +238,9 @@ for file in *.$extension; do
         checkerror=$(mothur "#deunique.seqs(fasta=tempdir/$input..full_and_partial.fasta, name=tempdir/$input.names)" 2>&1)
         check_app_error
         mv tempdir/$input..full_and_partial.redundant.fasta $output_dir
-        $run_python_module $output_dir/$input..full_and_partial.redundant.fasta $output_dir/$input.full_and_partial.fasta
         mkdir -p $output_dir/full_ITS/full_and_partial
-        mv $output_dir/$input.full_and_partial.fasta $output_dir/full_ITS/full_and_partial
+        $run_python_module $output_dir/$input..full_and_partial.redundant.fasta $output_dir/full_ITS/full_and_partial/$input.full_and_partial.fasta
+        # rm $output_dir/$input..full_and_partial.redundant.fasta
     fi
         #no detections
     if [[ -s tempdir/$input._no_detections.fasta ]]; then
@@ -322,18 +318,12 @@ ITSx -i input.unique.seqs -o output --preserve T --graphical F $organisms $parti
 ###Third-party applications for this process [PLEASE CITE]:
 #ITSx v1.1.3 for extracting ITS regions
     #citation: Bengtsson-Palme J., et al., 2013. Improved software detection and extraction of ITS1 and ITS2 from ribosomal ITS sequences of fungi and other eukaryotes for analysis of environmental sequencing data. Methods in Ecology and Evolution 4, 914-919.
-    #Copyright (C) 2012-2021 Johan Bengtsson-Palme et al.
-    #Distributed under the GNU General Public License
     #microbiology.se/software/itsx/
 #seqkit v2.0.0 for converting fastq to fasta (if input was fastq)
     #citation: Shen W, Le S, Li Y, Hu F (2016) SeqKit: A Cross-Platform and Ultrafast Toolkit for FASTA/Q File Manipulation. PLOS ONE 11(10): e0163962. https://doi.org/10.1371/journal.pone.0163962
-    #Distributed under the MIT License
-    #Copyright © 2016-2019 Wei Shen, 2019 Oxford Nanopore Technologies.
     #https://bioinf.shenwei.me/seqkit/
 #mothur 1.46.1 for unique and deunique sequences prior and after extraction
     #citation: Schloss, P.D., et al., Introducing mothur: Open-source, platform-independent, community-supported software for describing and comparing microbial communities. Appl Environ Microbiol, 2009. 75(23):7537-41
-    #Distributed under the GNU GENERAL PUBLIC LICENSE
-    #Copyright © 2007 Free Software Foundation, Inc. http://fsf.org/
     #https://github.com/mothur/mothur
 ##################################################################" > $output_dir/README.txt
 

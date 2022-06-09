@@ -10,6 +10,11 @@
     #Copyright (C) 2007 Free Software Foundation, Inc.
     #Distributed under the GNU LESSER GENERAL PUBLIC LICENSE
     #https://github.com/benjjneb/dada2
+#seqkit v2.0.0
+    #citation: Shen W, Le S, Li Y, Hu F (2016) SeqKit: A Cross-Platform and Ultrafast Toolkit for FASTA/Q File Manipulation. PLOS ONE 11(10): e0163962. https://doi.org/10.1371/journal.pone.0163962
+    #Distributed under the MIT License
+    #Copyright © 2016-2019 Wei Shen, 2019 Oxford Nanopore Technologies.
+    #https://bioinf.shenwei.me/seqkit/
 ##########################################################
 
 #load env variables
@@ -45,6 +50,15 @@ start=$(date +%s)
 first_file_check
 ### Prepare working env and check paired-end data
 prepare_PE_env
+### Check file formatting for FASTQ 
+if [[ $extension == "fastq" ]] || [[ $extension == "fq" ]] || [[ $extension == "fastq.gz" ]] || [[ $extension == "fq.gz" ]]; then
+    :
+else
+    printf '%s\n' "ERROR]: $file formatting not supported here!
+Supported extensions: fastq, fq (and gz or zip compressed formats).
+>Quitting" >&2
+    end_process
+fi
 
 #Check identifiers
 if [[ -z $read_R1 ]] || [[ -z $read_R2 ]] || [[ -z $samp_ID ]]; then
@@ -70,6 +84,38 @@ echo $Rlog > $output_dir/R_run.log
 wait
 printf "\n DADA2 filterAndTrim completed \n"
 
+
+### Synchronizing R1 and R2 reads fi $matchIDs == "true"
+if [[ $matchIDs == "true" ]] || [[ $matchIDs == "TRUE" ]]; then
+    while read LINE; do
+        #Read in R1 and R2 file names; without extension
+        inputR1=$(echo $LINE | sed -e "s/.$extension//")
+        inputR2=$(echo $inputR1 | sed -e 's/R1/R2/')
+        #If outputs are not empty, then synchronize R1 and R2
+        if [[ -s $output_dir/$inputR1\_filt.fastq ]]; then
+            if [[ -s $output_dir/$inputR2\_filt.fastq ]]; then
+                printf "\nSynchronizing R1 and R2 reads (matching order for paired-end reads merging)\n"
+                cd $output_dir
+                checkerror=$(seqkit pair -1 $inputR1\_filt.fastq -2 $inputR2\_filt.fastq 2>&1)
+                check_app_error
+
+                rm $inputR1\_filt.fastq
+                rm $inputR2\_filt.fastq
+                mv $inputR1\_filt.paired.fastq $inputR1\_filt.fastq
+                mv $inputR2\_filt.paired.fastq $inputR2\_filt.fastq
+                cd ..
+
+                #Convert output fastq files to FASTA
+                mkdir -p $output_dir/FASTA
+                checkerror=$(seqkit fq2fa -t dna --line-width 0 $output_dir/$inputR1\_filt.fastq -o $output_dir/FASTA/$inputR1\_filt.fasta 2>&1)
+                check_app_error
+                checkerror=$(seqkit fq2fa -t dna --line-width 0 $output_dir/$inputR2\_filt.fastq -o $output_dir/FASTA/$inputR1\_filt.fasta 2>&1)
+                check_app_error
+            fi
+        fi
+    done < tempdir2/paired_end_files.txt
+fi
+
 #################################################
 ### COMPILE FINAL STATISTICS AND README FILES ###
 #################################################
@@ -79,14 +125,28 @@ fi
 if [[ -f $output_dir/R_run.log ]]; then
     rm -f $output_dir/R_run.log
 fi
+
+### end pipe if no outputs were generated
+outfile_check=$(ls $output_dir/*.fastq 2>/dev/null | wc -l)
+if [[ $outfile_check != 0 ]]; then 
+    :
+else 
+    printf '%s\n' "ERROR]: no output files generated after quality filtering ($output_dir). Adjust settings.
+    >Quitting" >&2
+    end_process
+fi
+
 end=$(date +%s)
 runtime=$((end-start))
 
 #Make README.txt file
 printf "# Quality filtering of PAIRED-END sequencing data with dada2.
 
-Files in 'qualFiltered_out' directory represent quality filtered sequences in FASTQ format according to the selected options.
+Files in 'qualFiltered_out':
+# *_filt.fastq          = quality filtered sequences per sample in FASTQ format
 # seq_count_summary.txt = summary of sequence counts per sample
+# FASTA/*_filt.fasta    = quality filtered sequences per sample in FASTA format
+# (*.rds = R objects for dada2, you may delete these files if present)
 
 Core command -> 
 filterAndTrim(inputR1, outputR1, inputR2, outputR2, maxN = $maxN, maxEE = c($maxEE, $maxEE), truncQ = $truncQ, truncLen= c($truncLen_R1, $truncLen_R2), maxLen = $maxLen, minLen = $minLen, minQ=$minQ, rm.phix = TRUE, compress = FALSE, multithread = TRUE)
@@ -97,6 +157,9 @@ Total run time was $runtime sec.
 #dada2 v1.20
     #citation: Callahan, B., McMurdie, P., Rosen, M. et al. (2016) DADA2: High-resolution sample inference from Illumina amplicon data. Nat Methods 13, 581-583. https://doi.org/10.1038/nmeth.3869
     #https://github.com/benjjneb/dada2
+#seqkit v2.0.0 for synchronizing R1 and R2 after filtering (when matchIDs = TRUE)
+    #citation: Shen W, Le S, Li Y, Hu F (2016) SeqKit: A Cross-Platform and Ultrafast Toolkit for FASTA/Q File Manipulation. PLOS ONE 11(10): e0163962. https://doi.org/10.1371/journal.pone.0163962
+    #https://bioinf.shenwei.me/seqkit/
 ########################################################" > $output_dir/README.txt
 
 #Done
@@ -108,7 +171,7 @@ printf "Total time: $runtime sec.\n\n"
 
 #variables for all services
 echo "workingDir=$output_dir"
-echo "fileFormat=$fileFormat"
+echo "fileFormat=fastq"
 echo "dataFormat=$dataFormat"
 echo "readType=paired_end"
 
