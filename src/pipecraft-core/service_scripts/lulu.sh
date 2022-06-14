@@ -203,7 +203,7 @@ $info
 Files in 'lulu_out' directory:
 # lulu_out_table.txt     = curated table in tab delimited txt format
 # lulu_out_RepSeqs.fasta = fasta file for the molecular units (OTUs or ASVs) in the curated table
-# match_list.lulu        = match list file that was used by LULU to merge 'daughter molecular units'
+# match_list.lulu        = match list file that was used by LULU to merge 'daughter molecular' units
 # discarded_units.lulu   = molecular units (OTUs or ASVs) that were merged with other units based on specified thresholds)
 
 Core commands -> 

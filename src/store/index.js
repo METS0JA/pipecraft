@@ -1441,7 +1441,7 @@ export default new Vuex.Store({
                 value: 95,
                 disabled: "never",
                 tooltip:
-                  "default = 95%. Specify minimum threshold of sequence similarity for considering any OTU as an error of another",
+                  "specify minimum threshold of sequence similarity for considering any OTU as an error of another",
                 type: "numeric",
                 rules: [
                   (v) => v >= 1 || "ERROR: specify values >= 1",
