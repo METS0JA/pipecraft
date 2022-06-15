@@ -1096,10 +1096,10 @@ export default new Vuex.Store({
               },
               {
                 name: "e_value",
-                value: (0.00001).toExponential(),
+                value: (0.01).toExponential(),
                 disabled: "never",
                 tooltip:
-                  "domain E-value cutoff a sequence must obtain in the HMMER-based step to be included in the output",
+                  "domain E-value cutoff a sequence must obtain in the HMMER-based step to be included in the output. Here, the defaul 1e-2 = 0.01 (more relaxed compared with the default ITSx [1e-5])",
                 type: "numeric",
                 rules: [(v) => v >= 0 || "ERROR: specify only values > 0"],
               },
@@ -2298,10 +2298,10 @@ export default new Vuex.Store({
           },
           {
             name: "e_value",
-            value: (0.00001).toExponential(),
+            value: (0.01).toExponential(),
             disabled: "never",
             tooltip:
-              "domain e-value cutoff a sequence must obtain in the HMMER-based step to be included in the output",
+              "domain E-value cutoff a sequence must obtain in the HMMER-based step to be included in the output. Here, the defaul 1e-2 = 0.01 (more relaxed compared with the default ITSx [1e-5])",
             type: "numeric",
             rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
           },
