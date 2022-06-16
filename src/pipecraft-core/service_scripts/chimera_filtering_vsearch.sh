@@ -38,7 +38,7 @@ if [[ $reference_based == "undefined" ]]; then
 else
     regex='[^/]*$'
     ref=$(echo $reference_based | grep -oP "$regex")
-    db=$(printf "/extraFiles/$ref")
+    db=$(printf "/extraFiles4/$ref")
     database=$db
 fi
 
