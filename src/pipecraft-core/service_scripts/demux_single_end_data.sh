@@ -79,17 +79,18 @@ for file in *.$extension; do
         p=$"p"
         while read HEADER; do
             echo $HEADER >> tempdir2/barcodes_rev.fasta
-            sed -n $i$p tempdir2/paired_barcodes_seq.temp >> tempdir2/barcodes_rev.fasta
-            i=$((i + 1))
+            sed --quiet $i$p tempdir2/paired_barcodes_seq.temp >> tempdir2/barcodes_rev.fasta
+            i=$(($i + 1))
         done < tempdir2/paired_barcodes_headers.temp
         #make fwd indexes file
         sed -e 's/\.\.\..*//' < tempdir2/ValidatedBarcodesFileForDemux.fasta.temp > tempdir2/barcodes_fwd.fasta
         #reverse complementary REV indexes
-        seqkit seq --quiet -t dna -r -p tempdir2/barcodes_rev.fasta > tempdir2/barcodes_rev_RC.fasta
+        checkerror=$(seqkit seq --quiet -t dna -r -p tempdir2/barcodes_rev.fasta > tempdir2/barcodes_rev_RC.fasta 2>&1)
+        check_app_error
         #Make linked indexes files where REV indexes are in RC orientation
         tr "\n" "\t" < tempdir2/barcodes_fwd.fasta | sed -e 's/>/\n>/g' | sed '/^\n*$/d' > tempdir2/barcodes_fwd.temp
         tr "\n" "\t" < tempdir2/barcodes_rev_RC.fasta | sed -e 's/>/\n>/g' | sed '/^\n*$/d' > tempdir2/barcodes_rev_RC.temp
-        gawk 'BEGIN {FS=OFS="\t"} FNR==NR{a[$1]=$2;next} ($1 in a) {print $1,a[$1],$2}' tempdir2/barcodes_fwd.temp tempdir2/barcodes_rev_RC.temp > tempdir2/linked_barcodes_revRC.temp
+        awk 'BEGIN {FS=OFS="\t"} FNR==NR{a[$1]=$2;next} ($1 in a) {print $1,a[$1],$2}' tempdir2/barcodes_fwd.temp tempdir2/barcodes_rev_RC.temp > tempdir2/linked_barcodes_revRC.temp
         sed -e 's/\t/\n/' < tempdir2/linked_barcodes_revRC.temp | sed -e 's/\t/\.\.\./' > tempdir2/linked_barcodes_revRC.fasta
 
         #assign demux variables
@@ -125,7 +126,7 @@ done
 
 #Remove 'rc' string from seq if the indexes were found on reverse complementary strand
 for file in $output_dir/*.$newextension; do
-    gawk -i inplace '{ gsub(/ rc$/, "") }; { print }' $file
+    awk -i inplace '{ gsub(/ rc$/, "") }; { print }' $file
 done
 
 #################################################
