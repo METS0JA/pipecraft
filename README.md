@@ -4,7 +4,7 @@
 
 https://github.com/SuvalineVana/pipecraft/releases/tag/v0.1.2
 
-**Manual**: https://pipecraft2-manual.readthedocs.io/en/stable/
+**USER GUIDE**: https://pipecraft2-manual.readthedocs.io/en/stable/
 
 ---
 
