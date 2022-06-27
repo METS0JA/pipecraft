@@ -102,30 +102,27 @@ export default {
     items: [],
   }),
   methods: {
-    async runCustomWorkFlow(name) {
-      Swal.fire({
+    async confirmRun(name) {
+      let result = await Swal.fire({
         title: `Run ${name.replace(/_/g, " ")}?`,
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
         confirmButtonText: "Continue",
-      }).then(async (result) => {
+      });
+      return result;
+    },
+    async runCustomWorkFlow(name) {
+      this.confirmRun(name).then(async (result) => {
         if (result.isConfirmed) {
-          console.log(name);
           this.$store.commit("addWorkingDir", "/input");
           let startTime = Date.now();
           let steps2Run = this.$store.getters.steps2Run(name);
           console.log(steps2Run);
           console.log(startTime);
-          for (let index of this.$store.state[name].entries()) {
-            if (
-              this.$store.state[name][index[0]].selected == true ||
-              this.$store.state[name][index[0]].selected == "always"
-            ) {
-              console.log(
-                `Startin step ${index[0] + 1}: ${index[1].serviceName}`
-              );
-              let Hostname = index[1].serviceName.replace(" ", "_");
+          for (let [index, element] of this.$store.state[name].entries()) {
+            if (element.selected == true || element.selected == "always") {
+              let Hostname = element.serviceName.replace(" ", "_");
               let container = await dockerode.getContainer(Hostname);
               let nameConflicts = await container
                 .remove({ force: true })
@@ -139,17 +136,17 @@ export default {
               this.$store.commit("addRunInfo", [
                 true,
                 "customWorkflow",
-                index[0],
-                this.$store.state[name].length,
+                index,
+                element.length,
                 Hostname,
               ]);
-              let scriptName = this.$store.state[name][index[0]].scriptName;
-              let imageName = this.$store.state[name][index[0]].imageName;
+              let scriptName = element.scriptName;
+              let imageName = element.imageName;
               let Input = this.$store.state.inputDir;
               let WorkingDir = this.$store.state.workingDir;
               let envVariables;
-              envVariables = this.createCustomVariableObj(name, index[0]);
-              let Binds = this.createCustomBinds(name, index[0], Input);
+              envVariables = this.createCustomVariableObj(element);
+              let Binds = this.createCustomBinds(element, Input);
               console.log(Binds);
               let gotImg = await imageExists(dockerode, imageName);
               if (gotImg === false) {
@@ -160,15 +157,6 @@ export default {
                 console.log(`Pull complete`);
                 this.$store.commit("deactivatePullLoader");
               }
-              console.log(
-                `SCRIPT: ${scriptName}`,
-                "\n",
-                `IMAGE: ${imageName}`,
-                "\n",
-                `INPUT: ${Input}`,
-                "\n",
-                `WORKDIR: ${WorkingDir}`
-              );
               console.log(envVariables);
               let userInfo = os.userInfo();
               let result = await dockerode
@@ -239,9 +227,7 @@ export default {
               }
               stdout = new streams.WritableStream();
               stderr = new streams.WritableStream();
-              console.log(
-                `Finished step ${index[0] + 1}: ${index[1].serviceName}`
-              );
+              console.log(`Finished step ${index + 1}: ${element.serviceName}`);
               this.$store.commit("resetRunInfo");
               if (result.statusCode == 0) {
                 steps2Run -= 1;
@@ -438,14 +424,10 @@ export default {
       });
       return envVariables;
     },
-    createCustomVariableObj(name, index) {
+    createCustomVariableObj(element) {
       let envVariables = [];
-      this.$store.state[name][index].Inputs.forEach((input) => {
-        let varObj = {};
-        varObj[input.name] = input.value;
-        envVariables.push(stringify(varObj).replace(/(\r\n|\n|\r)/gm, ""));
-      });
-      this.$store.state[name][index].extraInputs.forEach((input) => {
+      let inputs = element.Inputs.concat(element.extraInputs);
+      inputs.forEach((input) => {
         let varObj = {};
         varObj[input.name] = input.value;
         envVariables.push(stringify(varObj).replace(/(\r\n|\n|\r)/gm, ""));
@@ -463,22 +445,19 @@ export default {
       });
       return envVariables;
     },
-    createCustomBinds(name, index, Input) {
+    createCustomBinds(element, Input) {
       let scriptsPath =
         isDevelopment == true
           ? `${slash(process.cwd())}/src/pipecraft-core/service_scripts`
           : `${process.resourcesPath}/src/pipecraft-core/service_scripts`;
       let Binds = [`${scriptsPath}:/scripts`, `${Input}:/input`];
-      let serviceInputs = this.$store.state[name][index].Inputs.concat(
-        this.$store.state[name][index].extraInputs
-      );
+      let serviceInputs = element.Inputs.concat(element.extraInputs);
       serviceInputs.forEach((input, index) => {
         if (
           input.type == "file" ||
           (input.type == "boolfile" && input.active == true)
         ) {
           let correctedPath = path.dirname(slash(input.value));
-          // let fileName = path.parse(correctedPath).base;
           if (index == 0) {
             let bind = `${correctedPath}:/extraFiles`;
             Binds.push(bind);
