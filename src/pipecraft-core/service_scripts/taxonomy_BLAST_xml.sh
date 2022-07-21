@@ -31,7 +31,12 @@ wordsize=$"-word_size=${word_size}" # positive integer
 reward=$"-reward=${reward}" # positive integer
 penalty=$"-penalty=${penalty}" # negative integer
 gapopen=$"-gapopen=${gap_open}" # positive integer
-gapextend=$"-gapextend=${gap_extend}" # positive integer
+#gapextend setting (default=undefined with megablast)
+if [[ $gap_extend == null ]] || [[ -z $gap_extend ]] || [[ $gap_extend == "undefined" ]]; then
+    gapextend=$""
+else
+    gapextend=$"-gapextend=${gap_extend}" 
+fi
 
 # Source for functions
 source /scripts/submodules/framework.functions.sh
@@ -98,7 +103,7 @@ check_app_error
 
 ### Parse BLAST xml file
 cd $output_dir
-python /scripts/submodules/Blast_xml_parse.py 10BestHits.xml
+python3 /scripts/submodules/Blast_xml_parse.py 10BestHits.xml
 
 #Extract first best hit from 10 best hits file
 gawk 'BEGIN{FS=OFS="\t"}{print $1,$4}' < 10hits.txt | \
@@ -132,6 +137,8 @@ printf "Taxonomy annotation with BLAST.
 Input = $IN
 BLAST_1st_best_hit.txt = BLAST results for the 1st best hit in the used database(s).
 BLAST_10_best_hits.txt = BLAST results for the 10 best hits in the used database(s).
+
+BLAST values filed separator is '+'. When pasting the taxonomy results to e.g. Excel, then first denote '+' as as filed separator to align the columns.
 
 score -> blast score
 e-value -> blast e-value
