@@ -112,95 +112,83 @@ export default {
       });
       return result;
     },
+    async clearContainerConflicts(Hostname) {
+      let container = await dockerode.getContainer(Hostname);
+      let nameConflicts = await container
+        .remove({ force: true })
+        .then(async () => {
+          return "Removed conflicting duplicate container";
+        })
+        .catch(() => {
+          return "No conflicting container names";
+        });
+      console.log(nameConflicts);
+    },
+    async updateRunInfo(i, len, name) {
+      this.$store.commit("addRunInfo", [true, "customWorkflow", i, len, name]);
+    },
+    async imageCheck(imageName) {
+      let gotImg = await imageExists(dockerode, imageName);
+      if (gotImg === false) {
+        this.$store.commit("activatePullLoader");
+        console.log(`Pulling image ${imageName}`);
+        let output = await pullImageAsync(dockerode, imageName);
+        console.log(output);
+        console.log(`Pull complete`);
+        this.$store.commit("deactivatePullLoader");
+      }
+    },
+    async getDockerProps(step) {
+      let Hostname = step.serviceName.replace(" ", "_");
+      let WorkingDir = this.$store.state.workingDir;
+      let envVariables = this.createCustomVariableObj(step);
+      let Binds = this.getBinds_c(step, this.$store.state.inputDir);
+      let dockerProps = {
+        Tty: false,
+        WorkingDir: WorkingDir,
+        name: Hostname,
+        Volumes: {},
+        HostConfig: {
+          Binds: Binds,
+        },
+        Env: envVariables,
+        User: `${Math.abs(os.userInfo().uid)}`,
+      };
+      return dockerProps;
+    },
     async runCustomWorkFlow(name) {
       this.confirmRun(name).then(async (result) => {
         if (result.isConfirmed) {
           this.$store.commit("addWorkingDir", "/input");
           let startTime = Date.now();
           let steps2Run = this.$store.getters.steps2Run(name);
-          console.log(steps2Run);
-          console.log(startTime);
-          for (let [index, element] of this.$store.state[name].entries()) {
-            if (element.selected == true || element.selected == "always") {
-              let Hostname = element.serviceName.replace(" ", "_");
-              let container = await dockerode.getContainer(Hostname);
-              let nameConflicts = await container
-                .remove({ force: true })
-                .then(async () => {
-                  return "Removed conflicting duplicate container";
-                })
-                .catch(() => {
-                  return "No conflicting container names";
-                });
-              console.log(nameConflicts);
-              this.$store.commit("addRunInfo", [
-                true,
-                "customWorkflow",
-                index,
-                element.length,
-                Hostname,
-              ]);
-              let scriptName = element.scriptName;
-              let imageName = element.imageName;
-              let Input = this.$store.state.inputDir;
-              let WorkingDir = this.$store.state.workingDir;
-              let envVariables;
-              envVariables = this.createCustomVariableObj(element);
-              let Binds = this.createCustomBinds(element, Input);
-              console.log(Binds);
-              let gotImg = await imageExists(dockerode, imageName);
-              if (gotImg === false) {
-                this.$store.commit("activatePullLoader");
-                console.log(`Pulling image ${imageName}`);
-                let output = await pullImageAsync(dockerode, imageName);
-                console.log(output);
-                console.log(`Pull complete`);
-                this.$store.commit("deactivatePullLoader");
-              }
-              console.log(envVariables);
-              let userInfo = os.userInfo();
+          for (let [i, step] of this.$store.state[name].entries()) {
+            if (step.selected == true || step.selected == "always") {
+              this.clearContainerConflicts(dockerProps.Hostname);
+              this.updateRunInfo(i, step.length, dockerProps.Hostname);
+              this.imageCheck(step.imageName);
+              let dockerProps = this.getDockerProps(step);
               let result = await dockerode
                 .run(
-                  imageName,
-                  ["sh", "-c", `/scripts/${scriptName}`],
+                  step.imageName,
+                  ["sh", "-c", `/scripts/${step.scriptName}`],
                   [stdout, stderr],
-                  {
-                    Tty: false,
-                    WorkingDir: WorkingDir,
-                    name: Hostname,
-                    Volumes: {},
-                    HostConfig: {
-                      Binds: Binds,
-                      CpuCount: 6,
-                    },
-                    Env: envVariables,
-                    User: `${Math.abs(userInfo.uid)}`,
-                  }
+                  dockerProps
                 )
                 .then(async ([res, container]) => {
-                  console.log(stdout.toString());
-                  let resObj = {};
-                  resObj.statusCode = res.StatusCode;
+                  res.stdout = stdout.toString();
+                  res.stderr = stderr.toString();
                   container.remove();
-                  if (res.StatusCode === 0) {
-                    resObj.log = stdout.toString();
-                    return resObj;
-                  } else {
-                    resObj.log = stderr.toString();
-                    return resObj;
-                  }
+                  return res;
                 })
                 .catch((err) => {
                   this.$store.commit("resetRunInfo");
-                  let resObj = {};
-                  resObj.statusCode = err.statusCode;
-                  resObj.log = err.json.message;
-                  return resObj;
+                  return err;
                 });
               console.log(result);
               if (result.statusCode == 0) {
                 let newWorkingDir = this.getVariableFromLog(
-                  result.log,
+                  result.stdout,
                   "workingDir"
                 );
                 let newDataInfo = {
@@ -218,7 +206,7 @@ export default {
                 if (result.statusCode == 137) {
                   Swal.fire("Workflow stopped");
                 } else {
-                  Swal.fire(result.log);
+                  Swal.fire(result.stdout);
                 }
                 this.$store.commit("resetRunInfo");
                 stdout = new streams.WritableStream();
@@ -227,7 +215,7 @@ export default {
               }
               stdout = new streams.WritableStream();
               stderr = new streams.WritableStream();
-              console.log(`Finished step ${index + 1}: ${element.serviceName}`);
+              console.log(`Finished step ${i + 1}: ${step.serviceName}`);
               this.$store.commit("resetRunInfo");
               if (result.statusCode == 0) {
                 steps2Run -= 1;
@@ -237,12 +225,10 @@ export default {
               }
             }
           }
-          let totalTime = this.millisToMinutesAndSeconds(
-            Date.now() - startTime
-          );
-          console.log(totalTime);
+          let totalTime = this.toMinsAndSecs(Date.now() - startTime);
           this.$store.commit("addWorkingDir", "/input");
           this.$store.commit("resetRunInfo");
+          console.log(totalTime);
         }
       });
     },
@@ -445,7 +431,7 @@ export default {
       });
       return envVariables;
     },
-    createCustomBinds(element, Input) {
+    getBinds_c(element, Input) {
       let scriptsPath =
         isDevelopment == true
           ? `${slash(process.cwd())}/src/pipecraft-core/service_scripts`
@@ -518,7 +504,7 @@ export default {
       );
       return result;
     },
-    millisToMinutesAndSeconds(millis) {
+    toMinsAndSecs(millis) {
       var minutes = Math.floor(millis / 60000);
       var seconds = ((millis % 60000) / 1000).toFixed(0);
       return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
