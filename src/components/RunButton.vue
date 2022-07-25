@@ -164,10 +164,11 @@ export default {
           let steps2Run = this.$store.getters.steps2Run(name);
           for (let [i, step] of this.$store.state[name].entries()) {
             if (step.selected == true || step.selected == "always") {
+              let dockerProps = await this.getDockerProps(step);
               this.clearContainerConflicts(dockerProps.Hostname);
               this.updateRunInfo(i, step.length, dockerProps.Hostname);
               this.imageCheck(step.imageName);
-              let dockerProps = this.getDockerProps(step);
+              console.log(dockerProps);
               let result = await dockerode
                 .run(
                   step.imageName,
@@ -179,22 +180,30 @@ export default {
                   res.stdout = stdout.toString();
                   res.stderr = stderr.toString();
                   container.remove();
+                  console.log(res);
                   return res;
                 })
                 .catch((err) => {
+                  console.log(err);
                   this.$store.commit("resetRunInfo");
                   return err;
                 });
               console.log(result);
-              if (result.statusCode == 0) {
+              if (result.StatusCode == 0) {
                 let newWorkingDir = this.getVariableFromLog(
                   result.stdout,
                   "workingDir"
                 );
                 let newDataInfo = {
-                  dataFormat: this.getVariableFromLog(result.log, "dataFormat"),
-                  fileFormat: this.getVariableFromLog(result.log, "fileFormat"),
-                  readType: this.getVariableFromLog(result.log, "readType"),
+                  dataFormat: this.getVariableFromLog(
+                    result.stdout,
+                    "dataFormat"
+                  ),
+                  fileFormat: this.getVariableFromLog(
+                    result.stdout,
+                    "fileFormat"
+                  ),
+                  readType: this.getVariableFromLog(result.stdout, "readType"),
                 };
                 this.$store.commit(
                   "toggle_PE_SE_scripts",
@@ -203,7 +212,7 @@ export default {
                 this.$store.commit("addInputInfo", newDataInfo);
                 this.$store.commit("addWorkingDir", newWorkingDir);
               } else {
-                if (result.statusCode == 137) {
+                if (result.StatusCode == 137) {
                   Swal.fire("Workflow stopped");
                 } else {
                   Swal.fire(result.stdout);
@@ -217,7 +226,7 @@ export default {
               stderr = new streams.WritableStream();
               console.log(`Finished step ${i + 1}: ${step.serviceName}`);
               this.$store.commit("resetRunInfo");
-              if (result.statusCode == 0) {
+              if (result.StatusCode == 0) {
                 steps2Run -= 1;
                 if (steps2Run == 0) {
                   Swal.fire("Workflow finished");
@@ -367,9 +376,7 @@ export default {
               Swal.fire("Workflow finished");
             }
           }
-          let totalTime = this.millisToMinutesAndSeconds(
-            Date.now() - startTime
-          );
+          let totalTime = this.toMinsAndSecs(Date.now() - startTime);
           console.log(totalTime);
           this.$store.commit("addWorkingDir", "/input");
           this.$store.commit("resetRunInfo");
