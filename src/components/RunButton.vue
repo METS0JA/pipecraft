@@ -165,8 +165,8 @@ export default {
           for (let [i, step] of this.$store.state[name].entries()) {
             if (step.selected == true || step.selected == "always") {
               let dockerProps = await this.getDockerProps(step);
-              this.clearContainerConflicts(dockerProps.Hostname);
-              this.updateRunInfo(i, step.length, dockerProps.Hostname);
+              this.clearContainerConflicts(dockerProps.name);
+              this.updateRunInfo(i, step.length, dockerProps.name);
               this.imageCheck(step.imageName);
               console.log(dockerProps);
               let result = await dockerode
@@ -179,7 +179,9 @@ export default {
                 .then(async ([res, container]) => {
                   res.stdout = stdout.toString();
                   res.stderr = stderr.toString();
-                  container.remove();
+                  if (res.StatusCode != 137) {
+                    container.remove({ v: true, force: true });
+                  }
                   console.log(res);
                   return res;
                 })
@@ -215,7 +217,7 @@ export default {
                 if (result.StatusCode == 137) {
                   Swal.fire("Workflow stopped");
                 } else {
-                  Swal.fire(result.stdout);
+                  Swal.fire(result.stderr);
                 }
                 this.$store.commit("resetRunInfo");
                 stdout = new streams.WritableStream();
