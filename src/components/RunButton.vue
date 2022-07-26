@@ -215,7 +215,7 @@ export default {
                 if (result.StatusCode == 137) {
                   Swal.fire("Workflow stopped");
                 } else {
-                  Swal.fire(result.stdout);
+                  Swal.fire(result.stderr);
                 }
                 this.$store.commit("resetRunInfo");
                 stdout = new streams.WritableStream();

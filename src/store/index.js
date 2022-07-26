@@ -80,6 +80,13 @@ export default new Vuex.Store({
                 type: "file",
               },
               {
+                name: "index_file_example",
+                value: "https://pipecraft2-manual.readthedocs.io/en/stable/user_guide.html#indexes-file-example-fasta-formatted",
+                disabled: "never",
+                type: "link",
+                tooltip: "link to PipeCraft manual page, index file examples",
+                },
+              {
                 name: "index_mismatch",
                 value: 0,
                 disabled: "never",
@@ -1850,6 +1857,13 @@ export default new Vuex.Store({
             type: "file",
           },
           {
+          name: "index_file_example",
+          value: "https://pipecraft2-manual.readthedocs.io/en/stable/user_guide.html#indexes-file-example-fasta-formatted",
+          disabled: "never",
+          type: "link",
+          tooltip: "link to PipeCraft manual page, index file examples",
+          },
+          {
             name: "index_mismatch",
             value: 0,
             disabled: "never",
@@ -2665,6 +2679,13 @@ export default new Vuex.Store({
               "select your fasta formatted indexes file for demultiplexing, where fasta headers are sample names, and sequences are sample specific index or index combination",
             type: "file",
           },
+          {
+            name: "index_file_example",
+            value: "https://pipecraft2-manual.readthedocs.io/en/stable/user_guide.html#indexes-file-example-fasta-formatted",
+            disabled: "never",
+            type: "link",
+            tooltip: "link to PipeCraft manual page, index file examples",
+            },
           {
             name: "index_mismatch",
             value: 0,
