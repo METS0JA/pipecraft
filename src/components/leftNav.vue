@@ -97,7 +97,10 @@ import AddMenu from "./AddMenu.vue";
 import RunButton from "./RunButton";
 import SelectedRoutes from "./SelectedRoutes";
 import * as Dockerode from "dockerode";
-var dockerode = new Dockerode({ socketPath: "//./pipe/docker_engine" });
+import os from "os";
+var socketPath =
+  os.platform() === "win32" ? "//./pipe/docker_engine" : "/var/run/docker.sock";
+var dockerode = new Dockerode({ socketPath: socketPath });
 
 export default {
   name: "leftNav",
@@ -119,16 +122,12 @@ export default {
     },
   },
   methods: {
-    stopWorkflow() {
+    async stopWorkflow() {
       var container = dockerode.getContainer(
         this.$store.state.runInfo.containerID
       );
-      container.kill(function (err, data) {
-        console.log(data);
-      });
-      container.remove(function (err, data) {
-        console.log(data);
-      });
+      console.log(container);
+      container.remove({ v: true, force: true });
       this.$store.commit("resetRunInfo");
     },
     folderSelect() {
