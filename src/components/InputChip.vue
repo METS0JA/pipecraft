@@ -3,7 +3,10 @@
     <template v-slot:activator="{ on }">
       <div v-on="on">
         <v-card
-          :disabled="Object.values(inputData).includes(input.disabled)"
+          :disabled="
+            Object.values(inputData).includes(input.disabled) ||
+            $store.state.runInfo.active == true
+          "
           light
           elevation="2"
           style="height: fit-content; resize: auto; min-height: 145px"

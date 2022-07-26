@@ -2,7 +2,10 @@
   <v-card
     light
     elevation="2"
-    :disabled="Object.values(inputData).includes(input.disabled)"
+    :disabled="
+      Object.values(inputData).includes(input.disabled) ||
+      $store.state.runInfo.active == true
+    "
   >
     <v-card-actions style="justify-content: center">
       <v-row style="justify-content: center">

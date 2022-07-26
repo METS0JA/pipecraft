@@ -2,7 +2,10 @@
   <v-card
     light
     elevation="2"
-    :disabled="Object.values(inputData).includes(input.disabled)"
+    :disabled="
+      Object.values(inputData).includes(input.disabled) ||
+      $store.state.runInfo.active == true
+    "
   >
     <v-tooltip top>
       <template v-slot:activator="{ on }">

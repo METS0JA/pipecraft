@@ -6,6 +6,7 @@
           <template v-slot:activator="{ on }">
             <div v-on="on">
               <v-btn
+                v-if="$store.state.runInfo.active != true"
                 style="background-color: #212121"
                 block
                 :style="
@@ -27,6 +28,18 @@
               >
                 Select workDir
               </v-btn>
+              <v-btn
+                v-if="$store.state.runInfo.active == true"
+                style="background-color: #212121"
+                block
+              >
+                Processing...
+              </v-btn>
+              <v-progress-linear
+                v-if="$store.state.runInfo.active == true"
+                indeterminate
+                color="green"
+              ></v-progress-linear>
             </div>
           </template>
           <div v-if="this.$store.state.inputDir == ''">No files selected!</div>
@@ -126,7 +139,6 @@ export default {
       var container = dockerode.getContainer(
         this.$store.state.runInfo.containerID
       );
-      console.log(container);
       container.remove({ v: true, force: true });
       this.$store.commit("resetRunInfo");
     },

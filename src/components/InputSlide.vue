@@ -3,7 +3,10 @@
     light
     elevation="2"
     width="400px"
-    :disabled="Object.values(inputData).includes(input.disabled)"
+    :disabled="
+      Object.values(inputData).includes(input.disabled) ||
+      $store.state.runInfo.active == true
+    "
   >
     <v-tooltip top>
       <template v-slot:activator="{ on }">
