@@ -110,13 +110,7 @@ var dockerode = new Dockerode({ socketPath: socketPath });
 export default {
   name: "qualityPlots",
   data() {
-    return {
-      fileExtension: "",
-      folderPath: "",
-      reportReady: false,
-      reportLoading: false,
-      dockerActive: false,
-    };
+    return this.$store.state.Qcheck;
   },
   created() {
     var self = this;
@@ -133,7 +127,7 @@ export default {
   },
   methods: {
     folderSelect() {
-      this.reportReady = false;
+      this.$store.state.Qcheck.reportReady = false;
       Swal.mixin({
         input: "select",
         confirmButtonText: "Next &rarr;",
@@ -163,7 +157,10 @@ export default {
         .then(async (result) => {
           if (result.value) {
             console.log(result.value);
-            this.fileExtension = result.value[0].replace("_", ".");
+            this.$store.state.Qcheck.fileExtension = result.value[0].replace(
+              "_",
+              "."
+            );
             dialog
               .showOpenDialog({
                 title: "Select the folder containing your sequnece files",
@@ -171,7 +168,9 @@ export default {
               })
               .then((result) => {
                 if (typeof result.filePaths[0] !== "undefined") {
-                  this.folderPath = slash(result.filePaths[0]);
+                  this.$store.state.Qcheck.folderPath = slash(
+                    result.filePaths[0]
+                  );
                 }
               })
               .catch((err) => {
@@ -181,8 +180,8 @@ export default {
         });
     },
     async fastQualityCheck() {
-      this.reportReady = false;
-      this.reportLoading = true;
+      this.$store.state.Qcheck.reportReady = false;
+      this.$store.state.Qcheck.reportLoading = true;
       console.log("starting fastqc");
       let gotImg = await imageExists(dockerode, "staphb/fastqc:0.11.9");
       if (gotImg === false) {
@@ -211,9 +210,9 @@ export default {
             Tty: false,
             WorkingDir: "/input",
             HostConfig: {
-              Binds: [`${this.folderPath}:/input`],
+              Binds: [`${this.$store.state.Qcheck.folderPath}:/input`],
             },
-            Env: [`format=${this.fileExtension}`],
+            Env: [`format=${this.$store.state.Qcheck.fileExtension}`],
           }
         )
         .then(async ([res, container]) => {
@@ -243,9 +242,11 @@ export default {
           Tty: false,
           WorkingDir: "/input",
           HostConfig: {
-            Binds: [`${this.folderPath}/quality_check:/input`],
+            Binds: [
+              `${this.$store.state.Qcheck.folderPath}/quality_check:/input`,
+            ],
           },
-          Env: [`format=${this.fileExtension}`],
+          Env: [`format=${this.$store.state.Qcheck.fileExtension}`],
         })
         .then(async ([res, container]) => {
           console.log(stdout.toString());
@@ -266,12 +267,12 @@ export default {
           return resObj;
         });
       console.log(result2);
-      this.reportReady = true;
-      this.reportLoading = false;
+      this.$store.state.Qcheck.reportReady = true;
+      this.$store.state.Qcheck.reportLoading = false;
     },
     openReport() {
       shell.openExternal(
-        `file://${this.folderPath}/quality_check/multiqc_report.html`
+        `file://${this.$store.state.Qcheck.folderPath}/quality_check/multiqc_report.html`
       );
     },
   },

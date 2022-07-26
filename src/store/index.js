@@ -8,6 +8,13 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     dockerStatus: "",
+    Qcheck: {
+      fileExtension: "",
+      folderPath: "",
+      reportReady: false,
+      reportLoading: false,
+      dockerActive: false,
+    },
     runInfo: {
       active: false,
       type: null,
@@ -81,11 +88,12 @@ export default new Vuex.Store({
               },
               {
                 name: "index_file_example",
-                value: "https://pipecraft2-manual.readthedocs.io/en/stable/user_guide.html#indexes-file-example-fasta-formatted",
+                value:
+                  "https://pipecraft2-manual.readthedocs.io/en/stable/user_guide.html#indexes-file-example-fasta-formatted",
                 disabled: "never",
                 type: "link",
                 tooltip: "link to PipeCraft manual page, index file examples",
-                },
+              },
               {
                 name: "index_mismatch",
                 value: 0,
@@ -1857,11 +1865,12 @@ export default new Vuex.Store({
             type: "file",
           },
           {
-          name: "index_file_example",
-          value: "https://pipecraft2-manual.readthedocs.io/en/stable/user_guide.html#indexes-file-example-fasta-formatted",
-          disabled: "never",
-          type: "link",
-          tooltip: "link to PipeCraft manual page, index file examples",
+            name: "index_file_example",
+            value:
+              "https://pipecraft2-manual.readthedocs.io/en/stable/user_guide.html#indexes-file-example-fasta-formatted",
+            disabled: "never",
+            type: "link",
+            tooltip: "link to PipeCraft manual page, index file examples",
           },
           {
             name: "index_mismatch",
@@ -2640,6 +2649,8 @@ export default new Vuex.Store({
         scriptName: "demux_paired_end_data.sh",
         imageName: "pipecraft/cutadapt:3.5",
         serviceName: "demultiplex",
+        manualLink:
+          "https://pipecraft2-manual.readthedocs.io/en/stable/user_guide.html#demultiplex",
         disabled: "demultiplexed",
         selected: false,
         showExtra: false,
@@ -2681,11 +2692,12 @@ export default new Vuex.Store({
           },
           {
             name: "index_file_example",
-            value: "https://pipecraft2-manual.readthedocs.io/en/stable/user_guide.html#indexes-file-example-fasta-formatted",
+            value:
+              "https://pipecraft2-manual.readthedocs.io/en/stable/user_guide.html#indexes-file-example-fasta-formatted",
             disabled: "never",
             type: "link",
             tooltip: "link to PipeCraft manual page, index file examples",
-            },
+          },
           {
             name: "index_mismatch",
             value: 0,

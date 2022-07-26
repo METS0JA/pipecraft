@@ -64,6 +64,26 @@
                 style="max-width: 34px; padding-top: 0; margin: 0"
               ></v-checkbox>
               {{ service.serviceName.toUpperCase() }}
+              <div v-if="service.manualLink">
+                <v-tooltip left>
+                  <template v-slot:activator="{ on }">
+                    <v-icon
+                      v-on="on"
+                      right
+                      @click.stop
+                      @click="openLink(service.manualLink)"
+                      style="
+                        display: block;
+                        margin-left: auto;
+                        margin-right: 10px;
+                      "
+                      >mdi-help-circle-outline</v-icon
+                    >
+                  </template>
+                  <span>Check out the documentation for more info</span>
+                </v-tooltip>
+              </div>
+
               <!-- <v-progress-circular
             v-if="
               $store.state.runInfo.active == true &&
@@ -264,6 +284,7 @@
 </template>
 
 <script>
+const { shell } = require("electron");
 import InputNumeric from "../components/InputNumeric.vue";
 import InputLink from "../components/InputLink.vue";
 import InputBool from "../components/InputBool.vue";
@@ -301,6 +322,9 @@ export default {
     },
   },
   methods: {
+    openLink(value) {
+      shell.openExternal(value);
+    },
     toggleExtra(index) {
       this.$store.commit("toggleExtraCustomWorkflow", {
         workflowName: this.$route.params.workflowName,
