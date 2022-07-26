@@ -535,7 +535,7 @@ for primer in $(echo $fwd_tempprimer | sed "s/,/ /g"); do
     #seach fwd primer in R1 and write to file
     fqgrep -m $mismatches -p $fwd_primer -e $inputR1.$newextension >> tempdir/R1.5_3.fastq
     #seach fwd primer in R2 and write to file
-    fqgrep -m $mismatches -p $fwd_primer -e $inputR2.$newextension >> tempdir/R1.5_3.fastq
+    fqgrep -m $mismatches -p $fwd_primer -e $inputR2.$newextension >> tempdir/R2.5_3.fastq
 done
 }
 
@@ -551,7 +551,7 @@ for primer in $(echo $rev_tempprimer | sed "s/,/ /g"); do
     rev_primer=$(convert_IUPAC $primer)
     printf '%s\n' " searching REV primer $primer"
     #search rev primer in R1 and write to file
-    fqgrep -m $mismatches -p $rev_primer -e $inputR1.$newextension >> tempdir/R2.3_5.fastq
+    fqgrep -m $mismatches -p $rev_primer -e $inputR1.$newextension >> tempdir/R1.3_5.fastq
     #search rev primer in R2 and write to file
     fqgrep -m $mismatches -p $rev_primer -e $inputR2.$newextension >> tempdir/R2.3_5.fastq
 done
