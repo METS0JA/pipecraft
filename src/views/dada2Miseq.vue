@@ -43,7 +43,10 @@
       <v-expansion-panel
         v-for="(service, index) in services"
         :key="index"
-        :disabled="Object.values(inputData).includes(service.disabled)"
+        :disabled="
+          Object.values(inputData).includes(service.disabled) &&
+          $store.state.runInfo.active == false
+        "
         :class="Object.values(inputData).includes(service.disabled) && hide"
       >
         <v-tooltip top>
@@ -83,22 +86,10 @@
                   <span>Check out the documentation for more info</span>
                 </v-tooltip>
               </div>
-
-              <!-- <v-progress-circular
-            v-if="
-              $store.state.runInfo.active == true &&
-                $store.state.runInfo.type == 'customWorkflow' &&
-                index == $store.state.runInfo.step
-            "
-            indeterminate
-            color="#1DE9B6"
-            :size="20"
-          ></v-progress-circular> -->
-
               <div
                 v-if="
                   $store.state.runInfo.active == true &&
-                  $store.state.runInfo.type == 'customWorkflow' &&
+                  $store.state.runInfo.type == $route.params.workflowName &&
                   index == $store.state.runInfo.step
                 "
                 style="margin-left: 25px"

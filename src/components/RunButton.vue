@@ -124,8 +124,8 @@ export default {
         });
       console.log(nameConflicts);
     },
-    async updateRunInfo(i, len, name) {
-      this.$store.commit("addRunInfo", [true, "customWorkflow", i, len, name]);
+    async updateRunInfo(i, len, Hname, name) {
+      this.$store.commit("addRunInfo", [true, name, i, len, Hname]);
     },
     async imageCheck(imageName) {
       let gotImg = await imageExists(dockerode, imageName);
@@ -165,9 +165,9 @@ export default {
           for (let [i, step] of this.$store.state[name].entries()) {
             if (step.selected == true || step.selected == "always") {
               let dockerProps = await this.getDockerProps(step);
-              this.clearContainerConflicts(dockerProps.name);
-              this.updateRunInfo(i, step.length, dockerProps.name);
-              this.imageCheck(step.imageName);
+              this.updateRunInfo(i, steps2Run, dockerProps.name, name);
+              await this.imageCheck(step.imageName);
+              await this.clearContainerConflicts(dockerProps.name);
               console.log(dockerProps);
               let result = await dockerode
                 .run(
