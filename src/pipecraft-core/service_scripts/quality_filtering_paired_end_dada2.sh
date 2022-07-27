@@ -37,6 +37,19 @@ maxLen=${maxLen}
 minQ=${minQ}
 matchIDs=${matchIDs}
 
+echo "$read_R1 read_R1"
+echo "$read_R2 read_R2"
+echo "$samp_ID samp_ID"
+echo "$maxEE maxEE"
+echo "$maxN maxN"
+echo "$truncQ truncQ"
+echo "$truncLen_R1 truncLen"
+echo "$truncLen_R2 truncLen_R2"
+echo "$minLen minLen"
+echo "$maxLen maxLen"
+echo "$minQ minQ"
+echo "$matchIDs matchIDs"
+
 #Source for functions
 source /scripts/submodules/framework.functions.sh
 #output dir
@@ -66,8 +79,9 @@ if [[ -z $read_R1 ]] || [[ -z $read_R2 ]] || [[ -z $samp_ID ]]; then
     >Quitting" >&2
     end_process
 fi
+read_R1_a=$(echo $read_R1 | sed -e 's/\\//') #if dot is the separator, then remove \ from the read identifier
 while read file; do
-    if [[ $file == *"$read_R1"* ]]; then
+    if [[ $file == *"$read_R1_a"* ]]; then
         :
     else
         printf '%s\n' "ERROR]: 'read R1/R2' identifiers are incorrectly specified.
@@ -85,31 +99,31 @@ wait
 printf "\n DADA2 filterAndTrim completed \n"
 
 
-### Synchronizing R1 and R2 reads fi $matchIDs == "true"
+### Synchronizing R1 and R2 reads if $matchIDs == "true"
 if [[ $matchIDs == "true" ]] || [[ $matchIDs == "TRUE" ]]; then
     while read LINE; do
         #Read in R1 and R2 file names; without extension
-        inputR1=$(echo $LINE | sed -e "s/.$extension//")
-        inputR2=$(echo $inputR1 | sed -e 's/R1/R2/')
+        samp_name=$(basename $LINE | awk -F\\${samp_ID} '{print$1}')
+        echo $samp_name
         #If outputs are not empty, then synchronize R1 and R2
-        if [[ -s $output_dir/$inputR1\_filt.fastq ]]; then
-            if [[ -s $output_dir/$inputR2\_filt.fastq ]]; then
+        if [[ -s $output_dir/$samp_name\_R1_filt.fastq ]]; then
+            if [[ -s $output_dir/$samp_name\_R2_filt.fastq ]]; then
                 printf "\nSynchronizing R1 and R2 reads (matching order for paired-end reads merging)\n"
                 cd $output_dir
-                checkerror=$(seqkit pair -1 $inputR1\_filt.fastq -2 $inputR2\_filt.fastq 2>&1)
+                checkerror=$(seqkit pair -1 $samp_name\_R1_filt.fastq -2 $samp_name\_R2_filt.fastq 2>&1)
                 check_app_error
 
-                rm $inputR1\_filt.fastq
-                rm $inputR2\_filt.fastq
-                mv $inputR1\_filt.paired.fastq $inputR1\_filt.fastq
-                mv $inputR2\_filt.paired.fastq $inputR2\_filt.fastq
+                rm $samp_name\_R1_filt.fastq
+                rm $samp_name\_R2_filt.fastq
+                mv $samp_name\_R1_filt.paired.fastq $samp_name\_R1_filt.fastq
+                mv $samp_name\_R2_filt.paired.fastq $samp_name\_R2_filt.fastq
                 cd ..
 
                 #Convert output fastq files to FASTA
                 mkdir -p $output_dir/FASTA
-                checkerror=$(seqkit fq2fa -t dna --line-width 0 $output_dir/$inputR1\_filt.fastq -o $output_dir/FASTA/$inputR1\_filt.fasta 2>&1)
+                checkerror=$(seqkit fq2fa -t dna --line-width 0 $output_dir/$samp_name\_R1_filt.fastq -o $output_dir/FASTA/$samp_name\_R1_filt.fasta 2>&1)
                 check_app_error
-                checkerror=$(seqkit fq2fa -t dna --line-width 0 $output_dir/$inputR2\_filt.fastq -o $output_dir/FASTA/$inputR1\_filt.fasta 2>&1)
+                checkerror=$(seqkit fq2fa -t dna --line-width 0 $output_dir/$samp_name\_R2_filt.fastq -o $output_dir/FASTA/$samp_name\_R2_filt.fasta 2>&1)
                 check_app_error
             fi
         fi

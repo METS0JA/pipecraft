@@ -122,6 +122,10 @@ runtime=$((end-start))
 #Make README.txt file
 printf "# Denoising and assembling of PAIRED-END sequencing data with dada2.
 
+### NOTE: ### 
+Input sequences must be made up only of A/C/G/T for denoising (i.e maxN must = 0 in quality filtering step). Otherwise DADA2 fails, and no output is generated.
+#############
+
 Files in 'denoised_assembled.dada2':
 # *.fasta   = denoised and assembled sequences per sample in FASTA format (no fastq output). 'Size' denotes the abundance of the ASV sequence.  
 # Error_rates_R1.pdf    = plots for estimated R1 error rates

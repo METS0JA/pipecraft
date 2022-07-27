@@ -7,9 +7,10 @@ library('dada2')
 
 #load env variables
 readType = Sys.getenv('readType')
-fileFormat=" Sys.getenv('fileFormat')"
+fileFormat= Sys.getenv('fileFormat')
 dataFormat = Sys.getenv('dataFormat')
 workingDir = Sys.getenv('workingDir')
+print(workingDir)
 
 #load  variables
 minOverlap = as.numeric(Sys.getenv('minOverlap'))
@@ -48,6 +49,7 @@ if (justConcatenate == "true" || justConcatenate == "TRUE"){
 
 ### Denoise
 if (pool != ""){
+    print("#Denoising")
     #check for output dir and delete if needed
     if (dir.exists("/input/denoised_assembled.dada2")) {
         unlink("/input/denoised_assembled.dada2", recursive=TRUE)
@@ -89,7 +91,8 @@ if (pool != ""){
 
 ### Merge denoised paired-end reads
 if (pool == ""){
-    path_results = "/input/denoised_assembled.dada2/"
+    print("#Merging")
+    path_results = "/input/denoised_assembled.dada2"
     #load denoised data
     dadaFs = readRDS(file.path(path_results, "dadaFs.rds"))
     dadaRs = readRDS(file.path(path_results, "dadaRs.rds"))

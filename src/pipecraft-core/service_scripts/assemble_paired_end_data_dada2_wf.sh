@@ -33,7 +33,7 @@ output_dir=$"/input/denoised_assembled.dada2"
 
 ### Check that at least 2 samples are provided
 files=$(ls /input/qualFiltered_out | grep -c "_filt.fastq")
-if [[ $files < 4 ]]; then
+if (( $files < 4 )); then
     printf '%s\n' "ERROR]: please provide at least 2 samples for the ASVs workflow
 >Quitting" >&2
     end_process
@@ -65,6 +65,10 @@ runtime=$((end-start))
 
 #Make README.txt file 
 printf "# Denoising and assembling of PAIRED-END sequencing data with dada2.
+
+### NOTE: ### 
+Input sequences must be made up only of A/C/G/T for denoising (i.e maxN must = 0 in quality filtering step). Otherwise DADA2 fails, and no output is generated.
+#############
 
 Files in 'denoised_assembled.dada2':
 # *.merged_ASVs.fasta   = denoised and assembled ASVs per sample. 'Size' denotes the abundance of the ASV sequence.  

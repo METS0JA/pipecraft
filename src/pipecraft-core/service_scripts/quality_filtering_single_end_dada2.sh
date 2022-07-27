@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Quality filter PAIRED-END sequencing data with dada2
-# Input = paired-end fastq files
+# Quality filter SINGLE-END sequencing data with dada2
+# Input = single-end fastq files
 
 ##########################################################
 ###Third-party applications:
@@ -19,14 +19,11 @@ dataFormat=${dataFormat}
 workingDir=${workingDir}
 
 #load variables
-#read_R1=${read_R1}
-#read_R2=${read_R2}
 samp_ID=${samp_ID}
 maxEE=${maxEE}
 maxN=${maxN}
 truncQ=${truncQ}
 truncLen_R1=${truncLen}
-#truncLen_R2=${truncLen_R2}
 minLen=${minLen}
 maxLen=${maxLen}
 minQ=${minQ}

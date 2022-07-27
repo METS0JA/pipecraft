@@ -774,7 +774,7 @@ export default new Vuex.Store({
                 value: ["\\."],
                 disabled: "single_end",
                 tooltip:
-                  "applies only for paired-end data. Identifyer string that separates the sample name from redundant charachters (e.g. file name = sample1.R1.fastq, then underscore '\\.' would be the 'identifier string' (sample name = sampl84)); note that backslash is only needed to escape dot regex (e.g. when file name = sample1_R1.fastq then specify as '_')",
+                  "applies only for paired-end data. Identifyer string that separates the sample name from redundant charachters (e.g. file name = sample1.R1.fastq, then '\\.' would be the 'identifier string' (sample name = sample1)); note that backslash is only needed to escape dot regex (e.g. when file name = sample1_R1.fastq then specify as '_')",
                 type: "chip",
                 rules: [(v) => v.length <= 1 || "ADD ONLY ONE IDENTIFIER"],
               },
@@ -962,7 +962,7 @@ export default new Vuex.Store({
                 value: ["\\."],
                 disabled: "never",
                 tooltip:
-                  "identifyer string that separates the sample name from redundant charachters (e.g. file name = sample1.R1.fastq, then underscore '\\.' would be the 'identifier string' (sample name = sampl84)); note that backslash is only needed to escape dot regex (e.g. when file name = sample1_R1.fastq then specify as '_')",
+                  "identifyer string that separates the sample name from redundant charachters (e.g. file name = sample1.R1.fastq, then '\\.' would be the 'identifier string' (sample name = sample1)); note that backslash is only needed to escape dot regex (e.g. when file name = sample1_R1.fastq then specify as '_')",
                 type: "chip",
                 rules: [(v) => v.length <= 1 || "ADD ONLY ONE IDENTIFIER"],
               },
@@ -2879,7 +2879,7 @@ export default new Vuex.Store({
             value: ["\\."],
             disabled: "never",
             tooltip:
-              "identifyer string that separates the sample name from redundant charachters (e.g. file name = sample1.R1.fastq, then underscore '\\.' would be the 'identifier string' (sample name = sampl84)); note that backslash is only needed to escape dot regex (e.g. when file name = sample1_R1.fastq then specify as '_')",
+              "identifyer string that separates the sample name from redundant charachters (e.g. file name = sample1.R1.fastq, then '\\.' would be the 'identifier string' (sample name = sample1)); note that backslash is only needed to escape dot regex (e.g. when file name = sample1_R1.fastq then specify as '_')",
             type: "chip",
             rules: [(v) => v.length <= 1 || "ADD ONLY ONE IDENTIFIER"],
           },
