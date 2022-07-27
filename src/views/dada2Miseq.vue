@@ -83,22 +83,10 @@
                   <span>Check out the documentation for more info</span>
                 </v-tooltip>
               </div>
-
-              <!-- <v-progress-circular
-            v-if="
-              $store.state.runInfo.active == true &&
-                $store.state.runInfo.type == 'customWorkflow' &&
-                index == $store.state.runInfo.step
-            "
-            indeterminate
-            color="#1DE9B6"
-            :size="20"
-          ></v-progress-circular> -->
-
               <div
                 v-if="
                   $store.state.runInfo.active == true &&
-                  $store.state.runInfo.type == 'customWorkflow' &&
+                  $store.state.runInfo.type == $route.params.workflowName &&
                   index == $store.state.runInfo.step
                 "
                 style="margin-left: 25px"
