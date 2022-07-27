@@ -43,7 +43,10 @@
       <v-expansion-panel
         v-for="(service, index) in services"
         :key="index"
-        :disabled="Object.values(inputData).includes(service.disabled)"
+        :disabled="
+          Object.values(inputData).includes(service.disabled) &&
+          $store.state.runInfo.active == false
+        "
         :class="Object.values(inputData).includes(service.disabled) && hide"
       >
         <v-tooltip top>

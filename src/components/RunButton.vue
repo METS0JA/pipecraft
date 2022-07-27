@@ -165,9 +165,9 @@ export default {
           for (let [i, step] of this.$store.state[name].entries()) {
             if (step.selected == true || step.selected == "always") {
               let dockerProps = await this.getDockerProps(step);
-              this.clearContainerConflicts(dockerProps.name);
               this.updateRunInfo(i, steps2Run, dockerProps.name, name);
-              this.imageCheck(step.imageName);
+              await this.imageCheck(step.imageName);
+              await this.clearContainerConflicts(dockerProps.name);
               console.log(dockerProps);
               let result = await dockerode
                 .run(
