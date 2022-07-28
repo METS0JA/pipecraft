@@ -4,9 +4,9 @@
       style="
         overflow-y: scroll !important;
         min-width: 800px !important;
-        height: 400px
         min-height: 40% !important;
-        background-color: #454442
+        height: 60% !important;
+        background-color: #454442;
       "
       id="terminal"
     ></div>

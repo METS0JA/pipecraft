@@ -317,7 +317,7 @@ export default {
                   name: Hostname,
                   HostConfig: {
                     Binds: Binds,
-                    CpuCount: 6,
+                    // CpuCount: 6,
                   },
                   Env: envVariables,
                   User: `${Math.abs(userInfo.uid)}`,
