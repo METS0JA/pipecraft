@@ -7,7 +7,7 @@
 
 ##########################################################
 ###Third-party applications:
-    #BLAST 2.11.0+
+    #BLAST 2.12.0+
     #citation: Camacho C., Coulouris G., Avagyan V., Ma N., Papadopoulos J., Bealer K., & Madden T.L. (2008) "BLAST+: architecture and applications." BMC Bioinformatics 10:421. 
 #python3 with biopython module
 #gawk
