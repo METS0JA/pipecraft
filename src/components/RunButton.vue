@@ -217,16 +217,17 @@ export default {
                 if (result.StatusCode == 137) {
                   Swal.fire("Workflow stopped");
                 } else {
-                  if (result.stderr == "") {
-                    result.stderr =
-                      "Something went wrong, make sure to report this one";
+                  let err;
+                  if (!result.stderr) {
+                    err = result;
+                  } else {
+                    err = result.stderr;
                   }
                   Swal.fire({
                     title: "An error has occured while processing your data",
-                    text: result.stderr,
+                    text: err,
                     showCancelButton: true,
-                    confirmButtonColor: "#3085d6",
-                    cancelButtonColor: "#d33",
+                    cancelButtonText: "Quit",
                     confirmButtonText: "Report a bug",
                   }).then((result) => {
                     // let log = await function('need to gather a log for each step ran and a snapshot of the state')
