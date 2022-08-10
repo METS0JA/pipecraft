@@ -3170,24 +3170,25 @@ export default new Vuex.Store({
       }
     },
     customWorkflowReady: (state) => {
+      let Ready = [];
       if (state.route.params.workflowName) {
-        let fileInputValues = [];
-        state[state.route.params.workflowName].forEach((input) => {
-          if (input.selected == true || input.selected == "always") {
-            input.Inputs.forEach((input) => {
-              if (input.type == "file") {
-                fileInputValues.push(input.value);
+        Ready.push(true);
+        state[state.route.params.workflowName].forEach((step) => {
+          if (step.selected == true || step.selected == "always") {
+            step.Inputs.forEach((input) => {
+              if (input.type == "file" || input.type == "chip") {
+                if (input.value == "undefined" || input.value.length < 1) {
+                  Ready.push(false);
+                }
               }
             });
           }
         });
-        if (fileInputValues.includes("undefined")) {
-          return false;
-        } else {
-          return true;
-        }
-      } else {
+      }
+      if (Ready.includes(false)) {
         return false;
+      } else {
+        return true;
       }
     },
   },

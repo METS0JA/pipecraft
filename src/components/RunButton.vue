@@ -217,7 +217,23 @@ export default {
                 if (result.StatusCode == 137) {
                   Swal.fire("Workflow stopped");
                 } else {
-                  Swal.fire(result.stderr);
+                  if (result.stderr == "") {
+                    result.stderr =
+                      "Something went wrong, make sure to report this one";
+                  }
+                  Swal.fire({
+                    title: "An error has occured while processing your data",
+                    text: result.stderr,
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Report a bug",
+                  }).then((result) => {
+                    // let log = await function('need to gather a log for each step ran and a snapshot of the state')
+                    if (result.isConfirmed) {
+                      Swal.fire("Report sent");
+                    }
+                  });
                 }
                 this.$store.commit("resetRunInfo");
                 stdout = new streams.WritableStream();
