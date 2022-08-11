@@ -141,7 +141,7 @@ BLAST_10_best_hits.txt = BLAST results for the 10 best hits in the used database
 BLAST values filed separator is '+'. When pasting the taxonomy results to e.g. Excel, then first denote '+' as as filed separator to align the columns.
 
 score -> blast score
-e-value -> blast e-value (note that e-value of 0 in BLAST means e-value is < 5e−324).
+e-value -> blast e-value (note that e-value of 0 in BLAST means e-value is < 5e-324).
 query len -> query (i.e. OTU/ASV) sequence length
 query start -> start position of match in the query seq
 query end -> end position of match in the query seq
