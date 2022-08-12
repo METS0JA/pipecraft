@@ -38,7 +38,7 @@
               <v-progress-linear
                 v-if="$store.state.runInfo.active == true"
                 indeterminate
-                color="green"
+                color="#1DE9B6"
               ></v-progress-linear>
             </div>
           </template>

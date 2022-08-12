@@ -92,13 +92,7 @@
                   $store.state.runInfo.type == $route.params.workflowName &&
                   index == $store.state.runInfo.step
                 "
-                style="margin-left: 25px"
               >
-                <v-progress-circular
-                  indeterminate
-                  color="#1DE9B6"
-                  :size="20"
-                ></v-progress-circular>
                 <span
                   v-if="$store.state.pullLoader.active == true"
                   style="padding-left: 25px"
@@ -109,7 +103,15 @@
           </template>
           <span>{{ service.tooltip }}</span>
         </v-tooltip>
-
+        <div
+          v-if="
+            $store.state.runInfo.active == true &&
+            $store.state.runInfo.type == $route.params.workflowName &&
+            index == $store.state.runInfo.step
+          "
+        >
+          <v-progress-linear indeterminate color="#1DE9B6"></v-progress-linear>
+        </div>
         <v-expansion-panel-content>
           <v-row justify="center">
             <v-col
