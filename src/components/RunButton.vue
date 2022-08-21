@@ -261,123 +261,80 @@ export default {
       });
     },
     async runWorkFlow() {
-      Swal.fire({
-        title: `Run workflow?`,
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Continue",
-      }).then(async (result) => {
+      this.confirmRun("workflow").then(async (result) => {
         if (result.isConfirmed) {
           this.$store.commit("addWorkingDir", "/input");
           let startTime = Date.now();
-          for (let index of this.selectedSteps.entries()) {
-            console.log(`Startin step: ${index[0] + 1} ${index[1].stepName}`);
-            let Hostname = index[1].stepName.replace(/[ |]/g, "_");
-            let container = await dockerode.getContainer(Hostname);
-            let nameConflicts = await container
-              .remove({ force: true })
-              .then(async () => {
-                return "Removed conflicting duplicate container";
-              })
-              .catch(() => {
-                return "No conflicting container names";
-              });
-            console.log(nameConflicts);
-            this.$store.commit("addRunInfo", [
-              true,
-              "workflow",
-              index[0],
-              this.selectedSteps.length,
-              Hostname,
-            ]);
-            let serviceIndex = this.findSelectedService(index[0]);
-            let scriptName =
-              this.selectedSteps[index[0]].services[serviceIndex].scriptName;
-            let imageName =
-              this.selectedSteps[index[0]].services[serviceIndex].imageName;
-            let Input = this.$store.state.inputDir;
-            let WorkingDir = this.$store.state.workingDir;
-            let envVariables;
-            envVariables = this.createVariableObj(index[0], serviceIndex);
-            let Binds = this.createBinds(serviceIndex, index[0], Input);
-            console.log(Binds);
-            let gotImg = await imageExists(dockerode, imageName);
-            if (gotImg === false) {
-              console.log(`Pulling image ${imageName}`);
-              this.$store.commit("activatePullLoader");
-              let output = await pullImageAsync(dockerode, imageName);
-              console.log(output);
-              console.log(`Pull complete`);
-              this.$store.commit("deactivatePullLoader");
-            }
-            console.log(
-              `SCRIPT: ${scriptName}`,
-              "\n",
-              `IMAGE: ${imageName}`,
-              "\n",
-              `INPUT: ${Input}`,
-              "\n",
-              `WORKDIR: ${WorkingDir}`
-            );
-            console.log(envVariables);
-            let userInfo = os.userInfo();
+          let steps2Run = this.$store.getters.steps2Run("selectedSteps");
+          for (let [i, step] of this.selectedSteps.entries()) {
+            let selectedStep = this.findSelectedService(i);
+            let dockerProps = await this.getDockerProps(selectedStep);
+            this.updateRunInfo(i, steps2Run, dockerProps.name, "workflow");
+            await this.imageCheck(selectedStep.imageName);
+            await this.clearContainerConflicts(dockerProps.name);
             let result = await dockerode
               .run(
-                imageName,
-                ["sh", "-c", `/scripts/${scriptName}`],
+                selectedStep.imageName,
+                ["sh", "-c", `/scripts/${selectedStep.scriptName}`],
                 [stdout, stderr],
-                {
-                  Tty: false,
-                  WorkingDir: WorkingDir,
-                  Volumes: {},
-                  name: Hostname,
-                  HostConfig: {
-                    Binds: Binds,
-                    // CpuCount: 6,
-                  },
-                  Env: envVariables,
-                  User: `${Math.abs(userInfo.uid)}`,
-                }
+                dockerProps
               )
               .then(async ([res, container]) => {
-                console.log(stdout.toString());
-                let resObj = { statusCode: res.StatusCode };
-                container.remove();
-                if (res.StatusCode === 0) {
-                  resObj.log = stdout.toString();
-                  return resObj;
-                } else {
-                  resObj.log = stderr.toString();
-                  return resObj;
+                res.stdout = stdout.toString();
+                res.stderr = stderr.toString();
+                if (res.StatusCode != 137) {
+                  container.remove({ v: true, force: true });
                 }
+                console.log(res);
+                return res;
               })
               .catch((err) => {
+                console.log(err);
                 this.$store.commit("resetRunInfo");
-                let resObj = {};
-                resObj.statusCode = err.statusCode;
-                resObj.log = err.json.message;
-                return resObj;
+                return err;
               });
             console.log(result);
-            if (result.statusCode == 0) {
+            if (result.StatusCode == 0) {
               let newWorkingDir = this.getVariableFromLog(
-                result.log,
+                result.stdout,
                 "workingDir"
               );
               let newDataInfo = {
-                dataFormat: this.getVariableFromLog(result.log, "dataFormat"),
-                fileFormat: this.getVariableFromLog(result.log, "fileFormat"),
-                readType: this.getVariableFromLog(result.log, "readType"),
+                dataFormat: this.getVariableFromLog(
+                  result.stdout,
+                  "dataFormat"
+                ),
+                fileFormat: this.getVariableFromLog(
+                  result.stdout,
+                  "fileFormat"
+                ),
+                readType: this.getVariableFromLog(result.stdout, "readType"),
               };
               this.$store.commit("toggle_PE_SE_scripts", newDataInfo.readType);
               this.$store.commit("addInputInfo", newDataInfo);
               this.$store.commit("addWorkingDir", newWorkingDir);
             } else {
-              if (result.statusCode == 137) {
+              if (result.StatusCode == 137) {
                 Swal.fire("Workflow stopped");
               } else {
-                Swal.fire(result.log);
+                let err;
+                if (!result.stderr) {
+                  err = result;
+                } else {
+                  err = result.stderr;
+                }
+                Swal.fire({
+                  title: "An error has occured while processing your data",
+                  text: err,
+                  showCancelButton: true,
+                  cancelButtonText: "Quit",
+                  confirmButtonText: "Report a bug",
+                }).then((result) => {
+                  // let log = await function('need to gather a log for each step ran and a snapshot of the state')
+                  if (result.isConfirmed) {
+                    Swal.fire("Report sent");
+                  }
+                });
               }
               this.$store.commit("resetRunInfo");
               stdout = new streams.WritableStream();
@@ -386,19 +343,19 @@ export default {
             }
             stdout = new streams.WritableStream();
             stderr = new streams.WritableStream();
-            console.log(`Finished step ${index[0] + 1}: ${index[1].stepName}`);
+            console.log(`Finished step ${i + 1}: ${step.stepName}`);
             this.$store.commit("resetRunInfo");
-            if (
-              this.selectedSteps.length == index[0] + 1 &&
-              result.statusCode == 0
-            ) {
-              Swal.fire("Workflow finished");
+            if (result.StatusCode == 0) {
+              steps2Run -= 1;
+              if (steps2Run == 0) {
+                Swal.fire("Workflow finished");
+              }
             }
           }
           let totalTime = this.toMinsAndSecs(Date.now() - startTime);
-          console.log(totalTime);
           this.$store.commit("addWorkingDir", "/input");
           this.$store.commit("resetRunInfo");
+          console.log(totalTime);
         }
       });
     },
@@ -513,9 +470,9 @@ export default {
     findAndRemoveContainer() {},
     findSelectedService(i) {
       let result;
-      this.selectedSteps[i].services.forEach((input, index) => {
+      this.selectedSteps[i].services.forEach((input) => {
         if (input.selected === true || input.selected == "always") {
-          result = index;
+          result = input;
         }
       });
       return result;
