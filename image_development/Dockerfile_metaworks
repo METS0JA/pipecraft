@@ -4,6 +4,10 @@ RUN conda init bash
 RUN apt-get update
 RUN apt-get install wget -y
 RUN apt-get install unzip -y
+RUN apt-get install pigz -y
+RUN apt-get install libuv1 -y
+RUN apt-get install libdw1 -y
+RUN apt-get install gzip -y
 RUN wget https://github.com/terrimporter/MetaWorks/releases/download/v1.11.1/MetaWorks1.11.1.zip
 RUN unzip MetaWorks1.11.1.zip
 RUN cd MetaWorks1.11.1 && conda env create -f environment.yml
@@ -12,8 +16,5 @@ RUN . /root/.bashrc && \
     cd MetaWorks1.11.1 && \
     conda activate MetaWorks_v1.11.1
 RUN wget ftp://ftp.ncbi.nlm.nih.gov/genomes/TOOLS/ORFfinder/linux-i64/ORFfinder.gz
-RUN apt-get install gzip -y
 RUN gunzip ORFfinder.gz
 RUN mv ORFfinder /bin/.
-RUN apt-get install libuv1 -y
-RUN apt-get install libdw1 -y
