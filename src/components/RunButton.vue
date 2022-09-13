@@ -139,7 +139,7 @@ export default {
       }
     },
     async getDockerProps(step) {
-      let Hostname = step.serviceName.replace(" ", "_");
+      let Hostname = step.serviceName.replaceAll(" ", "_");
       let WorkingDir = this.$store.state.workingDir;
       let envVariables = this.createCustomVariableObj(step);
       let Binds = this.getBinds_c(step, this.$store.state.inputDir);
@@ -269,6 +269,7 @@ export default {
           for (let [i, step] of this.selectedSteps.entries()) {
             let selectedStep = this.findSelectedService(i);
             let dockerProps = await this.getDockerProps(selectedStep);
+            console.log(dockerProps);
             this.updateRunInfo(i, steps2Run, dockerProps.name, "workflow");
             await this.imageCheck(selectedStep.imageName);
             await this.clearContainerConflicts(dockerProps.name);

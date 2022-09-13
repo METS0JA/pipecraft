@@ -906,7 +906,7 @@ export default new Vuex.Store({
               "assemble paired-end reads with DADA2 'mergePairs' function. This step performs also dada denoising! Note that only FASTA is outputted!",
             scriptName: "assemble_paired_end_data_dada2.sh",
             imageName: "pipecraft/dada2:1.20",
-            serviceName: "DADA2 denoise and merge",
+            serviceName: "DADA2_denoise_and_merge",
             selected: false,
             disabled: "single_end",
             showExtra: false,

@@ -16,4 +16,3 @@ RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 RUN python3 get-pip.py
 RUN python3 -m pip install cutadapt==3.5
 RUN apt-get remove wget -y curl -y
-
