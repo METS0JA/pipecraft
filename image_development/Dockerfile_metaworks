@@ -2,6 +2,8 @@ FROM continuumio/miniconda3:4.12.0
 # ARG DEBIAN_FRONTEND=noninteractive
 RUN conda init bash
 RUN apt-get update
+RUN apt-get install --no-install-recommends r-base -y
+RUN Rscript -e 'install.packages("reshape2", repos="https://cloud.r-project.org")'
 RUN apt-get install wget -y
 RUN apt-get install unzip -y
 RUN apt-get install pigz -y
