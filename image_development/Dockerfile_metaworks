@@ -20,4 +20,5 @@ RUN . /root/.bashrc && \
     conda activate MetaWorks_v1.11.1
 RUN wget ftp://ftp.ncbi.nlm.nih.gov/genomes/TOOLS/ORFfinder/linux-i64/ORFfinder.gz
 RUN gunzip ORFfinder.gz
+RUN chmod 755 ORFfinder
 RUN mv ORFfinder /bin/.
