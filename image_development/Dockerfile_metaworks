@@ -12,6 +12,7 @@ RUN apt-get install libdw1 -y
 RUN apt-get install gzip -y
 RUN wget https://github.com/terrimporter/MetaWorks/releases/download/v1.11.1/MetaWorks1.11.1.zip
 RUN unzip MetaWorks1.11.1.zip
+RUN rm MetaWorks1.11.1.zip
 RUN cd MetaWorks1.11.1 && conda env create -f environment.yml
 RUN . /root/.bashrc && \
     conda init bash && \
