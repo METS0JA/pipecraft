@@ -104,7 +104,7 @@ done < tempdir2/paired_end_files.txt
 ### COMPILE FINAL STATISTICS AND README FILES ###
 #################################################
 printf "\nCleaning up and compiling final stats files ...\n"
-clean_and_make_stats_Assemble_Demux
+clean_and_make_stats_assemble
 end=$(date +%s)
 runtime=$((end-start))
 
