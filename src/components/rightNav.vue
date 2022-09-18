@@ -80,6 +80,56 @@
     <v-list-item style="padding: 0" class="mt-5" ripple link>
       <v-tooltip left nudge-left="10">
         <template v-slot:activator="{ on }">
+          <v-list-item-content
+            v-on="on"
+            @click="push2premade('Metaworks_workflow')"
+          >
+            <div>
+              <v-icon
+                style="margin-right: -10px; margin-left: 5px"
+                :style="
+                  `/premade/Metaworks_workflow` == $route.path
+                    ? { color: '#1DE9B6' }
+                    : { color: 'white' }
+                "
+                >mdi-alpha-m-box</v-icon
+              >
+              <v-icon
+                style="margin-right: -11px"
+                :style="
+                  `/premade/Metaworks_workflow` == $route.path
+                    ? { color: '#1DE9B6' }
+                    : { color: 'white' }
+                "
+                >mdi-alpha-e-box</v-icon
+              >
+              <v-icon
+                style="margin-right: -11px"
+                :style="
+                  `/premade/Metaworks_workflow` == $route.path
+                    ? { color: '#1DE9B6' }
+                    : { color: 'white' }
+                "
+                >mdi-alpha-t-box</v-icon
+              >
+              <v-icon
+                style="margin-right: -11px"
+                :style="
+                  `/premade/Metaworks_workflow` == $route.path
+                    ? { color: '#1DE9B6' }
+                    : { color: 'white' }
+                "
+                >mdi-alpha-a-box</v-icon
+              >
+            </div>
+          </v-list-item-content>
+        </template>
+        <span>DADA2 workflow</span>
+      </v-tooltip>
+    </v-list-item>
+    <v-list-item style="padding: 0" class="mt-5" ripple link>
+      <v-tooltip left nudge-left="10">
+        <template v-slot:activator="{ on }">
           <v-list-item-content v-on="on" @click="push2premade('OTUs_workflow')">
             <div>
               <v-icon

@@ -62,6 +62,9 @@ export default {
         ];
       }
     },
+    inputData() {
+      return this.$store.state.data;
+    },
   },
   methods: {
     toggleActive(value) {
