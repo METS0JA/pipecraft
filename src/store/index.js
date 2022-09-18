@@ -2939,13 +2939,12 @@ export default new Vuex.Store({
         ],
       },
       {
-        tooltip:
-          "Reads are dereplicated (only unique sequences are retained) with VSEARCH v2.21.1 using the fastx_uniques method",
+        tooltip: "Tick checkbox if you want to filter out putative pseudogenes",
         scriptName: "",
         imageName: "pipecraft/metaworks:1.11.1",
-        serviceName: "denoise and dereplicate",
+        serviceName: "Pseudogene filtering",
         disabled: "never",
-        selected: "always",
+        selected: false,
         showExtra: false,
         extraInputs: [],
         Inputs: [],
