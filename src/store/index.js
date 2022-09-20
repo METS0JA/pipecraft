@@ -2745,19 +2745,19 @@ export default new Vuex.Store({
             rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
           },
           {
-            name: "overlap_matching",
-            value: 0.9,
+            name: "mismatches",
+            value: 0.02,
             disabled: "never",
-            tooltip: "Minimum fraction of matching overlap (default 0.90)",
+            tooltip:
+              "Maximum fraction of mismatches allowed in overlap (default 0.02)",
             type: "numeric",
             rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
           },
           {
-            name: "overlap",
+            name: "matches",
             value: [],
             disabled: "never",
-            tooltip:
-              "Maximum fraction of mismatches allowed in overlap (default 0.02)",
+            tooltip: "Minimum fraction of matching overlap (default 0.90)",
             type: "numeric",
             rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
           },
