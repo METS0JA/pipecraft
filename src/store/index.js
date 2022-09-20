@@ -2947,7 +2947,86 @@ export default new Vuex.Store({
         selected: false,
         showExtra: false,
         extraInputs: [],
-        Inputs: [],
+        Inputs: [
+          {
+            name: "tax_to_target",
+            value: [],
+            disabled: "never",
+            tooltip:
+              "Add taxonomic groups to target eg. 'Metazoa' to target Metazoa",
+            type: "chip",
+            iupac: true,
+            rules: [(v) => v.length <= 20 || "TOO MANY GROUPS"],
+          },
+          {
+            name: "tax_to_exclude",
+            value: [],
+            disabled: "never",
+            tooltip:
+              "Add taxonomic groups to exclude eg. Chordata' to exclude vertebrates",
+            type: "chip",
+            iupac: true,
+            rules: [(v) => v.length <= 20 || "TOO MANY GROUPS"],
+          },
+          {
+            name: "HMM_profile_analysis",
+            active: false,
+            btnName: "select file",
+            value: "undefined",
+            disabled: "never",
+            tooltip:
+              "Removal of sequences with unusually low HMM scores, link a HMM profile",
+            type: "boolfile",
+          },
+          {
+            name: "gene_code",
+            items: [
+              "standard code",
+              "vertebrate mitochondrial",
+              "invertebrate mitochondrial",
+            ],
+            disabled: "never",
+            tooltip:
+              "Use one of the RDP classifier built-in fungal classifiers",
+            value: "standard code",
+            type: "select",
+          },
+          {
+            name: "start_codon",
+            items: [
+              "ATG only",
+              "ATG and atlter. init. codon",
+              "any sense codon",
+            ],
+            disabled: "never",
+            tooltip: "ORF start codon to use",
+            value: "ATG and atlter. init. codon",
+            type: "select",
+          },
+          {
+            name: "min_length",
+            value: 30,
+            disabled: "never",
+            tooltip: "minimum length (ORFfinder default 75, min 30 nt)",
+            type: "numeric",
+            rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+          },
+          {
+            name: "ignore_nested",
+            value: true,
+            disabled: "never",
+            tooltip: "ignore nested ORFs",
+            type: "bool",
+          },
+          {
+            name: "strand",
+            items: ["both", "plus", "minus"],
+            disabled: "never",
+            tooltip: "ORF start codon to use",
+            value: "plus",
+            type: "select",
+          },
+        ],
       },
     ],
     ASVs_workflow: [
