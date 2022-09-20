@@ -31,10 +31,13 @@ echo "vars:"
 echo "$filename_structure"
 echo $R1
 echo $R2
+echo "wd = $pwd"
 
 echo "activate CONDA"
 echo ""
-
+#conda init bash
+#exec $SHELL
+eval "$(conda shell.bash hook)"
 conda activate MetaWorks_v1.11.1
 
 #ITSpart=$"ITS2" #or ITS1
@@ -65,28 +68,6 @@ else
     novaseq=$""
 fi
 
-# Make primers.fasta
-fwd_primer_array=$(echo $fwd_tempprimer | sed 's/,/ /g' | sed 's/I/N/g')
-rev_primer_array=$(echo $rev_tempprimer | sed 's/,/ /g' | sed 's/I/N/g')
-i=1
-for fwd_primer in $fwd_primer_array; do
-    #validate primer seq
-    printf ">primer\n$fwd_primer" | checkerror=$(seqkit seq --seq-type DNA -v 2>&1)
-    check_app_error
-
-    for rev_primer in $rev_primer_array; do
-        #validate primer seq
-        printf ">primer\n$rev_primer" | checkerror=$(seqkit seq --seq-type DNA -v 2>&1)
-        check_app_error
-
-        echo ">primer_pair$i" >> /input/primers.fasta
-        #reverse complement rev primer
-        rev_primer_rc=$(printf ">rev_primer\n$rev_primer" | seqkit seq --reverse --complement --seq-type DNA -v | sed -n 2p)
-        echo "$fwd_primer...$rev_primer_rc" >> /input/primers.fasta
-        ((i=i+1))
-    done
-done
-primers=$"/input/primers.fasta"
 
 #Denoise
 minsize=${minsize}
@@ -106,14 +87,35 @@ first_file_check
 ### Prepare working env and check paired-end data
 prepare_PE_env
 
-# ENTER THE MetaWorks
+### Make primers.fasta
+fwd_primer_array=$(echo $fwd_tempprimer | sed 's/,/ /g' | sed 's/I/N/g')
+rev_primer_array=$(echo $rev_tempprimer | sed 's/,/ /g' | sed 's/I/N/g')
+i=1
+for fwd_primer in $fwd_primer_array; do
+    #validate primer seq
+    printf ">primer\n$fwd_primer" | checkerror=$(seqkit seq --seq-type DNA -v 2>&1)
+    check_app_error
 
+    for rev_primer in $rev_primer_array; do
+        #validate primer seq
+        printf ">primer\n$rev_primer" | checkerror=$(seqkit seq --seq-type DNA -v 2>&1)
+        check_app_error
+
+        echo ">primer_pair$i" >> /input/tempdir2/primers.fasta
+        #reverse complement rev primer
+        rev_primer_rc=$(printf ">rev_primer\n$rev_primer" | seqkit seq --reverse --complement --seq-type DNA -v | sed -n 2p)
+        echo "$fwd_primer...$rev_primer_rc" >> /input/tempdir2/primers.fasta
+        ((i=i+1))
+    done
+done
+primers=$"/input/tempdir2/primers.fasta"
+
+### ENTER THE MetaWorks
 cd /MetaWorks1.11.1
 
 if [[ -f config_ESV.pipecraft.yaml ]]; then
     rm config_ESV.pipecraft.yaml
 fi
-
 
 # Make configuration file for MetaWorks v1.11.1
 printf "# Configuration file for MetaWorks v1.11.1
@@ -296,7 +298,7 @@ ORFFINDER:
 
 # report_type (1|2)
 report_type: 1
-" > config_ESV.pipecraft.yaml
+" > /input/tempdir2/config_ESV.pipecraft.yaml
 
 
 #########################################################################################################
@@ -308,15 +310,34 @@ if [[ -f snakefile_ESV.pipecraft ]]; then
     rm snakefile_ESV.pipecraft
 fi
 
-cp snakefile_ESV snakefile_ESV.pipecraft
-sed -i 's/Read in vars from config_ESV.yaml/Read in vars from config_ESV.pipecraft.yaml/' snakefile_ESV.pipecraft
-sed -i '6 i\configfile: "config_ESV.pipecraft.yaml"' snakefile_ESV.pipecraft
+cp snakefile_ESV /input/tempdir2/snakefile_ESV.pipecraft
+sed -i 's/Read in vars from config_ESV.yaml/Read in vars from config_ESV.pipecraft.yaml/' /input/tempdir2/snakefile_ESV.pipecraft
+sed -i '6 i\configfile: "config_ESV.pipecraft.yaml"' /input/tempdir2/snakefile_ESV.pipecraft
 
 
 # Run MetaWorks
 echo "Running snakemake"
-snakemake --jobs $cores --snakefile snakefile_ESV.pipecraft --configfile config_ESV.pipecraft.yaml
+checkerror=$(snakemake -h 2>&1)
+check_app_error
+
+checkerror=$(snakemake --jobs $cores --snakefile /input/tempdir2/snakefile_ESV.pipecraft --configfile /input/tempdir2/config_ESV.pipecraft.yaml 2>&1)
+check_app_error
+
 echo "Snakemake done"
+
+#Done
+printf "\nDONE\n"
+printf "Data in directory '$output_dir'\n"
+printf "Summary of sequence counts in '$output_dir/seq_count_summary.txt'\n"
+printf "Check README.txt files in output directory for further information about the process.\n"
+printf "Total time: $runtime sec.\n\n"
+
+#variables for all services
+echo "workingDir=$output_dir"
+echo "fileFormat=$newextension"
+echo "dataFormat=$dataFormat"
+echo "readType=paired_end"
+
 
 # ###########################
 # ### create an ESV table ###
