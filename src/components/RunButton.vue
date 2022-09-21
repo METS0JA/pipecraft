@@ -178,6 +178,8 @@ export default {
                 )
                 .then(async ([res, container]) => {
                   console.log(stdout.toString());
+                  console.log(sterr.toString());
+                  console.log(stdout.toString());
                   res.stdout = stdout.toString();
                   res.stderr = stderr.toString();
                   if (res.StatusCode != 137) {
