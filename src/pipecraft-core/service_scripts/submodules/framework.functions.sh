@@ -372,7 +372,7 @@ fi
 ### Compile a track reads summary file (seq_count_summary.txt)
 printf "File\tReads\tAssembled_reads\n" > $output_dir/seq_count_summary.txt
 while read LINE; do
-    file1=$(echo $LINE | awk '{print $1}' | sed -e "s/R1\.$newextension/$newextension/")
+    file1=$(echo $LINE | awk '{print $1}' | sed -e "s/$read_R1.*\.$newextension/\.$newextension/")
     count1=$(echo $LINE | awk '{print $2}')
     file2=$(grep "$file1" tempdir2/seq_count_after.txt | awk '{print $1}')
     count2=$(grep "$file1" tempdir2/seq_count_after.txt | awk '{print $2}')

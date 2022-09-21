@@ -868,6 +868,15 @@ export default new Vuex.Store({
             ],
             Inputs: [
               {
+                name: "read_R1",
+                value: ["\\.R1"],
+                disabled: "single_end",
+                tooltip:
+                  "identifyer string that is common for all R1 reads (e.g. when all R1 files have '.R1' string, then enter '\\.R1'. Note that backslash is only needed to escape dot regex; e.g. when all R1 files have '_R1' string, then enter '_R1'.)",
+                type: "chip",
+                rules: [(v) => v.length <= 1 || "ADD ONLY ONE IDENTIFIER"],
+              },
+              {
                 name: "min_overlap",
                 value: 12,
                 disabled: "never",
@@ -2645,8 +2654,8 @@ export default new Vuex.Store({
     Metaworks_workflow: [
       {
         tooltip: "MetaWorks v1.11.1, ESV paired-end reads",
-        scriptName: "metaworks_paired_end_ESV.sh",
-        imageName: "pipecraft/metaworks:1.11.1",
+        scriptName: "metaworks_paired_end_ESV2.sh",
+        imageName: "snakemake/snakemake:latest",
         serviceName: "metaworks_ESV",
         disabled: "never",
         selected: "always",
@@ -2696,7 +2705,7 @@ export default new Vuex.Store({
             type: "numeric",
             rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
           },
-          // remove primers
+          // remove primers and q_filt
           {
             name: "forward_primers",
             value: ["GGWACWGGWTGAACWGTWTAYCCYCC"],

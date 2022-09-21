@@ -1,6 +1,5 @@
 FROM continuumio/miniconda3:4.12.0
 # ARG DEBIAN_FRONTEND=noninteractive
-RUN conda init bash
 RUN apt-get update
 RUN apt-get install build-essential -y
 RUN apt-get install --no-install-recommends r-base -y
@@ -11,18 +10,16 @@ RUN apt-get install pigz -y
 RUN apt-get install libuv1 -y
 RUN apt-get install libdw1 -y
 RUN apt-get install gzip -y
-RUN wget https://github.com/terrimporter/MetaWorks/releases/download/v1.11.1/MetaWorks1.11.1.zip
-RUN unzip MetaWorks1.11.1.zip
-RUN rm MetaWorks1.11.1.zip
-RUN cd MetaWorks1.11.1 && conda env create -f environment.yml
+RUN wget https://github.com/terrimporter/MetaWorks/releases/download/v1.11.1/MetaWorks1.11.2.zip
+RUN unzip MetaWorks1.11.2.zip
+RUN rm MetaWorks1.11.2.zip
+#RUN  !!! wget metaworks_environment.yml from SuvalineVana github 
+RUN conda env create -f metaworks_environment.yml
 RUN . /root/.bashrc && \
-    conda init bash && \
-    cd MetaWorks1.11.1 && \
-    conda activate MetaWorks_v1.11.1
+    conda init bash
 RUN wget ftp://ftp.ncbi.nlm.nih.gov/genomes/TOOLS/ORFfinder/linux-i64/ORFfinder.gz
 RUN gunzip ORFfinder.gz
 RUN chmod 755 ORFfinder
 RUN mv ORFfinder /bin/.
 RUN wget https://github.com/shenwei356/seqkit/releases/download/v2.0.0/seqkit_linux_amd64.tar.gz -O /tmp/seqkit.tar.gz && \
     tar zxvf /tmp/seqkit.tar.gz -C /usr/bin/ && rm /tmp/seqkit.tar.gz
-
