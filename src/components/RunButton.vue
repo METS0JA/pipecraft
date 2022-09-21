@@ -177,6 +177,7 @@ export default {
                   dockerProps
                 )
                 .then(async ([res, container]) => {
+                  console.log(stdout.toString());
                   res.stdout = stdout.toString();
                   res.stderr = stderr.toString();
                   if (res.StatusCode != 137) {
