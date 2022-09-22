@@ -2655,7 +2655,11 @@ export default new Vuex.Store({
       {
         tooltip: "MetaWorks v1.11.1, ESV paired-end reads",
         scriptName: "metaworks_paired_end_ESV2.sh",
+<<<<<<< HEAD
         imageName: "pipecraft/metaworks:1.11.1",
+=======
+        imageName: "pipecraft/metaworks:1.11.2",
+>>>>>>> 7c900e00fa29ca0ffe7f88bc48e61f4be1d57a9f
         serviceName: "metaworks_ESV",
         disabled: "never",
         selected: "always",
@@ -2683,8 +2687,7 @@ export default new Vuex.Store({
             name: "min_overlap",
             value: 25,
             disabled: "never",
-            tooltip:
-              "minimum overlap (bp) length between R1 and R2 reads",
+            tooltip: "minimum overlap (bp) length between R1 and R2 reads",
             type: "numeric",
             rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
           },
@@ -2773,7 +2776,7 @@ export default new Vuex.Store({
             type: "numeric",
             rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
-          // denoise  
+          // denoise
           {
             name: "minsize",
             value: 8,

@@ -15,8 +15,8 @@
 # test if metaworks cut primers reorients the reads! 
 # validate primers  ok - -> also for cut primers!
 ################################################################
-
 # Run MetaWorks
+echo $UID
 echo "Running snakemake"
 #checkerror=$(snakemake -h 2>&1)
 #check_app_error
@@ -25,13 +25,14 @@ exec $SHELL
 eval "$(conda shell.bash hook)"
 #conda activate MetaWorks_v1.11.1
 
-which conda
-which snakemake
-
 
 conda activate MetaWorks_v1.11.1
-
 cd /input
+
+
+eval "$(conda shell.bash hook)"
+conda activate MetaWorks_v1.11.2
+snakemake --jobs 1 --snakefile hello_world.txt
 #snakemake --jobs 2 --snakefile /input/snakefile_ESV --configfile /input/config_ESV.pipecraft.yaml 
-snakemake --jobs 1 --snakefile hello_world
+
 
