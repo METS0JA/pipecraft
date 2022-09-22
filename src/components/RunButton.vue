@@ -152,7 +152,7 @@ export default {
           Binds: Binds,
         },
         Env: envVariables,
-        User: `${Math.abs(os.userInfo().uid)}`,
+        User: `${os.userInfo().uid > 0 ? os.userInfo().uid : 0}`,
       };
       return dockerProps;
     },
@@ -177,6 +177,9 @@ export default {
                   dockerProps
                 )
                 .then(async ([res, container]) => {
+                  console.log(stdout.toString());
+                  console.log(stderr.toString());
+                  console.log(stdout.toString());
                   res.stdout = stdout.toString();
                   res.stderr = stderr.toString();
                   if (res.StatusCode != 137) {
