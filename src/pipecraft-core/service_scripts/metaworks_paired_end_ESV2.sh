@@ -20,13 +20,16 @@
 echo "Running snakemake"
 #checkerror=$(snakemake -h 2>&1)
 #check_app_error
-#eval "$(conda shell.bash hook)"
+conda init bash
+exec $SHELL
+eval "$(conda shell.bash hook)"
 #conda activate MetaWorks_v1.11.1
 
 which conda
 which snakemake
 
 
+conda activate MetaWorks_v1.11.1
 
 cd /input
 #snakemake --jobs 2 --snakefile /input/snakefile_ESV --configfile /input/config_ESV.pipecraft.yaml 
