@@ -39,6 +39,28 @@
         <span>{{ item.tooltip }}</span>
       </v-tooltip>
     </v-list-item>
+    <v-tooltip left nudge-left="10">
+      <template v-slot:activator="{ on }">
+        <v-list-item v-on="on" class="mt-5" ripple link>
+          <v-menu left offset-x>
+            <template v-slot:activator="{ on, attrs }">
+              <v-list-item-content v-on="on" v-bind="attrs">
+                <v-icon>mdi-more</v-icon>
+              </v-list-item-content>
+            </template>
+            <v-list>
+              <v-list-item
+                v-for="(item, index) in $store.state.customWorkflowInfo"
+                :key="index"
+              >
+                <v-list-item-title>{{ index }}</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </v-list-item>
+      </template>
+      <span>custom workflows</span>
+    </v-tooltip>
     <v-list-item style="padding: 0" class="mt-5" ripple link>
       <v-tooltip left nudge-left="10">
         <template v-slot:activator="{ on }">
