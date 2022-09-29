@@ -186,8 +186,9 @@ while read LINE; do
         -A file:tempdir2/rev_primer_RC.fasta \
         -o $output_dir/$inputR1.$newextension \
         -p $output_dir/$inputR2.$newextension \
-        $inputR1.$newextension $inputR2.$newextension 2>&1)
+        $output_dir/$inputR1.round1.$newextension $output_dir/$inputR2.round1.$newextension 2>&1)
         check_app_error
+        rm $output_dir/$inputR1.round1.$newextension $output_dir/$inputR2.round1.$newextension
 
     elif [[ $seqs_to_keep == "keep_only_linked" ]]; then
         checkerror=$(cutadapt --quiet \
@@ -205,11 +206,10 @@ while read LINE; do
         -G file:tempdir2/liked_rev_fwdRC.fasta \
         -o $output_dir/$inputR1.round1.$newextension \
         -p $output_dir/$inputR2.round1.$newextension \
-        $output_dir/$inputR1.round1.$newextension $output_dir/$inputR2.round1.$newextension 2>&1)
+        $inputR1.$newextension $inputR2.$newextension 2>&1)
         check_app_error
-        rm $output_dir/$inputR1.round1.$newextension $output_dir/$inputR2.round1.$newextension
 
-        #round2; clipping if present, but no discarding
+        #additional check of the primer presence
         checkerror=$(cutadapt --quiet \
         $mismatches \
         $min_length \
@@ -228,7 +228,8 @@ while read LINE; do
         -p $output_dir/$inputR2.$newextension \
         $output_dir/$inputR1.round1.$newextension $output_dir/$inputR2.round1.$newextension 2>&1)
         check_app_error
-        rm $output_dir/$inputR1.round1.$newextension $output_dir/$inputR2.round1.$newextension
+        rm $output_dir/$inputR1.round1.$newextension
+        rm $output_dir/$inputR2.round1.$newextension
     fi
 done < tempdir2/paired_end_files.txt
 
