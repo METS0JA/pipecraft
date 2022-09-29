@@ -159,6 +159,31 @@ while read LINE; do
         -A file:tempdir2/fwd_primer_RC.fasta \
         -G file:tempdir2/fwd_primer.fasta \
         -A file:tempdir2/rev_primer_RC.fasta \
+        -o $output_dir/$inputR1.round1.$newextension \
+        -p $output_dir/$inputR2.round1.$newextension \
+        $inputR1.$newextension $inputR2.$newextension 2>&1)
+        check_app_error
+
+        #round2; clipping if present, but no discarding
+        checkerror=$(cutadapt --quiet \
+        $mismatches \
+        $min_length \
+        $overlap \
+        $indels \
+        $cores \
+        --pair-filter=$pair_filter \
+        -g file:tempdir2/liked_fwd_revRC.fasta \
+        -g file:tempdir2/liked_rev_fwdRC.fasta \
+        -g file:tempdir2/fwd_primer.fasta \
+        -a file:tempdir2/rev_primer_RC.fasta \
+        -g file:tempdir2/rev_primer.fasta \
+        -a file:tempdir2/fwd_primer_RC.fasta \
+        -G file:tempdir2/liked_fwd_revRC.fasta \
+        -G file:tempdir2/liked_rev_fwdRC.fasta \
+        -G file:tempdir2/rev_primer.fasta \
+        -A file:tempdir2/fwd_primer_RC.fasta \
+        -G file:tempdir2/fwd_primer.fasta \
+        -A file:tempdir2/rev_primer_RC.fasta \
         -o $output_dir/$inputR1.$newextension \
         -p $output_dir/$inputR2.$newextension \
         $inputR1.$newextension $inputR2.$newextension 2>&1)
@@ -180,10 +205,11 @@ while read LINE; do
         -G file:tempdir2/liked_rev_fwdRC.fasta \
         -o $output_dir/$inputR1.round1.$newextension \
         -p $output_dir/$inputR2.round1.$newextension \
-        $inputR1.$newextension $inputR2.$newextension 2>&1)
+        $output_dir/$inputR1.round1.$newextension $output_dir/$inputR2.round1.$newextension 2>&1)
         check_app_error
+        rm $output_dir/$inputR1.round1.$newextension $output_dir/$inputR2.round1.$newextension
 
-        #additional check of the primer presence
+        #round2; clipping if present, but no discarding
         checkerror=$(cutadapt --quiet \
         $mismatches \
         $min_length \
@@ -202,8 +228,7 @@ while read LINE; do
         -p $output_dir/$inputR2.$newextension \
         $output_dir/$inputR1.round1.$newextension $output_dir/$inputR2.round1.$newextension 2>&1)
         check_app_error
-        rm $output_dir/$inputR1.round1.$newextension
-        rm $output_dir/$inputR2.round1.$newextension
+        rm $output_dir/$inputR1.round1.$newextension $output_dir/$inputR2.round1.$newextension
     fi
 done < tempdir2/paired_end_files.txt
 

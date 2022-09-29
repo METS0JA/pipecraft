@@ -39,7 +39,43 @@
         <span>{{ item.tooltip }}</span>
       </v-tooltip>
     </v-list-item>
-    <v-list-item style="padding: 0" class="mt-5" ripple link>
+    <v-tooltip left nudge-left="10">
+      <template v-slot:activator="{ on }">
+        <v-list-item v-on="on" class="mt-5" ripple link>
+          <v-menu dark left nudge-left="15" offset-x>
+            <template v-slot:activator="{ on, attrs }">
+              <v-list-item-content v-on="on" v-bind="attrs">
+                <v-icon
+                  :style="
+                    $route.path.includes('premade')
+                      ? { color: '#1DE9B6' }
+                      : { color: 'white' }
+                  "
+                  >mdi-more</v-icon
+                >
+              </v-list-item-content>
+            </template>
+            <v-list>
+              <v-subheader>CUSTOM WORKFLOWS</v-subheader>
+              <v-divider></v-divider>
+              <v-list-item
+                ripple
+                link
+                v-for="(item, index) in $store.state.customWorkflowInfo"
+                :key="index"
+                @click="push2premade(index)"
+              >
+                <v-list-item-title>{{
+                  index.replace("_", " ")
+                }}</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </v-list-item>
+      </template>
+      <span>custom workflows</span>
+    </v-tooltip>
+    <!--     <v-list-item style="padding: 0" class="mt-5" ripple link>
       <v-tooltip left nudge-left="10">
         <template v-slot:activator="{ on }">
           <v-list-item-content v-on="on" @click="push2premade('ASVs_workflow')">
@@ -76,8 +112,8 @@
         </template>
         <span>DADA2 workflow</span>
       </v-tooltip>
-    </v-list-item>
-    <v-list-item style="padding: 0" class="mt-5" ripple link>
+    </v-list-item> -->
+    <!--     <v-list-item style="padding: 0" class="mt-5" ripple link>
       <v-tooltip left nudge-left="10">
         <template v-slot:activator="{ on }">
           <v-list-item-content
@@ -126,8 +162,8 @@
         </template>
         <span>DADA2 workflow</span>
       </v-tooltip>
-    </v-list-item>
-    <v-list-item style="padding: 0" class="mt-5" ripple link>
+    </v-list-item> -->
+    <!--     <v-list-item style="padding: 0" class="mt-5" ripple link>
       <v-tooltip left nudge-left="10">
         <template v-slot:activator="{ on }">
           <v-list-item-content v-on="on" @click="push2premade('OTUs_workflow')">
@@ -164,7 +200,7 @@
         </template>
         <span>OTU workflow</span>
       </v-tooltip>
-    </v-list-item>
+    </v-list-item> -->
   </v-list>
 </template>
 
