@@ -7,6 +7,9 @@ RUN apt-get update && \
     apt-get install -y unzip && \
     apt-get install -y pigz && \
     apt-get install -y gzip && \
+    apt-get install libuv1 -y  && \
+    apt-get install libdw1 -y  && \
+    apt-get install libnghttp2-14 -y  && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -22,7 +25,7 @@ ENV PATH=$CONDA_DIR/bin:$PATH
 RUN wget https://github.com/terrimporter/MetaWorks/releases/download/v1.11.2/MetaWorks1.11.2.zip
 RUN unzip MetaWorks1.11.2.zip
 RUN rm MetaWorks1.11.2.zip
-RUN cd MetaWorks1.11.2 && conda env create -f environment.yml && activate MetaWorks_v1.11.2
+RUN cd MetaWorks1.11.2 && conda env create -f environment.yml
 
 # Install ORFfinder and seqkit
 RUN wget ftp://ftp.ncbi.nlm.nih.gov/genomes/TOOLS/ORFfinder/linux-i64/ORFfinder.gz
@@ -38,8 +41,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends r-base
 RUN Rscript -e 'install.packages("reshape2", repos="https://cloud.r-project.org")'
 
 
-#RUN apt-get install libuv1 -y
-#RUN apt-get install libdw1 -y
+
 #RUN  !!! wget metaworks_environment.yml from SuvalineVana github 
 #RUN . /root/.bashrc && \
 #    conda init bash
