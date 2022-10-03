@@ -374,7 +374,7 @@ printf "File\tReads\tAssembled_reads\n" > $output_dir/seq_count_summary.txt
 while read LINE; do
     file1=$(echo $LINE | awk '{print $1}' | sed -e "s/$read_R1.*\.$newextension/\.$newextension/")
     count1=$(echo $LINE | awk '{print $2}')
-    file2=$(grep "$file1" tempdir2/seq_count_after.txt | awk '{print $1}')
+    file2=$(grep "$file1" tempdir2/seq_count_after.txt | awk '{print $1}' | awk 'BEGIN{FS="/"}{print $NF}')
     count2=$(grep "$file1" tempdir2/seq_count_after.txt | awk '{print $2}')
     if [ "$file1" == "$file2" ]; then
         printf "$file1\t$count1\t$count2\n" >> $output_dir/seq_count_summary.txt
@@ -392,9 +392,9 @@ if [[ $check_compress == "gz" ]] || [[ $check_compress == "zip" ]]; then
 fi
 
 #Delete tempdir2
-if [[ -d tempdir2 ]]; then
-    rm -rf tempdir2
-fi
+#if [[ -d tempdir2 ]]; then
+#    rm -rf tempdir2
+#fi
 }
 
 

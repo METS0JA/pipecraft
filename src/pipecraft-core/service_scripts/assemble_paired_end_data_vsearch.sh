@@ -24,6 +24,8 @@ fastq_maxns=$"--fastq_maxns ${max_Ns}"
 fastq_maxmergelen="--fastq_maxmergelen ${max_len}"
 fastq_qmax=$fastq_qmax
 notmerged_files=$keep_disjointed
+read_R1=${read_R1}
+export $read_R1
 
 #Source for functions
 source /scripts/submodules/framework.functions.sh

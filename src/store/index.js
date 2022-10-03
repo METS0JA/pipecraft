@@ -2655,11 +2655,7 @@ export default new Vuex.Store({
       {
         tooltip: "MetaWorks v1.11.1, ESV paired-end reads",
         scriptName: "metaworks_paired_end_ESV2.sh",
-<<<<<<< HEAD
-        imageName: "pipecraft/metaworks:1.11.1",
-=======
         imageName: "pipecraft/metaworks:1.11.2",
->>>>>>> 7c900e00fa29ca0ffe7f88bc48e61f4be1d57a9f
         serviceName: "metaworks_ESV",
         disabled: "never",
         selected: "always",
