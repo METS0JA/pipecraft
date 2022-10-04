@@ -42,7 +42,7 @@
     <v-tooltip left nudge-left="10">
       <template v-slot:activator="{ on }">
         <v-list-item v-on="on" class="mt-5" ripple link>
-          <v-menu dark left nudge-left="15" offset-x>
+          <v-menu tile dark left nudge-left="15" offset-x>
             <template v-slot:activator="{ on, attrs }">
               <v-list-item-content v-on="on" v-bind="attrs">
                 <v-icon
@@ -55,8 +55,8 @@
                 >
               </v-list-item-content>
             </template>
-            <v-list>
-              <v-subheader>CUSTOM WORKFLOWS</v-subheader>
+            <v-list style="padding: 0">
+              <v-subheader style="height: 40px">CUSTOM WORKFLOWS</v-subheader>
               <v-divider></v-divider>
               <v-list-item
                 ripple
