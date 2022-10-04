@@ -40,6 +40,9 @@ output_dir=$"/input/primersCut_out"
 #############################
 ### Start of the workflow ###
 #############################
+if [[ $no_indels == "TRUE" ]]; then
+    indels=$"--no-indels"
+fi
 start=$(date +%s)
 ### Check if files with specified extension exist in the dir
 first_file_check

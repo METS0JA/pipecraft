@@ -323,7 +323,7 @@ export default new Vuex.Store({
                 value: "keep_all",
                 disabled: "never",
                 tooltip:
-                  "keep sequences where at least one primer was found (fwd or rev); recommended when cutting primers from paired-end data (unassembled), when individual R1 or R2 read lenghts are shorther than the expected amplicon length. 'keep_only_linked' = keep sequences if primers are found in both ends (fwd…rev); discards the read if both primers were not found in this read",
+                "'keep_all' keeps the sequences where at least one primer was found (fwd or rev); recommended when cutting primers from paired-end data (unassembled), where individual R1 or R2 read lenghts are shorther than the expected amplicon length. 'keep_only_linked' = keep sequences if primers are found in both ends (fwd…rev); discards the read if both primers were not found in this read; maybe useful for single-end data",
                 type: "select",
               },
               {
@@ -2015,7 +2015,7 @@ export default new Vuex.Store({
             value: "keep_all",
             disabled: "never",
             tooltip:
-              "keep sequences where at least one primer was found (fwd or rev); recommended when cutting primers from paired-end data (unassembled), when individual R1 or R2 read lenghts are shorther than the expected amplicon length. 'keep_only_linked' = keep sequences if primers are found in both ends (fwd…rev); discards the read if both primers were not found in this read",
+            "'keep_all' keeps the sequences where at least one primer was found (fwd or rev); recommended when cutting primers from paired-end data (unassembled), where individual R1 or R2 read lenghts are shorther than the expected amplicon length. 'keep_only_linked' = keep sequences if primers are found in both ends (fwd…rev); discards the read if both primers were not found in this read; maybe useful for single-end data",
             type: "select",
           },
           {
@@ -3104,7 +3104,7 @@ export default new Vuex.Store({
             value: "keep_all",
             disabled: "never",
             tooltip:
-              "keep sequences where at least one primer was found (fwd or rev); recommended when cutting primers from paired-end data (unassembled), when individual R1 or R2 read lenghts are shorther than the expected amplicon length. 'keep_only_linked' = keep sequences if primers are found in both ends (fwd…rev); discards the read if both primers were not found in this read",
+              "'keep_all' keeps the sequences where at least one primer was found (fwd or rev); recommended when cutting primers from paired-end data (unassembled), where individual R1 or R2 read lenghts are shorther than the expected amplicon length. 'keep_only_linked' = keep sequences if primers are found in both ends (fwd…rev); discards the read if both primers were not found in this read; maybe useful for single-end data",
             type: "select",
           },
           {
