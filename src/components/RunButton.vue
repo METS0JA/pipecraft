@@ -349,7 +349,7 @@ export default {
             console.log(`Finished step ${i + 1}: ${step.stepName}`);
             this.$store.commit("resetRunInfo");
             if (result.StatusCode == 0) {
-              steps2Run -= 1;
+              // steps2Run -= 1;
               if (steps2Run == 0) {
                 Swal.fire("Workflow finished");
               }
