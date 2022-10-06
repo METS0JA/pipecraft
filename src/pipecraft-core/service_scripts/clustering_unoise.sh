@@ -50,7 +50,7 @@ uc=${output_uc}                                 # undefined or TRUE; only for OT
 ### Start of the workflow ###
 #############################
 #output dir
-output_dir=$"/input/clustering_out"
+output_dir=$"input/clustering_out"
 
 #additional options, if selection != undefined
 if [[ $relabel == "none" ]]; then
@@ -67,11 +67,12 @@ else
 fi
 
 ## Number of cores for GNU parallel
-NCORES=${cores/--threads /}
+NCORES=$"2"
+#NCORES=${cores/--threads /}
 
 start=$(date +%s)
 # Source for functions
-source /scripts/framework.functions.sh
+source /scripts/submodules/framework.functions.sh
 
 ### Check if files with specified extension exist in the dir
 first_file_check
@@ -125,6 +126,12 @@ if [[ $denoise_level == "global" ]]; then
   --sizein --sizeout > $output_dir/Glob_derep.fasta
   
   ### Clustering
+  printf "cat $output_dir/Glob_derep.fasta"
+  cat $output_dir/Glob_derep.fasta
+
+  printf "clustering\n"
+  printf "vsearch --cluster_unoise $output_dir/Glob_derep.fasta   $strands   $minsize   $unoise_alpha   $simtype   $qmask   $maxaccepts   $maxrejects   $cores   $relabel_in   --centroids $output_dir/zOTUs.fasta  --fasta_width 0 --sizein --sizeout\n"
+
   checkerror=$(vsearch \
   --cluster_unoise $output_dir/Glob_derep.fasta \
   $strands \
@@ -142,6 +149,8 @@ if [[ $denoise_level == "global" ]]; then
   check_app_error
   
   ## Remove chimera
+  printf "remove chimeras\n"
+
   if [[ $chimerarm == "TRUE" ]]; then
     checkerror=$(vsearch \
     --sortbysize $output_dir/zOTUs.fasta \
