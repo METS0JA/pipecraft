@@ -21,20 +21,20 @@
 #load variables
 extension=$fileFormat
 #mandatory options
-id=$"--id ${similarity_threshold}" # positive float (0-1)
-otutype=$"--${OTU_type}" # list: --centroids, --consout
-strands=$"--strand ${strands}" # list: --strand both, --strand plus
-minsize=$"--minsize ${min_OTU_size}" # pos int
+id=$"--id ${similarity_threshold}"     # positive float (0-1)
+otutype=$"--${OTU_type}"               # list: --centroids, --consout
+strands=$"--strand ${strands}"         # list: --strand both, --strand plus
+minsize=$"--minsize ${min_OTU_size}"   # pos int
 
 #additional options
-seqsort=$"--${sequence_sorting}" # list: --cluster_size or --cluster_fast, --cluster_smallmem
-simtype=$"--iddef ${similarity_type}" # list: --iddef 0; --iddef 1; --iddef 2; --iddef 3; --iddef 4
-centroid=$centroid_type # list: similarity, abundance
+seqsort=$"--${sequence_sorting}"       # list: --cluster_size or --cluster_fast, --cluster_smallmem
+simtype=$"--iddef ${similarity_type}"  # list: --iddef 0; --iddef 1; --iddef 2; --iddef 3; --iddef 4
+centroid=$centroid_type                # list: similarity, abundance
 maxaccepts=$"--maxaccepts ${max_hits}" # pos int
-relabel=$relabel # list: none, sha1, md5
-mask=$"--qmask ${mask}" # list: --qmask dust, --qmask none
-dbmask=$"--dbmask ${dbmask}"  # list: --qmask dust, --qmask none
-uc=$output_UC # false or true
+relabel=$relabel                       # list: none, sha1, md5
+mask=$"--qmask ${mask}"                # list: --qmask dust, --qmask none
+dbmask=$"--dbmask ${dbmask}"           # list: --qmask dust, --qmask none
+uc=$output_UC                          # false or true
 ###############################
 # Source for functions
 source /scripts/submodules/framework.functions.sh
@@ -42,6 +42,13 @@ source /scripts/submodules/framework.functions.sh
 output_dir=$"/input/clustering_out"
 
 #additional options, if selection != undefined/false
+if [[ $seqsort == "size" ]]; then;
+    seqsort=$"--cluster_size"
+elif [[ $seqsort == "length" ]]; then;
+    seqsort=$"--cluster_fast"
+elif [[ $seqsort == "no" ]]; then;
+    seqsort=$"--cluster_smallmem --usersort"
+fi 
 if [[ $centroid == "similarity" ]]; then
     centroid_in=$"" 
 else

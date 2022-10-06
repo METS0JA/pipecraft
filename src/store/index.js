@@ -1246,8 +1246,8 @@ export default new Vuex.Store({
               },
               {
                 name: "sequence_sorting",
-                items: ["cluster_fast", "cluster_size", "cluster_smallmem"],
-                value: "cluster_size",
+                items: ["size", "length", "no"],
+                value: "size",
                 disabled: "never",
                 tooltip:
                   'size = sort the sequences by decreasing abundance; "length" = sort the sequences by decreasing length (--cluster_fast); "no" = do not sort sequences (--cluster_smallmem --usersort)',
@@ -1342,6 +1342,153 @@ export default new Vuex.Store({
                 disabled: "never",
                 tooltip:
                   "minimum read count per output OTU (e.g., if value = 2, then singleton OTUs will be discarded [OTUs with only one sequence])",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+            ],
+          },
+          {
+            scriptName: "clustering_unoise.sh",
+            tooltip: "tick the checkbox to cluster reads with vsearch --cluster_unoise",
+            imageName: "pipecraft/vsearch:2.18",
+            serviceName: "unoise",
+            selected: false,
+            showExtra: false,
+            extraInputs: [
+              {
+                name: "unoise_alpha",
+                value: 2.0,
+                disabled: "never",
+                tooltip:
+                  "default = 2.0. alpha parameter to the vsearch --cluster_unoise command",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "denoise_level",
+                items: ["global", "individual"],
+                value: "global",
+                disabled: "never",
+                tooltip:
+                  'at which level to perform denoising; global = by pooling samples, individual = independently for each sample',
+                type: "select",
+              },
+              {
+                name: "remove_chimeras",
+                value: true,
+                disabled: "never",
+                tooltip:
+                  "perform chimera removal with UCHIME3 de novo algoritm",
+                type: "bool",
+              },
+              {
+                name: "abskew",
+                value: 16,
+                disabled: "never",
+                tooltip:
+                  "the abundance skew of chimeric sequences in comparsion with parental sequences (by default, parents should be at least 16 times more abundant than their chimera)",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "similarity_type",
+                items: ["0", "1", "2", "3", "4"],
+                value: "2",
+                disabled: "never",
+                tooltip: "pairwise sequence identity definition (--iddef)",
+                type: "select",
+              },
+              {
+                name: "maxaccepts",
+                value: 1,
+                disabled: "never",
+                tooltip:
+                  "maximum number of hits to accept before stopping the search",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "maxrejects",
+                value: 32,
+                disabled: "never",
+                tooltip:
+                  "maximum number of non-matching target sequences to consider before stopping the search",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "relabel",
+                items: ["none", "md5m", "sha1"],
+                value: "sha1",
+                disabled: "never",
+                tooltip: "relabel sequence identifiers (none = do not relabel)",
+                type: "select",
+              },
+              {
+                name: "mask",
+                items: ["dust", "none"],
+                value: "dust",
+                disabled: "never",
+                tooltip:
+                  'mask regions in sequences using the "dust" method, or do not mask ("none").',
+                type: "select",
+              },
+              {
+                name: "dbmask",
+                items: ["dust", "none"],
+                value: "dust",
+                disabled: "never",
+                tooltip:
+                  'prior the OTU table creation, mask regions in sequences using the "dust" method, or do not mask ("none").',
+                type: "select",
+              },
+              {
+                name: "output_uc",
+                value: false,
+                disabled: "never",
+                tooltip:
+                  "output clustering results in tab-separated UCLAST-like format",
+                type: "bool",
+              },
+            ],
+            Inputs: [
+              {
+                name: "zOTUs_thresh",
+                value: 0.99,
+                disabled: "never",
+                tooltip:
+                  "sequence similarity threshold for zOTU table creation; 0.99 = 99% similarity threshold",
+                max: 1,
+                min: 0,
+                step: 0.01,
+                type: "slide",
+              },
+              {
+                name: "clustering_thresh",
+                value: 1,
+                disabled: "never",
+                tooltip:
+                  "define OTUs based on the sequence similarity threshold; if id = 1, no OTU clustering will be performed",
+                max: 1,
+                min: 0,
+                step: 0.01,
+                type: "slide",
+              },
+              {
+                name: "strands",
+                items: ["both", "plus"],
+                disabled: "never",
+                tooltip:
+                  "when comparing sequences with the cluster seed, check both strands (forward and reverse complementary) or the plus strand only",
+                value: "both",
+                type: "select",
+              },
+              {
+                name: "minsize",
+                value: 5,
+                disabled: "never",
+                tooltip:
+                  "minimum abundance of sequences for denoising",
                 type: "numeric",
                 rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
               },
