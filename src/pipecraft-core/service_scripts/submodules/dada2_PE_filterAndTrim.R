@@ -53,11 +53,6 @@ qfilt = filterAndTrim(fnFs, filtFs, fnRs, filtRs,
                     matchIDs = FALSE,
                     compress = FALSE, 
                     multithread = TRUE)
-
-#save R objects for assembly process
-saveRDS(filtFs, file.path(path_results, "filtFs.rds"))
-saveRDS(filtRs, file.path(path_results, "filtRs.rds"))
-saveRDS(sample_names, file.path(path_results, "sample_names.rds"))
 saveRDS(qfilt, file.path(path_results, "quality_filtered.rds"))
 
 #seq count summary
@@ -66,5 +61,13 @@ seq_count <- cbind(qfilt)
 colnames(seq_count) <- c("input", "qualFiltered")
 rownames(seq_count) <- sample_names
 write.table(seq_count, file.path(path_results, "seq_count_summary.txt"), sep = "\t", col.names = NA, row.names = TRUE, quote = FALSE)
+
+#save R objects for assembly process
+R1qf = sort(list.files(path_results, pattern = "_R1_filt.", full.names = TRUE))
+R2qf = sort(list.files(path_results, pattern = "_R2_filt.", full.names = TRUE))
+sample_names = sapply(strsplit(basename(R1qf), "_R1_filt."), `[`, 1)
+saveRDS(R1qf, file.path(path_results, "filtFs.rds"))
+saveRDS(R2qf, file.path(path_results, "filtRs.rds"))
+saveRDS(sample_names, file.path(path_results, "sample_names.rds"))
 
 #DONE, proceed with quality_filtering_paired_end_dada2.sh to clean up make readme

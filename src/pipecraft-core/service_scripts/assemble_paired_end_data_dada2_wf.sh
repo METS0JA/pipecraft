@@ -46,7 +46,7 @@ start=$(date +%s)
 ### Process samples with dada2 removeBimeraDenovo function in R
 printf "# Running DADA2 \n"
 Rlog=$(Rscript /scripts/submodules/dada2_denoise_assemble_wf.R 2>&1)
-echo $Rlog > $output_dir/R_run.log 
+echo $Rlog >> $output_dir/R_run.log 
 wait
 printf "\n DADA2 completed \n"
 

@@ -44,10 +44,6 @@ qfilt = filterAndTrim(fnFs, filtFs,
                     rm.phix = TRUE, 
                     compress = FALSE, 
                     multithread = TRUE)
-
-#save R objects for assembly process
-saveRDS(filtFs, file.path(path_results, "filtFs.rds"))
-saveRDS(sample_names, file.path(path_results, "sample_names.rds"))
 saveRDS(qfilt, file.path(path_results, "quality_filtered.rds"))
 
 #seq count summary
@@ -56,5 +52,11 @@ seq_count <- cbind(qfilt)
 colnames(seq_count) <- c("input", "qualFiltered")
 rownames(seq_count) <- sample_names
 write.table(seq_count, file.path(path_results, "seq_count_summary.txt"), sep = "\t", col.names = NA, row.names = TRUE, quote = FALSE)
+
+#save R objects for assembly process
+filtered = sort(list.files(path_results, pattern = "filt.", full.names = TRUE))
+sample_names = sapply(strsplit(basename(filtered), "filt."), `[`, 1)
+saveRDS(filtered, file.path(path_results, "filtFs.rds"))
+saveRDS(sample_names, file.path(path_results, "sample_names.rds"))
 
 #DONE, proceed with quality_filtering_single_end_dada2.sh to clean up make readme

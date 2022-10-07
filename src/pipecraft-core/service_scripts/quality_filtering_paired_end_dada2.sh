@@ -104,11 +104,10 @@ if [[ $matchIDs == "true" ]] || [[ $matchIDs == "TRUE" ]]; then
     while read LINE; do
         #Read in R1 and R2 file names; without extension
         samp_name=$(basename $LINE | awk -F\\${samp_ID} '{print$1}')
-        echo $samp_name
         #If outputs are not empty, then synchronize R1 and R2
         if [[ -s $output_dir/$samp_name\_R1_filt.fastq ]]; then
             if [[ -s $output_dir/$samp_name\_R2_filt.fastq ]]; then
-                printf "\nSynchronizing R1 and R2 reads (matching order for paired-end reads merging)\n"
+                printf "\nSynchronizing $samp_name R1 and R2 reads\n"
                 cd $output_dir
                 checkerror=$(seqkit pair -1 $samp_name\_R1_filt.fastq -2 $samp_name\_R2_filt.fastq 2>&1)
                 check_app_error
@@ -126,6 +125,8 @@ if [[ $matchIDs == "true" ]] || [[ $matchIDs == "TRUE" ]]; then
                 checkerror=$(seqkit fq2fa -t dna --line-width 0 $output_dir/$samp_name\_R2_filt.fastq -o $output_dir/FASTA/$samp_name\_R2_filt.fasta 2>&1)
                 check_app_error
             fi
+        else
+            printf "NOTE: all reads descarded from $samp_name\n"
         fi
     done < tempdir2/paired_end_files.txt
 fi

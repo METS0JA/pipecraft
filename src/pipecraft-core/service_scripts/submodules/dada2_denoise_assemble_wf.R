@@ -62,7 +62,7 @@ if (pool != ""){
     filtFs = readRDS(file.path(workingDir, "filtFs.rds"))
     filtRs = readRDS(file.path(workingDir, "filtRs.rds"))
     sample_names = readRDS(file.path(workingDir, "sample_names.rds"))
-    print(sample_names)
+    print(filtFs)
 
     #Learn the error rates
     errF = learnErrors(filtFs, multithread = FALSE)
@@ -111,6 +111,8 @@ if (pool == ""){
     ### WRITE PER-SAMPLE DENOISED and MERGED FASTA FILES
     #make sequence table
     ASV_tab = makeSequenceTable(merge)
+    rownames(ASV_tab) = gsub("_R1_filt.fastq", "", rownames(ASV_tab))
+    
     #write RDS object
     saveRDS(ASV_tab, (file.path(path_results, "ASVs_table.denoised-merged.rds")))
 
@@ -148,6 +150,11 @@ if (pool == ""){
 
     #seq count summary
     getN <- function(x) sum(getUniques(x))
+    
+        #remove 0 seqs samples from qfilt statistics
+        row_sub = apply(qfilt, 1, function(row) all(row !=0 ))
+        qfilt = qfilt[row_sub, ]
+
     seq_count <- cbind(qfilt, sapply(dadaFs, getN), sapply(dadaRs, getN), sapply(merge, getN))
     colnames(seq_count) <- c("input", "qualFiltered", "denoised_R1", "denoised_R2", "merged")
     rownames(seq_count) <- sample_names
