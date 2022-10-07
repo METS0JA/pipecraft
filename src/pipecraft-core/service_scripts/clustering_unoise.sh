@@ -67,7 +67,7 @@ else
 fi
 
 ## Number of cores for GNU parallel
-NCORES=$"2"
+NCORES=$cores
 #NCORES=${cores/--threads /}
 
 start=$(date +%s)
