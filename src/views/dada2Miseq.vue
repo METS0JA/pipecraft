@@ -290,7 +290,6 @@ import InputSlide from "../components/InputSlide.vue";
 import InputCombo from "../components/InputCombo.vue";
 
 export default {
-  name: "Home",
   components: {
     InputLink,
     InputChip,
