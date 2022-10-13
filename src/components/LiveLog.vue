@@ -59,7 +59,7 @@ export default {
   name: "LiveLog",
   data() {
     return {
-      toggle: true,
+      toggle: false,
     };
   },
   created() {
