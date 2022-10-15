@@ -391,9 +391,9 @@ if [[ $check_compress == "gz" ]] || [[ $check_compress == "zip" ]]; then
 fi
 
 #Delete tempdir2
-# if [[ -d tempdir2 ]]; then
-#     rm -rf tempdir2
-# fi
+if [[ -d tempdir2 ]]; then
+    rm -rf tempdir2
+fi
 }
 
 
