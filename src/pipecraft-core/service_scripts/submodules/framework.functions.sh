@@ -356,13 +356,12 @@ if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]] || [[ $newexten
 fi
 
 ### Count reads after the process
+output_dir_for_sed=$(echo $output_dir | sed -e "s/\//\\\\\//g")
 if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]] || [[ $newextension == "fasta" ]] || [[ $newextension == "fa" ]] || [[ $newextension == "fas" ]]; then
     touch tempdir2/seq_count_after.txt
     outfile_check=$(ls $output_dir/*.$newextension 2>/dev/null | wc -l)
-    if [ $outfile_check != 0 ]; then 
-        for file in $output_dir/*.$newextension; do
-            seqkit stats --threads 6 -T $file | awk -F'\t' 'BEGIN{OFS="\t";} FNR == 2 {print $1,$4}' | sed -e 's/assembled_out\///' >> tempdir2/seq_count_after.txt
-        done
+    if [[ $outfile_check != 0 ]]; then 
+        seqkit stats --threads 6 -T $output_dir/*.$newextension | awk -F'\t' 'BEGIN{OFS="\t";} NR!=1 {print $1,$4}' | sed -e "s/$output_dir_for_sed//" >> tempdir2/seq_count_after.txt
     else 
         printf '%s\n' "ERROR]: no output files generated ($output_dir). Adjust settings." >&2
         end_process
@@ -392,9 +391,9 @@ if [[ $check_compress == "gz" ]] || [[ $check_compress == "zip" ]]; then
 fi
 
 #Delete tempdir2
-if [[ -d tempdir2 ]]; then
-    rm -rf tempdir2
-fi
+# if [[ -d tempdir2 ]]; then
+#     rm -rf tempdir2
+# fi
 }
 
 
@@ -402,45 +401,49 @@ fi
 ### Cleaning up and compiling final stats file UNIVERSAL fastx (but not for PE assembly and demux and GeneX) ###
 ################################################################################################################
 function clean_and_make_stats () {
+countstart=$(date +%s)
+
 #Delete empty output files
 find $output_dir -empty -type f -delete
 ### Count reads before and after the process
-if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]]; then
+if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]] || [[ $newextension == "fasta" ]] || [[ $newextension == "fa" ]] || [[ $newextension == "fas" ]]; then
     touch tempdir2/seq_count_before.txt
-    for file in *.$newextension; do
-        size=$(echo $(cat $file | wc -l) / 4 | bc)
-        printf "$file\t$size\n" >> tempdir2/seq_count_before.txt
-    done
+    seqkit stats --threads 6 -T *.$newextension | awk -F'\t' 'BEGIN{OFS="\t";} NR!=1 {print $1,$4}' >> tempdir2/seq_count_before.txt
+#    for file in *.$newextension; do
+#        size=$(echo $(cat $file | wc -l) / 4 | bc)
+#        printf "$file\t$size\n" >> tempdir2/seq_count_before.txt
+#    done
     touch tempdir2/seq_count_after.txt
     outfile_check=$(ls $output_dir/*.$newextension 2>/dev/null | wc -l)
-    if [ $outfile_check != 0 ]; then 
-        for file in $output_dir/*.$newextension; do
-            size=$(echo $(cat $file | wc -l) / 4 | bc)
-            printf "$file\t$size\n" >> tempdir2/seq_count_after.txt
-        done
+    if [ $outfile_check != 0 ]; then
+        seqkit stats --threads 6 -T $output_dir/*.$newextension | awk -F'\t' 'BEGIN{OFS="\t";} NR!=1 {print $1,$4}' >> tempdir2/seq_count_after.txt
+#        for file in $output_dir/*.$newextension; do
+#            size=$(echo $(cat $file | wc -l) / 4 | bc)
+#            printf "$file\t$size\n" >> tempdir2/seq_count_after.txt
+#        done
     else
         printf '%s\n' "ERROR]: no output files generated ($output_dir). Check settings!" >&2
         end_process
     fi
 fi
-if [[ $newextension == "fasta" ]] || [[ $newextension == "fa" ]] || [[ $newextension == "fas" ]]; then
-    touch tempdir2/seq_count_before.txt
-    for file in *.$newextension; do
-        size=$(grep -c "^>" $file)
-        printf "$file\t$size\n" >> tempdir2/seq_count_before.txt
-    done
-    touch tempdir2/seq_count_after.txt
-    outfile_check=$(ls $output_dir/*.$newextension 2>/dev/null | wc -l)
-    if [ $outfile_check != 0 ]; then 
-        for file in $output_dir/*.$newextension; do
-            size=$(grep -c "^>" $file)
-            printf "$file\t$size\n" >> tempdir2/seq_count_after.txt
-        done
-    else
-        printf '%s\n' "ERROR]: no output files generated ($output_dir). Check settings!" >&2
-        end_process
-    fi
-fi
+# if [[ $newextension == "fasta" ]] || [[ $newextension == "fa" ]] || [[ $newextension == "fas" ]]; then
+#     touch tempdir2/seq_count_before.txt
+#     for file in *.$newextension; do
+#         size=$(grep -c "^>" $file)
+#         printf "$file\t$size\n" >> tempdir2/seq_count_before.txt
+#     done
+#     touch tempdir2/seq_count_after.txt
+#     outfile_check=$(ls $output_dir/*.$newextension 2>/dev/null | wc -l)
+#     if [ $outfile_check != 0 ]; then 
+#         for file in $output_dir/*.$newextension; do
+#             size=$(grep -c "^>" $file)
+#             printf "$file\t$size\n" >> tempdir2/seq_count_after.txt
+#         done
+#     else
+#         printf '%s\n' "ERROR]: no output files generated ($output_dir). Check settings!" >&2
+#         end_process
+#     fi
+# fi
 ### Compile a track reads summary file (seq_count_summary.txt)
 output_dir_for_sed=$(echo $output_dir | sed -e "s/\//\\\\\//g")
 sed -e "s/$output_dir_for_sed\///" < tempdir2/seq_count_after.txt > tempdir2/seq_count_after.temp
@@ -451,7 +454,7 @@ while read LINE; do
     while read LINE2; do
         file2=$(echo $LINE2 | awk '{print $1}')
         count2=$(echo $LINE2 | awk '{print $2}')
-        if [ "$file1" == "$file2" ]; then
+        if [[ "$file1" == "$file2" ]]; then
             printf "$file1\t$count1\t$count2\n" >> $output_dir/seq_count_summary.txt
         fi
     done < tempdir2/seq_count_after.temp
@@ -462,11 +465,9 @@ while read LINE; do
     fi
 done < tempdir2/seq_count_before.txt && rm -rf tempdir2
 
-#Note for counting seqs in FASTQ files
-if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]]; then
-    printf "\nPlease note that sequence count assumes that there are 4 lines per sequence in a FASTQ file (as this is mostly the case).
-You may double-check the sequence count of one file using implemented 'QualityCheck' module in PipeCraft.\n" >> $output_dir/seq_count_summary.txt
-fi
+countend=$(date +%s)
+countruntime=$((countend-countstart))
+printf "\n Count seqs runtime = $countruntime" >> $output_dir/seq_count_summary.txt
 
 #Delete decompressed files if original set of files were compressed
 if [[ $check_compress == "gz" ]] || [[ $check_compress == "zip" ]]; then

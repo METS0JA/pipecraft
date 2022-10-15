@@ -140,12 +140,12 @@ while read LINE; do
             mv tempdir/$inputR1.$newextension $output_dir/$inputR1.$newextension
             mv tempdir/$inputR2.$newextension $output_dir/$inputR2.$newextension
 
-            #Convert output fastq files to FASTA
-            mkdir -p $output_dir/FASTA
-            checkerror=$(seqkit fq2fa -t dna --line-width 0 $output_dir/$inputR1.$newextension -o $output_dir/FASTA/$inputR1.fasta 2>&1)
-            check_app_error
-            checkerror=$(seqkit fq2fa -t dna --line-width 0 $output_dir/$inputR2.$newextension -o $output_dir/FASTA/$inputR2.fasta 2>&1)
-            check_app_error
+            # #Convert output fastq files to FASTA
+            # mkdir -p $output_dir/FASTA
+            # checkerror=$(seqkit fq2fa -t dna --line-width 0 $output_dir/$inputR1.$newextension -o $output_dir/FASTA/$inputR1.fasta 2>&1)
+            # check_app_error
+            # checkerror=$(seqkit fq2fa -t dna --line-width 0 $output_dir/$inputR2.$newextension -o $output_dir/FASTA/$inputR2.fasta 2>&1)
+            # check_app_error
         else
             printf '%s\n' "WARNING]: $inputR2 has 0 seqs after filtering (no output for that sample)"
             rm tempdir/$inputR1.$newextension
@@ -172,8 +172,6 @@ printf "# Quality filtering with vsearch.
 Files in 'qualFiltered_out':
 # *.$newextension           = quality filtered sequences in FASTQ format.
 # seq_count_summary.txt     = summary of sequence counts per sample.
-Files in 'qualFiltered_out/FASTA':
-# *.fasta                   = quality filtered sequences in FASTA format.
 
 Core commands -> 
 quality filtering: vsearch --fastq_filter input_file $maxee $maxns $trunc_length $minlen $cores $qmax $qmin $max_length $maxee_rate --fastqout output_file

@@ -76,8 +76,6 @@ for file in *.$extension; do
     ###############################
     ### Start quality filtering ###
     ###############################
-    mkdir -p $output_dir/FASTA
-
     checkerror=$(vsearch --fastq_filter \
     $input.$newextension \
     $maxee \
@@ -89,8 +87,7 @@ for file in *.$extension; do
     $qmin \
     $max_length \
     $maxee_rate \
-    --fastqout $output_dir/$input.$newextension \
-    --fastaout $output_dir/FASTA/$input.fasta 2>&1)
+    --fastqout $output_dir/$input.$newextension 2>&1)
     check_app_error
 done
 
@@ -108,11 +105,9 @@ printf "# Quality filtering with vsearch.
 Files in 'qualFiltered_out':
 # *.$newextension           = quality filtered sequences in FASTQ format.
 # seq_count_summary.txt     = summary of sequence counts per sample.
-Files in 'qualFiltered_out/FASTA':
-# *.fasta                   = quality filtered sequences in FASTA format.
 
 Core command -> 
-vsearch --fastq_filter input_file $maxee $maxns $trunc_length $minlen $cores $qmax $qmin $max_length $maxee_rate --fastqout $output_dir/output_file.fastq --fastaout $output_dir/FASTA/output_file.fasta
+vsearch --fastq_filter input_file $maxee $maxns $trunc_length $minlen $cores $qmax $qmin $max_length $maxee_rate --fastqout $output_dir/output_file.fastq
 
 Total run time was $runtime sec.
 
