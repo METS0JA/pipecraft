@@ -110,6 +110,40 @@ export default {
           console.log("data", data);
         });
     },
+    runDocker_2() {
+      console.log("starting");
+      // var stdout = new streams.WritableStream();
+      docker
+        .run(
+          "ubuntu",
+          ["sh", "-c", `watch -n1  echo "Hello"`],
+          false,
+          {
+            Hostconfig: {
+              Binds: ["C:/Users/martin/Desktop/test:/input"],
+            },
+          },
+          {},
+          (err, data, container) => {
+            if (err) throw err;
+            console.log(data.StatusCode);
+            console.log(container);
+          }
+        )
+        .on("container", (container) => {
+          setTimeout(() => {
+            console.log(container);
+          }, 5000);
+        })
+        .on("stream", (stream) => {
+          stream.on("data", (data) =>
+            console.log(data.toString().replace(/[\n\r]/g, ""))
+          );
+        })
+        .on("data", (data) => {
+          console.log("data", data);
+        });
+    },
   },
 };
 </script>
