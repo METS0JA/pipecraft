@@ -1691,7 +1691,7 @@ export default new Vuex.Store({
 
           {
             tooltip: "cluster ASVs to OTUs using vsearch",
-            scriptName: "table_filtering_dada2.sh",
+            scriptName: "xxx.sh",
             imageName: "pipecraft/dada2:1.20",
             serviceName: "ASV_to_OTU",
             disabled: "never",

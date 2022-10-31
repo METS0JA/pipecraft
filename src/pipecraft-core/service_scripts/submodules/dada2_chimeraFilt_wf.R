@@ -96,8 +96,8 @@ for (i in 2:length(colnames(ASV_tab.nochim))){
 if (file.exists("/input/qualFiltered_out/filtFs.rds")) {
     unlink("/input/qualFiltered_out/*.rds")
 }
-if (file.exists("/input/denoised_assembled.dada2/dadaFs.rds")) {
-    unlink("/input/denoised_assembled.dada2/*.rds")
-}
+#if (file.exists("/input/denoised_assembled.dada2/dadaFs.rds")) {
+#    unlink("/input/denoised_assembled.dada2/*.rds")
+#}
 
 #DONE, proceed with chimera_filtering_dada2_wf.sh.sh to clean up make readme

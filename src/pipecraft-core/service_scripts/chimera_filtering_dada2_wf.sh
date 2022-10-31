@@ -80,9 +80,6 @@ fi
 if [[ -f $output_dir1/R_run.log ]]; then
     rm -f $output_dir1/R_run.log
 fi
-if [[ -f $output_dir1/ASVs_table.denoised-merged.nochim.rds ]]; then
-    rm -f $output_dir1/ASVs_table.denoised-merged.nochim.rds
-fi
 
 end=$(date +%s)
 runtime=$((end-start))

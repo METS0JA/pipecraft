@@ -119,11 +119,11 @@ if [[ $matchIDs == "true" ]] || [[ $matchIDs == "TRUE" ]]; then
                 cd ..
 
                 #Convert output fastq files to FASTA
-                mkdir -p $output_dir/FASTA
-                checkerror=$(seqkit fq2fa -t dna --line-width 0 $output_dir/$samp_name\_R1_filt.fastq -o $output_dir/FASTA/$samp_name\_R1_filt.fasta 2>&1)
-                check_app_error
-                checkerror=$(seqkit fq2fa -t dna --line-width 0 $output_dir/$samp_name\_R2_filt.fastq -o $output_dir/FASTA/$samp_name\_R2_filt.fasta 2>&1)
-                check_app_error
+#                mkdir -p $output_dir/FASTA
+#                checkerror=$(seqkit fq2fa -t dna --line-width 0 $output_dir/$samp_name\_R1_filt.fastq -o $output_dir/FASTA/$samp_name\_R1_filt.fasta 2>&1)
+#                check_app_error
+#                checkerror=$(seqkit fq2fa -t dna --line-width 0 $output_dir/$samp_name\_R2_filt.fastq -o $output_dir/FASTA/$samp_name\_R2_filt.fasta 2>&1)
+#                check_app_error
             fi
         else
             printf "NOTE: all reads descarded from $samp_name\n"
@@ -160,7 +160,6 @@ printf "# Quality filtering with dada2.
 Files in 'qualFiltered_out':
 # *_filt.fastq          = quality filtered sequences per sample in FASTQ format.
 # seq_count_summary.txt = summary of sequence counts per sample.
-# FASTA/*_filt.fasta    = quality filtered sequences per sample in FASTA format.
 # (*.rds = R objects for dada2, you may delete these files if present).
 
 Core command -> 
