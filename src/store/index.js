@@ -1635,7 +1635,7 @@ export default new Vuex.Store({
           },
 
           {
-            tooltip: "applies to DADA2 output ASV table. Collaplse identical ASVs or/and filter ASVs by length",
+            tooltip: "applies to DADA2 output ASV table (rds). Collaplse identical ASVs or/and filter ASVs by length",
             scriptName: "table_filtering_dada2.sh",
             imageName: "pipecraft/dada2:1.20",
             serviceName: "DADA2 collapseNoMismatch",
@@ -1688,6 +1688,62 @@ export default new Vuex.Store({
               },
             ],
           },
+
+          {
+            tooltip: "cluster ASVs to OTUs using vsearch",
+            scriptName: "table_filtering_dada2.sh",
+            imageName: "pipecraft/dada2:1.20",
+            serviceName: "ASV_to_OTU",
+            disabled: "never",
+            selected: false,
+            showExtra: false,
+            extraInputs: [
+              {
+                name: "minOverlap",
+                value: 20,
+                disabled: "never",
+                tooltip: "collapseNoMismatch setting. Default = 20. The minimum overlap of base pairs between ASV sequences required to collapse them together",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "vec",
+                value: true,
+                disabled: "never",
+                tooltip:
+                  "collapseNoMismatch setting. Default = TRUE. Use the vectorized aligner. Should be turned off if sequences exceed 2kb in length",
+                type: "bool",
+              },
+            ],
+            Inputs: [
+              {
+                name: "DADA2_table",
+                value: "undefined",
+                btnName: "select rds",
+                disabled: "never",
+                tooltip:
+                  "select the RDS file (ASV table), output from DADA2 workflow; usually in denoised_assembled.dada2/ASVs_table.denoised-merged.rds",
+                type: "file",
+              },
+              {
+                name: "collapseNoMismatch",
+                value: true,
+                disabled: "never",
+                tooltip:
+                  "collapses ASVs in an ASV table that are identical up to shifts or length variation, i.e. that have no mismatches or internal indels",
+                type: "bool",
+              },
+              {
+                name: "by_length",
+                value: 250,
+                disabled: "never",
+                tooltip: "discard ASVs from the ASV table that are shorter than specified value (in base pairs). Value 0 means OFF; no filtering by length.",
+                type: "numeric",
+                rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
+              },
+            ],
+          },
+
         ],
       },
 
