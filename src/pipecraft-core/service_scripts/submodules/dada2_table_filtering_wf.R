@@ -1,10 +1,6 @@
 #!/usr/bin/env Rscript
 
 #Filter DADA2 ASV table; collapse no mismatch and/or filer by ASV length
-readType = Sys.getenv('readType')
-fileFormat = Sys.getenv('fileFormat')
-dataFormat = Sys.getenv('dataFormat')
-workingDir = Sys.getenv('workingDir')
 
 #load variables
 table_rds = "/input/denoised_assembled.dada2/ASVs_table.denoised-merged.rds"
@@ -12,6 +8,12 @@ collapseNoMismatch = Sys.getenv('collapseNoMismatch')
 minOverlap = as.numeric(Sys.getenv('minOverlap'))
 vec = Sys.getenv('vec')
 len_filt = as.numeric(Sys.getenv('by_length'))
+
+#print variables
+print(collapseNoMismatch)
+print(minOverlap)
+print(vec)
+print(len_filt)
 
 #ASV table path
 path_ASVs="/input/ASVs_out.dada2"
