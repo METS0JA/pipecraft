@@ -1638,7 +1638,7 @@ export default new Vuex.Store({
             tooltip: "applies to DADA2 output ASV table (rds). Collaplse identical ASVs or/and filter ASVs by length",
             scriptName: "table_filtering_dada2.sh",
             imageName: "pipecraft/dada2:1.20",
-            serviceName: "DADA2 collapseNoMismatch",
+            serviceName: "DADA2 collapse ASVs",
             disabled: "never",
             selected: false,
             showExtra: false,

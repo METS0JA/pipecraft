@@ -6,10 +6,10 @@
 ### Quit process upon ERROR ###
 ###############################
 function end_process () {
-if [ -d tempdir ]; then
+if [[ -d tempdir ]]; then
     rm -rf tempdir
 fi
-if [ -d tempdir2 ]; then
+if [[ -d tempdir2 ]]; then
     rm -rf tempdir2
 fi
 exit 1
@@ -20,7 +20,7 @@ export -f end_process
 ### Check if APP run was successful ###
 #######################################
 function check_app_error () {
-if [ "$?" = "0" ]; then
+if [[ "$?" = "0" ]]; then
     :
 else
     printf '%s\n' "ERROR]: $checkerror" >&2
@@ -95,12 +95,12 @@ fi
 ####################################################
 function prepare_PE_env () {
 #Remove 'old' output_dir if exist and make new empty one
-if [ -d $output_dir ]; then
+if [[ -d $output_dir ]]; then
     rm -rf $output_dir
 fi
 mkdir $output_dir
 #Make tempdir2, for seq count statistics
-if [ -d tempdir2 ]; then
+if [[ -d tempdir2 ]]; then
     rm -rf tempdir2
 fi
 mkdir -p tempdir2
@@ -121,7 +121,7 @@ sed -i 's/ /_/g' tempdir2/files_in_folder.txt
 #Check if R1 string is in the file name (if so, then assume that then reverse file has R2 in the file name)
 grep "R1" < tempdir2/files_in_folder.txt > tempdir2/paired_end_files.txt || true
     #Check if everything is ok considering file names
-if [ -s tempdir2/paired_end_files.txt ]; then
+if [[ -s tempdir2/paired_end_files.txt ]]; then
     :
 else
     printf '%s\n' "ERROR]: no paired-end read files found.
@@ -151,11 +151,11 @@ done < tempdir2/files_in_folder.txt
 ### Check SINGLE-END data and pepare working env ###
 ####################################################
 function prepare_SE_env () {
-if [ -d $output_dir ]; then
+if [[ -d $output_dir ]]; then
     rm -rf $output_dir
 fi
 mkdir $output_dir
-if [ -d tempdir2 ]; then
+if [[ -d tempdir2 ]]; then
     rm -rf tempdir2
 fi
 mkdir -p tempdir2
