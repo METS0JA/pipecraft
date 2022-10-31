@@ -56,9 +56,10 @@ write.table(seq_count, file.path(path_results, "seq_count_summary.txt"), sep = "
 ###format and save ASV table and ASVs.fasta
 #sequence headers
 asv_seqs = colnames(ASV_tab.nochim)
+asv_size = colSums(ASV_tab.nochim)
 asv_headers = vector(dim(ASV_tab.nochim)[2], mode="character")
 for (i in 1:dim(ASV_tab.nochim)[2]) {
-asv_headers[i] = paste(">ASV", i, sep="_")
+    asv_headers[i] = paste(">ASV", i, ";size=", asv_size[i], sep="")
 }
 #transpose sequence table
 ASV_tab.nochim = t(ASV_tab.nochim)
