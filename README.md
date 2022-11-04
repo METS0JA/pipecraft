@@ -2,7 +2,9 @@
 
 ## Release 0.1.3
 
-https://github.com/SuvalineVana/pipecraft/releases/tag/v0.1.3
+Download: https://github.com/SuvalineVana/pipecraft/releases/tag/v0.1.3
+
+---
 
 **USER GUIDE**: https://pipecraft2-manual.readthedocs.io/en/stable/
 
