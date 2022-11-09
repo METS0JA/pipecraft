@@ -93,6 +93,7 @@ var stdout = new streams.WritableStream();
 var stderr = new streams.WritableStream();
 const isDevelopment = process.env.NODE_ENV !== "production";
 const fs = require("fs");
+var JSONfn = require("json-fn");
 
 export default {
   name: "Run",
@@ -163,6 +164,7 @@ export default {
           this.$store.commit("addWorkingDir", "/input");
           let startTime = Date.now();
           let steps2Run = this.$store.getters.steps2Run(name);
+          this.autoSaveConfig();
           let log = fs.createWriteStream(
             `${this.$store.state.inputDir}/${name}_${new Date()
               .toJSON()
@@ -279,6 +281,7 @@ export default {
           let startTime = Date.now();
           let steps2Run = this.$store.getters.steps2Run("selectedSteps");
           console.log(`${this.$store.state.inputDir}`);
+          this.autoSaveConfig();
           let log = fs.createWriteStream(
             `${this.$store.state.inputDir}/CustomWorkflow_${new Date()
               .toJSON()
@@ -514,6 +517,18 @@ export default {
       var minutes = Math.floor(millis / 60000);
       var seconds = ((millis % 60000) / 1000).toFixed(0);
       return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+    },
+    autoSaveConfig() {
+      var conf = [];
+      let confJson;
+      if (this.$route.params.workflowName) {
+        conf.push(this.$store.state[this.$route.params.workflowName]);
+        conf.push(this.$route.params.workflowName);
+        confJson = JSONfn.stringify(conf);
+      } else {
+        confJson = JSONfn.stringify(this.$store.state.selectedSteps);
+      }
+      fs.writeFileSync(`${this.$store.state.inputDir}/config.json`, confJson);
     },
   },
 };
