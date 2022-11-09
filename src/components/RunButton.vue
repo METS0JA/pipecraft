@@ -92,6 +92,7 @@ var dockerode = new Dockerode({ socketPath: socketPath });
 var stdout = new streams.WritableStream();
 var stderr = new streams.WritableStream();
 const isDevelopment = process.env.NODE_ENV !== "production";
+const fs = require("fs");
 
 export default {
   name: "Run",
@@ -162,6 +163,11 @@ export default {
           this.$store.commit("addWorkingDir", "/input");
           let startTime = Date.now();
           let steps2Run = this.$store.getters.steps2Run(name);
+          let log = fs.createWriteStream(
+            `${this.$store.state.inputDir}/${name}_${new Date()
+              .toJSON()
+              .slice(0, 10)}.txt`
+          );
           for (let [i, step] of this.$store.state[name].entries()) {
             if (step.selected == true || step.selected == "always") {
               let dockerProps = await this.getDockerProps(step);
@@ -194,6 +200,7 @@ export default {
                 });
               console.log(result);
               if (result.StatusCode == 0) {
+                log.write(result.stdout.toString().replace(/[\n\r]/g, ""));
                 let newWorkingDir = this.getVariableFromLog(
                   result.stdout,
                   "workingDir"
@@ -217,12 +224,15 @@ export default {
                 this.$store.commit("addWorkingDir", newWorkingDir);
               } else {
                 if (result.StatusCode == 137) {
+                  log.write(result.stderr.toString().replace(/[\n\r]/g, ""));
                   Swal.fire("Workflow stopped");
                 } else {
                   let err;
                   if (!result.stderr) {
+                    log.write(result.stdout.toString().replace(/[\n\r]/g, ""));
                     err = result;
                   } else {
+                    log.write(result.stderr.toString().replace(/[\n\r]/g, ""));
                     err = result.stderr;
                   }
                   Swal.fire({
@@ -268,6 +278,12 @@ export default {
           this.$store.commit("addWorkingDir", "/input");
           let startTime = Date.now();
           let steps2Run = this.$store.getters.steps2Run("selectedSteps");
+          console.log(`${this.$store.state.inputDir}`);
+          let log = fs.createWriteStream(
+            `${this.$store.state.inputDir}/CustomWorkflow_${new Date()
+              .toJSON()
+              .slice(0, 10)}.txt`
+          );
           for (let [i, step] of this.selectedSteps.entries()) {
             let selectedStep = this.findSelectedService(i);
             let dockerProps = await this.getDockerProps(selectedStep);
@@ -298,6 +314,7 @@ export default {
               });
             console.log(result);
             if (result.StatusCode == 0) {
+              log.write(result.stdout.toString().replace(/[\n\r]/g, ""));
               let newWorkingDir = this.getVariableFromLog(
                 result.stdout,
                 "workingDir"
@@ -318,13 +335,16 @@ export default {
               this.$store.commit("addWorkingDir", newWorkingDir);
             } else {
               if (result.StatusCode == 137) {
+                log.write(result.stderr.toString().replace(/[\n\r]/g, ""));
                 Swal.fire("Workflow stopped");
               } else {
                 let err;
                 if (!result.stderr) {
+                  log.write(result.stdout.toString().replace(/[\n\r]/g, ""));
                   err = result;
                 } else {
                   err = result.stderr;
+                  log.write(result.stderr.toString().replace(/[\n\r]/g, ""));
                 }
                 Swal.fire({
                   title: "An error has occured while processing your data",
