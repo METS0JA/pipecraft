@@ -1,18 +1,17 @@
-FROM alpine:3.14
-
-RUN apk add build-base \
-    && apk add automake \
-    && apk add parallel \
-    && apk add --no-cache --upgrade grep \
-    && apk add autoconf  \
-    && apk add pigz  \
-    && apk add bash  \
-    && apk add wget  \
-    && apk add git  \
-    && apk add zlib-dev \
-    && apk add bzip2-dev \
-    && wget https://github.com/shenwei356/seqkit/releases/download/v2.3.0/seqkit_linux_amd64.tar.gz -O /tmp/seqkit.tar.gz  \
-    && tar zxvf /tmp/seqkit.tar.gz -C /usr/bin/ && rm /tmp/seqkit.tar.gz \
-    && git clone --branch v2.18.0 https://github.com/torognes/vsearch.git \
+FROM ubuntu:22.04
+# ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get update -y
+RUN apt-get install build-essential -y
+RUN apt-get install wget -y
+RUN apt-get install pigz -y
+RUN apt-get install git -y
+ENV TZ=Europe/Tallinn
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN apt-get install r-base -y
+RUN apt-get install autoconf -y
+RUN wget https://github.com/shenwei356/seqkit/releases/download/v2.3.0/seqkit_linux_amd64.tar.gz -O /tmp/seqkit.tar.gz  \
+    && tar zxvf /tmp/seqkit.tar.gz -C /usr/bin/ && rm /tmp/seqkit.tar.gz
+RUN git clone --branch v2.18.0 https://github.com/torognes/vsearch.git \
     && cd vsearch && ./autogen.sh && ./configure && make && make install
-RUN apk del git && apk del wget
+RUN Rscript -e 'install.packages("data.table", dependencies=TRUE , repos="https://cloud.r-project.org")'
+RUN Rscript -e 'install.packages("optparse", repos="https://cloud.r-project.org")'
