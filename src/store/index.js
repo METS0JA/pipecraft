@@ -1273,7 +1273,7 @@ export default new Vuex.Store({
               },
               {
                 name: "relabel",
-                items: ["none", "md5m", "sha1"],
+                items: ["none", "md5", "sha1"],
                 value: "sha1",
                 disabled: "never",
                 tooltip: "relabel sequence identifiers (none = do not relabel)",
@@ -1418,7 +1418,7 @@ export default new Vuex.Store({
               },
               {
                 name: "relabel",
-                items: ["none", "md5m", "sha1"],
+                items: ["none", "md5", "sha1"],
                 value: "sha1",
                 disabled: "never",
                 tooltip: "relabel sequence identifiers (none = do not relabel)",
@@ -2738,7 +2738,7 @@ export default new Vuex.Store({
           },
           {
             name: "relabel",
-            items: ["none", "md5m", "sha1"],
+            items: ["none", "md5", "sha1"],
             value: "sha1",
             disabled: "never",
             tooltip: "relabel sequence identifiers (none = do not relabel)",
