@@ -24,7 +24,7 @@ extension=$fileFormat
 id=$"--id ${similarity_threshold}"     # positive float (0-1)
 otutype=$"--${OTU_type}"               # list: --centroids, --consout
 strands=$"--strand ${strands}"         # list: --strand both, --strand plus
-minsize=$"--minsize ${min_OTU_size}"   # pos int
+minsize=$"--minsize ${min_OTU_size}"   # pos int (default, 1)
 
 #additional options
 seqsort=$"--${sequence_sorting}"       # list: --cluster_size or --cluster_fast, --cluster_smallmem
@@ -88,16 +88,19 @@ for file in *.$extension; do
     check_extension_fastx
 done
 
+mkdir -p tempdir
+
 ### Global dereplication
 find . -maxdepth 1 -name "*.$newextension"
 
 find . -maxdepth 1 -name "*.$newextension" | parallel -j 1 "cat {}" \
 | vsearch \
 --derep_fulllength - \
---output - \
+--output $output_dir/Glob_derep.fasta \
+--uc tempdir/Glob_derep.uc \
 --fasta_width 0 \
 --threads 1 \
---sizein --sizeout > $output_dir/Glob_derep.fasta
+--sizein --sizeout
 
 ### Clustering
 checkerror=$(vsearch $seqsort \
@@ -131,8 +134,6 @@ else
 fi
 
 ### Dereplication of individual samples, add sample ID to the header
-mkdir -p tempdir
-
 derep_rename () {
   samp_name=$(basename $1 | awk 'BEGIN{FS="."} {$NF=""; print $0}' | sed 's/ //g')
 
@@ -150,21 +151,36 @@ find . -maxdepth 1 -name "*.$newextension" | parallel -j 1 "derep_rename {}"
 
 cat tempdir/*.fasta > tempdir/Dereplicated_samples.fasta
 
-### OTU table creation
-checkerror=$(vsearch \
---usearch_global tempdir/Dereplicated_samples.fasta \
---db $output_dir/OTUs.fasta \
-$id \
-$strands \
-$mask \
-$dbmask \
---sizein --sizeout \
-$cores \
---otutabout $output_dir/OTU_table.txt  2>&1)
-check_app_error
+## Prepare table with sequence abundance per sample
+seqkit seq --name tempdir/Dereplicated_samples.fasta \
+  | awk -F ";" '{print $3 "\t" $1 "\t" $2}' \
+  | sed 's/size=//; s/sample=//' \
+  > tempdir/ASV_table_long.txt
 
-# rename #OTU ID -> OTU_id (LULU does not like # for outputting sample names)
-sed -i 's/#OTU ID/OTU_id/' $output_dir/OTU_table.txt
+### OTU table creation
+Rscript /scripts/submodules/ASV_OTU_merging_script.R \
+  --derepuc      tempdir/Glob_derep.uc \
+  --uc           "$output_dir"/OTUs.uc \
+  --asv          tempdir/ASV_table_long.txt \
+  --rmsingletons TRUE \
+  --output       "$output_dir"/OTU_table.txt
+
+
+# ### OTU table creation (with VSEARCH mapping)
+# checkerror=$(vsearch \
+# --usearch_global tempdir/Dereplicated_samples.fasta \
+# --db $output_dir/OTUs.fasta \
+# $id \
+# $strands \
+# $mask \
+# $dbmask \
+# --sizein --sizeout \
+# $cores \
+# --otutabout $output_dir/OTU_table.txt  2>&1)
+# check_app_error
+# 
+# # rename #OTU ID -> OTU_id (LULU does not like # for outputting sample names)
+# sed -i 's/#OTU ID/OTU_id/' $output_dir/OTU_table.txt
 
 #Order the OTUs in fasta file accoring to OTU table
 if [[ -s "$output_dir/OTU_table.txt" ]]; then 
