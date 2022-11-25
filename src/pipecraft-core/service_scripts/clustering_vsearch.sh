@@ -150,6 +150,13 @@ find . -maxdepth 1 -name "*.$newextension" | parallel -j 1 "derep_rename {}"
 
 cat tempdir/*.fasta > tempdir/Dereplicated_samples.fasta
 
+## Prepare table with sequence abundance per sample
+seqkit seq --name tempdir/Dereplicated_samples.fasta \
+  | awk -F ";" '{print $3 "\t" $1 "\t" $2}' \
+  | sed 's/size=//; s/sample=//' \
+  > tempdir/ASV_table_long.txt
+
+
 ### OTU table creation
 checkerror=$(vsearch \
 --usearch_global tempdir/Dereplicated_samples.fasta \
