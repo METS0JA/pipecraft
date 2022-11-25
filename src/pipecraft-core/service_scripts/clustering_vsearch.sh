@@ -88,16 +88,19 @@ for file in *.$extension; do
     check_extension_fastx
 done
 
+mkdir -p tempdir
+
 ### Global dereplication
 find . -maxdepth 1 -name "*.$newextension"
 
 find . -maxdepth 1 -name "*.$newextension" | parallel -j 1 "cat {}" \
 | vsearch \
 --derep_fulllength - \
---output - \
+--output $output_dir/Glob_derep.fasta \
+--uc tempdir/Glob_derep.uc \
 --fasta_width 0 \
 --threads 1 \
---sizein --sizeout > $output_dir/Glob_derep.fasta
+--sizein --sizeout
 
 ### Clustering
 checkerror=$(vsearch $seqsort \
@@ -131,8 +134,6 @@ else
 fi
 
 ### Dereplication of individual samples, add sample ID to the header
-mkdir -p tempdir
-
 derep_rename () {
   samp_name=$(basename $1 | awk 'BEGIN{FS="."} {$NF=""; print $0}' | sed 's/ //g')
 
@@ -158,7 +159,7 @@ seqkit seq --name tempdir/Dereplicated_samples.fasta \
 
 ### OTU table creation
 Rscript /scripts/submodules/ASV_OTU_merging_script.R \
-  --derepuc      "$output_dir"/Glob_derep.uc \
+  --derepuc      tempdir/Glob_derep.uc \
   --uc           "$output_dir"/OTUs.uc \
   --asv          tempdir/ASV_table_long.txt \
   --rmsingletons TRUE \
