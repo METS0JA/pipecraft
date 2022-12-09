@@ -1018,10 +1018,10 @@ export default new Vuex.Store({
         services: [
           {
             tooltip:
-              "tick the checkbox to filter chimeras with vsearch. Run only on single-end or assembled paired-end data",
+              "tick the checkbox to filter chimeras with vsearch --uchime_denovo",
             scriptName: "chimera_filtering_vsearch.sh",
             imageName: "pipecraft/vsearch:2.18",
-            serviceName: "vsearch",
+            serviceName: "uchime_denovo",
             selected: false,
             showExtra: false,
             extraInputs: [
@@ -1029,7 +1029,7 @@ export default new Vuex.Store({
                 name: "cores",
                 value: 4,
                 disabled: "never",
-                tooltip: "Number of cores to use",
+                tooltip: "Number of cores to use (only for reference based chimera filtering)",
                 type: "numeric",
                 rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
               },
@@ -1052,6 +1052,74 @@ export default new Vuex.Store({
                 min: 0,
                 step: 0.01,
                 type: "slide",
+              },
+            ],
+            Inputs: [
+              {
+                name: "pre_cluster",
+                value: 0.98,
+                disabled: "never",
+                tooltip:
+                  "Identity percentage when performing 'pre-clustering' with --cluster_size for denovo chimera filtering with --uchime_denovo",
+                max: 1,
+                min: 0,
+                step: 0.01,
+                type: "slide",
+              },
+              {
+                name: "min_unique_size",
+                value: 1,
+                disabled: "never",
+                tooltip:
+                  "Minimum amount of a unique sequences in a fasta file. If value = 1, then no sequences are discarded after dereplication; if value = 2, then sequences, which are represented only once in a given file are discarded; and so on",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "denovo",
+                value: true,
+                disabled: "never",
+                tooltip:
+                  "Perform denovo chimera filtering with --uchime_denovo",
+                type: "bool",
+              },
+              {
+                name: "reference_based",
+                active: false,
+                btnName: "select file",
+                value: "undefined",
+                disabled: "never",
+                tooltip:
+                  "Perform reference database based chimera filtering with --uchime_ref. If denovo = TRUE, then reference based chimera filtering will be performed after denovo",
+                type: "boolfile",
+              },
+            ],
+          },
+          {
+            tooltip:
+              "tick the checkbox to filter chimeras with vsearch --uchime_denovo3 [for denoised sequences]",
+            scriptName: "chimera_filtering_vsearch_uchime3.sh",
+            imageName: "pipecraft/vsearch:2.18",
+            serviceName: "uchime_denovo3",
+            selected: false,
+            showExtra: false,
+            extraInputs: [
+              {
+                name: "cores",
+                value: 4,
+                disabled: "never",
+                tooltip: "Number of cores to use (only for reference based chimera filtering)",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "abundance_skew",
+                value: 16,
+                disabled: "never",
+                tooltip:
+                  "The abundance skew is used to distinguish in a threeway alignment which sequence is the chimera and which are the parents. The assumption is that chimeras appear later in the PCR amplification process and are therefore less abundant than their parents",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
               },
             ],
             Inputs: [
@@ -1273,10 +1341,10 @@ export default new Vuex.Store({
               },
               {
                 name: "relabel",
-                items: ["none", "md5", "sha1"],
-                value: "sha1",
+                items: ["md5", "sha1"],
+                value: "md5",
                 disabled: "never",
-                tooltip: "relabel sequence identifiers (none = do not relabel)",
+                tooltip: "relabel sequence identifiers (using md5 or sha1 algorithm; default = md5)",
                 type: "select",
               },
               {
@@ -1296,14 +1364,6 @@ export default new Vuex.Store({
                 tooltip:
                   'prior the OTU table creation, mask regions in sequences using the "dust" method, or do not mask ("none").',
                 type: "select",
-              },
-              {
-                name: "output_UC",
-                value: false,
-                disabled: "never",
-                tooltip:
-                  "output clustering results in tab-separated UCLAST-like format",
-                type: "bool",
               },
             ],
             Inputs: [
@@ -1351,7 +1411,7 @@ export default new Vuex.Store({
             scriptName: "clustering_unoise.sh",
             tooltip: "tick the checkbox to cluster reads with vsearch --cluster_unoise",
             imageName: "pipecraft/vsearch:2.18",
-            serviceName: "unoise",
+            serviceName: "unoise3",
             selected: false,
             showExtra: false,
             extraInputs: [
@@ -1418,10 +1478,10 @@ export default new Vuex.Store({
               },
               {
                 name: "relabel",
-                items: ["none", "md5", "sha1"],
-                value: "sha1",
+                items: ["md5", "sha1"],
+                value: "md5",
                 disabled: "never",
-                tooltip: "relabel sequence identifiers (none = do not relabel)",
+                tooltip: "relabel sequence identifiers (using md5 or sha1 algorithm; default = md5)",
                 type: "select",
               },
               {
@@ -1441,14 +1501,6 @@ export default new Vuex.Store({
                 tooltip:
                   'prior the OTU table creation, mask regions in sequences using the "dust" method, or do not mask ("none").',
                 type: "select",
-              },
-              {
-                name: "output_uc",
-                value: false,
-                disabled: "never",
-                tooltip:
-                  "output clustering results in tab-separated UCLAST-like format",
-                type: "bool",
               },
             ],
             Inputs: [
@@ -2504,7 +2556,7 @@ export default new Vuex.Store({
             name: "cores",
             value: 4,
             disabled: "never",
-            tooltip: "Number of cores to use",
+            tooltip: "Number of cores to use (only for reference based chimera filtering)",
             type: "numeric",
             rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
@@ -2738,10 +2790,10 @@ export default new Vuex.Store({
           },
           {
             name: "relabel",
-            items: ["none", "md5", "sha1"],
-            value: "sha1",
+            items: ["md5", "sha1"],
+            value: "md5",
             disabled: "never",
-            tooltip: "relabel sequence identifiers (none = do not relabel)",
+            tooltip: "relabel sequence identifiers (using md5 or sha1 algorithm; default = md5)",
             type: "select",
           },
           {
@@ -2761,14 +2813,6 @@ export default new Vuex.Store({
             tooltip:
               'prior the OTU table creation, mask regions in sequences using the "dust" method, or do not mask ("none")',
             type: "select",
-          },
-          {
-            name: "output_UC",
-            value: false,
-            disabled: "never",
-            tooltip:
-              "output clustering results in tab-separated UCLAST-like format",
-            type: "bool",
           },
         ],
         Inputs: [
@@ -2913,7 +2957,7 @@ export default new Vuex.Store({
     Metaworks_workflow: [
       {
         tooltip: "MetaWorks v1.11.1, ESV paired-end reads",
-        scriptName: "metaworks_paired_end_ESV2.sh",
+        scriptName: "metaworks_paired_end_ESV.sh",
         imageName: "pipecraft/metaworks:1.11.2",
         serviceName: "metaworks_ESV",
         disabled: "never",
@@ -3602,7 +3646,7 @@ export default new Vuex.Store({
         ],
       },
       {
-        tooltip: "applies to DADA2 output ASV table. Collaplse identical ASVs or/and filter ASVs by length",
+        tooltip: "Collaplse identical ASVs or/and filter ASVs by length",
         scriptName: "table_filtering_dada2_wf.sh",
         imageName: "pipecraft/dada2:1.20",
         serviceName: "filter ASV table",

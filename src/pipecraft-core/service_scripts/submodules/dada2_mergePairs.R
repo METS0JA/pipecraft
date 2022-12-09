@@ -90,7 +90,7 @@ print("mergePairs DONE")
 #make sequence table
 ASV_tab = makeSequenceTable(merge)
 #write RDS object
-#saveRDS(ASV_tab, (file.path(path_results, "ASVs_table.denoised-merged.rds")))
+#saveRDS(ASV_tab, (file.path(path_results, "ASVs_table.denoised.rds")))
 
 #sequence headers
 asv_seqs = colnames(ASV_tab)
@@ -107,7 +107,7 @@ colnames(ASV_tab)[1] = "Sequence"
 row.names(ASV_tab) = sub(">", "", asv_headers)
 
 #write ASVs table
-# write.table(ASV_tab, file.path(path_results, "ASVs_table.txt"), sep = "\t", col.names = NA, row.names = TRUE, quote = FALSE)
+#write.table(ASV_tab, file.path(path_results, "ASVs_table.txt"), sep = "\t", col.names = NA, row.names = TRUE, quote = FALSE)
 
 #Loop through each sample in the table and write per-sample fasta files
 for (i in 2:length(colnames(ASV_tab))){

@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 
-#DADA2 denoising and merging paired-end data
+#DADA2 denoising and merging paired-end data, for DADA2 full workflow.
 
 #load dada2
 library('dada2')
@@ -114,7 +114,7 @@ if (pool == ""){
     rownames(ASV_tab) = gsub("_R1_filt.fastq", "", rownames(ASV_tab))
     
     #write RDS object
-    saveRDS(ASV_tab, (file.path(path_results, "ASVs_table.denoised-merged.rds")))
+    saveRDS(ASV_tab, (file.path(path_results, "ASVs_table.denoised.rds")))
 
     #sequence headers
     asv_seqs = colnames(ASV_tab)

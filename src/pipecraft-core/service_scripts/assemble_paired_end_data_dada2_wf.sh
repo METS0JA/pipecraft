@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# denoise and assemble paired-end data with DADA2 dada and mergePairs functions for ASVs workflow.
+# denoise and assemble paired-end data with DADA2 dada and mergePairs functions. For DADA2 full workflow.
 
 ##########################################################
 ###Third-party applications:

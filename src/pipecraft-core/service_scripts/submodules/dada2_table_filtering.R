@@ -94,34 +94,49 @@ if (len_filt != 0) {
             short_ASV_count = short_ASV_count + 1 
         }
     }
-    ASV_tab_lenFilt = table_in[,-c(a)] #remove columns, i.e ASVs with short seqs
 
-    #print ASV count
-    print(paste0("< ", len_filt, " bp ASVs = ", short_ASV_count))
-    print(paste0("no. of ASVs in a length filtered table = ", dim(ASV_tab_lenFilt)[2]))
-    print("")
-
-    ###format and save ASV table and ASVs.fasta
-    #sequence headers with size
-    asv_seqs = colnames(ASV_tab_lenFilt)
-    asv_size = colSums(ASV_tab_lenFilt)
-    asv_headers = vector(dim(ASV_tab_lenFilt)[2], mode="character")
-    for (i in 1:dim(ASV_tab_lenFilt)[2]) {
-        asv_headers[i] = paste(">ASV", i, ";size=", asv_size[i], sep="")
+    #Write output file indicationg that no ASVs were filtered out based on this length threshold
+    if (is.null(a) == TRUE) {
+        write(a, file.path(path_ASVs, "a.txt"))
     }
-    #transpose sequence table
-    tASV_tab_lenFilt = t(ASV_tab_lenFilt)
-    #add sequences to 1st column
-    tASV_tab_lenFilt = cbind(row.names(tASV_tab_lenFilt), tASV_tab_lenFilt)
-    colnames(tASV_tab_lenFilt)[1] = "Sequence"
-    #row names as sequence headers
-    row.names(tASV_tab_lenFilt) = sub(">", "", asv_headers)
 
-    #write ASVs.fasta to path_ASVs
-    asv_fasta <- c(rbind(asv_headers, asv_seqs))
-    write(asv_fasta, file.path(path_ASVs, "ASVs_lenFilt.fasta"))
-    #write ASVs table to path_ASVs
-    write.table(tASV_tab_lenFilt, file.path(path_ASVs, "ASV_table_lenFilt.txt"), sep = "\t", col.names = NA, row.names = TRUE, quote = FALSE)
+    #a = NULL if all ASVs were kept. Proceed if there are some ASVs to be removed; i.e. a != NULL
+    if (is.null(a) != TRUE) {
+        ASV_tab_lenFilt = table_in[,-c(a)] #remove columns, i.e ASVs with short seqs
+
+        #print ASV count
+        print(paste0("< ", len_filt, " bp ASVs = ", short_ASV_count))
+        print(paste0("no. of ASVs in a length filtered table = ", dim(ASV_tab_lenFilt)[2]))
+        print("")
+
+        #Proceed if NOT all ASVs were removed by length filtering
+        if (dim(ASV_tab_lenFilt)[2] != 0) { 
+            ###format and save ASV table and ASVs.fasta
+            #sequence headers with size
+            asv_seqs = colnames(ASV_tab_lenFilt)
+            asv_size = colSums(ASV_tab_lenFilt)
+            asv_headers = vector(dim(ASV_tab_lenFilt)[2], mode="character")
+            for (i in 1:dim(ASV_tab_lenFilt)[2]) {
+                asv_headers[i] = paste(">ASV", i, ";size=", asv_size[i], sep="")
+            }
+            #transpose sequence table
+            tASV_tab_lenFilt = t(ASV_tab_lenFilt)
+            #add sequences to 1st column
+            tASV_tab_lenFilt = cbind(row.names(tASV_tab_lenFilt), tASV_tab_lenFilt)
+            colnames(tASV_tab_lenFilt)[1] = "Sequence"
+            #row names as sequence headers
+            row.names(tASV_tab_lenFilt) = sub(">", "", asv_headers)
+
+            #write ASVs.fasta to path_ASVs
+            asv_fasta <- c(rbind(asv_headers, asv_seqs))
+            write(asv_fasta, file.path(path_ASVs, "ASVs_lenFilt.fasta"))
+            #write ASVs table to path_ASVs
+            write.table(tASV_tab_lenFilt, file.path(path_ASVs, "ASV_table_lenFilt.txt"), sep = "\t", col.names = NA, row.names = TRUE, quote = FALSE)
+        } else {
+            print(paste0("NO ASVs remained after length filtering; ", len_filt, " bp"))
+        }
+    }
+
 }
 ##########################################
 

@@ -27,14 +27,13 @@ strands=$"--strand ${strands}"         # list: --strand both, --strand plus
 minsize=$"--minsize ${min_OTU_size}"   # pos int (default, 1)
 
 #additional options
-seqsort=$"--${sequence_sorting}"       # list: --cluster_size or --cluster_fast, --cluster_smallmem
+seqsort=$"${sequence_sorting}"       # list: --cluster_size or --cluster_fast, --cluster_smallmem
 simtype=$"--iddef ${similarity_type}"  # list: --iddef 0; --iddef 1; --iddef 2; --iddef 3; --iddef 4
 centroid=$centroid_type                # list: similarity, abundance
 maxaccepts=$"--maxaccepts ${max_hits}" # pos int
-relabel=$relabel                       # list: none, sha1, md5
+relabel=$relabel                       # list: sha1, md5
 mask=$"--qmask ${mask}"                # list: --qmask dust, --qmask none
 dbmask=$"--dbmask ${dbmask}"           # list: --qmask dust, --qmask none
-uc=$output_UC                          # false or true
 ###############################
 # Source for functions
 source /scripts/submodules/framework.functions.sh
@@ -42,11 +41,11 @@ source /scripts/submodules/framework.functions.sh
 output_dir=$"/input/clustering_out"
 
 #additional options, if selection != undefined/false
-if [[ $seqsort == "size" ]]; then;
+if [[ $seqsort == "size" ]]; then
     seqsort=$"--cluster_size"
-elif [[ $seqsort == "length" ]]; then;
+elif [[ $seqsort == "length" ]]; then
     seqsort=$"--cluster_fast"
-elif [[ $seqsort == "no" ]]; then;
+elif [[ $seqsort == "none" ]]; then
     seqsort=$"--cluster_smallmem --usersort"
 fi 
 if [[ $centroid == "similarity" ]]; then
@@ -54,17 +53,10 @@ if [[ $centroid == "similarity" ]]; then
 else
     centroid_in=$"--sizeorder"
 fi
-if [[ $relabel == "none" ]]; then
-    relabel_in=$"" 
-elif [[ $relabel == "sha1" ]]; then
+if [[ $relabel == "sha1" ]]; then
     relabel_in=$"--relabel_sha1"
 elif [[ $relabel == "md5" ]]; then
     relabel_in=$"--relabel_md5"
-fi
-if [[ $uc == "false" ]]; then
-    uc_in=$""
-else
-    uc_in=$"--uc $output_dir/OTUs.uc"
 fi
 
 #############################
@@ -115,7 +107,7 @@ $maxaccepts \
 $cores \
 $otutype \
 $output_dir/OTUs.temp.fasta \
-$uc_in \
+--uc $output_dir/OTUs.uc \
 --fasta_width 0 \
 --sizein --sizeout 2>&1)
 check_app_error
@@ -158,29 +150,17 @@ seqkit seq --name tempdir/Dereplicated_samples.fasta \
   > tempdir/ASV_table_long.txt
 
 ### OTU table creation
-Rscript /scripts/submodules/ASV_OTU_merging_script.R \
+printf "# Making OTU table \n"
+Rlog=$(Rscript /scripts/submodules/ASV_OTU_merging_script.R \
   --derepuc      tempdir/Glob_derep.uc \
   --uc           "$output_dir"/OTUs.uc \
   --asv          tempdir/ASV_table_long.txt \
   --rmsingletons TRUE \
-  --output       "$output_dir"/OTU_table.txt
+  --output       "$output_dir"/OTU_table.txt 2>&1)
+echo $Rlog > $output_dir/R_run.log 
+wait
+printf "\n OTU table DONE \n"
 
-
-# ### OTU table creation (with VSEARCH mapping)
-# checkerror=$(vsearch \
-# --usearch_global tempdir/Dereplicated_samples.fasta \
-# --db $output_dir/OTUs.fasta \
-# $id \
-# $strands \
-# $mask \
-# $dbmask \
-# --sizein --sizeout \
-# $cores \
-# --otutabout $output_dir/OTU_table.txt  2>&1)
-# check_app_error
-# 
-# # rename #OTU ID -> OTU_id (LULU does not like # for outputting sample names)
-# sed -i 's/#OTU ID/OTU_id/' $output_dir/OTU_table.txt
 
 #Order the OTUs in fasta file accoring to OTU table
 if [[ -s "$output_dir/OTU_table.txt" ]]; then 
@@ -226,7 +206,6 @@ Files in 'clustering_out' directory:
 
 Core commands -> 
 clustering: vsearch $seqsort Glob_derep.fasta $id $simtype $strands $relabel_in $mask $centroid_in $maxaccepts $cores $otutype OTUs.fasta $uc_in --fasta_width 0 --sizein --sizeout
-make OTU table: vsearch --usearch_global Dereplicated_samples.fasta --db OTUs.fasta $id $strands $mask $dbmask --sizein --sizeout $cores --otutabout OTU_table.txt
 
 Total run time was $runtime sec.\n\n
 ##################################################################

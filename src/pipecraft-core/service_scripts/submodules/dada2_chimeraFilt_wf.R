@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 
-#DADA2 chimera filtering. In this step, also ASV table is generated (and ASVs.fasta)
+#DADA2 chimera filtering for DADA2 full workflow. In this step, also ASV table is generated (and ASVs.fasta)
 
 #load dada2
 library("dada2")
@@ -29,13 +29,13 @@ path_ASVs = "/input/ASVs_out.dada2"
 dir.create(path_ASVs)
 
 #load data
-ASV_tab = readRDS(file.path(workingDir, "ASVs_table.denoised-merged.rds"))
+ASV_tab = readRDS(file.path(workingDir, "ASVs_table.denoised.rds"))
 
 #remove chimeras
 ASV_tab.nochim <- removeBimeraDenovo(ASV_tab, method = method, multithread = FALSE, verbose = FALSE)
 
 #save rds
-saveRDS(ASV_tab.nochim, file.path(path_results, "ASVs_table.denoised-merged.nochim.rds"))
+saveRDS(ASV_tab.nochim, file.path(path_ASVs, "ASVs_table.denoised.nochim.rds"))
 
 #seq count summary
 qfilt = readRDS("/input/qualFiltered_out/quality_filtered.rds")
@@ -96,8 +96,5 @@ for (i in 2:length(colnames(ASV_tab.nochim))){
 if (file.exists("/input/qualFiltered_out/filtFs.rds")) {
     unlink("/input/qualFiltered_out/*.rds")
 }
-#if (file.exists("/input/denoised_assembled.dada2/dadaFs.rds")) {
-#    unlink("/input/denoised_assembled.dada2/*.rds")
-#}
 
-#DONE, proceed with chimera_filtering_dada2_wf.sh.sh to clean up make readme
+#DONE, proceed with chimera_filtering_dada2_wf.sh to clean up make readme
