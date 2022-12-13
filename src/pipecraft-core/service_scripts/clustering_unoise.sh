@@ -50,8 +50,8 @@ mask=$"--qmask ${mask}"                         # list: --qmask dust, --qmask no
 #output dir
 output_dir=$"/input/clustering_out"
 
-## Number of cores for GNU parallel
-NCORES=$cores
+## Number of cores for GNU parallel. [NOT WORKING]
+#NCORES=$cores
 
 start=$(date +%s)
 # Source for functions
@@ -63,7 +63,7 @@ first_file_check
 prepare_SE_env
 
 ### Pre-process samples
-printf "Checking files ...\n"
+printf "Checking files ... \n"
 for file in *.$extension; do
     #Read file name; without extension
     input=$(echo $file | sed -e "s/.$extension//")
@@ -80,7 +80,7 @@ if [ -d tempdir ]; then
 fi
 mkdir -p tempdir
 
-printf "Dereplicating ...\n"
+printf "Dereplication of individual samples ... \n"
 ## Dereplication of individual samples, add sample ID to the header
 derep_rename () {
   samp_name=$(basename $1 | awk 'BEGIN{FS="."} {$NF=""; print $0}' | sed 's/ //g')
@@ -95,22 +95,23 @@ derep_rename () {
 export -f derep_rename
 find . -maxdepth 1 -name "*.$newextension" | parallel -j 1 "derep_rename {}"
 
+### Global dereplication
+printf "Dereplicating globally ... \n"
+find tempdir -maxdepth 1 -name "*.fasta" | parallel -j 1 "cat {}" \
+| vsearch \
+--derep_fulllength - \
+--uc tempdir/Glob_derep.uc \
+--output - \
+--fasta_width 0 \
+--threads 1 \
+--sizein --sizeout > $output_dir/Glob_derep.fasta
+
 ## Denoizing sequences globally
 if [[ $denoise_level == "global" ]]; then
-  printf "Denoizing sequences globally ...\n"
-
-  ### Global dereplication
-  find tempdir -maxdepth 1 -name "*.fasta" | parallel -j 1 "cat {}" \
-  | vsearch \
-  --derep_fulllength - \
-  --uc tempdir/Glob_derep.uc \
-  --output - \
-  --fasta_width 0 \
-  --threads 1 \
-  --sizein --sizeout > $output_dir/Glob_derep.fasta
-  
+  printf "Denoizing sequences globally ... \n"
+ 
   ### UNOISE3
-  printf "Unoise3 ...\n"
+  printf "Unoise3 ... \n"
   checkerror=$(vsearch \
   --cluster_unoise $output_dir/Glob_derep.fasta \
   $strands \
@@ -128,7 +129,7 @@ if [[ $denoise_level == "global" ]]; then
   check_app_error
   
   ## Remove chimera
-  printf "remove chimeras\n"
+  printf "Remove chimeras ... \n"
 
   if [[ $chimerarm == "true" ]]; then
     checkerror=$(vsearch \
@@ -153,7 +154,6 @@ fi  # end of global denoising
 
 ## Denoizing sequences individually for each sample
 if [[ $denoise_level == "individual" ]]; then
-
   mkdir -p tempdir_denoize
   mkdir -p tempdir_chimera
 
@@ -163,8 +163,7 @@ if [[ $denoise_level == "individual" ]]; then
     samp_name=$(basename $1)
 
     ## Denoise sample
-    checkerror=$(
-    vsearch \
+    checkerror=$(vsearch \
     --cluster_unoise "$1" \
       $strands \
       $minsize \
@@ -180,9 +179,8 @@ if [[ $denoise_level == "individual" ]]; then
     check_app_error
     
     ## Remove chimera
-    if [[ $chimerarm == "TRUE" ]]; then
-      checkerror=$(
-      vsearch \
+    if [[ $chimerarm == "true" ]]; then
+      checkerror=$(vsearch \
         --sortbysize tempdir_denoize/"$samp_name" \
         --output - \
         | vsearch \
@@ -208,13 +206,13 @@ if [[ $denoise_level == "individual" ]]; then
   export maxrejects="$maxrejects"
 
   ## Take dereplicated samples and apply denoising function
-  find tempdir -maxdepth 1 -name "*.fasta" | parallel -j "$NCORES" "denoise_and_chim {}"
+  printf "Denoizing sequences individually ... \n"
+  find tempdir -maxdepth 1 -name "*.fasta" | parallel -j 1 "denoise_and_chim {}"
 
-  if [[ $chimerarm == "TRUE" ]]; then
+  if [[ $chimerarm == "true" ]]; then
+    printf "Removing chimeras ... \n"
+    find tempdir_chimera -maxdepth 1 -name "Chim_*.fasta" | parallel -j 1 "cat {} >> tempdir/All_chimera.fasta"
     ## Count chimeric sequences
-    find tempdir_chimera -maxdepth 1 -name "Chim_*.fasta" | parallel -j 1 \
-      "cat {} >> tempdir/All_chimera.fasta"
-      
     chimeras=$(grep -c "^>" tempdir/All_chimera.fasta)
 
     ## Combine and dereplicate denoised sequences
@@ -222,6 +220,7 @@ if [[ $denoise_level == "individual" ]]; then
     | vsearch \
     --derep_fulllength - \
     --output $output_dir/zOTUs.fasta \
+    --uc $output_dir/zOTUs.uc \
     --fasta_width 0 \
     --threads 1 \
     --sizein --sizeout
@@ -232,6 +231,7 @@ if [[ $denoise_level == "individual" ]]; then
     | vsearch \
     --derep_fulllength - \
     --output $output_dir/zOTUs.fasta \
+    --uc $output_dir/zOTUs.uc \
     --fasta_width 0 \
     --threads 1 \
     --sizein --sizeout
@@ -250,20 +250,21 @@ seqkit seq --name $output_dir/Dereplicated_samples.fasta \
   > tempdir/ASV_table_long.txt
 
 ## zOTU table creation
-printf "Making zOTU table ...\n"
-Rlog=$(Rscript /scripts/submodules/ASV_OTU_merging_script.R \
+printf "Making zOTU table ... \n"
+#Rlog=$(
+  Rscript /scripts/submodules/ASV_OTU_merging_script.R \
   --derepuc      tempdir/Glob_derep.uc \
   --uc           "$output_dir"/zOTUs.uc \
   --asv          tempdir/ASV_table_long.txt \
   --rmsingletons FALSE \
-  --output       "$output_dir"/zOTU_table.txt 2>&1)
-echo $Rlog > $output_dir/R_run.log 
+  --output       "$output_dir"/zOTU_table.txt 
+  #2>&1)
+#echo $Rlog > $output_dir/R_run.log 
 wait
-printf "\n zOTU table DONE \n"
 
 ## Perform OTU clustering (if required, id < 1)
 if [[ $id_float != 1 ]]; then
-  printf "\n Clustering zOTUs ...\n"
+  printf "\n Clustering zOTUs ... \n"
 
   ### Clustering
   checkerror=$(vsearch --cluster_size \
@@ -282,23 +283,31 @@ if [[ $id_float != 1 ]]; then
   check_app_error
 
   ## OTU table creation
-  printf "Making OTU table ...\n"
-  Rlog=$(Rscript /scripts/submodules/ASV_OTU_merging_script.R \
+  printf "Making OTU table ... \n"
+  #Rlog=$(
+    Rscript /scripts/submodules/ASV_OTU_merging_script.R \
     --derepuc      tempdir/Glob_derep.uc \
     --uc           "$output_dir"/OTUs.uc \
     --asv          tempdir/ASV_table_long.txt \
     --rmsingletons FALSE \
-    --output       "$output_dir"/OTU_table.txt 2>&1)
-  echo $Rlog > $output_dir/R_run.log 
+    --output       "$output_dir"/OTU_table.txt 
+    #2>&1)
+#  echo $Rlog > $output_dir/R_run.log 
   wait
-  printf "\n OTU table DONE \n"
-
 fi # end of OTU clustering
+
+### remove ";sample=.*;" from OTU.fasta files
+if [[ -f $output_dir/OTUs.fasta ]]; then
+  sed -i 's/;sample=.*;/;/' $output_dir/OTUs.fasta
+fi
+if [[ -f $output_dir/zOTUs.fasta ]]; then
+  sed -i 's/;sample=.*;/;/' $output_dir/zOTUs.fasta
+fi
 
 #################################################
 ### COMPILE FINAL STATISTICS AND README FILES ###
 #################################################
-printf "\nCleaning up and compiling final stats files ...\n"
+printf "\nCleaning up and compiling final stats files ... \n"
 rm $output_dir/Glob_derep.fasta
 rm $output_dir/Dereplicated_samples.fasta
 
@@ -308,40 +317,46 @@ if [[ $check_compress == "gz" ]] || [[ $check_compress == "zip" ]]; then
 fi
 
 #Delete tempdirs
-# if [ -d tempdir ]; then
-#     rm -rf tempdir
-# fi
-# if [ -d tempdir_denoize ]; then
-#     rm -rf tempdir_denoize
-# fi
-# if [ -d tempdir_chimera ]; then
-#     rm -rf tempdir_chimera
-# fi
+if [ -d tempdir ]; then
+    rm -rf tempdir
+fi
+if [ -d tempdir2 ]; then
+    rm -rf tempdir2
+fi
+if [ -d tempdir_denoize ]; then
+    rm -rf tempdir_denoize
+fi
+if [ -d tempdir_chimera ]; then
+    rm -rf tempdir_chimera
+fi
+
 
 #Make README.txt file
 size_zotu=$(grep -c "^>" $output_dir/zOTUs.fasta)
 
-printf "Sequence denoizing formed $size_zotu zOTUs (zero-radius OTUs);
-'$output_dir' directory contains FASTA formated denoized sequences (zOTUs.fasta)
-and an zOTU distribution table per sample (per input file in the working directory), zOTU_table.txt.
+printf "Sequence denoizing formed $size_zotu zOTUs (zero-radius OTUs).
+
+Files in 'clustering_out' directory:
+# zOTUs.fasta = FASTA formated denoized sequences (zOTUs.fasta)
+# zOTU_table.txt = zOTU distribution table per sample (per input file in the working directory).
 \n" > $output_dir/README.txt
 
 ## If additional clustering was performed
 if [[ $id_float != 1 ]]; then
     size_otu=$(grep -c "^>" $output_dir/OTUs.fasta)
-    printf "Additional sequence clustering at $id similarity threshold formed $size_otu OTUs;
-    '$output_dir' directory contains FASTA formated representative OTU sequences (OTUs.fasta)
-    and an OTU distribution table per sample (per input file in the working directory), OTU_table.txt.
+    printf "Additional clustering of zOTUs at $id similarity threshold formed $size_otu OTUs.
+    # OTUs.fasta = FASTA formated representative OTU sequences.
+    # OTU_table.txt = OTU distribution table per sample (per input file in the working directory).
     \n" >> $output_dir/README.txt
 fi
 
 ## Chimera stats
-if [[ $chimerarm == "TRUE" ]]; then
+if [[ $chimerarm == "true" ]]; then
     printf "Chimera removal step eliminated $chimeras sequences\n" >> $output_dir/README.txt
 fi
 
 ## ////  maybe add minsize validation here ???
-printf "If samples are denoised individually rather by pooling all samples together, 
+printf "\nIf samples are denoised individually rather by pooling all samples together, 
 reducing minsize to 4 is more reasonable for higher sensitivity.
 \n" >> $output_dir/README.txt
 

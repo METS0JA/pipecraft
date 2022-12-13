@@ -68,7 +68,7 @@ first_file_check_clustering
 prepare_SE_env
 
 ### Pre-process samples
-printf "Checking files ...\n"
+printf "Checking files ... \n"
 for file in *.$extension; do
     #Read file name; without extension
     input=$(echo $file | sed -e "s/.$extension//")
@@ -99,11 +99,11 @@ derep_rename () {
   | sed 's/>.*/&;sample='"$samp_name"'/' > tempdir/"$samp_name".fasta
 }
 export -f derep_rename
+printf "Dereplication of individual samples ... \n"
 find . -maxdepth 1 -name "*.$newextension" | parallel -j 1 "derep_rename {}"
 
 ### Global dereplication
-find tempdir -maxdepth 1 -name "*.fasta"
-
+printf "Dereplicating globally ... \n"
 find tempdir -maxdepth 1 -name "*.fasta" | parallel -j 1 "cat {}" \
 | vsearch \
 --derep_fulllength - \
@@ -114,6 +114,7 @@ find tempdir -maxdepth 1 -name "*.fasta" | parallel -j 1 "cat {}" \
 --sizein --sizeout
 
 ### Clustering
+printf "Clustering ... \n"
 checkerror=$(vsearch $seqsort \
 $output_dir/Glob_derep.fasta \
 $id \
@@ -139,19 +140,21 @@ seqkit seq --name tempdir/Dereplicated_samples.fasta \
   > tempdir/ASV_table_long.txt
 
 ### OTU table creation
-printf "# Making OTU table \n"
-Rlog=$(Rscript /scripts/submodules/ASV_OTU_merging_script.R \
+printf "Making OTU table ... \n"
+#Rlog=$(
+    Rscript /scripts/submodules/ASV_OTU_merging_script.R \
   --derepuc      tempdir/Glob_derep.uc \
   --uc           "$output_dir"/OTUs.uc \
   --asv          tempdir/ASV_table_long.txt \
   --rmsingletons $remove_singletons \
-  --output       "$output_dir"/OTU_table.txt 2>&1)
-echo $Rlog > $output_dir/R_run.log 
+  --output       "$output_dir"/OTU_table.txt 
+  #2>&1)
+#echo $Rlog > $output_dir/R_run.log 
 wait
-printf "\n OTU table DONE \n"
 
 ### Discard singleton OTUs
 if [[ $remove_singletons == "TRUE"  ]]; then
+    printf "Discarding singletons ... \n"
     checkerror=$(vsearch \
     --sortbysize $output_dir/OTUs.temp.fasta \
     --minsize 2 \
@@ -168,7 +171,7 @@ fi
 #################################################
 ### COMPILE FINAL STATISTICS AND README FILES ###
 #################################################
-printf "\nCleaning up and compiling final stats files ...\n"
+printf "\nCleaning up and compiling final stats files ... \n"
 
 #Delete decompressed files if original set of files were compressed
 if [[ $check_compress == "gz" ]] || [[ $check_compress == "zip" ]]; then
@@ -184,7 +187,6 @@ if [ -d tempdir2 ]; then
 fi
 rm $output_dir/Glob_derep.fasta
 size=$(grep -c "^>" $output_dir/OTUs.fasta)
-
 end=$(date +%s)
 runtime=$((end-start))
 
@@ -196,7 +198,7 @@ Files in 'clustering_out' directory:
 # OTU_table.txt = OTU distribution table per sample (tab delimited file). OTU headers are renamed according to MD5 algorithm in vsearch.
 
 Core commands -> 
-clustering: vsearch $seqsort Glob_derep.fasta $id $simtype $strands $mask $centroid_in $maxaccepts $cores $otutype OTUs.fasta --fasta_width 0 --sizein --sizeout
+clustering: vsearch $seqsort dereplicated_sequences.fasta $id $simtype $strands $mask $centroid_in $maxaccepts $cores $otutype OTUs.fasta --fasta_width 0 --sizein --sizeout
 
 Total run time was $runtime sec.\n\n
 ##################################################################
