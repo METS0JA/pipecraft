@@ -30,9 +30,8 @@ remove_singletons=$"${remove_singletons}"   # TRUE, FALSE
 seqsort=$"${sequence_sorting}"       # list: --cluster_size or --cluster_fast, --cluster_smallmem
 simtype=$"--iddef ${similarity_type}"  # list: --iddef 0; --iddef 1; --iddef 2; --iddef 3; --iddef 4
 centroid=$centroid_type                # list: similarity, abundance
-maxaccepts=$"--maxaccepts ${max_hits}" # pos int
+maxaccepts=$"--maxaccepts ${maxaccepts}" # pos int
 mask=$"--qmask ${mask}"                # list: --qmask dust, --qmask none
-dbmask=$"--dbmask ${dbmask}"           # list: --qmask dust, --qmask none
 ###############################
 # Source for functions
 source /scripts/submodules/framework.functions.sh
@@ -124,8 +123,7 @@ $mask \
 $centroid_in \
 $maxaccepts \
 $cores \
-$otutype \
-$output_dir/OTUs.temp.fasta \
+$otutype $output_dir/OTUs.temp.fasta \
 --uc $output_dir/OTUs.uc \
 --fasta_width 0 \
 --sizein --sizeout 2>&1)

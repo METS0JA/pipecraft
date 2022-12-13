@@ -346,7 +346,7 @@ export default new Vuex.Store({
           {
             tooltip: "quality filtering with vsearch",
             scriptName: "quality_filtering_paired_end_vsearch.sh",
-            imageName: "pipecraft/vsearch:2.18",
+            imageName: "pipecraft/vsearch:2.22.1",
             serviceName: "vsearch",
             selected: false,
             showExtra: false,
@@ -816,7 +816,7 @@ export default new Vuex.Store({
           {
             tooltip: "assemble paired-end reads with vsearch",
             scriptName: "assemble_paired_end_data_vsearch.sh",
-            imageName: "pipecraft/vsearch:2.18",
+            imageName: "pipecraft/vsearch:2.22.1",
             serviceName: "vsearch",
             disabled: "single_end",
             selected: false,
@@ -1020,7 +1020,7 @@ export default new Vuex.Store({
             tooltip:
               "tick the checkbox to filter chimeras with vsearch --uchime_denovo",
             scriptName: "chimera_filtering_vsearch.sh",
-            imageName: "pipecraft/vsearch:2.18",
+            imageName: "pipecraft/vsearch:2.22.1",
             serviceName: "uchime_denovo",
             selected: false,
             showExtra: false,
@@ -1099,7 +1099,7 @@ export default new Vuex.Store({
             tooltip:
               "tick the checkbox to filter chimeras with vsearch --uchime_denovo3 [for denoised sequences]",
             scriptName: "chimera_filtering_vsearch_uchime3.sh",
-            imageName: "pipecraft/vsearch:2.18",
+            imageName: "pipecraft/vsearch:2.22.1",
             serviceName: "uchime_denovo3",
             selected: false,
             showExtra: false,
@@ -1299,7 +1299,7 @@ export default new Vuex.Store({
           {
             scriptName: "clustering_vsearch.sh",
             tooltip: "tick the checkbox to cluster reads with vsearch",
-            imageName: "pipecraft/vsearch:2.18",
+            imageName: "pipecraft/vsearch:2.22.1",
             serviceName: "vsearch",
             selected: false,
             showExtra: false,
@@ -1331,7 +1331,7 @@ export default new Vuex.Store({
                 type: "select",
               },
               {
-                name: "max_hits",
+                name: "maxaccepts",
                 value: 1,
                 disabled: "never",
                 tooltip:
@@ -1349,13 +1349,13 @@ export default new Vuex.Store({
                 type: "select",
               },
               {
-                name: "dbmask",
-                items: ["dust", "none"],
-                value: "dust",
+                name: "cores",
+                value: 4,
                 disabled: "never",
                 tooltip:
-                  'prior the OTU table creation, mask regions in sequences using the "dust" method, or do not mask ("none").',
-                type: "select",
+                  "number of cores to use",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
               },
             ],
             Inputs: [
@@ -1401,7 +1401,7 @@ export default new Vuex.Store({
           {
             scriptName: "clustering_unoise.sh",
             tooltip: "tick the checkbox to cluster reads with vsearch --cluster_unoise",
-            imageName: "pipecraft/vsearch:2.18",
+            imageName: "pipecraft/vsearch:2.22.1",
             serviceName: "unoise3",
             selected: false,
             showExtra: false,
@@ -1421,7 +1421,7 @@ export default new Vuex.Store({
                 value: "global",
                 disabled: "never",
                 tooltip:
-                  'at which level to perform denoising; global = by pooling samples, individual = independently for each sample',
+                  'at which level to perform denoising; global = by pooling samples, individual = independently for each sample (if samples are denoised individually, reducing minsize to 4 may be more reasonable for higher sensitivity)',
                 type: "select",
               },
               {
@@ -1477,33 +1477,33 @@ export default new Vuex.Store({
                 type: "select",
               },
               {
-                name: "dbmask",
-                items: ["dust", "none"],
-                value: "dust",
+                name: "cores",
+                value: 4,
                 disabled: "never",
                 tooltip:
-                  'prior the OTU table creation, mask regions in sequences using the "dust" method, or do not mask ("none").',
-                type: "select",
+                  "number of cores to use",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
               },
             ],
             Inputs: [
               {
                 name: "zOTUs_thresh",
-                value: 0.99,
+                value: 1,
                 disabled: "never",
                 tooltip:
-                  "sequence similarity threshold for zOTU table creation; 0.99 = 99% similarity threshold",
+                  "sequence similarity threshold for zOTU table creation; 1 = 100% similarity threshold for zOTUs",
                 max: 1,
                 min: 0,
                 step: 0.01,
                 type: "slide",
               },
               {
-                name: "clustering_thresh",
+                name: "similarity_threshold",
                 value: 1,
                 disabled: "never",
                 tooltip:
-                  "define OTUs based on the sequence similarity threshold; if id = 1, no OTU clustering will be performed",
+                  "cluster zOTUs to OTUs based on the sequence similarity threshold; if id = 1, no OTU clustering will be performed",
                 max: 1,
                 min: 0,
                 step: 0.01,
@@ -1520,7 +1520,7 @@ export default new Vuex.Store({
               },
               {
                 name: "minsize",
-                value: 5,
+                value: 8,
                 disabled: "never",
                 tooltip:
                   "minimum abundance of sequences for denoising",
@@ -2326,7 +2326,7 @@ export default new Vuex.Store({
       {
         tooltip: "assemble paired-end reads with vsearch",
         scriptName: "assemble_paired_end_data_vsearch.sh",
-        imageName: "pipecraft/vsearch:2.18",
+        imageName: "pipecraft/vsearch:2.22.1",
         serviceName: "merge reads",
         selected: "always",
         disabled: "single_end",
@@ -2414,7 +2414,7 @@ export default new Vuex.Store({
       {
         tooltip: "quality filtering with vsearch",
         scriptName: "quality_filtering_paired_end_vsearch.sh",
-        imageName: "pipecraft/vsearch:2.18",
+        imageName: "pipecraft/vsearch:2.22.1",
         serviceName: "quality filtering",
         disabled: "never",
         selected: "always",
@@ -2529,7 +2529,7 @@ export default new Vuex.Store({
         tooltip:
           "chimera filtering with vsearch. Untick the checkbox to skip this step",
         scriptName: "chimera_filtering_vsearch.sh",
-        imageName: "pipecraft/vsearch:2.18",
+        imageName: "pipecraft/vsearch:2.22.1",
         serviceName: "chimera filtering",
         disabled: "never",
         selected: "always",
@@ -2730,7 +2730,7 @@ export default new Vuex.Store({
       {
         tooltip: "cluster reads to OTUs with vsearch",
         scriptName: "clustering_vsearch.sh",
-        imageName: "pipecraft/vsearch:2.18",
+        imageName: "pipecraft/vsearch:2.22.1",
         serviceName: "clustering",
         disabled: "never",
         selected: "always",
@@ -2763,7 +2763,7 @@ export default new Vuex.Store({
             type: "select",
           },
           {
-            name: "max_hits",
+            name: "maxaccepts",
             value: 1,
             disabled: "never",
             tooltip:
@@ -2781,13 +2781,13 @@ export default new Vuex.Store({
             type: "select",
           },
           {
-            name: "dbmask",
-            items: ["dust", "none"],
-            value: "dust",
+            name: "cores",
+            value: 4,
             disabled: "never",
             tooltip:
-              'prior the OTU table creation, mask regions in sequences using the "dust" method, or do not mask ("none")',
-            type: "select",
+              "number of cores to use",
+            type: "numeric",
+            rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
         ],
         Inputs: [
