@@ -1340,14 +1340,6 @@ export default new Vuex.Store({
                 rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
               },
               {
-                name: "relabel",
-                items: ["md5", "sha1"],
-                value: "md5",
-                disabled: "never",
-                tooltip: "relabel sequence identifiers (using md5 or sha1 algorithm; default = md5)",
-                type: "select",
-              },
-              {
                 name: "mask",
                 items: ["dust", "none"],
                 value: "dust",
@@ -1369,10 +1361,10 @@ export default new Vuex.Store({
             Inputs: [
               {
                 name: "OTU_type",
-                items: ["centroid", "consensus"],
+                items: ["centroid", "consout"],
                 disabled: "never",
                 tooltip:
-                  '"centroid" = output centroid sequences; "consensus" = output consensus sequences',
+                  '"centroid" = output centroid sequences; "consout" = output consensus sequences',
                 value: "centroid",
                 type: "select",
               },
@@ -1397,13 +1389,12 @@ export default new Vuex.Store({
                 type: "select",
               },
               {
-                name: "min_OTU_size",
-                value: 2,
+                name: "remove_singletons",
+                value: false,
                 disabled: "never",
                 tooltip:
-                  "minimum read count per output OTU (e.g., if value = 2, then singleton OTUs will be discarded [OTUs with only one sequence])",
-                type: "numeric",
-                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+                  "remove singleton OTUs (e.g., if TRUE, then OTUs with only one sequence will be discarded)",
+                type: "bool",
               },
             ],
           },
@@ -1475,14 +1466,6 @@ export default new Vuex.Store({
                   "maximum number of non-matching target sequences to consider before stopping the search",
                 type: "numeric",
                 rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
-              },
-              {
-                name: "relabel",
-                items: ["md5", "sha1"],
-                value: "md5",
-                disabled: "never",
-                tooltip: "relabel sequence identifiers (using md5 or sha1 algorithm; default = md5)",
-                type: "select",
               },
               {
                 name: "mask",
@@ -2789,14 +2772,6 @@ export default new Vuex.Store({
             rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
           {
-            name: "relabel",
-            items: ["md5", "sha1"],
-            value: "md5",
-            disabled: "never",
-            tooltip: "relabel sequence identifiers (using md5 or sha1 algorithm; default = md5)",
-            type: "select",
-          },
-          {
             name: "mask",
             items: ["dust", "none"],
             value: "dust",
@@ -2818,10 +2793,10 @@ export default new Vuex.Store({
         Inputs: [
           {
             name: "OTU_type",
-            items: ["centroid", "consensus"],
+            items: ["centroid", "consout"],
             disabled: "never",
             tooltip:
-              '"centroid" = output centroid sequences; "consensus" = output consensus sequences',
+              '"centroid" = output centroid sequences; "consout" = output consensus sequences',
             value: "centroid",
             type: "select",
           },
@@ -2846,13 +2821,12 @@ export default new Vuex.Store({
             type: "select",
           },
           {
-            name: "min_OTU_size",
-            value: 2,
+            name: "remove_singletons",
+            value: false,
             disabled: "never",
             tooltip:
-              "minimum read count per output OTU (e.g., if value = 2, then singleton OTUs will be discarded [OTUs with only one sequence])",
-            type: "numeric",
-            rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              "remove singleton OTUs (e.g., if TRUE, then OTUs with only one sequence will be discarded)",
+            type: "bool",
           },
         ],
       },

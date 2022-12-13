@@ -24,14 +24,13 @@ extension=$fileFormat
 id=$"--id ${similarity_threshold}"     # positive float (0-1)
 otutype=$"--${OTU_type}"               # list: --centroids, --consout
 strands=$"--strand ${strands}"         # list: --strand both, --strand plus
-minsize=$"--minsize ${min_OTU_size}"   # pos int (default, 1)
+remove_singletons=$"${remove_singletons}"   # TRUE, FALSE
 
 #additional options
 seqsort=$"${sequence_sorting}"       # list: --cluster_size or --cluster_fast, --cluster_smallmem
 simtype=$"--iddef ${similarity_type}"  # list: --iddef 0; --iddef 1; --iddef 2; --iddef 3; --iddef 4
 centroid=$centroid_type                # list: similarity, abundance
 maxaccepts=$"--maxaccepts ${max_hits}" # pos int
-relabel=$relabel                       # list: sha1, md5
 mask=$"--qmask ${mask}"                # list: --qmask dust, --qmask none
 dbmask=$"--dbmask ${dbmask}"           # list: --qmask dust, --qmask none
 ###############################
@@ -53,10 +52,11 @@ if [[ $centroid == "similarity" ]]; then
 else
     centroid_in=$"--sizeorder"
 fi
-if [[ $relabel == "sha1" ]]; then
-    relabel_in=$"--relabel_sha1"
-elif [[ $relabel == "md5" ]]; then
-    relabel_in=$"--relabel_md5"
+if [[ $remove_singletons == "true"  ]]; then
+    remove_singletons=$"TRUE"
+fi
+if [[ $remove_singletons == "false"  ]]; then
+    remove_singletons=$"FALSE"
 fi
 
 #############################
@@ -80,12 +80,32 @@ for file in *.$extension; do
     check_extension_fastx
 done
 
+#tempdir
+if [ -d tempdir ]; then
+    rm -rf tempdir
+fi
 mkdir -p tempdir
 
-### Global dereplication
-find . -maxdepth 1 -name "*.$newextension"
+### Rename sequences to md5 or sha1
+    # and dereplication of individual samples, add sample ID to the header
+derep_rename () {
+  samp_name=$(basename $1 | awk 'BEGIN{FS="."} {$NF=""; print $0}' | sed 's/ //g')
+  vsearch \
+    --derep_fulllength "$1" \
+    --relabel_md5 \
+    --output - \
+    --fasta_width 0 \
+    --threads 1 \
+    --sizein --sizeout \
+  | sed 's/>.*/&;sample='"$samp_name"'/' > tempdir/"$samp_name".fasta
+}
+export -f derep_rename
+find . -maxdepth 1 -name "*.$newextension" | parallel -j 1 "derep_rename {}"
 
-find . -maxdepth 1 -name "*.$newextension" | parallel -j 1 "cat {}" \
+### Global dereplication
+find tempdir -maxdepth 1 -name "*.fasta"
+
+find tempdir -maxdepth 1 -name "*.fasta" | parallel -j 1 "cat {}" \
 | vsearch \
 --derep_fulllength - \
 --output $output_dir/Glob_derep.fasta \
@@ -100,7 +120,6 @@ $output_dir/Glob_derep.fasta \
 $id \
 $simtype \
 $strands \
-$relabel_in \
 $mask \
 $centroid_in \
 $maxaccepts \
@@ -112,35 +131,7 @@ $output_dir/OTUs.temp.fasta \
 --sizein --sizeout 2>&1)
 check_app_error
 
-### Discard OTUs with less than specified number of sequence (minsize)
-if [[ $minsize != "--minsize 1"  ]]; then
-    checkerror=$(vsearch \
-    --sortbysize $output_dir/OTUs.temp.fasta \
-    $minsize \
-    --sizein --sizeout --fasta_width 0 \
-    --output $output_dir/OTUs.fasta 2>&1)
-    check_app_error
-    rm $output_dir/OTUs.temp.fasta
-else
-    mv $output_dir/OTUs.temp.fasta $output_dir/OTUs.fasta
-fi
-
-### Dereplication of individual samples, add sample ID to the header
-derep_rename () {
-  samp_name=$(basename $1 | awk 'BEGIN{FS="."} {$NF=""; print $0}' | sed 's/ //g')
-
-  vsearch \
-    --derep_fulllength "$1" \
-    --output - \
-    --fasta_width 0 \
-    --threads 1 \
-    --sizein --sizeout \
-  | sed 's/>.*/&;sample='"$samp_name"'/' > tempdir/"$samp_name".fasta
-}
-export -f derep_rename
-
-find . -maxdepth 1 -name "*.$newextension" | parallel -j 1 "derep_rename {}"
-
+### Cat dereplicated individual samples for making an OTU table
 cat tempdir/*.fasta > tempdir/Dereplicated_samples.fasta
 
 ## Prepare table with sequence abundance per sample
@@ -155,31 +146,32 @@ Rlog=$(Rscript /scripts/submodules/ASV_OTU_merging_script.R \
   --derepuc      tempdir/Glob_derep.uc \
   --uc           "$output_dir"/OTUs.uc \
   --asv          tempdir/ASV_table_long.txt \
-  --rmsingletons TRUE \
+  --rmsingletons $remove_singletons \
   --output       "$output_dir"/OTU_table.txt 2>&1)
 echo $Rlog > $output_dir/R_run.log 
 wait
 printf "\n OTU table DONE \n"
 
+### Discard singleton OTUs
+if [[ $remove_singletons == "TRUE"  ]]; then
+    checkerror=$(vsearch \
+    --sortbysize $output_dir/OTUs.temp.fasta \
+    --minsize 2 \
+    --sizein --sizeout --fasta_width 0 \
+    --output $output_dir/OTUs.fasta 2>&1)
+    check_app_error
 
-#Order the OTUs in fasta file accoring to OTU table
-if [[ -s "$output_dir/OTU_table.txt" ]]; then 
-    awk 'BEGIN{FS="\t"}{print $1}' < $output_dir/OTU_table.txt > $output_dir/OTUs.names
-    touch $output_dir/ordered.OTUs.fasta
-    while read ID; do
-        grep -A1 ">$ID" $output_dir/OTUs.fasta >> $output_dir/ordered.OTUs.fasta
-    done < $output_dir/OTUs.names
-    #remove and rename
-    rm $output_dir/OTUs.names
-    rm $output_dir/OTUs.fasta
-    mv $output_dir/ordered.OTUs.fasta $output_dir/OTUs.fasta
+    sed -i 's/;sample=.*;/;/' $output_dir/OTUs.fasta
+else
+    sed -e 's/;sample=.*;/;/' $output_dir/OTUs.temp.fasta > $output_dir/OTUs.fasta
+    rm $output_dir/OTUs.temp.fasta
 fi
 
 #################################################
 ### COMPILE FINAL STATISTICS AND README FILES ###
 #################################################
 printf "\nCleaning up and compiling final stats files ...\n"
-rm $output_dir/Glob_derep.fasta
+
 #Delete decompressed files if original set of files were compressed
 if [[ $check_compress == "gz" ]] || [[ $check_compress == "zip" ]]; then
     rm *.$newextension
@@ -192,6 +184,7 @@ fi
 if [ -d tempdir2 ]; then
     rm -rf tempdir2
 fi
+rm $output_dir/Glob_derep.fasta
 size=$(grep -c "^>" $output_dir/OTUs.fasta)
 
 end=$(date +%s)
@@ -201,11 +194,11 @@ runtime=$((end-start))
 printf "Clustering formed $size OTUs.
 
 Files in 'clustering_out' directory:
-# OTUs.fasta = FASTA formated representative OTU sequences
-# OTU_table.txt = OTU distribution table per sample (tab delimited file)
+# OTUs.fasta = FASTA formated representative OTU sequences. OTU headers are renamed according to MD5 algorithm in vsearch.
+# OTU_table.txt = OTU distribution table per sample (tab delimited file). OTU headers are renamed according to MD5 algorithm in vsearch.
 
 Core commands -> 
-clustering: vsearch $seqsort Glob_derep.fasta $id $simtype $strands $relabel_in $mask $centroid_in $maxaccepts $cores $otutype OTUs.fasta $uc_in --fasta_width 0 --sizein --sizeout
+clustering: vsearch $seqsort Glob_derep.fasta $id $simtype $strands $mask $centroid_in $maxaccepts $cores $otutype OTUs.fasta --fasta_width 0 --sizein --sizeout
 
 Total run time was $runtime sec.\n\n
 ##################################################################

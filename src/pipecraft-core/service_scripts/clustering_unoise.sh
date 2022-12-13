@@ -42,7 +42,6 @@ maxrejects=$"--maxrejects ${maxrejects}"        # positive integer (default, 32)
 relabel=${relabel}                              # list: none, sha1, md5
 mask=$"--qmask ${mask}"                         # list: --qmask dust, --qmask none
 dbmask=$"--dbmask ${dbmask}"                    # list: --qmask dust, --qmask none
-uc=${output_uc}                                 # undefined or TRUE; only for OTUs (if id < 1)
 ###############################
 ###############################
 
@@ -51,20 +50,6 @@ uc=${output_uc}                                 # undefined or TRUE; only for OT
 #############################
 #output dir
 output_dir=$"/input/clustering_out"
-
-#additional options, if selection != undefined
-if [[ $relabel == "none" ]]; then
-    relabel_in=$"" 
-elif [[ $relabel == "sha1" ]]; then
-    relabel_in=$"--relabel_sha1"
-elif [[ $relabel == "md5" ]]; then
-    relabel_in=$"--relabel_md5"
-fi
-if [[ $uc == "undefined" ]]; then
-    uc_in=$""
-else
-    uc_in=$"--uc $output_dir/OTUs.uc"
-fi
 
 ## Number of cores for GNU parallel
 NCORES=$cores
@@ -126,12 +111,7 @@ if [[ $denoise_level == "global" ]]; then
   --sizein --sizeout > $output_dir/Glob_derep.fasta
   
   ### Clustering
-#  printf "cat $output_dir/Glob_derep.fasta"
-#  cat $output_dir/Glob_derep.fasta
-
   printf "clustering\n"
-  printf "vsearch --cluster_unoise $output_dir/Glob_derep.fasta   $strands   $minsize   $unoise_alpha   $simtype   $qmask   $maxaccepts   $maxrejects   $cores   $relabel_in   --centroids $output_dir/zOTUs.fasta  --fasta_width 0 --sizein --sizeout\n"
-
   checkerror=$(vsearch \
   --cluster_unoise $output_dir/Glob_derep.fasta \
   $strands \
@@ -144,6 +124,7 @@ if [[ $denoise_level == "global" ]]; then
   $cores \
   $relabel_in \
   --centroids $output_dir/zOTUs.fasta \
+  --uc $output_dir/zOTUs.uc \
   --fasta_width 0 \
   --sizein --sizeout 2>&1)
   check_app_error
@@ -296,26 +277,38 @@ if (( $(echo "${id/--id /} < 1" | bc -l) )); then
   $maxrejects \
   $cores \
   --centroids $output_dir/OTUs.fasta \
-  $uc_in \
+  --uc $output_dir/OTUs.uc \
   --fasta_width 0 \
   --sizein --sizeout \
   2>&1)
   check_app_error
 
   ## OTU table creation
-  checkerror=$(
-  vsearch \
-  --usearch_global $output_dir/Dereplicated_samples.fasta \
-  --db $output_dir/OTUs.fasta \
-  $id \
-  $strands \
-  $qmask \
-  $dbmask \
-  --sizein --sizeout \
-  $cores \
-  --otutabout $output_dir/OTU_table.txt \
-  2>&1)
-  check_app_error
+  # checkerror=$(
+  # vsearch \
+  # --usearch_global $output_dir/Dereplicated_samples.fasta \
+  # --db $output_dir/OTUs.fasta \
+  # $id \
+  # $strands \
+  # $qmask \
+  # $dbmask \
+  # --sizein --sizeout \
+  # $cores \
+  # --otutabout $output_dir/OTU_table.txt \
+  # 2>&1)
+  # check_app_error
+
+  ### OTU table creation
+  printf "# Making OTU table \n"
+  Rlog=$(Rscript /scripts/submodules/ASV_OTU_merging_script.R \
+    --derepuc      tempdir/Glob_derep.uc \
+    --uc           "$output_dir"/OTUs.uc \
+    --asv          tempdir/ASV_table_long.txt \
+    --rmsingletons TRUE \
+    --output       "$output_dir"/OTU_table.txt 2>&1)
+  echo $Rlog > $output_dir/R_run.log 
+  wait
+  printf "\n OTU table DONE \n"
 
 fi # end of OTU clustering
 
