@@ -346,7 +346,7 @@ export default new Vuex.Store({
           {
             tooltip: "quality filtering with vsearch",
             scriptName: "quality_filtering_paired_end_vsearch.sh",
-            imageName: "pipecraft/vsearch:2.22.1",
+            imageName: "pipecraft/vsearch_dada2:1",
             serviceName: "vsearch",
             selected: false,
             showExtra: false,
@@ -691,7 +691,7 @@ export default new Vuex.Store({
           {
             tooltip: "quality filtering with DADA2 'filterAndTrim' function",
             scriptName: "quality_filtering_paired_end_dada2.sh",
-            imageName: "pipecraft/dada2:1.20",
+            imageName: "pipecraft/vsearch_dada2:1",
             serviceName: "DADA2",
             selected: false,
             showExtra: false,
@@ -816,7 +816,7 @@ export default new Vuex.Store({
           {
             tooltip: "assemble paired-end reads with vsearch",
             scriptName: "assemble_paired_end_data_vsearch.sh",
-            imageName: "pipecraft/vsearch:2.22.1",
+            imageName: "pipecraft/vsearch_dada2:1",
             serviceName: "vsearch",
             disabled: "single_end",
             selected: false,
@@ -914,7 +914,7 @@ export default new Vuex.Store({
             tooltip:
               "assemble paired-end reads with DADA2 'mergePairs' function. This step performs also dada denoising! Note that only FASTA is outputted!",
             scriptName: "assemble_paired_end_data_dada2.sh",
-            imageName: "pipecraft/dada2:1.20",
+            imageName: "pipecraft/vsearch_dada2:1",
             serviceName: "DADA2_denoise_and_merge",
             selected: false,
             disabled: "single_end",
@@ -1020,7 +1020,7 @@ export default new Vuex.Store({
             tooltip:
               "tick the checkbox to filter chimeras with vsearch --uchime_denovo",
             scriptName: "chimera_filtering_vsearch.sh",
-            imageName: "pipecraft/vsearch:2.22.1",
+            imageName: "pipecraft/vsearch_dada2:1",
             serviceName: "uchime_denovo",
             selected: false,
             showExtra: false,
@@ -1099,7 +1099,7 @@ export default new Vuex.Store({
             tooltip:
               "tick the checkbox to filter chimeras with vsearch --uchime_denovo3 [for denoised sequences]",
             scriptName: "chimera_filtering_vsearch_uchime3.sh",
-            imageName: "pipecraft/vsearch:2.22.1",
+            imageName: "pipecraft/vsearch_dada2:1",
             serviceName: "uchime_denovo3",
             selected: false,
             showExtra: false,
@@ -1299,7 +1299,7 @@ export default new Vuex.Store({
           {
             scriptName: "clustering_vsearch.sh",
             tooltip: "tick the checkbox to cluster reads with vsearch",
-            imageName: "pipecraft/vsearch:2.22.1",
+            imageName: "pipecraft/vsearch_dada2:1",
             serviceName: "vsearch",
             selected: false,
             showExtra: false,
@@ -1401,7 +1401,7 @@ export default new Vuex.Store({
           {
             scriptName: "clustering_unoise.sh",
             tooltip: "tick the checkbox to cluster reads with vsearch --cluster_unoise",
-            imageName: "pipecraft/vsearch:2.22.1",
+            imageName: "pipecraft/vsearch_dada2:1",
             serviceName: "unoise3",
             selected: false,
             showExtra: false,
@@ -1538,7 +1538,7 @@ export default new Vuex.Store({
           {
             tooltip: "postclustering with LULU algorithm",
             scriptName: "lulu.sh",
-            imageName: "pipecraft/dada2:1.20",
+            imageName: "pipecraft/vsearch_dada2:1",
             serviceName: "LULU",
             selected: false,
             showExtra: false,
@@ -1672,7 +1672,7 @@ export default new Vuex.Store({
           {
             tooltip: "applies to DADA2 output ASV table (rds). Collaplse identical ASVs or/and filter ASVs by length",
             scriptName: "table_filtering_dada2.sh",
-            imageName: "pipecraft/dada2:1.20",
+            imageName: "pipecraft/vsearch_dada2:1",
             serviceName: "DADA2 collapse ASVs",
             disabled: "never",
             selected: false,
@@ -1727,7 +1727,7 @@ export default new Vuex.Store({
           {
             tooltip: "cluster ASVs to OTUs using vsearch",
             scriptName: "xxx.sh",
-            imageName: "pipecraft/dada2:1.20",
+            imageName: "pipecraft/vsearch_dada2:1",
             serviceName: "ASV_to_OTU",
             disabled: "never",
             selected: false,
@@ -1887,7 +1887,7 @@ export default new Vuex.Store({
             tooltip:
               "assign taxonomy with DADA2 'assignTaxonomy' function against the selected database",
             scriptName: "taxonomy_dada2.sh",
-            imageName: "pipecraft/dada2:1.20",
+            imageName: "pipecraft/vsearch_dada2:1",
             serviceName: "DADA2 classifier",
             disabled: "never",
             selected: false,
@@ -1938,7 +1938,7 @@ export default new Vuex.Store({
           {
             tooltip: "postclustering with LULU algorithm",
             scriptName: "lulu.sh",
-            imageName: "pipecraft/dada2:1.20",
+            imageName: "pipecraft/vsearch_dada2:1",
             serviceName: "LULU",
             selected: false,
             showExtra: false,
@@ -2326,7 +2326,7 @@ export default new Vuex.Store({
       {
         tooltip: "assemble paired-end reads with vsearch",
         scriptName: "assemble_paired_end_data_vsearch.sh",
-        imageName: "pipecraft/vsearch:2.22.1",
+        imageName: "pipecraft/vsearch_dada2:1",
         serviceName: "merge reads",
         selected: "always",
         disabled: "single_end",
@@ -2414,7 +2414,7 @@ export default new Vuex.Store({
       {
         tooltip: "quality filtering with vsearch",
         scriptName: "quality_filtering_paired_end_vsearch.sh",
-        imageName: "pipecraft/vsearch:2.22.1",
+        imageName: "pipecraft/vsearch_dada2:1",
         serviceName: "quality filtering",
         disabled: "never",
         selected: "always",
@@ -2529,7 +2529,7 @@ export default new Vuex.Store({
         tooltip:
           "chimera filtering with vsearch. Untick the checkbox to skip this step",
         scriptName: "chimera_filtering_vsearch.sh",
-        imageName: "pipecraft/vsearch:2.22.1",
+        imageName: "pipecraft/vsearch_dada2:1",
         serviceName: "chimera filtering",
         disabled: "never",
         selected: "always",
@@ -2730,7 +2730,7 @@ export default new Vuex.Store({
       {
         tooltip: "cluster reads to OTUs with vsearch",
         scriptName: "clustering_vsearch.sh",
-        imageName: "pipecraft/vsearch:2.22.1",
+        imageName: "pipecraft/vsearch_dada2:1",
         serviceName: "clustering",
         disabled: "never",
         selected: "always",
@@ -3398,7 +3398,7 @@ export default new Vuex.Store({
       {
         tooltip: "quality filtering with DADA2 'filterAndTrim' function",
         scriptName: "quality_filtering_paired_end_dada2.sh",
-        imageName: "pipecraft/dada2:1.20",
+        imageName: "pipecraft/vsearch_dada2:1",
         serviceName: "quality filtering",
         disabled: "never",
         selected: "always",
@@ -3517,7 +3517,7 @@ export default new Vuex.Store({
       {
         tooltip: "select the denoising options for DADA2 'dada' function",
         scriptName: "assemble_paired_end_data_dada2_wf.sh",
-        imageName: "pipecraft/dada2:1.20",
+        imageName: "pipecraft/vsearch_dada2:1",
         serviceName: "denoise",
         selected: "always",
         disabled: "never",
@@ -3556,7 +3556,7 @@ export default new Vuex.Store({
         tooltip:
           "assemble paired-end reads (R1 and R2) with DADA2 'mergePairs' function",
         scriptName: "assemble_paired_end_data_dada2_wf.sh",
-        imageName: "pipecraft/dada2:1.20",
+        imageName: "pipecraft/vsearch_dada2:1",
         serviceName: "merge Pairs",
         selected: "always",
         disabled: "never",
@@ -3601,7 +3601,7 @@ export default new Vuex.Store({
       {
         tooltip: "remove chimeras with DADA2 'removeBimeraDenovo' function",
         scriptName: "chimera_filtering_dada2_wf.sh",
-        imageName: "pipecraft/dada2:1.20",
+        imageName: "pipecraft/vsearch_dada2:1",
         serviceName: "chimera filtering",
         disabled: "never",
         selected: "always",
@@ -3622,7 +3622,7 @@ export default new Vuex.Store({
       {
         tooltip: "Collaplse identical ASVs or/and filter ASVs by length",
         scriptName: "table_filtering_dada2_wf.sh",
-        imageName: "pipecraft/dada2:1.20",
+        imageName: "pipecraft/vsearch_dada2:1",
         serviceName: "filter ASV table",
         disabled: "never",
         selected: false,
@@ -3669,7 +3669,7 @@ export default new Vuex.Store({
         tooltip:
           "assign taxonomy with DADA2 'assignTaxonomy' function against the selected database. Untick the checkbox to skip this step",
         scriptName: "taxonomy_dada2.sh",
-        imageName: "pipecraft/dada2:1.20",
+        imageName: "pipecraft/vsearch_dada2:1",
         serviceName: "assign Taxonomy",
         disabled: "never",
         selected: false,

@@ -68,7 +68,7 @@ fi
 #################################################################
 function first_file_check () {
 count=$(ls -1 *.$extension 2>/dev/null | wc -l)
-if [ $count != 0 ]; then 
+if [[ $count != 0 ]]; then 
     :
 else
     printf '%s\n' "ERROR]: cannot find files with specified extension '$extension'
@@ -79,7 +79,7 @@ fi
 }
 function first_file_check_clustering () {
 count=$(ls -1 *.$extension 2>/dev/null | wc -l)
-if [ $count != 0 ]; then 
+if [[ $count != 0 ]]; then 
     :
 else
     printf '%s\n' "ERROR]: cannot find input.
@@ -186,7 +186,7 @@ function check_gz_zip_SE () {
     if [[ $check_compress == "gz" ]] || [[ $check_compress == "zip" ]]; then
         pigz --decompress --force --keep $input.$extension
         #Check errors
-        if [ "$?" != "0" ]; then
+        if [[ "$?" != "0" ]]; then
             printf '%s\n' "ERROR]: $input.$extension decompressing failed! File not compressed as gz or zip.
 Decompressing other formats is not supported, please decompress manually.
 >Quitting" >&2 
@@ -211,7 +211,7 @@ check_compress=$(echo $extension | (awk 'BEGIN{FS=OFS="."} {print $NF}';))
 if [[ $check_compress == "gz" ]] || [[ $check_compress == "zip" ]]; then
     pigz --decompress --force --keep $inputR1.$extension
     #Check errors
-    if [ "$?" != "0" ]; then
+    if [[ "$?" != "0" ]]; then
         printf '%s\n' "ERROR]: $inputR1.$extension decompressing failed! File not compressed as gz or zip.
 Decompressing other formats is not supported, please decompress manually.
 >Quitting" >&2
@@ -219,7 +219,7 @@ Decompressing other formats is not supported, please decompress manually.
     fi
     pigz --decompress --force --keep $inputR2.$extension
     #Check errors
-    if [ "$?" != "0" ]; then
+    if [[ "$?" != "0" ]]; then
         printf '%s\n' "ERROR]: $inputR2.$extension decompressing failed! File not compressed as gz or zip.
 Decompressing other formats is not supported, please decompress manually.
 >Quitting" >&2
@@ -301,7 +301,7 @@ fi
 if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]] || [[ $newextension == "fasta" ]] || [[ $newextension == "fa" ]] || [[ $newextension == "fas" ]]; then
     touch tempdir2/seq_count_after.txt
     outfile_check=$(ls $output_dir/*.$newextension 2>/dev/null | wc -l)
-    if [ $outfile_check != 0 ]; then
+    if [[ $outfile_check != 0 ]]; then
         if [[ -f tempdir2/paired_end_files.txt ]]; then
             for file in $output_dir/*R1.$newextension; do
                 seqkit stats --threads 6 -T $file | awk -F'\t' 'BEGIN{OFS="\t";} FNR == 2 {print $1,$4}' | sed -e 's/demultiplex_out\///' >> tempdir2/seq_count_after.txt
@@ -375,7 +375,7 @@ while read LINE; do
     count1=$(echo $LINE | awk '{print $2}')
     file2=$(grep "$file1" tempdir2/seq_count_after.txt | awk '{print $1}' | awk 'BEGIN{FS="/"}{print $NF}')
     count2=$(grep "$file1" tempdir2/seq_count_after.txt | awk '{print $2}')
-    if [ "$file1" == "$file2" ]; then
+    if [[ "$file1" == "$file2" ]]; then
         printf "$file1\t$count1\t$count2\n" >> $output_dir/seq_count_summary.txt
     fi
     #Report file where no sequences were reoriented (i.e. the output was 0)
@@ -415,7 +415,7 @@ if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]] || [[ $newexten
 #    done
     touch tempdir2/seq_count_after.txt
     outfile_check=$(ls $output_dir/*.$newextension 2>/dev/null | wc -l)
-    if [ $outfile_check != 0 ]; then
+    if [[ $outfile_check != 0 ]]; then
         seqkit stats --threads 6 -T $output_dir/*.$newextension | awk -F'\t' 'BEGIN{OFS="\t";} NR!=1 {print $1,$4}' >> tempdir2/seq_count_after.txt
 #        for file in $output_dir/*.$newextension; do
 #            size=$(echo $(cat $file | wc -l) / 4 | bc)
@@ -434,7 +434,7 @@ fi
 #     done
 #     touch tempdir2/seq_count_after.txt
 #     outfile_check=$(ls $output_dir/*.$newextension 2>/dev/null | wc -l)
-#     if [ $outfile_check != 0 ]; then 
+#     if [[ $outfile_check != 0 ]]; then 
 #         for file in $output_dir/*.$newextension; do
 #             size=$(grep -c "^>" $file)
 #             printf "$file\t$size\n" >> tempdir2/seq_count_after.txt
@@ -465,9 +465,9 @@ while read LINE; do
     fi
 done < tempdir2/seq_count_before.txt && rm -rf tempdir2
 
-countend=$(date +%s)
-countruntime=$((countend-countstart))
-printf "\n Count seqs runtime = $countruntime" >> $output_dir/seq_count_summary.txt
+#countend=$(date +%s)
+#countruntime=$((countend-countstart))
+#printf "\n Count seqs runtime = $countruntime" >> $output_dir/seq_count_summary.txt
 
 #Delete decompressed files if original set of files were compressed
 if [[ $check_compress == "gz" ]] || [[ $check_compress == "zip" ]]; then
@@ -499,7 +499,7 @@ if [[ $newextension == "fastq" ]] || [[ $newextension == "fq" ]]; then
     done
     touch tempdir2/seq_count_after.txt
     outfile_check=$(ls $output_dir/$subdir/*.$newextension 2>/dev/null | wc -l)
-    if [ $outfile_check != 0 ]; then 
+    if [[ $outfile_check != 0 ]]; then 
         for file in $output_dir/$subdir/*.$outfile_addition.$newextension; do
             size=$(echo $(cat $file | wc -l) / 4 | bc)
             printf "$file\t$size\n" >> tempdir2/seq_count_after.txt
@@ -514,7 +514,7 @@ if [[ $newextension == "fasta" ]] || [[ $newextension == "fa" ]] || [[ $newexten
     done
     touch tempdir2/seq_count_after.txt
     outfile_check=$(ls $output_dir/$subdir/*.$newextension 2>/dev/null | wc -l)
-    if [ $outfile_check != 0 ]; then 
+    if [[ $outfile_check != 0 ]]; then 
         for file in $output_dir/$subdir/*.$outfile_addition.$newextension; do
             size=$(grep -c "^>" $file)
             printf "$file\t$size\n" >> tempdir2/seq_count_after.txt
@@ -532,7 +532,7 @@ while read LINE; do
     while read LINE2; do
         file2=$(echo $LINE2 | awk '{print $1}')
         count2=$(echo $LINE2 | awk '{print $2}')
-        if [ "$file1" == "$file2" ]; then
+        if [[ "$file1" == "$file2" ]]; then
             printf "$file1\t$count1\t$count2\n" >> $output_dir/$subdir/seq_count_summary.txt
         fi
     done < tempdir2/seq_count_after.temp
@@ -555,11 +555,11 @@ if [[ $check_compress == "gz" ]] || [[ $check_compress == "zip" ]]; then
 fi
 #Remove mothur logfiles
 mothur_logfiles=$(ls -1 *.logfile 2>/dev/null | wc -l)
-if [ $mothur_logfiles != 0 ]; then 
+if [[ $mothur_logfiles != 0 ]]; then 
     rm mothur.*.logfile 
 fi
 #Delete tempdir
-if [ -d tempdir ]; then
+if [[ -d tempdir ]]; then
     rm -rf tempdir
 fi
 }
@@ -654,7 +654,7 @@ done
 function multiprimer_search_R1 () {
 checkerror=$(seqkit rmdup --quiet -w 0 -n -D tempdir/duplicatesR1.temp tempdir/R1.5_3.fastq > tempdir/R1.5_3.fastq.temp 2>&1)
 check_app_error
-if [ -s tempdir/duplicatesR1.temp ]; then
+if [[ -s tempdir/duplicatesR1.temp ]]; then
     awk 'BEGIN{FS=","}{print $2}' tempdir/duplicatesR1.temp | sed -e 's/^ //' > tempdir/duplicatesR1.names
         #Remove duplicate seqs from fastq
     checkerror=$(seqkit grep --invert-match -n -w 0 -f tempdir/duplicatesR1.names tempdir/R1.5_3.fastq.temp \
@@ -675,7 +675,7 @@ fi
 function multiprimer_search_R2 () {
 checkerror=$(seqkit rmdup --quiet -w 0 -n -D tempdir/duplicatesR2.temp tempdir/R2.3_5.fastq > tempdir/R2.3_5.fastq.temp 2>&1)
 check_app_error
-if [ -s tempdir/duplicatesR2.temp ]; then
+if [[ -s tempdir/duplicatesR2.temp ]]; then
     awk 'BEGIN{FS=","}{print $2}' tempdir/duplicatesR2.temp | sed -e 's/^ //' > tempdir/duplicatesR2.names
         #Remove duplicate seqs from fastq
     checkerror=$(seqkit grep --invert-match -n -w 0 -f tempdir/duplicatesR2.names tempdir/R2.3_5.fastq.temp \
@@ -697,7 +697,7 @@ fi
 function multiprimer_search_SE () {
 checkerror=$(seqkit rmdup --quiet -w 0 -n -D tempdir/duplicates.temp tempdir/5_3.fastx > tempdir/5_3.fastx.temp 2>&1)
 check_app_error
-if [ -s tempdir/duplicates.temp ]; then
+if [[ -s tempdir/duplicates.temp ]]; then
     awk 'BEGIN{FS=","}{print $2}' tempdir/duplicates.temp | sed -e 's/^ //' > tempdir/duplicates.names
         #Remove duplicate seqs from fastx
     checkerror=$(seqkit grep --invert-match -n -w 0 -f tempdir/duplicates.names tempdir/5_3.fastx.temp \
@@ -726,7 +726,7 @@ function check_indexes_file () {
 printf "\nValidating indexes file ...\n"
     #is fasta format?
 cat $indexes_file | seqkit seq -v > tempdir2/ValidatedBarcodesFileForDemux.fasta.temp
-if [ "$?" != "0" ]; then
+if [[ "$?" != "0" ]]; then
     printf '%s\n' "ERROR]: 'indexes file' not in correct fasta format. 
 Please check the indexes file and format according to the 'indexes_file_example.txt'
 >Quitting" >&2
