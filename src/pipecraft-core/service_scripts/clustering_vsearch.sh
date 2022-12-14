@@ -17,21 +17,23 @@
     #Distributed under the License GPLv3+
 #pigz v2.4
 ##########################################################
+echo "WORKDIR: $workingDir"
 
 #load variables
 extension=$fileFormat
 #mandatory options
-id=$"--id ${similarity_threshold}"     # positive float (0-1)
-otutype=$"--${OTU_type}"               # list: --centroids, --consout
-strands=$"--strand ${strands}"         # list: --strand both, --strand plus
-remove_singletons=$"${remove_singletons}"   # TRUE, FALSE
+id=$"--id ${similarity_threshold}"          # positive float (0-1)
+otutype=$"--${OTU_type}"                    # list: --centroids, --consout
+strands=$"--strand ${strands}"              # list: --strand both, --strand plus
+remove_singletons=$"${remove_singletons}"   # true/false
 
 #additional options
-seqsort=$"${sequence_sorting}"       # list: --cluster_size or --cluster_fast, --cluster_smallmem
-simtype=$"--iddef ${similarity_type}"  # list: --iddef 0; --iddef 1; --iddef 2; --iddef 3; --iddef 4
-centroid=$centroid_type                # list: similarity, abundance
-maxaccepts=$"--maxaccepts ${maxaccepts}" # pos int
-mask=$"--qmask ${mask}"                # list: --qmask dust, --qmask none
+seqsort=$"${sequence_sorting}"           # list: --cluster_size or --cluster_fast, --cluster_smallmem
+simtype=$"--iddef ${similarity_type}"    # list: --iddef 0; --iddef 1; --iddef 2; --iddef 3; --iddef 4
+centroid=$centroid_type                  # list: similarity, abundance
+maxaccepts=$"--maxaccepts ${maxaccepts}" # pos integer
+mask=$"--qmask ${mask}"                  # list: --qmask dust, --qmask none
+cores=$"--threads ${cores}"              # pos integer
 ###############################
 # Source for functions
 source /scripts/submodules/framework.functions.sh
@@ -115,6 +117,20 @@ find tempdir -maxdepth 1 -name "*.fasta" | parallel -j 1 "cat {}" \
 
 ### Clustering
 printf "Clustering ... \n"
+printf "\n vsearch $seqsort \
+$output_dir/Glob_derep.fasta \
+$id \
+$simtype \
+$strands \
+$mask \
+$centroid_in \
+$maxaccepts \
+$cores \
+$otutype $output_dir/OTUs.temp.fasta \
+--uc $output_dir/OTUs.uc \
+--fasta_width 0 \
+--sizein --sizeout"
+
 checkerror=$(vsearch $seqsort \
 $output_dir/Glob_derep.fasta \
 $id \
@@ -184,6 +200,11 @@ if [ -d tempdir2 ]; then
     rm -rf tempdir2
 fi
 rm $output_dir/Glob_derep.fasta
+#rm
+if [[ -f $output_dir/R_run.log ]]; then
+    rm -f $output_dir/R_run.log
+fi
+
 size=$(grep -c "^>" $output_dir/OTUs.fasta)
 end=$(date +%s)
 runtime=$((end-start))
@@ -192,8 +213,9 @@ runtime=$((end-start))
 printf "Clustering formed $size OTUs.
 
 Files in 'clustering_out' directory:
-# OTUs.fasta = FASTA formated representative OTU sequences. OTU headers are renamed according to MD5 algorithm in vsearch.
+# OTUs.fasta    = FASTA formated representative OTU sequences. OTU headers are renamed according to MD5 algorithm in vsearch.
 # OTU_table.txt = OTU distribution table per sample (tab delimited file). OTU headers are renamed according to MD5 algorithm in vsearch.
+# OTUs.uc       = uclust-like formatted clustering results for OTUs.
 
 Core commands -> 
 clustering: vsearch $seqsort dereplicated_sequences.fasta $id $simtype $strands $mask $centroid_in $maxaccepts $cores $otutype OTUs.fasta --fasta_width 0 --sizein --sizeout

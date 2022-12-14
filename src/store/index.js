@@ -1299,7 +1299,7 @@ export default new Vuex.Store({
           {
             scriptName: "clustering_vsearch.sh",
             tooltip: "tick the checkbox to cluster reads with vsearch",
-            imageName: "pipecraft/vsearch:2.18",
+            imageName: "pipecraft/vsearch:2.22.1",
             serviceName: "vsearch",
             selected: false,
             showExtra: false,
@@ -1400,7 +1400,7 @@ export default new Vuex.Store({
           },
           {
             scriptName: "clustering_unoise.sh",
-            tooltip: "tick the checkbox to cluster reads with vsearch --cluster_unoise",
+            tooltip: "tick the checkbox to cluster reads with vsearch --cluster_unoise (and optionally remove chimeras with --uchime3_denovo)",
             imageName: "pipecraft/vsearch:2.18",
             serviceName: "unoise3",
             selected: false,
@@ -2326,7 +2326,7 @@ export default new Vuex.Store({
       {
         tooltip: "assemble paired-end reads with vsearch",
         scriptName: "assemble_paired_end_data_vsearch.sh",
-        imageName: "pipecraft/vsearch:2.18",
+        imageName: "pipecraft/vsearch:2.22.1",
         serviceName: "merge reads",
         selected: "always",
         disabled: "single_end",
@@ -2423,7 +2423,7 @@ export default new Vuex.Store({
       {
         tooltip: "quality filtering with vsearch",
         scriptName: "quality_filtering_paired_end_vsearch.sh",
-        imageName: "pipecraft/vsearch:2.18",
+        imageName: "pipecraft/vsearch:2.22.1",
         serviceName: "quality filtering",
         disabled: "never",
         selected: "always",
@@ -2538,7 +2538,7 @@ export default new Vuex.Store({
         tooltip:
           "chimera filtering with vsearch. Untick the checkbox to skip this step",
         scriptName: "chimera_filtering_vsearch.sh",
-        imageName: "pipecraft/vsearch:2.18",
+        imageName: "pipecraft/vsearch:2.22.1",
         serviceName: "chimera filtering",
         disabled: "never",
         selected: "always",
@@ -2756,7 +2756,7 @@ export default new Vuex.Store({
       {
         tooltip: "cluster reads to OTUs with vsearch",
         scriptName: "clustering_vsearch.sh",
-        imageName: "pipecraft/vsearch:2.18",
+        imageName: "pipecraft/vsearch:2.22.1",
         serviceName: "clustering",
         disabled: "never",
         selected: "always",
@@ -2772,8 +2772,8 @@ export default new Vuex.Store({
           },
           {
             name: "sequence_sorting",
-            items: ["cluster_fast", "cluster_size", "cluster_smallmem"],
-            value: "cluster_size",
+            items: ["size", "length", "no"],
+            value: "size",
             disabled: "never",
             tooltip:
               'size = sort the sequences by decreasing abundance; "length" = sort the sequences by decreasing length (--cluster_fast); "no" = do not sort sequences (--cluster_smallmem --usersort)',

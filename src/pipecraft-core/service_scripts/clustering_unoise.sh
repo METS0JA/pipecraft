@@ -325,6 +325,10 @@ fi
 if [ -d tempdir_chimera ]; then
     rm -rf tempdir_chimera
 fi
+#rm
+if [[ -f $output_dir/R_run.log ]]; then
+    rm -f $output_dir/R_run.log
+fi
 
 
 #Make README.txt file
@@ -333,8 +337,9 @@ size_zotu=$(grep -c "^>" $output_dir/zOTUs.fasta)
 printf "Sequence denoizing formed $size_zotu zOTUs (zero-radius OTUs).
 
 Files in 'clustering_out' directory:
-# zOTUs.fasta = FASTA formated denoized sequences (zOTUs.fasta)
+# zOTUs.fasta    = FASTA formated denoized sequences (zOTUs.fasta)
 # zOTU_table.txt = zOTU distribution table per sample (per input file in the working directory).
+# zOTUs.uc       = uclust-like formatted clustering results for zOTUs
 \n" > $output_dir/README.txt
 
 ## If additional clustering was performed
@@ -343,6 +348,7 @@ if [[ $id_float != 1 ]]; then
     printf "Additional clustering of zOTUs at $id similarity threshold formed $size_otu OTUs.
     # OTUs.fasta = FASTA formated representative OTU sequences.
     # OTU_table.txt = OTU distribution table per sample (per input file in the working directory).
+    # OTUs.uc       = uclust-like formatted clustering results for OTUs.
     \n" >> $output_dir/README.txt
 fi
 

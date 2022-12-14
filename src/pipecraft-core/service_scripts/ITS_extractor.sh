@@ -58,9 +58,9 @@ else
     truncate_in=$"--truncate T"
 fi
 if [[ $cluster_full_and_partial == "true" ]]; then
-    cluster_full_and_partial=$"full_and_partial"
+    full_and_partial=$"full_and_partial"
 else
-    cluster_full_and_partial=$""
+    full_and_partial=$""
 fi
 
 
@@ -342,7 +342,11 @@ printf "Check README.txt files in output directory for further information about
 printf "Total time: $runtime sec.\n\n"
 
 #variables for all services
-echo "workingDir=$output_dir/$region_for_clustering/$full_and_partial"
+if [[ $region_for_clustering != "" ]]; then
+    echo "workingDir=$output_dir/$region_for_clustering/$full_and_partial"
+else
+    echo "workingDir=$output_dir"
+fi
 echo "fileFormat=$newextension"
 echo "dataFormat=$dataFormat"
 echo "readType=single_end"
