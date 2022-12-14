@@ -38,6 +38,8 @@ domains=$"-N ${domains}"
 complement=${complement}
 only_full=${only_full}
 truncate=${truncate}
+region_for_clustering=${region_for_clustering}
+cluster_full_and_partial=${cluster_full_and_partial}
 
 #additional options, if selection != undefined
 if [[ $complement == "false" ]]; then
@@ -55,6 +57,12 @@ if [[ $truncate == "false" ]]; then
 else
     truncate_in=$"--truncate T"
 fi
+if [[ $cluster_full_and_partial == "true" ]]; then
+    cluster_full_and_partial=$"full_and_partial"
+else
+    cluster_full_and_partial=$""
+fi
+
 
 # Source for functions
 source /scripts/submodules/framework.functions.sh
@@ -334,7 +342,7 @@ printf "Check README.txt files in output directory for further information about
 printf "Total time: $runtime sec.\n\n"
 
 #variables for all services
-echo "workingDir=$output_dir/ITS1"
+echo "workingDir=$output_dir/$region_for_clustering/$full_and_partial"
 echo "fileFormat=$newextension"
 echo "dataFormat=$dataFormat"
 echo "readType=single_end"

@@ -141,15 +141,13 @@ seqkit seq --name tempdir/Dereplicated_samples.fasta \
 
 ### OTU table creation
 printf "Making OTU table ... \n"
-#Rlog=$(
-    Rscript /scripts/submodules/ASV_OTU_merging_script.R \
+Rlog=$(Rscript /scripts/submodules/ASV_OTU_merging_script.R \
   --derepuc      tempdir/Glob_derep.uc \
   --uc           "$output_dir"/OTUs.uc \
   --asv          tempdir/ASV_table_long.txt \
   --rmsingletons $remove_singletons \
-  --output       "$output_dir"/OTU_table.txt 
-  #2>&1)
-#echo $Rlog > $output_dir/R_run.log 
+  --output       "$output_dir"/OTU_table.txt 2>&1)
+echo $Rlog > $output_dir/R_run.log 
 wait
 
 ### Discard singleton OTUs

@@ -1299,7 +1299,7 @@ export default new Vuex.Store({
           {
             scriptName: "clustering_vsearch.sh",
             tooltip: "tick the checkbox to cluster reads with vsearch",
-            imageName: "pipecraft/vsearch_dada2:1",
+            imageName: "pipecraft/vsearch:2.18",
             serviceName: "vsearch",
             selected: false,
             showExtra: false,
@@ -1401,7 +1401,7 @@ export default new Vuex.Store({
           {
             scriptName: "clustering_unoise.sh",
             tooltip: "tick the checkbox to cluster reads with vsearch --cluster_unoise",
-            imageName: "pipecraft/vsearch_dada2:1",
+            imageName: "pipecraft/vsearch:2.18",
             serviceName: "unoise3",
             selected: false,
             showExtra: false,
@@ -1670,9 +1670,9 @@ export default new Vuex.Store({
           },
 
           {
-            tooltip: "applies to DADA2 output ASV table (rds). Collaplse identical ASVs or/and filter ASVs by length",
+            tooltip: "applies to DADA2 output ASV table (rds). Collaplse identical ASVs or/and filter ASVs by length [SELECT WORKDIR (data format, extension and read types are irrelevant here)]",
             scriptName: "table_filtering_dada2.sh",
-            imageName: "pipecraft/vsearch_dada2:1",
+            imageName: "pipecraft/dada2:1.20",
             serviceName: "DADA2 collapse ASVs",
             disabled: "never",
             selected: false,
@@ -1724,60 +1724,60 @@ export default new Vuex.Store({
             ],
           },
 
-          {
-            tooltip: "cluster ASVs to OTUs using vsearch",
-            scriptName: "xxx.sh",
-            imageName: "pipecraft/vsearch_dada2:1",
-            serviceName: "ASV_to_OTU",
-            disabled: "never",
-            selected: false,
-            showExtra: false,
-            extraInputs: [
-              {
-                name: "minOverlap",
-                value: 20,
-                disabled: "never",
-                tooltip: "collapseNoMismatch setting. Default = 20. The minimum overlap of base pairs between ASV sequences required to collapse them together",
-                type: "numeric",
-                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
-              },
-              {
-                name: "vec",
-                value: true,
-                disabled: "never",
-                tooltip:
-                  "collapseNoMismatch setting. Default = TRUE. Use the vectorized aligner. Should be turned off if sequences exceed 2kb in length",
-                type: "bool",
-              },
-            ],
-            Inputs: [
-              {
-                name: "DADA2_table",
-                value: "undefined",
-                btnName: "select rds",
-                disabled: "never",
-                tooltip:
-                  "select the RDS file (ASV table), output from DADA2 workflow; usually in denoised_assembled.dada2/ASVs_table.denoised-merged.rds",
-                type: "file",
-              },
-              {
-                name: "collapseNoMismatch",
-                value: true,
-                disabled: "never",
-                tooltip:
-                  "collapses ASVs in an ASV table that are identical up to shifts or length variation, i.e. that have no mismatches or internal indels",
-                type: "bool",
-              },
-              {
-                name: "by_length",
-                value: 250,
-                disabled: "never",
-                tooltip: "discard ASVs from the ASV table that are shorter than specified value (in base pairs). Value 0 means OFF; no filtering by length.",
-                type: "numeric",
-                rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
-              },
-            ],
-          },
+          // {
+          //   tooltip: "cluster ASVs to OTUs using vsearch",
+          //   scriptName: "xxx.sh",
+          //   imageName: "pipecraft/vsearch_dada2:1",
+          //   serviceName: "ASV_to_OTU",
+          //   disabled: "never",
+          //   selected: false,
+          //   showExtra: false,
+          //   extraInputs: [
+          //     {
+          //       name: "minOverlap",
+          //       value: 20,
+          //       disabled: "never",
+          //       tooltip: "collapseNoMismatch setting. Default = 20. The minimum overlap of base pairs between ASV sequences required to collapse them together",
+          //       type: "numeric",
+          //       rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+          //     },
+          //     {
+          //       name: "vec",
+          //       value: true,
+          //       disabled: "never",
+          //       tooltip:
+          //         "collapseNoMismatch setting. Default = TRUE. Use the vectorized aligner. Should be turned off if sequences exceed 2kb in length",
+          //       type: "bool",
+          //     },
+          //   ],
+          //   Inputs: [
+          //     {
+          //       name: "DADA2_table",
+          //       value: "undefined",
+          //       btnName: "select rds",
+          //       disabled: "never",
+          //       tooltip:
+          //         "select the RDS file (ASV table), output from DADA2 workflow; usually in denoised_assembled.dada2/ASVs_table.denoised-merged.rds",
+          //       type: "file",
+          //     },
+          //     {
+          //       name: "collapseNoMismatch",
+          //       value: true,
+          //       disabled: "never",
+          //       tooltip:
+          //         "collapses ASVs in an ASV table that are identical up to shifts or length variation, i.e. that have no mismatches or internal indels",
+          //       type: "bool",
+          //     },
+          //     {
+          //       name: "by_length",
+          //       value: 250,
+          //       disabled: "never",
+          //       tooltip: "discard ASVs from the ASV table that are shorter than specified value (in base pairs). Value 0 means OFF; no filtering by length.",
+          //       type: "numeric",
+          //       rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
+          //     },
+          //   ],
+          // },
 
         ],
       },
@@ -2326,7 +2326,7 @@ export default new Vuex.Store({
       {
         tooltip: "assemble paired-end reads with vsearch",
         scriptName: "assemble_paired_end_data_vsearch.sh",
-        imageName: "pipecraft/vsearch_dada2:1",
+        imageName: "pipecraft/vsearch:2.18",
         serviceName: "merge reads",
         selected: "always",
         disabled: "single_end",
@@ -2378,6 +2378,15 @@ export default new Vuex.Store({
         ],
         Inputs: [
           {
+            name: "read_R1",
+            value: ["\\.R1"],
+            disabled: "single_end",
+            tooltip:
+              "identifyer string that is common for all R1 reads (e.g. when all R1 files have '.R1' string, then enter '\\.R1'. Note that backslash is only needed to escape dot regex; e.g. when all R1 files have '_R1' string, then enter '_R1'.)",
+            type: "chip",
+            rules: [(v) => v.length <= 1 || "ADD ONLY ONE IDENTIFIER"],
+          },
+          {
             name: "min_overlap",
             value: 12,
             disabled: "never",
@@ -2414,7 +2423,7 @@ export default new Vuex.Store({
       {
         tooltip: "quality filtering with vsearch",
         scriptName: "quality_filtering_paired_end_vsearch.sh",
-        imageName: "pipecraft/vsearch_dada2:1",
+        imageName: "pipecraft/vsearch:2.18",
         serviceName: "quality filtering",
         disabled: "never",
         selected: "always",
@@ -2529,7 +2538,7 @@ export default new Vuex.Store({
         tooltip:
           "chimera filtering with vsearch. Untick the checkbox to skip this step",
         scriptName: "chimera_filtering_vsearch.sh",
-        imageName: "pipecraft/vsearch_dada2:1",
+        imageName: "pipecraft/vsearch:2.18",
         serviceName: "chimera filtering",
         disabled: "never",
         selected: "always",
@@ -2725,12 +2734,29 @@ export default new Vuex.Store({
             type: "numeric",
             rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
           },
+          {
+            name: "region_for_clustering",
+            items: ["full_ITS", "SSU", "ITS1", "5.8S", "ITS2", "LSU"],
+            value: "ITS2",
+            disabled: "never",
+            tooltip:
+              "specify region for clustering (because multiple output folders are generated during this process)",
+            type: "select",
+          },
+          {
+            name: "cluster_full_and_partial",
+            value: true,
+            disabled: "never",
+            tooltip:
+              "if setting 'partial' is not 0, then at the NEXT STEP cluster 'full and partial' (e.g.) ITS2 reads (dir /ITS2/full_and_partial). If OFF, then cluster only full ITS2 reads",
+            type: "bool",
+          },
         ],
       },
       {
         tooltip: "cluster reads to OTUs with vsearch",
         scriptName: "clustering_vsearch.sh",
-        imageName: "pipecraft/vsearch_dada2:1",
+        imageName: "pipecraft/vsearch:2.18",
         serviceName: "clustering",
         disabled: "never",
         selected: "always",

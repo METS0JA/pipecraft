@@ -251,15 +251,13 @@ seqkit seq --name $output_dir/Dereplicated_samples.fasta \
 
 ## zOTU table creation
 printf "Making zOTU table ... \n"
-#Rlog=$(
-  Rscript /scripts/submodules/ASV_OTU_merging_script.R \
+Rlog=$(Rscript /scripts/submodules/ASV_OTU_merging_script.R \
   --derepuc      tempdir/Glob_derep.uc \
   --uc           "$output_dir"/zOTUs.uc \
   --asv          tempdir/ASV_table_long.txt \
   --rmsingletons FALSE \
-  --output       "$output_dir"/zOTU_table.txt 
-  #2>&1)
-#echo $Rlog > $output_dir/R_run.log 
+  --output       "$output_dir"/zOTU_table.txt 2>&1)
+echo $Rlog > $output_dir/R_run.log 
 wait
 
 ## Perform OTU clustering (if required, id < 1)
@@ -284,15 +282,13 @@ if [[ $id_float != 1 ]]; then
 
   ## OTU table creation
   printf "Making OTU table ... \n"
-  #Rlog=$(
-    Rscript /scripts/submodules/ASV_OTU_merging_script.R \
+  Rlog=$(Rscript /scripts/submodules/ASV_OTU_merging_script.R \
     --derepuc      tempdir/Glob_derep.uc \
     --uc           "$output_dir"/OTUs.uc \
     --asv          tempdir/ASV_table_long.txt \
     --rmsingletons FALSE \
-    --output       "$output_dir"/OTU_table.txt 
-    #2>&1)
-#  echo $Rlog > $output_dir/R_run.log 
+    --output       "$output_dir"/OTU_table.txt 2>&1)
+  echo $Rlog > $output_dir/R_run.log 
   wait
 fi # end of OTU clustering
 
