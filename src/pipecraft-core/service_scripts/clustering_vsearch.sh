@@ -17,21 +17,23 @@
     #Distributed under the License GPLv3+
 #pigz v2.4
 ##########################################################
+echo "WORKDIR: $workingDir"
 
 #load variables
 extension=$fileFormat
 #mandatory options
-id=$"--id ${similarity_threshold}"     # positive float (0-1)
-otutype=$"--${OTU_type}"               # list: --centroids, --consout
-strands=$"--strand ${strands}"         # list: --strand both, --strand plus
-remove_singletons=$"${remove_singletons}"   # TRUE, FALSE
+id=$"--id ${similarity_threshold}"          # positive float (0-1)
+otutype=$"--${OTU_type}"                    # list: --centroids, --consout
+strands=$"--strand ${strands}"              # list: --strand both, --strand plus
+remove_singletons=$"${remove_singletons}"   # true/false
 
 #additional options
-seqsort=$"${sequence_sorting}"       # list: --cluster_size or --cluster_fast, --cluster_smallmem
-simtype=$"--iddef ${similarity_type}"  # list: --iddef 0; --iddef 1; --iddef 2; --iddef 3; --iddef 4
-centroid=$centroid_type                # list: similarity, abundance
-maxaccepts=$"--maxaccepts ${maxaccepts}" # pos int
-mask=$"--qmask ${mask}"                # list: --qmask dust, --qmask none
+seqsort=$"${sequence_sorting}"           # list: --cluster_size or --cluster_fast, --cluster_smallmem
+simtype=$"--iddef ${similarity_type}"    # list: --iddef 0; --iddef 1; --iddef 2; --iddef 3; --iddef 4
+centroid=$centroid_type                  # list: similarity, abundance
+maxaccepts=$"--maxaccepts ${maxaccepts}" # pos integer
+mask=$"--qmask ${mask}"                  # list: --qmask dust, --qmask none
+cores=$"--threads ${cores}"              # pos integer
 ###############################
 # Source for functions
 source /scripts/submodules/framework.functions.sh
@@ -75,8 +77,8 @@ for file in *.$extension; do
     #If input is compressed, then decompress (keeping the compressed file, but overwriting if filename exists!)
         #$extension will be $newextension
     check_gz_zip_SE
-    ### Check input formats (fastq/fasta supported)
-    check_extension_fastx
+    ### Check input formats (only fasta, fa, fas supported)
+    check_extension_fasta
 done
 
 #tempdir
@@ -115,6 +117,20 @@ find tempdir -maxdepth 1 -name "*.fasta" | parallel -j 1 "cat {}" \
 
 ### Clustering
 printf "Clustering ... \n"
+printf "\n vsearch $seqsort \
+$output_dir/Glob_derep.fasta \
+$id \
+$simtype \
+$strands \
+$mask \
+$centroid_in \
+$maxaccepts \
+$cores \
+$otutype $output_dir/OTUs.temp.fasta \
+--uc $output_dir/OTUs.uc \
+--fasta_width 0 \
+--sizein --sizeout"
+
 checkerror=$(vsearch $seqsort \
 $output_dir/Glob_derep.fasta \
 $id \
@@ -141,15 +157,13 @@ seqkit seq --name tempdir/Dereplicated_samples.fasta \
 
 ### OTU table creation
 printf "Making OTU table ... \n"
-#Rlog=$(
-    Rscript /scripts/submodules/ASV_OTU_merging_script.R \
+Rlog=$(Rscript /scripts/submodules/ASV_OTU_merging_script.R \
   --derepuc      tempdir/Glob_derep.uc \
   --uc           "$output_dir"/OTUs.uc \
   --asv          tempdir/ASV_table_long.txt \
   --rmsingletons $remove_singletons \
-  --output       "$output_dir"/OTU_table.txt 
-  #2>&1)
-#echo $Rlog > $output_dir/R_run.log 
+  --output       "$output_dir"/OTU_table.txt 2>&1)
+echo $Rlog > $output_dir/R_run.log 
 wait
 
 ### Discard singleton OTUs
@@ -186,6 +200,11 @@ if [ -d tempdir2 ]; then
     rm -rf tempdir2
 fi
 rm $output_dir/Glob_derep.fasta
+#rm
+if [[ -f $output_dir/R_run.log ]]; then
+    rm -f $output_dir/R_run.log
+fi
+
 size=$(grep -c "^>" $output_dir/OTUs.fasta)
 end=$(date +%s)
 runtime=$((end-start))
@@ -194,8 +213,9 @@ runtime=$((end-start))
 printf "Clustering formed $size OTUs.
 
 Files in 'clustering_out' directory:
-# OTUs.fasta = FASTA formated representative OTU sequences. OTU headers are renamed according to MD5 algorithm in vsearch.
+# OTUs.fasta    = FASTA formated representative OTU sequences. OTU headers are renamed according to MD5 algorithm in vsearch.
 # OTU_table.txt = OTU distribution table per sample (tab delimited file). OTU headers are renamed according to MD5 algorithm in vsearch.
+# OTUs.uc       = uclust-like formatted clustering results for OTUs.
 
 Core commands -> 
 clustering: vsearch $seqsort dereplicated_sequences.fasta $id $simtype $strands $mask $centroid_in $maxaccepts $cores $otutype OTUs.fasta --fasta_width 0 --sizein --sizeout

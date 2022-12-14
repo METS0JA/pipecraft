@@ -70,8 +70,8 @@ for file in *.$extension; do
     #If input is compressed, then decompress (keeping the compressed file, but overwriting if filename exists!)
         #$extension will be $newextension
     check_gz_zip_SE
-    ### Check input formats (fastq and fasta supported)
-    check_extension_fastx
+    ### Check input formats (only fasta, fa, fas supported)
+    check_extension_fasta
 done
 
 #tempdir
@@ -251,15 +251,13 @@ seqkit seq --name $output_dir/Dereplicated_samples.fasta \
 
 ## zOTU table creation
 printf "Making zOTU table ... \n"
-#Rlog=$(
-  Rscript /scripts/submodules/ASV_OTU_merging_script.R \
+Rlog=$(Rscript /scripts/submodules/ASV_OTU_merging_script.R \
   --derepuc      tempdir/Glob_derep.uc \
   --uc           "$output_dir"/zOTUs.uc \
   --asv          tempdir/ASV_table_long.txt \
   --rmsingletons FALSE \
-  --output       "$output_dir"/zOTU_table.txt 
-  #2>&1)
-#echo $Rlog > $output_dir/R_run.log 
+  --output       "$output_dir"/zOTU_table.txt 2>&1)
+echo $Rlog > $output_dir/R_run.log 
 wait
 
 ## Perform OTU clustering (if required, id < 1)
@@ -284,15 +282,13 @@ if [[ $id_float != 1 ]]; then
 
   ## OTU table creation
   printf "Making OTU table ... \n"
-  #Rlog=$(
-    Rscript /scripts/submodules/ASV_OTU_merging_script.R \
+  Rlog=$(Rscript /scripts/submodules/ASV_OTU_merging_script.R \
     --derepuc      tempdir/Glob_derep.uc \
     --uc           "$output_dir"/OTUs.uc \
     --asv          tempdir/ASV_table_long.txt \
     --rmsingletons FALSE \
-    --output       "$output_dir"/OTU_table.txt 
-    #2>&1)
-#  echo $Rlog > $output_dir/R_run.log 
+    --output       "$output_dir"/OTU_table.txt 2>&1)
+  echo $Rlog > $output_dir/R_run.log 
   wait
 fi # end of OTU clustering
 
@@ -329,6 +325,10 @@ fi
 if [ -d tempdir_chimera ]; then
     rm -rf tempdir_chimera
 fi
+#rm
+if [[ -f $output_dir/R_run.log ]]; then
+    rm -f $output_dir/R_run.log
+fi
 
 
 #Make README.txt file
@@ -337,8 +337,9 @@ size_zotu=$(grep -c "^>" $output_dir/zOTUs.fasta)
 printf "Sequence denoizing formed $size_zotu zOTUs (zero-radius OTUs).
 
 Files in 'clustering_out' directory:
-# zOTUs.fasta = FASTA formated denoized sequences (zOTUs.fasta)
+# zOTUs.fasta    = FASTA formated denoized sequences (zOTUs.fasta)
 # zOTU_table.txt = zOTU distribution table per sample (per input file in the working directory).
+# zOTUs.uc       = uclust-like formatted clustering results for zOTUs
 \n" > $output_dir/README.txt
 
 ## If additional clustering was performed
@@ -347,6 +348,7 @@ if [[ $id_float != 1 ]]; then
     printf "Additional clustering of zOTUs at $id similarity threshold formed $size_otu OTUs.
     # OTUs.fasta = FASTA formated representative OTU sequences.
     # OTU_table.txt = OTU distribution table per sample (per input file in the working directory).
+    # OTUs.uc       = uclust-like formatted clustering results for OTUs.
     \n" >> $output_dir/README.txt
 fi
 

@@ -53,7 +53,7 @@ colnames(seq_count) <- c("input(merged)", "chimeraFiltered", "no.of ASVs")
 rownames(seq_count) <- sample_names
 write.table(seq_count, file.path(path_results, "seq_count_summary.txt"), sep = "\t", col.names = NA, row.names = TRUE, quote = FALSE)
 
-###format and save ASV table and ASVs.fasta
+###format and save ASVs_table.txt and ASVs.fasta
 #sequence headers
 asv_seqs = colnames(ASV_tab.nochim)
 asv_size = colSums(ASV_tab.nochim)
@@ -92,7 +92,7 @@ for (i in 2:length(colnames(ASV_tab.nochim))){
     }
 }
 
-#remove pipeline .rds objects
+#remove not needed .rds objects
 if (file.exists("/input/qualFiltered_out/filtFs.rds")) {
     unlink("/input/qualFiltered_out/*.rds")
 }

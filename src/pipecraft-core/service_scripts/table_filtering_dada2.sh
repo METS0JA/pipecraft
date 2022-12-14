@@ -19,8 +19,6 @@ minOverlap=${minOverlap}
 vec=${vec}
 by_length=${by_length}
 
-echo $by_length
-
 #Source for functions
 source /scripts/submodules/framework.functions.sh
 
@@ -33,7 +31,7 @@ if [[ $collapseNoMismatch != "true" ]]; then
 fi
 
 #output dir
-output_dir=$"/input/ASVs_filt.out.dada2"
+output_dir=$"/input/filtered_table"
 if [[ -d $output_dir ]]; then
     rm -rf $output_dir
 fi
@@ -45,13 +43,10 @@ mkdir -p $output_dir
 start=$(date +%s)
 
 ### Filtering the ASV table
-#Rlog=$(
-Rscript /scripts/submodules/dada2_table_filtering.R 
-#2>&1)
-#echo $Rlog > $output_dir/R_run.log 
+printf "Filtering the ASV table ... \n"
+Rlog=$(Rscript /scripts/submodules/dada2_table_filtering.R 2>&1)
+echo $Rlog > $output_dir/R_run.log 
 wait
-printf "\n Filtering the ASV table, completed \n"
-
 
 # Count ASVs
 ASVs_collapsed=$(grep -c "^>" $output_dir/ASVs_collapsed.fasta)
@@ -70,13 +65,20 @@ elif [[ $ASVs_lenFilt != "" ]]; then
     ASVs_lenFilt_result_fasta=$"ASV sequences after discarding < $by_length bp ASVs. Contains $ASVs_lenFilt ASVs"
 fi
 
+
+#rm 
+if [[ -f $output_dir/R_run.log ]]; then
+    rm -f $output_dir/R_run.log
+fi
+
 #Make README.txt file
 end=$(date +%s)
 runtime=$((end-start))
 if [[ $collapseNoMismatch == "true" ]]; then
     printf "# Filtering the of the dada2 ASV table.
+    Note that ASV headers between tables/fastas do not match. Named from ASV_1 to ASV_N according to ASV lis
 
-    Files in 'ASVs_out.dada2':
+    Files in 'filtered_table':
     # ASVs_table_collapsed.txt = ASV table after collapsing identical ASVs. Contains $ASVs_collapsed ASVs
     # ASVs_collapsed.fasta     = ASV sequences after collapsing identical ASVs. Contains $ASVs_collapsed ASVs
     # ASV_table_collapsed.rds  = ASV table in RDS format after collapsing identical ASVs. 
@@ -92,11 +94,12 @@ if [[ $collapseNoMismatch == "true" ]]; then
     #dada2 v1.20
         #citation: Callahan, B., McMurdie, P., Rosen, M. et al. (2016) DADA2: High-resolution sample inference from Illumina amplicon data. Nat Methods 13, 581-583. https://doi.org/10.1038/nmeth.3869
         #https://github.com/benjjneb/dada2
-    ########################################################" > $output_dir/README_ASVtabFilt.txt
+    ########################################################" > $output_dir/README.txt
 else
     printf "# Filtering the of the dada2 ASV table.
+    Note that ASV headers between tables/fastas do not match. Named from ASV_1 to ASV_N according to ASV lis
 
-    Files in 'ASVs_out.dada2':
+    Files in 'filtered_table':
     # ASV_table_lenFilt.txt    = $ASVs_lenFilt_result_table
     # ASVs_lenFilt.fasta       = $ASVs_lenFilt_result_fasta
 
@@ -106,7 +109,7 @@ else
     #dada2 v1.20
         #citation: Callahan, B., McMurdie, P., Rosen, M. et al. (2016) DADA2: High-resolution sample inference from Illumina amplicon data. Nat Methods 13, 581-583. https://doi.org/10.1038/nmeth.3869
         #https://github.com/benjjneb/dada2
-    ########################################################" > $output_dir/README_ASVtabFilt.txt
+    ########################################################" > $output_dir/README.txt
 fi
 
 #Done
@@ -117,6 +120,6 @@ printf "Total time: $runtime sec.\n\n"
 
 #variables for all services
 echo "workingDir=$output_dir"
-echo "fileFormat=$newextension"
+echo "fileFormat=fasta"
 echo "dataFormat=$dataFormat"
 echo "readType=single_end"

@@ -25,7 +25,7 @@ fastq_maxmergelen="--fastq_maxmergelen ${max_len}"
 fastq_qmax=$fastq_qmax
 notmerged_files=$keep_disjointed
 read_R1=${read_R1}
-export $read_R1
+export $read_R1 #for framework.functions.sh to make seq_count_summary.txt
 
 #Source for functions
 source /scripts/submodules/framework.functions.sh
@@ -57,7 +57,7 @@ while read LINE; do
     ########################
     ### Start assembling ###
     ########################
-    fastqout=$(echo $inputR1 | sed -E 's/\.R1.*|_R1.*|-R1.*//')
+    fastqout=$(echo $inputR1 | sed -E "s/$read_R1.*//")
 
     #variables for not_merged output files
     if [[ $notmerged_files == "TRUE" ]]; then

@@ -19,7 +19,7 @@ print(vec)
 print(len_filt)
 
 #ASV table path
-path_ASVs="/input/ASVs_filt.out.dada2"
+path_out="/input/filtered_table"
 
 #load dada2
 library('dada2')
@@ -35,7 +35,7 @@ if (collapseNoMismatch == "true") {
     table_in = readRDS(table_rds)
 
     ASV_tab_collapsed = collapseNoMismatch(table_in, minOverlap = minOverlap, vec = vec)
-    saveRDS(ASV_tab_collapsed, file.path(path_ASVs, "ASV_tab_collapsed.rds"))
+    saveRDS(ASV_tab_collapsed, file.path(path_out, "ASV_tab_collapsed.rds"))
 
     #Print ASV count
     print(paste0("total no. of input ASVs = ", dim(table_in)[2]))
@@ -57,11 +57,11 @@ if (collapseNoMismatch == "true") {
     colnames(tASV_tab_collapsed)[1] = "Sequence"
     #row names as sequence headers
     row.names(tASV_tab_collapsed) = sub(">", "", asv_headers)
-    #write ASVs.fasta to path_ASVs
+    #write ASVs.fasta to path_out
     asv_fasta <- c(rbind(asv_headers, asv_seqs))
-    write(asv_fasta, file.path(path_ASVs, "ASVs_collapsed.fasta"))
-    #write ASVs table to path_ASVs
-    write.table(tASV_tab_collapsed, file.path(path_ASVs, "ASVs_table_collapsed.txt"), sep = "\t", col.names = NA, row.names = TRUE, quote = FALSE)
+    write(asv_fasta, file.path(path_out, "ASVs_collapsed.fasta"))
+    #write ASVs table to path_out
+    write.table(tASV_tab_collapsed, file.path(path_out, "ASVs_table_collapsed.txt"), sep = "\t", col.names = NA, row.names = TRUE, quote = FALSE)
 
     #input for length filtering, if != 0
     table_in = ASV_tab_collapsed
@@ -97,7 +97,7 @@ if (len_filt != 0) {
 
     #Write output file indicationg that no ASVs were filtered out based on this length threshold
     if (is.null(a) == TRUE) {
-        write(a, file.path(path_ASVs, "a.txt"))
+        write(a, file.path(path_out, "a.txt"))
     }
 
     #a = NULL if all ASVs were kept. Proceed if there are some ASVs to be removed; i.e. a != NULL
@@ -127,11 +127,11 @@ if (len_filt != 0) {
             #row names as sequence headers
             row.names(tASV_tab_lenFilt) = sub(">", "", asv_headers)
 
-            #write ASVs.fasta to path_ASVs
+            #write ASVs.fasta to path_out
             asv_fasta <- c(rbind(asv_headers, asv_seqs))
-            write(asv_fasta, file.path(path_ASVs, "ASVs_lenFilt.fasta"))
-            #write ASVs table to path_ASVs
-            write.table(tASV_tab_lenFilt, file.path(path_ASVs, "ASV_table_lenFilt.txt"), sep = "\t", col.names = NA, row.names = TRUE, quote = FALSE)
+            write(asv_fasta, file.path(path_out, "ASVs_lenFilt.fasta"))
+            #write ASVs table to path_out
+            write.table(tASV_tab_lenFilt, file.path(path_out, "ASV_table_lenFilt.txt"), sep = "\t", col.names = NA, row.names = TRUE, quote = FALSE)
         } else {
             print(paste0("NO ASVs remained after length filtering; ", len_filt, " bp"))
         }

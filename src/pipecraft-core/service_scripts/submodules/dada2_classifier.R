@@ -36,7 +36,12 @@ if (tryRC == "true" || tryRC == "TRUE"){
 }
 
 #load sequences
-seqs_file = list.files(file.path(workingDir), pattern = fileFormat)
+if (file.exists("ASVs_lenFilt.fasta") == TRUE && file.exists("ASVs_collapsed.fasta") == TRUE) {
+    seqs_file = list.files(file.path(getwd()), pattern = "ASVs_lenFilt.fasta")
+} else {
+    seqs_file = list.files(file.path(workingDir), pattern = fileFormat)
+}
+
 print(seqs_file)
 
 #assign taxonomy
