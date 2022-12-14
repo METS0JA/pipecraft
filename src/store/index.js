@@ -1787,7 +1787,7 @@ export default new Vuex.Store({
         disabled: "never",
         services: [
           {
-            tooltip: "assign taxonomy with BLAST against selected database",
+            tooltip: "assign taxonomy with BLAST against selected database [SELECT WORKDIR that contains only ONE fasta file for the process]",
             scriptName: "taxonomy_BLAST_xml.sh",
             imageName: "pipecraft/blast:2.12",
             serviceName: "BLAST",
@@ -1885,9 +1885,9 @@ export default new Vuex.Store({
           },
           {
             tooltip:
-              "assign taxonomy with DADA2 'assignTaxonomy' function against the selected database",
+              "assign taxonomy with DADA2 'assignTaxonomy' function [SELECT WORKDIR that contains only ONE fasta file for the process]",
             scriptName: "taxonomy_dada2.sh",
-            imageName: "pipecraft/vsearch_dada2:1",
+            imageName: "pipecraft/dada2:1.20",
             serviceName: "DADA2 classifier",
             disabled: "never",
             selected: false,
@@ -3398,7 +3398,7 @@ export default new Vuex.Store({
       {
         tooltip: "quality filtering with DADA2 'filterAndTrim' function",
         scriptName: "quality_filtering_paired_end_dada2.sh",
-        imageName: "pipecraft/vsearch_dada2:1",
+        imageName: "pipecraft/dada2:1.20",
         serviceName: "quality filtering",
         disabled: "never",
         selected: "always",
@@ -3517,7 +3517,7 @@ export default new Vuex.Store({
       {
         tooltip: "select the denoising options for DADA2 'dada' function",
         scriptName: "assemble_paired_end_data_dada2_wf.sh",
-        imageName: "pipecraft/vsearch_dada2:1",
+        imageName: "pipecraft/dada2:1.20",
         serviceName: "denoise",
         selected: "always",
         disabled: "never",
@@ -3556,7 +3556,7 @@ export default new Vuex.Store({
         tooltip:
           "assemble paired-end reads (R1 and R2) with DADA2 'mergePairs' function",
         scriptName: "assemble_paired_end_data_dada2_wf.sh",
-        imageName: "pipecraft/vsearch_dada2:1",
+        imageName: "pipecraft/dada2:1.20",
         serviceName: "merge Pairs",
         selected: "always",
         disabled: "never",
@@ -3601,7 +3601,7 @@ export default new Vuex.Store({
       {
         tooltip: "remove chimeras with DADA2 'removeBimeraDenovo' function",
         scriptName: "chimera_filtering_dada2_wf.sh",
-        imageName: "pipecraft/vsearch_dada2:1",
+        imageName: "pipecraft/dada2:1.20",
         serviceName: "chimera filtering",
         disabled: "never",
         selected: "always",
@@ -3622,7 +3622,7 @@ export default new Vuex.Store({
       {
         tooltip: "Collaplse identical ASVs or/and filter ASVs by length",
         scriptName: "table_filtering_dada2_wf.sh",
-        imageName: "pipecraft/vsearch_dada2:1",
+        imageName: "pipecraft/dada2:1.20",
         serviceName: "filter ASV table",
         disabled: "never",
         selected: false,
@@ -3669,7 +3669,7 @@ export default new Vuex.Store({
         tooltip:
           "assign taxonomy with DADA2 'assignTaxonomy' function against the selected database. Untick the checkbox to skip this step",
         scriptName: "taxonomy_dada2.sh",
-        imageName: "pipecraft/vsearch_dada2:1",
+        imageName: "pipecraft/dada2:1.20",
         serviceName: "assign Taxonomy",
         disabled: "never",
         selected: false,
@@ -3719,15 +3719,15 @@ export default new Vuex.Store({
         title: "vsearch OTUs workflow",
       },
       ASVs_workflow: {
-        info: "This workflow is based on DADA2 pipeline tutorial",
+        info: "This workflow is based on DADA2 pipeline tutorial (except parts with tickboxes)",
         link: "https://benjjneb.github.io/dada2/tutorial.html",
         title: "DADA2 ASVs workflow for PAIRED-END reads",
       },
-      Metaworks_workflow: {
-        info: "This workflow is based on Metaworks workflow quickstarts",
-        link: "https://terrimporter.github.io/MetaWorksSite/quickstart/",
-        title: "MetaWorks ESVs workflow for demultiplexed PAIRED-END reads",
-      },
+      // Metaworks_workflow: {
+      //   info: "This workflow is based on Metaworks workflow quickstarts",
+      //   link: "https://terrimporter.github.io/MetaWorksSite/quickstart/",
+      //   title: "MetaWorks ESVs workflow for demultiplexed PAIRED-END reads",
+      // },
     },
   },
   getters: {

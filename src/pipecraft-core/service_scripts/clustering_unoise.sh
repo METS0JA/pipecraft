@@ -70,8 +70,8 @@ for file in *.$extension; do
     #If input is compressed, then decompress (keeping the compressed file, but overwriting if filename exists!)
         #$extension will be $newextension
     check_gz_zip_SE
-    ### Check input formats (fastq and fasta supported)
-    check_extension_fastx
+    ### Check input formats (only fasta, fa, fas supported)
+    check_extension_fasta
 done
 
 #tempdir

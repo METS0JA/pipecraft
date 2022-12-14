@@ -37,6 +37,9 @@ echo $Rlog > $output_dir1/R_run.log
 wait
 printf "\n DADA2 removeBimeraDenovo completed \n"
 
+# Add "ASV" as a 1st col name
+sed -i "1 s|^|ASV|" ASVs_table.txt
+
 ###Compare 'chimera filtered fasta files per sample' and 'NOT chimera filtered fasta files per sample' to paste out only chimeric sequences per sample
 echo "pasting chimeric seqs"
 #path to denoised-assembled fastas

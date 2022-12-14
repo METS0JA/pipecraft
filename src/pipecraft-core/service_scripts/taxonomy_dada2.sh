@@ -32,15 +32,20 @@ first_file_check
 ### Check if single-end files are compressed (decompress and check)
 check_gz_zip_SE
 
-### Get input rep seqs (OTUs.fasta) and give ERROR when multiple rep seqs files are in the working folder
+### Get input fasta
 i=$"0"
 for file in *.$newextension; do
     input_fasta=$(echo $file)
     i=$((i + 1))
 done
 if [[ $i > 1 ]]; then
-    printf '%s\n' "ERROR]: more than one representative sequence file ($newextension file) in the working folder" >&2
-    end_process
+    if [[ -s $workingDir/ASVs_lenFilt.fasta ]] && [[ -s $workingDir/ASVs_collapsed.fasta ]]; then #if table filtering was performed by collapsing identical ASVs and by length
+        input_fasta=$"/input/ASVs_lenFilt.fasta"
+    else 
+        printf '%s\n' "ERROR]: more than one representative sequence file ($newextension file) in the working folder" >&2
+        end_process
+    fi
+    printf "\n input fasta = $input_fasta \n"
 else
     printf "\n input fasta = $input_fasta \n"
 fi
@@ -63,12 +68,12 @@ printf "\n DADA2 classifier completed \n"
 ########################################
 ### CLEAN UP AND COMPILE README FILE ###
 ########################################
-if [[ -f $output_dir/R_run.log ]]; then
-    rm -f $output_dir/R_run.log
-fi
 #Delete tempdir
 if [[ -d tempdir2 ]]; then
     rm -rf tempdir2
+fi
+if [[ -f $output_dir/R_run.log ]]; then
+    rm -f $output_dir/R_run.log
 fi
 
 end=$(date +%s)
