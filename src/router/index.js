@@ -6,6 +6,7 @@ import dada2Miseq from "../views/dada2Miseq.vue";
 import RunInfo from "../views/RunInfo.vue";
 import fastqcANDmultiqc from "../views/fastqcANDmultiqc.vue";
 import ExpertMode from "../views/ExpertMode.vue";
+import testMode from "../components/Testing.vue";
 
 Vue.use(VueRouter);
 
@@ -30,6 +31,10 @@ const routes = [
   {
     path: "/ExpertMode",
     component: ExpertMode,
+  },
+  {
+    path: "/testMode",
+    component: testMode,
   },
 ];
 

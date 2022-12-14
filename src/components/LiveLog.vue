@@ -1,4 +1,3 @@
-s
 <template>
   <v-container fluid style="position: absolute; bottom: 40px; right: 0">
     <div
@@ -32,13 +31,11 @@ import "xterm/css/xterm.css";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
 import * as Dockerode from "dockerode";
+const fs = require("fs");
 const streams = require("memory-streams");
 var stdout = new streams.WritableStream();
+// var stderr = new streams.WritableStream();
 
-stdout.on("pipe", (src) => {
-  console.log("Something is piping into the writer.");
-  console.log(src.toString("utf8"));
-});
 var socketPath =
   os.platform() === "win32" ? "//./pipe/docker_engine" : "/var/run/docker.sock";
 var docker = new Dockerode({ socketPath: socketPath });
@@ -46,6 +43,7 @@ var docker = new Dockerode({ socketPath: socketPath });
 var term;
 term = new Terminal({
   theme: { background: "#454442" },
+  convertEol: true,
   rows: 35,
   experimentalCharAtlas: "dynamic",
 });
@@ -78,30 +76,61 @@ export default {
       fitAddon.fit();
     },
     async runDocker() {
-      console.log("starting");
-      // var stdout = new streams.WritableStream();
-      let result = await docker.run(
-        "ubuntu",
-        ["sh", "-c", `while sleep 1; do echo "Hi"; done`],
-        false,
-        {
-          Hostconfig: {
-            Binds: ["C:/Users/martin/Desktop/test:/input"],
-          },
-        },
-        {},
-        (err, data, container) => {
-          if (err) throw err;
-          console.log(data.StatusCode);
-          console.log(container);
-          console.log(err);
+      let log = fs.createWriteStream("log.txt");
+      const object1 = {
+        a: "Hyperion ",
+        b: "Endymion",
+        c: "Starship Troopers",
+        d: "Ringworld",
+        e: "Stranger in a Strange land",
+        f: "Rendezvous with Rama",
+      };
+      for (let [i, step] of Object.entries(object1)) {
+        stdout = new streams.WritableStream();
+        let promise = new Promise((resolve, reject) => {
+          docker
+            .run(
+              "ubuntu",
+              [
+                "sh",
+                "-c",
+                `for value in $(seq 1 5)
+                 do
+                   echo ${step} + ${i}
+                   echo $value
+                   sleep 5s
+                 done
+                 echo All done`,
+              ],
+              false,
+              (err, data, container) => {
+                console.log(container);
+                console.log(data);
+                console.log(stdout.toString());
+                if (err) {
+                  console.log(err);
+                  reject(err);
+                } else {
+                  resolve(data);
+                }
+              }
+            )
+            .on("stream", (stream) => {
+              stream.on("data", function (data) {
+                console.log(data.toString().replace(/[\n\r]/g, ""));
+                log.write(data.toString().replace(/[\n\r]/g, ""));
+                term.write(data.toString().replace(/[\n\r]/g, "") + "\n");
+                stdout.write(data.toString().replace(/[\n\r]/g, "") + "\n");
+              });
+            });
+        });
+        let result = await promise;
+        console.log(result);
+        if (result.statusCode != 0) {
+          break;
         }
-      );
-      result.on("stream", (stream) => {
-        stream.on("data", (data) =>
-          console.log(data.toString().replace(/[\n\r]/g, ""))
-        );
-      });
+        console.log("viimane lohh");
+      }
     },
   },
 };
