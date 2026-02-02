@@ -1,5 +1,9 @@
 #!/bin/bash
   # $1 = name of the directory containing FASTQ files
+  export NXF_ANSI_LOG="false"
+  export NXF_LOG_COLOR="false"
+  export NXF_ANSI="false"
+  export TERM="dumb"
   echo -e "\n"
   echo -e "Input data: " $1
   echo -e "Output: " Step1_Results/"$1"
@@ -24,4 +28,7 @@ stdbuf -oL -eL nextflow run \
   --tracedir   "$BASEDIR"Input/Step1_WorkDirs/"$1"/pipeline_info \
   --demultiplexed true \
   -ansi-log    false \
-  2>&1 | tee -a "$BASEDIR"/Input/Nextflow__"$1".log
+  2>&1 | sed -E 's/\x1B\[[0-9;]*[A-Za-z]//g' \
+       | tr -d '\r' \
+       | tr -d '▒░' \
+       | tee -a "$BASEDIR"/Input/Nextflow__"$1".log

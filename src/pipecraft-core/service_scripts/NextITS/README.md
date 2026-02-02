@@ -1,11 +1,12 @@
 # NextITS <img src='images/NextITS_logo.svg' align="right" height="70" />
 
 ![GitHub (latest release)](https://img.shields.io/github/v/release/vmikk/NextITS?label=GitHub%20release&color=23aa62)
-[![Nextflow](https://img.shields.io/badge/Nextflow%20DSL2-%E2%89%A524.04-23aa62.svg)](https://www.nextflow.io/)
+[![Nextflow](https://img.shields.io/badge/version-%E2%89%A525.04.2-green?style=flat&logo=nextflow&logoColor=white&color=%230DC09D&link=https%3A%2F%2Fnextflow.io)](https://www.nextflow.io/)
 [![GitHub license](https://img.shields.io/github/license/vmikk/NextITS)](https://github.com/vmikk/NextITS/blob/main/LICENSE)  
 
-[![Runs with singularity](https://img.shields.io/badge/Runs%20with-Singularity-blue?style=flat&logo=singularity)](https://sylabs.io/docs/)
-[![Runs with Docker](https://img.shields.io/badge/Runs%20with-Docker-blue?style=flat&logo=docker)](https://hub.docker.com/r/vmikk/nextits/tags)  
+[![Runs with Singularity](https://img.shields.io/badge/Runs%20with-Singularity-blue?style=flat&logo=singularity)](https://cloud.sylabs.io/library/vmiks/nextits/nextits)
+[![Runs with Docker](https://img.shields.io/badge/Runs%20with-Docker-blue?style=flat&logo=docker)](https://hub.docker.com/r/vmikk/nextits/tags)
+[![Runs with Podman](https://img.shields.io/badge/Runs%20with-Podman-blue?style=flat&logo=podman)](https://podman.io/)  
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15074881.svg)](https://doi.org/10.5281/zenodo.15074881)
 
@@ -36,5 +37,5 @@ nextflow run vmikk/NextITS -r main \
 
 ## Citation
 
-Mikryukov V., Anslan S., Tedersoo L. NextITS: a pipeline for metabarcoding fungi and other eukaryotes with full-length ITS sequenced with PacBio. [https://github.com/vmikk/NextITS](https://github.com/vmikk/NextITS)
+Mikryukov V., Anslan S., Tedersoo L. NextITS: a pipeline for metabarcoding fungi and other eukaryotes with full-length ITS sequenced with PacBio. [https://github.com/vmikk/NextITS](https://github.com/vmikk/NextITS). DOI:10.5281/zenodo.15074881
 

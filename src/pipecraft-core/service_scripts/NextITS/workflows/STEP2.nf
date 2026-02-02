@@ -1,24 +1,24 @@
-#!/usr/bin/env nextflow
 /*
-
 ============================================================================
-  NextITS: Pipeline to process fungal ITS amplicons
-  Step II: aggregate sequencing runs
+  NextITS: Pipeline to process eukaryotic ITS amplicons
 ============================================================================
   License: Apache-2.0
   Github : https://github.com/vmikk/NextITS
-  Website: https://next-its.github.io/
+  Website: https://Next-ITS.github.io/
 ----------------------------------------------------------------------------
 */
 
+// ---- Step-2 workflow ----
+
+
 // Step-2 workflow:
 // - Dereplicate sequences
-// - (optionally) Denoize with UNOISE
-// - Cluster:
+// - (optionally) Denoize with UNOISE or DADA2
+// - (optionally) Cluster:
 //   * SWARM
 //   * VSEARCH
 // - LULU (via MUMU implementation)
-// - Prepare OTU table (wide, aggregate sequence abundance by OTU/Swarm cluster)
+// - Prepare OTU table (wide, aggregate sequence abundance by ASV/OTU/Swarm cluster)
 
 
 
@@ -26,93 +26,15 @@
 nextflow.enable.dsl = 2
 
 include { software_versions_to_yaml } from '../modules/version_parser.nf'
+include { CLUSTERING }                from '../subworkflows/clustering_subworkflow.nf'
+include { dumpParamsTsv }             from '../modules/dump_parameters.nf'
 
-
-// Path to the Step-1 results
-params.data_path = "${launchDir}/Step1_Results"
-
-// Output directory
-params.outdir = "Step2_Results"
-
-// Pool sample replicates (e.g., re-sequenced samples) in the final OTU table
-params.merge_replicates = false
-
-// Filtering sequences (trimmed amplicons) by length
-params.ampliconlen_min = null
-params.ampliconlen_max = null
-// if(params.ampliconlen_min != null | params.ampliconlen_max != null){
-//   length_filtering = true
-// } else {
-//   length_filtering = false
-// }
-
-// Sequence denoising or pre-clustering ("none", "unoise", "dada2", "swarm_d1", "homopolymer")
-params.preclustering = "none"
-
-// Denoising with UNOISE
-params.unoise_alpha   = 6.0
-params.unoise_minsize = 1
-
-
-// Sequence clustering method ("none" / "vsearch" / "swarm" / "shmatching")
-params.clustering = "vsearch"
-
-// VSEARCH clustering
-params.otu_id    = 0.98
-params.otu_iddef = 2        // also for UNOISE
-params.otu_qmask = "dust"   // also for UNOISE
-
-// SWARM clustering
-params.swarm_d          = 1
-params.swarm_fastidious = true
-params.swarm_d1boundary = 3       // min mass of large OTUs, only for Fastidious + d=1
-
-// Alignment parameters
-// NB. vsearch scores = 2 * usearch scores  !!
-// E.g., "20I/2E" = penalty 20 for opening internal gaps, and 2 for opening terminal gaps (left or right)
-
-params.alignment_penalties = "default"   // alternatively, "UNITE"
-
-if(params.alignment_penalties == "UNITE"){
-
-  // Alternative dereplication as in UNITE
-  // Allow query sequences vary 4% in length at 100% similarity
-  params.unite_querycov  = 0.96 
-  params.unite_targetcov = 0.96 
-
-  // VSEARCH
-  params.vsearch_gapopen = "0I/0E"   // penalties for gap opening     (usearch, "0.0/0.0E")
-  params.vsearch_gapext  = "2I/1E"   // penalties for gap extension   (usearch, "1.0/0.5E")
-
-}
-if(params.alignment_penalties == "default"){
-  
-  // VSEARCH
-  params.vsearch_gapopen = "20I/2E"
-  params.vsearch_gapext  = "2I/1E"
-}
+// Directory for storing pipeline information
+out_tracedir = params.tracedir
 
 
 
-// Default thresholds for singleton and de novo chimera removal 
-params.max_MEEP         = 0.5
-params.max_ChimeraScore = 0.6
-params.recover_lowqsingletons = true
-params.recover_denovochimeras = true
 
-// LULU
-params.lulu = true
-params.lulu_match     = 95.0    // minimum similarity threshold (default, 84.0)
-params.lulu_ratio     = 1.0     // minimum abundance ratio (default, 1.0)
-params.lulu_ratiotype = "min"   // abundance ratio type - "min" or "avg" (default, "min")
-params.lulu_relcooc   = 0.95    // relative co-occurrence (default, 0.95)
-params.lulu_maxhits   = 0       // maximum number of hits (0 = unlimited; default, 10?)
-
-// Parameter validation
-if (params.preclustering == "none" && params.clustering == "none"){
-  println "Pre-clustering and clustering could not be both set to 'none'"
-  exit(1)
-}
 
 
 // Aggregate sequences from all sequencing runs, remove de novo chimeras
@@ -128,10 +50,14 @@ process aggregate_sequences {
     output:
       path "Seqs.fa.gz",   emit: seqs
       path "Seqs.parquet", emit: seqs_parquet
+      tuple val("${task.process}"), val('R'), eval('Rscript -e "cat(R.version.string)" | sed "s/R version //" | cut -d" " -f1'),  topic: versions
+      tuple val("${task.process}"), val('data.table'), eval('Rscript -e "cat(as.character(packageVersion(\'data.table\')))"'),  topic: versions
+      tuple val("${task.process}"), val('arrow'), eval('Rscript -e "cat(as.character(packageVersion(\'arrow\')))"'),  topic: versions
+      tuple val("${task.process}"), val('Biostrings'), eval('Rscript -e "cat(as.character(packageVersion(\'Biostrings\')))"'),  topic: versions
 
     script:
     """
-    echo -e "Aggregating sequences\n"
+    echo -e "Aggregating sequences\\n"
     
     aggregate_sequences.R \
       --seqtabs       . \
@@ -148,7 +74,7 @@ process dereplication {
 
     label "main_container"
 
-    publishDir "${params.outdir}/01.Dereplicated", mode: 'symlink'
+    publishDir "${params.outdir}/01.Dereplicated", mode: "${params.storagemode}"
     // cpus 8
 
     input:
@@ -157,6 +83,7 @@ process dereplication {
     output:
       path "Dereplicated.fa.gz", emit: derep
       path "Dereplicated.uc.gz", emit: derep_uc
+      tuple val("${task.process}"), val('vsearch'), eval('vsearch --version 2>&1 | head -n 1 | sed "s/vsearch //g" | sed "s/,.*//g" | sed "s/^v//" | sed "s/_.*//"'), topic: versions
 
     script:
     def minlen = params.ampliconlen_min ? "--minseqlength ${params.ampliconlen_min}" : ""
@@ -174,7 +101,7 @@ process dereplication {
     pigzCPUs = Math.min(maxPigzThreads, Math.floor(totalCPUs / parallelJobs).intValue())
 
     """
-    echo -e "Dereplicating sequences\n"
+    echo -e "Dereplicating sequences\\n"
 
     vsearch \
       --derep_fulllength ${seqs} \
@@ -186,10 +113,10 @@ process dereplication {
       --sizein --sizeout \
       --uc Dereplicated.uc
 
-    echo -e "..Dereplication finished\n"
+    echo -e "..Dereplication finished\\n"
 
     ## Compress results
-    echo -e "\nCompressing results"
+    echo -e "\\nCompressing results"
     parallel -j ${parallelJobs} \
       "pigz -p ${pigzCPUs} -${params.gzip_compression} {}" \
       ::: "Dereplicated.uc" "Dereplicated.fa"
@@ -204,7 +131,7 @@ process dereplication_unite {
 
     label "main_container"
 
-    publishDir "${params.outdir}/01.Dereplicated", mode: 'symlink'
+    publishDir "${params.outdir}/01.Dereplicated", mode: "${params.storagemode}"
     // cpus 8
 
     input:
@@ -216,7 +143,7 @@ process dereplication_unite {
 
     script:
     """
-    echo -e "Dereplicating sequences\n"
+    echo -e "Dereplicating sequences\\n"
 
     ## NB. by default, UNITE uses `cluster_fast`, which sorts sequences by length
     ## Here, we use `cluster_size`, which sorts by abundance
@@ -239,7 +166,7 @@ process dereplication_unite {
     echo -e "..Dereplication finished"
 
     ## Compress results
-    echo -e "\nCompressing results"
+    echo -e "\\nCompressing results"
     parallel -j ${task.cpus} "gzip -${params.gzip_compression} {}" \
       ::: "Dereplicated.uc" "Dereplicated.fa"
 
@@ -247,298 +174,239 @@ process dereplication_unite {
 }
 
 
-// Homopolymer correction (global, for pooled and dereplicated data)
-process homopolymer {
+// Fast pre-clustering of the dataset (to split into chunks prior processing)
+process linclust {
 
     label "main_container"
-
-    publishDir "${params.outdir}/02.Homopolymer", mode: "${params.storagemode}"
-    // cpus 1
 
     input:
       path input
 
     output:
-      path "HomopolymerCompressed.fa.gz", emit: hp
-      path "HomopolymerCompressed.uc.gz", emit: hp_uc
+      path "DB_clu.tsv", emit: db_clu
+      tuple val("${task.process}"), val('mmseqs'), eval('mmseqs version'), topic: versions
 
     script:
     """
-    ## Run homopolyer correction globally
 
-    echo -e "Running homopolymer correction"
+    ## Create DB
+    echo -e "..DB creation\\n"
+  
+    mmseqs createdb \
+      --dbtype 2 \
+      --createdb-mode 0 \
+      --shuffle 0 \
+      ${input} \
+      mmseqs_db
 
-    echo -e "\nCompressing repeats"
-    zcat ${input} \
-      | homopolymer_compression.sh \
-      | gzip -2 \
-      > homo_compressed.fa.gz
 
-    echo -e "\nAdditional dereplication"
-    vsearch \
-      --derep_fulllength homo_compressed.fa.gz \
-      --output - \
-      --strand both \
-      --fasta_width 0 \
-      --threads 1 \
-      --sizein --sizeout \
-      --uc HomopolymerCompressed.uc \
-    > homo_compressed_dereplicated.fa
+    ## Run (cascaded) clustering
+    echo -e "..Lin-Clustering\\n"
 
-    ## Substitute homopolymer-comressed sequences with uncompressed ones
-    ## (update size annotaions)
-    echo -e "\nExtracting representative sequences"
+    mmseqs linclust \
+      mmseqs_db \
+      linclusters_db \
+      tmplc \
+      --min-seq-id ${params.chunking_id} \
+      --cluster-mode 0 \
+      --similarity-type 2 \
+      -c 0.7 --cov-mode 0 \
+      -k 15 \
+      --kmer-per-seq 100 \
+      --kmer-per-seq-scale 0.3 \
+      --spaced-kmer-mode 0 \
+      --mask 0 \
+      --split-memory-limit 100G \
+      --remove-tmp-files 1 \
+      --threads ${task.cpus}
 
-    seqkit fx2tab ${input} > inp_tab.txt
-    seqkit fx2tab homo_compressed_dereplicated.fa > clust_tab.txt
+    ## Generate a TSV-formatted output of clustering
+    echo -e "..Generating TSV-formatted output of clustering\\n"
 
-    if [ -s inp_tab.txt ]; then
-      substitute_compressed_seqs.R \
-        inp_tab.txt clust_tab.txt \
-        HomopolymerCompressed_tmp.fa
+    mmseqs createtsv \
+      mmseqs_db mmseqs_db \
+      linclusters_db \
+      DB_clu.tsv \
+      --threads ${task.cpus}
 
-      echo -e "..Done"
+    """
+}
+
+// Bucketize sequences into clusters
+process bucketize {
+
+    label "main_container"
+
+    input:
+      path sequences
+      path clusters
+
+    output:
+      path "bucket_*.fa.gz", emit: buckets
+      tuple val("${task.process}"), val('R'), eval('Rscript -e "cat(R.version.string)" | sed "s/R version //" | cut -d" " -f1'),  topic: versions
+      tuple val("${task.process}"), val('data.table'), eval('Rscript -e "cat(as.character(packageVersion(\'data.table\')))"'),  topic: versions
+      tuple val("${task.process}"), val('Biostrings'), eval('Rscript -e "cat(as.character(packageVersion(\'Biostrings\')))"'),  topic: versions
+
+    script:
+    numchunks = params.chunking_n ? "--numbuckets ${params.chunking_n}" : ""
+    """
+    echo -e "..Bucketizing sequences\\n"
+
+    bucketize_db.R \
+      --db      ${clusters} \
+      --fasta   ${sequences} \
+      ${numchunks} \
+      --summary bucket_summary.txt \
+      --threads ${task.cpus}
+  
+  """
+}
+
+
+
+
+
+// Merge processed buckets (e.g., clustered sequences)
+process merge_buckets {
+
+    label "main_container"
+
+    // Conditional publishing to match non-chunked directory structure
+    // (only enabled when chunking is used)
+    
+    // Pre-clustering results (if any)
+    publishDir "${params.outdir}/02.Homopolymer", 
+               mode: "${params.storagemode}",
+               enabled: (params.chunking_n != null && params.chunking_n >= 2) && params.preclustering == "homopolymer",
+               pattern: "PreClustered.uc.gz",
+               saveAs: { filename -> filename == "PreClustered.uc.gz" ? "HomopolymerCompressed.uc.gz" : null }
+    
+    publishDir "${params.outdir}/02.UNOISE", 
+               mode: "${params.storagemode}",
+               enabled: (params.chunking_n != null && params.chunking_n >= 2) && params.preclustering == "unoise",
+               pattern: "PreClustered.uc.gz",
+               saveAs: { filename -> filename == "PreClustered.uc.gz" ? "UNOISE.uc.gz" : null }
+               
+    publishDir "${params.outdir}/02.DADA2", 
+               mode: "${params.storagemode}",
+               enabled: (params.chunking_n != null && params.chunking_n >= 2) && params.preclustering == "dada2",
+               pattern: "PreClustered.uc.gz",
+               saveAs: { filename -> filename == "PreClustered.uc.gz" ? "DADA2_denoised.uc.gz" : null }
+               
+    publishDir "${params.outdir}/02.Preclustered_SWARM_d1", 
+               mode: "${params.storagemode}",
+               enabled: (params.chunking_n != null && params.chunking_n >= 2) && params.preclustering == "swarm_d1",
+               pattern: "PreClustered.uc.gz",
+               saveAs: { filename -> filename == "PreClustered.uc.gz" ? "SWARM.uc.gz" : null }
+    
+    // Final clustering results - publish to clustering directory if clustering != "none"
+    publishDir "${params.outdir}/03.Clustered_VSEARCH", 
+               mode: "${params.storagemode}",
+               enabled: (params.chunking_n != null && params.chunking_n >= 2) && params.clustering == "vsearch",
+               pattern: "Clustered.{fa,uc}.gz"
+               // No saveAs needed - files already have correct names for VSEARCH
+               
+    publishDir "${params.outdir}/03.Clustered_SWARM", 
+               mode: "${params.storagemode}",
+               enabled: (params.chunking_n != null && params.chunking_n >= 2) && params.clustering == "swarm",
+               pattern: "Clustered.{fa,uc}.gz",
+               saveAs: { filename -> 
+                   switch(filename) {
+                       case "Clustered.fa.gz": return "SWARM_representatives.fa.gz"
+                       case "Clustered.uc.gz": return "SWARM.uc.gz"
+                       default: return null
+                   }
+               }
+    
+    // Final results when no clustering is done (clustering == "none") - publish to preclustering directory
+    publishDir "${params.outdir}/02.Homopolymer", 
+               mode: "${params.storagemode}",
+               enabled: (params.chunking_n != null && params.chunking_n >= 2) && params.clustering == "none" && params.preclustering == "homopolymer",
+               pattern: "Clustered.{fa,uc}.gz",
+               saveAs: { filename -> 
+                   switch(filename) {
+                       case "Clustered.fa.gz": return "HomopolymerCompressed.fa.gz"
+                       case "Clustered.uc.gz": return "HomopolymerCompressed.uc.gz"
+                       default: return null
+                   }
+               }
+               
+    publishDir "${params.outdir}/02.UNOISE", 
+               mode: "${params.storagemode}",
+               enabled: (params.chunking_n != null && params.chunking_n >= 2) && params.clustering == "none" && params.preclustering == "unoise",
+               pattern: "Clustered.{fa,uc}.gz",
+               saveAs: { filename -> 
+                   switch(filename) {
+                       case "Clustered.fa.gz": return "UNOISE.fa.gz"
+                       case "Clustered.uc.gz": return "UNOISE.uc.gz"
+                       default: return null
+                   }
+               }
+               
+    publishDir "${params.outdir}/02.DADA2", 
+               mode: "${params.storagemode}",
+               enabled: (params.chunking_n != null && params.chunking_n >= 2) && params.clustering == "none" && params.preclustering == "dada2",
+               pattern: "Clustered.{fa,uc}.gz",
+               saveAs: { filename -> 
+                   switch(filename) {
+                       case "Clustered.fa.gz": return "DADA2_denoised.fa.gz"
+                       case "Clustered.uc.gz": return "DADA2_denoised.uc.gz"
+                       default: return null
+                   }
+               }
+               
+    publishDir "${params.outdir}/02.Preclustered_SWARM_d1", 
+               mode: "${params.storagemode}",
+               enabled: (params.chunking_n != null && params.chunking_n >= 2) && params.clustering == "none" && params.preclustering == "swarm_d1",
+               pattern: "Clustered.{fa,uc}.gz",
+               saveAs: { filename -> 
+                   switch(filename) {
+                       case "Clustered.fa.gz": return "SWARM_representatives.fa.gz"
+                       case "Clustered.uc.gz": return "SWARM.uc.gz"
+                       default: return null
+                   }
+               }
+
+
+    // Since there are name collisions, we need to stage files with unique names
+    input:
+      path(preclustuc_chunks, stageAs: "pre/?/*")  // UC files for pre-clustering (optional)
+      path(cluster_chunks, stageAs:    "cls/?/*")  // Sequence representatives
+      path(clustuc_chunks, stageAs:    "ucs/?/*")  // UC files for clustering
+
+    output:
+      path "PreClustered.uc.gz", emit: preclustuc_ch, optional: true
+      path "Clustered.fa.gz",    emit: cluster_ch
+      path "Clustered.uc.gz",    emit: clustuc_ch
+
+
+    script:
+    """
+    echo -e "Merging buckets\\n"
+
+    ## Pool sequence representatives
+    echo -e "..Pooling sequence representatives\\n"
+    find cls -name "*.fa.gz" \
+      | parallel -j 1 "cat {}" \
+      > Clustered.fa.gz
+
+    ## Pool UC files
+    echo -e "..Pooling UC files\\n"
+    find ucs -name "*.uc.gz" \
+      | parallel -j 1 "cat {}" \
+      > Clustered.uc.gz
+
+    ## Check if pre-clustering was performed
+    if [[ -e pre/1/NoPrecluster || -L "pre/1/NoPrecluster" ]]; then
+      echo -e "..Pre-clustering was not performed. Skipping pooling these data\\n"
     else
-      echo -e "..Input data looks empty, nothing to proceed with"
+      echo -e "..Pre-clustering was performed\\n"
+      find pre -name "*.uc.gz" \
+        | parallel -j 1 "cat {}" \
+        > PreClustered.uc.gz
     fi
 
-
-    ## Sort by number of reads
-    vsearch \
-      --sortbysize HomopolymerCompressed_tmp.fa \
-      --sizein --sizeout \
-      --threads ${task.cpus} \
-      --fasta_width 0 \
-      --output - \
-      | gzip -${params.gzip_compression} \
-      > HomopolymerCompressed.fa.gz
-
-
-    #### combine_derep_and_hpcorrection.R
-
-    echo -e "\nHomopolymer correction finished\n"
-
-    ## Compress results
-    echo -e "\nCompressing results"
-    gzip -${params.gzip_compression} HomopolymerCompressed.uc
-    
-    ## Remove temporary files
-    echo -e "\nRemoving temporary files"
-    rm homo_compressed.fa.gz
-    rm homo_compressed_dereplicated.fa
-    rm HomopolymerCompressed_tmp.fa
-    rm inp_tab.txt
-    rm clust_tab.txt
-    """
-}
-
-
-// Denoize sequences with UNOISE
-process unoise {
-
-    label "main_container"
-
-    publishDir "${params.outdir}/02.UNOISE", mode: 'symlink'
-    // cpus 8
-
-    input:
-      path input
-
-    output:
-      path "UNOISE.fa.gz", emit: unoise
-      path "UNOISE.uc.gz", emit: unoise_uc
-
-    script:
-    """
-    echo -e "Denoizing sequences with UNOISE\n"
-
-    vsearch \
-      --cluster_unoise ${input} \
-      --unoise_alpha   ${params.unoise_alpha} \
-      --minsize ${params.unoise_minsize} \
-      --iddef   ${params.otu_iddef} \
-      --qmask   ${params.otu_qmask} \
-      --gapopen ${params.vsearch_gapopen} \
-      --gapext  ${params.vsearch_gapext } \
-      --threads ${task.cpus} \
-      --fasta_width 0 \
-      --sizein --sizeout \
-      --centroids UNOISE.fa \
-      --uc UNOISE.uc
-
-    echo -e "..UNOISE done\n"
-
-    ## Compress results
-    echo -e "\nCompressing UNOISE results"
-    parallel -j 1 \
-      "pigz -p ${task.cpus} -${params.gzip_compression} {}" \
-      ::: "UNOISE.fa" "UNOISE.uc"
-
-    """
-}
-
-
-
-
-// Preclustering with SWARM and d1
-process precluster_swarm {
-
-    label "main_container"
-
-    publishDir "${params.outdir}/02.Preclustered_SWARM_d1", mode: 'symlink'
-    // cpus 8
-
-    input:
-      path input
-
-    output:
-      path "SWARM_representatives.fa.gz", emit: clust
-      path "SWARM.uc.gz",                 emit: clust_uc
-      path "SWARM.swarms.gz",             emit: swarms
-      path "SWARM.struct.gz",             emit: struct
-      path "SWARM.stats.gz",              emit: stats
-
-    script:
-    """
-    echo -e "Pre-clustering sequences with SWARM d=1\n"
-    echo -e "Note: sequences with ambiguous nucleotides will be excluded!\n"
-
-    ## Remove sequences with ambiguities
-    zcat ${input} \
-    | awk '{if (/^>/) {a = \$0} else {if (/^[ACGT]*\$/) {printf "%s\\n%s\\n", a, \$0}}}' \
-    | swarm \
-      --differences 1 \
-      --boundary    ${params.swarm_d1boundary} \
-      --fastidious \
-      --threads     ${task.cpus} \
-      --usearch-abundance \
-      --statistics-file    SWARM.stats \
-      --internal-structure SWARM.struct \
-      --uclust-file        SWARM.uc \
-      --seeds              SWARM_representatives.fa \
-      > SWARM.swarms
-
-    echo -e "\n..Swarm pre-clustering finished\n"
-
-    ## Compress results
-    echo -e "..Compressing results\n"
-    parallel -j 1 \
-      "pigz -p ${task.cpus} -${params.gzip_compression} {}" \
-      ::: "SWARM_representatives.fa" "SWARM.uc" "SWARM.swarms" "SWARM.struct" "SWARM.stats"
-
-    echo -e "..Done\n"
-    """
-}
-
-
-
-// Cluster sequences with VSEARCH (fixed similarity threshold)
-process cluster_vsearch {
-
-    label "main_container"
-
-    publishDir "${params.outdir}/03.Clustered_VSEARCH", mode: 'symlink'
-    // cpus 8
-
-    input:
-      path input
-
-    output:
-      path "Clustered.fa.gz", emit: clust
-      path "Clustered.uc.gz", emit: clust_uc
-
-    script:
-    """
-    echo -e "Clustering sequences with VSEARCH\n"
-
-    vsearch \
-      --cluster_size ${input} \
-      --id      ${params.otu_id} \
-      --iddef   ${params.otu_iddef} \
-      --qmask   ${params.otu_qmask} \
-      --gapopen ${params.vsearch_gapopen} \
-      --gapext  ${params.vsearch_gapext } \
-      --threads ${task.cpus} \
-      --sizein --sizeout \
-      --strand both \
-      --fasta_width 0 \
-      --uc Clustered.uc \
-      --centroids - \
-    | gzip -${params.gzip_compression} > Clustered.fa.gz
-    
-    echo -e "..Done"
-
-    ## Compress UC file
-    echo -e "\nCompressing UC file"
-    pigz -p ${task.cpus} -${params.gzip_compression} Clustered.uc
-
-    """
-}
-
-
-
-// Cluster sequences with SWARM (dynamic similarity threshold)
-process cluster_swarm {
-
-    label "main_container"
-
-    publishDir "${params.outdir}/03.Clustered_SWARM", mode: 'symlink'
-    // cpus 8
-
-    input:
-      path input
-
-    output:
-      path "SWARM_representatives.fa.gz", emit: clust
-      path "SWARM.uc.gz",                 emit: clust_uc
-      path "SWARM.swarms.gz",             emit: swarms
-      path "SWARM.struct.gz",             emit: struct
-      path "SWARM.stats.gz",              emit: stats
-
-    exec:
-      fastidious = (params.swarm_fastidious.toBoolean() == true & params.swarm_d.toInteger() == 1) ? "--fastidious --boundary ${params.swarm_d1boundary}" : ""
-      println("swarm_fastidious: ${params.swarm_fastidious}, swarm_d: ${params.swarm_d}")
-      println("fastid option:  ${fastidious}")
-
-    script:
-    """
-    echo -e "Clustering sequences with SWARM\n"
-    echo -e "Note: sequences with ambiguous nucleotides will be excluded!\n"
-
-    ## Swarm works with ACGTU alphabet only
-    ## 1. So check if there are any sequences with ambiguities
-    ## 2. If any, remove them
-    ## 3. Cluster
-
-    ## Count number of sequences with ambiguities (will go through the entire file)
-    # AMBIGS=\$(seqkit grep --count --by-seq --use-regexp --ignore-case --pattern "[RYSWKMBDHVN]" ${input})
-
-    ## Remove sequences with ambiguities
-    zcat ${input} \
-    | awk '{if (/^>/) {a = \$0} else {if (/^[ACGT]*\$/) {printf "%s\\n%s\\n", a, \$0}}}' \
-    | swarm \
-        --differences ${params.swarm_d} \
-        ${fastidious} \
-        --threads     ${task.cpus} \
-        --usearch-abundance \
-        --statistics-file    SWARM.stats \
-        --internal-structure SWARM.struct \
-        --uclust-file        SWARM.uc \
-        --seeds              SWARM_representatives.fa \
-        > SWARM.swarms
-
-    # --output-file SWARM.swarms  # to avoid buffering, it's better to stream data into a file (with >)
-    # -r, --mothur                # output using mothur-like format
-
-    echo -e "\n..Swarm clustering finished\n"
-
-    ## Compress results
-    echo -e "..Compressing results\n"
-    parallel -j 1 \
-      "pigz -p ${task.cpus} -${params.gzip_compression} {}" \
-      ::: "SWARM_representatives.fa" "SWARM.uc" "SWARM.swarms" "SWARM.struct" "SWARM.stats"
-
-    echo -e "..Done\n"
+    echo -e "..Done\\n"
     """
 }
 
@@ -549,7 +417,7 @@ process merge_uc {
 
     label "main_container"
     
-    publishDir "${params.outdir}/04.PooledResults", mode: 'symlink'
+    publishDir "${params.outdir}/04.PooledResults", mode: "${params.storagemode}"
     // cpus 4
 
     input:
@@ -559,17 +427,20 @@ process merge_uc {
 
     output:
       path "UC_Pooled.parquet", emit: uc
+      tuple val("${task.process}"), val('ucs'), eval('ucs --version | sed "s/ucs //"'), topic: versions
+      tuple val("${task.process}"), val('R'), eval('Rscript -e "cat(R.version.string)" | sed "s/R version //" | cut -d" " -f1'),  topic: versions
+      tuple val("${task.process}"), val('duckdb'), eval('Rscript -e "cat(as.character(packageVersion(\'duckdb\')))"'),  topic: versions
 
     script:
     """
-    echo -e "merge_uc process\n"
+    echo -e "Merging UC files\\n"
 
     ## Parse UC files from different steps, convert to parquet format
-    echo -e "..Parsing dereplicated UC file\n"
+    echo -e "..Parsing dereplicated UC file\\n"
     ucs --input ${uc_derep} --output UC_derep.parquet
 
     if [ -f ${uc_preclust} ] && [ "${uc_preclust}" != "NoPrecluster" ]; then
-      echo -e "..Parsing pre-clustered UC file\n"
+      echo -e "..Parsing pre-clustered UC file\\n"
       ucs --input ${uc_preclust} --output UC_preclust.parquet
       UCPRECLUST="UC_preclust.parquet"
     else
@@ -577,12 +448,12 @@ process merge_uc {
     fi
 
     if [ -f ${uc_clust} ]; then
-      echo -e "..Parsing clustered UC file\n"
+      echo -e "..Parsing clustered UC file\\n"
       ucs --input ${uc_clust} --output UC_clust.parquet
     fi
 
     ## Merge UC files into a single file
-    echo -e "..Merging UC files\n"
+    echo -e "..Merging UC files\\n"
     merge_uc_files.R \
       --ucderep    UC_derep.parquet \
       --ucpreclust \${UCPRECLUST} \
@@ -598,7 +469,7 @@ process summarize {
 
     label "main_container"
 
-    publishDir "${params.outdir}/04.PooledResults", mode: 'symlink'
+    publishDir "${params.outdir}/04.PooledResults", mode: "${params.storagemode}"
     // cpus 4
 
     input:
@@ -612,9 +483,14 @@ process summarize {
       path "OTU_table_wide.RData",  emit: otutabwider
       path "OTU_table_long.RData",  emit: otutablongr
       path "OTUs.fa.gz",            emit: seqs
+      tuple val("${task.process}"), val('R'), eval('Rscript -e "cat(R.version.string)" | sed "s/R version //" | cut -d" " -f1'),  topic: versions
+      tuple val("${task.process}"), val('data.table'), eval('Rscript -e "cat(as.character(packageVersion(\'data.table\')))"'),  topic: versions
+      tuple val("${task.process}"), val('arrow'), eval('Rscript -e "cat(as.character(packageVersion(\'arrow\')))"'),  topic: versions
+      tuple val("${task.process}"), val('Biostrings'), eval('Rscript -e "cat(as.character(packageVersion(\'Biostrings\')))"'),  topic: versions
 
     script:
     """
+    echo -e "Summarizing clustered data\\n"
 
     summarize_clustered_data.R \
       --seqtab         ${seqtab} \
@@ -634,7 +510,7 @@ process lulu {
 
     label "main_container"
 
-    publishDir "${params.outdir}/05.LULU", mode: 'symlink'
+    publishDir "${params.outdir}/05.LULU", mode: "${params.storagemode}"
     // cpus 8
 
     input:
@@ -646,10 +522,13 @@ process lulu {
       path "LULU_match_list.txt.gz",         emit: matches
       path "LULU_merging_statistics.txt.gz", emit: stats
       path "OTUs_LULU.fa.gz",                emit: fasta
+      tuple val("${task.process}"), val('mumu'), eval('mumu --version | head -n 1 | sed "s/mumu //"'), topic: versions
+      tuple val("${task.process}"), val('vsearch'), eval('vsearch --version 2>&1 | head -n 1 | sed "s/vsearch //g" | sed "s/,.*//g" | sed "s/^v//" | sed "s/_.*//"'), topic: versions
+      tuple val("${task.process}"), val('ripgrep'), eval('rg --version | head -1 | sed "s/ripgrep //"'), topic: versions
 
     script:
     """
-    echo -e "Post-clustering curation with MUMU (C++ implementation of LULU)\n"
+    echo -e "Post-clustering curation with MUMU (C++ implementation of LULU)\\n"
 
     ## If Clustered.fa.gz used as input
     ## (but there are sequences excluded from the OTU table)
@@ -671,7 +550,7 @@ process lulu {
     echo -e "VSEARCH similarity threshold: " "\$VSID"
 
     ## Prepare match list (+ remove size annotations)
-    echo -e "Preparing match list\n"
+    echo -e "Preparing match list\\n"
     vsearch \
       --usearch_global ${sequences} \
       --db             ${sequences} \
@@ -691,10 +570,10 @@ process lulu {
     # Input match_list = tab-separated, OTU pairwise similarity scores
 
 
-    echo -e "\nUnpacking OTU table\n"
+    echo -e "\\nUnpacking OTU table\\n"
     gunzip --stdout ${otu_table} > tmp_OTU_table.txt
 
-    echo -e "\nRunning MUMU\n"
+    echo -e "\\nRunning MUMU\\n"
     mumu \
       --otu_table     tmp_OTU_table.txt \
       --match_list    LULU_match_list.txt \
@@ -706,21 +585,21 @@ process lulu {
       --minimum_ratio_type           ${params.lulu_ratiotype} \
       --minimum_relative_cooccurence ${params.lulu_relcooc}
 
-    echo -e "..Compressing LULU-curated OTU table\n"
+    echo -e "..Compressing LULU-curated OTU table\\n"
     parallel -j 1 \
       "pigz -p ${task.cpus} -${params.gzip_compression} {}" \
       ::: "OTU_table_LULU.txt" "LULU_merging_statistics.txt" "LULU_match_list.txt"
 
-    echo -e "..LULU done\n"
+    echo -e "..LULU done\\n"
 
-    echo -e "\nPreparing sequence subset\n"
+    echo -e "\\nPreparing sequence subset\\n"
 
-    echo -e "..Extracting OTU IDs\n"
+    echo -e "..Extracting OTU IDs\\n"
     zcat OTU_table_LULU.txt.gz \
       | awk 'NR > 1 {print \$1}' \
       > curated_OTU_ids.txt
 
-    echo -e "..Extracting sequences\n"
+    echo -e "..Extracting sequences\\n"
     rg -z -A 1 \
       -f curated_OTU_ids.txt \
       --context-separator "" \
@@ -731,8 +610,8 @@ process lulu {
     > OTUs_LULU.fa.gz
 
     ## Remove temporary files
-    echo -e "\nAll done!\n"
-    echo -e "Removing temporary files\n"
+    echo -e "\\nAll done!\\n"
+    echo -e "Removing temporary files\\n"
     # rm tmp_sequences.fa.gz
     rm tmp_OTU_table.txt curated_OTU_ids.txt
 
@@ -759,6 +638,38 @@ process lulu {
 // 17. `relative_cooccurrence` - relative co-occurence value (number of samples where both the potential parent OTU and the query OTU are present divided by the number of samples where the query OTU is present)
 // 18. `status` - status: 'accepted' or 'rejected'
 //     The potential parent OTU is either accepted as a parent, or rejected
+
+// Auto documentation of analysis procedures
+// (generate narrative description of methods)
+process document_analysis_s2 {
+
+    label "main_container"
+
+    publishDir "${out_tracedir}", mode: 'copy', overwrite: true
+    // cpus 1
+
+    input:
+      path versions       // "software_versions.yml"
+      path params         // "pipeline_params.tsv"
+
+    output:
+      path "README_Step2_Methods.txt",  emit: docs
+
+
+    script:
+    """
+    echo -e "Descriptive summary generation\n"
+
+    document_s2.R \
+      ${versions} \
+      ${params} \
+      README_Step2_Methods.txt
+
+    """
+}
+
+
+
 
 // Step-2 workflow
 workflow S2 {
@@ -799,69 +710,47 @@ workflow S2 {
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        Pre-clustering / denoising
+        Clustering / pre-clustering / denoising   with optional chunking
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
 
-    // Denoizing
-    if ( params.preclustering == "none" ) {
-      denoise_ch    = derep_ch
-      preclustuc_ch = file('NoPrecluster')
-    
-    // Denoise with UNOISE
-    } else if ( params.preclustering == "unoise" ) {
-      unoise(derep_ch)
-      denoise_ch    = unoise.out.unoise
-      preclustuc_ch = unoise.out.unoise_uc
-    
+    // No chunking (process all sequences at once)
+    if(params.chunking_n == null || params.chunking_n < 2){
 
-    // Precluster with SWARM
-    } else if ( params.preclustering == "swarm_d1" ){
-      precluster_swarm(derep_ch)
-      denoise_ch    = precluster_swarm.out.clust
-      preclustuc_ch = precluster_swarm.out.clust_uc
-    }
+      CLUSTERING(derep_ch)
 
+      preclustuc_ch = CLUSTERING.out.preclustuc_ch
+      cluster_ch    = CLUSTERING.out.cluster_ch
+      clustuc_ch    = CLUSTERING.out.clustuc_ch
 
-    /*
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        Clustering
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    */
+    } else {
+    // Chunking (process sequences in N chunks)
 
+      // Groupd sequences into clusters
+      linclust(derep_ch)
 
-    // Greedy clustering with VSEARCH
-    if ( params.clustering == "vsearch" ) {
-      cluster_vsearch(denoise_ch)
-      cluster_ch = cluster_vsearch.out.clust
-      clustuc_ch = cluster_vsearch.out.clust_uc
-    
-    // Clustering with SWARM
-    } else if ( params.clustering == "swarm" ) {
-      
-      // If pre-clustering was already done with the same d, just take the previous results
-      if(params.preclustering == "swarm_d1" & params.swarm_d == 1){
-        cluster_ch = precluster_swarm.out.clust
-        clustuc_ch = precluster_swarm.out.clust_uc
-        preclustuc_ch = file('NoPrecluster')
-      
-      // Otherwise, run SWARM
-      } else {
-        cluster_swarm(denoise_ch)
-        cluster_ch = cluster_swarm.out.clust
-        clustuc_ch = cluster_swarm.out.clust_uc
-      }
+      // Bucketize sequence clusters into chunks
+      bucketize(derep_ch, linclust.out.db_clu)
+      buckets_ch = bucketize.out.buckets.flatten()
 
-    // Do not cluster, use zOTUs from UNOISE
-    } else if ( params.preclustering == "unoise" & params.clustering == "none" ) {
-      cluster_ch = unoise.out.unoise
-      clustuc_ch = unoise.out.unoise_uc
-      preclustuc_ch = file('NoPrecluster')
-    
-    } else if ( params.preclustering == "none" & params.clustering == "none" ){
-      println "No pre-clustering or clustering was done"
+      // Run clustering/pre-clustering/denoising subworkflow
+      CLUSTERING(buckets_ch)
 
-      // TODO: create table based on dereplicated sequences?
+      // collect UC and FASTA files from all chunks
+      preclustuc_chunks = CLUSTERING.out.preclustuc_ch.collect()
+      cluster_chunks    = CLUSTERING.out.cluster_ch.collect()
+      clustuc_chunks    = CLUSTERING.out.clustuc_ch.collect()
+
+      // Merge buckets into a single file
+      merge_buckets(
+        preclustuc_chunks,
+        cluster_chunks,
+        clustuc_chunks)
+
+      cluster_ch    = merge_buckets.out.cluster_ch
+      clustuc_ch    = merge_buckets.out.clustuc_ch
+      preclustuc_ch = merge_buckets.out.preclustuc_ch.ifEmpty(file('NoPrecluster'))
+
     }
 
 
@@ -899,8 +788,27 @@ workflow S2 {
     // run_summary()
 
 
-  // Auto documentation of analysis procedures
-  // document_analysis_step2
+  // Dump the software versions to a file
+  ch_versions_yml = software_versions_to_yaml(Channel.topic('versions'))
+      .collectFile(
+          storeDir: "${params.tracedir}",
+          name:     'software_versions.yml',
+          sort:     true,
+          newLine:  true
+      )
 
+  // Dump the parameters to a file
+  ch_params_tsv = dumpParamsTsv()
+    .collectFile(
+        storeDir: "${params.tracedir}",
+        name:     "pipeline_params.tsv",
+        sort:     true,
+        newLine:  true
+    )
+
+  // Auto documentation of analysis procedures
+  document_analysis_s2(
+    ch_versions_yml,
+    ch_params_tsv)
 
 }

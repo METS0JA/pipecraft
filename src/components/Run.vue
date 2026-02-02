@@ -1004,11 +1004,39 @@ export default {
           console.log(props);
           await this.$store.dispatch('clearContainerConflicts', "Step_1");
           await this.$store.dispatch('clearContainerConflicts', "Step_2");
-          await this.$store.dispatch('imageCheck', "pipecraft/nextits:test");
+          await this.$store.dispatch('imageCheck', "pipecraft/nextits:test2");
+          const escChar = String.fromCharCode(27);
+          const ansiEscapePattern = new RegExp(
+            `${escChar}\\[[0-9;]*[A-Za-z]`,
+            "g"
+          );
+          const stripControlChars = (text) => {
+            let result = "";
+            for (let i = 0; i < text.length; i += 1) {
+              const code = text.charCodeAt(i);
+              if (code === 9 || code === 10) {
+                result += text[i];
+              } else if (code >= 32 && code !== 127) {
+                result += text[i];
+              }
+            }
+            return result;
+          };
+          const sanitizeLogChunk = (chunk) =>
+            stripControlChars(
+              chunk
+                // Strip ANSI escape sequences
+                .replace(ansiEscapePattern, "")
+                // Remove block drawing chars used in Nextflow banners
+                .replace(/[\u2580-\u259F]/g, "")
+                // Drop carriage returns to avoid messy inline updates
+                .replace(/\r/g, "")
+            );
+
           let promise = new Promise((resolve, reject) => {
             this.$docker
               .run(
-                "pipecraft/nextits:test",
+                "pipecraft/nextits:test2",
                 ["bash", "-c", `bash /scripts/NextITS_Pipeline.sh`],
                 false,
                 props,
@@ -1027,12 +1055,13 @@ export default {
 
               .on("stream", (stream) => {
                 stream.on("data", function (data) {
-                  console.log(data.toString().replace(/[\n\r]/g, ""));
+                  const cleaned = sanitizeLogChunk(data.toString());
+                  console.log(cleaned);
                   if (writeLog == true) {
-                    log.write(data.toString().replace(/[\n\r]/g, ""));
+                    log.write(cleaned);
                   }
                   // term.write(data.toString().replace(/[\n\r]/g, "") + "\n");
-                  stdout.write(data.toString().replace(/[\n\r]/g, "") + "\n");
+                  stdout.write(cleaned);
                 });
               });
           });

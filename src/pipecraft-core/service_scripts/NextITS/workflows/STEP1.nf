@@ -1,9 +1,25 @@
+/*
+============================================================================
+  NextITS: Pipeline to process eukaryotic ITS amplicons
+============================================================================
+  License: Apache-2.0
+  Github : https://github.com/vmikk/NextITS
+  Website: https://Next-ITS.github.io/
+----------------------------------------------------------------------------
+*/
 
 // ---- Step-1 workflow ----
 
 
 // Include functions
 include { software_versions_to_yaml } from '../modules/version_parser.nf'
+include { dumpParamsTsv }             from '../modules/dump_parameters.nf'
+include { CHIMERA_REMOVAL }           from '../subworkflows/chimera_removal_subworkflow.nf'
+
+if ( params.seqplatform == "Illumina" ){
+  include { qc_pe; demux_illumina_notmerged; trim_primers_pe; join_pe } from '../modules/Illumina_pe.nf'
+}
+
 
 // Define output paths for different steps
 out_0_bam    = params.outdir + "/00_BAM2FASTQ"
@@ -15,11 +31,12 @@ out_3_itsxp  = params.outdir + "/03_ITSx_PooledParts"
 out_3_trim   = params.outdir + "/03_PrimerTrim"
 out_3_trimPE = params.outdir + "/03_PrimerTrim_NotMerged"
 out_4_homop  = params.outdir + "/04_Homopolymer"
-out_5_chim   = params.outdir + "/05_Chimera"
+// out_5_chim   = params.outdir + "/05_Chimera"
 out_6_tj     = params.outdir + "/06_TagJumpFiltration"
 out_7_seq    = params.outdir + "/07_SeqTable"
 out_8_smr    = params.outdir + "/08_RunSummary"
 out_9_db     = params.outdir + "/09_DB"
+out_tracedir = params.tracedir
 
 // Sub-workflow-specific outputs
 out_3_quickstats = params.outdir + "/03_Stats"
@@ -43,7 +60,7 @@ process bam2fastq {
 
     script:
     """
-    echo -e "Converting BAM to FASTQ\n"
+    echo -e "Converting BAM to FASTQ\\n"
     echo -e "Input file: " ${input}
     echo -e "BAM index: "  ${bam_index}
 
@@ -52,7 +69,7 @@ process bam2fastq {
       --num-threads ${task.cpus} \
       ${input}
 
-    echo -e "\nConvertion finished"
+    echo -e "\\nConvertion finished"
     """
 }
 
@@ -79,7 +96,7 @@ process qc_se {
     filter_maxee      = params.qc_maxee      ? "--fastq_maxee ${params.qc_maxee}"          : ""
     filter_maxeerate  = params.qc_maxeerate  ? "--fastq_maxee_rate ${params.qc_maxeerate}" : ""
     """
-    echo -e "QC"
+    echo -e "QC\\n"
     echo -e "Input file: " ${input}
 
     ## We do not need to change the file name (output name should be the same as input)
@@ -103,60 +120,9 @@ process qc_se {
     ## qc_maxhomopolymerlen
     # e.g. "(A{26,}|C{26,}|T{26,}|G{26,})"
 
-    echo -e "\nQC finished"
+    echo -e "\\nQC finished"
     """
 }
-
-
-// Quality filtering for pair-end reads
-process qc_pe {
-
-    label "main_container"
-
-    // cpus 10
-
-    input:
-      path input_R1
-      path input_R2
-
-    output:
-      path "QC_R1.fq.gz", emit: filtered_R1
-      path "QC_R2.fq.gz", emit: filtered_R2
-
-    script:
-    filter_avgphred  = params.qc_avgphred  ? "--average_qual ${params.qc_avgphred}"                 : "--average_qual 0"
-    filter_phredmin  = params.qc_phredmin  ? "--qualified_quality_phred ${params.qc_phredmin}"      : ""
-    filter_phredperc = params.qc_phredperc ? "--unqualified_percent_limit ${params.qc_phredperc}"   : ""
-    filter_polyglen  = params.qc_polyglen  ? "--trim_poly_g --poly_g_min_len ${params.qc_polyglen}" : ""
-    """
-    echo -e "QC"
-    echo -e "Input R1: " ${input_R1}
-    echo -e "Input R2: " ${input_R2}
-
-    ## If `filter_phredmin` && `filter_phredperc` are specified,
-    # Filtering based on percentage of unqualified bases
-    # how many percents of bases are allowed to be unqualified (Q < 24)
-        
-    fastp \
-      --in1 ${input_R1} \
-      --in2 ${input_R2} \
-      --disable_adapter_trimming \
-      --n_base_limit ${params.qc_maxn} \
-      ${filter_avgphred} \
-      ${filter_phredmin} \
-      ${filter_phredperc} \
-      ${filter_polyglen} \
-      --length_required 100 \
-      --thread ${task.cpus} \
-      --html qc.html \
-      --json qc.json \
-      --out1 QC_R1.fq.gz \
-      --out2 QC_R2.fq.gz
-
-    echo -e "\nQC finished"
-    """
-}
-
 
 
 // Validate tags for demultiplexing
@@ -164,6 +130,8 @@ process tag_validation {
 
     label "main_container"
     // cpus 1
+
+    publishDir "${out_1_demux}", pattern: "tag_names_renamed.tsv", mode: "${params.storagemode}"
 
     input:
       path barcodes
@@ -174,10 +142,11 @@ process tag_validation {
       path "biosamples_sym.csv",       emit: biosamples_sym,  optional: true
       path "file_renaming.tsv",        emit: file_renaming,   optional: true
       path "unknown_combinations.tsv", emit: unknown_combinations, optional: true
+      path "tag_names_renamed.tsv",    emit: tag_names_renamed, optional: true
 
     script:
     """
-    echo -e "Valdidating demultiplexing tags\n"
+    echo -e "Valdidating demultiplexing tags\\n"
     echo -e "Input file: " ${barcodes}
 
     ## Convert Windows-style line endings (CRLF) to Unix-style (LF)
@@ -188,7 +157,7 @@ process tag_validation {
       --tags   ${barcodes} \
       --output barcodes_validated.fasta
 
-    echo -e "Tag validation finished"
+    echo -e "\\nTag validation finished"
     """
 }
 
@@ -232,8 +201,8 @@ process demux {
     ## (if `biosamples_sym` does not exists, it means that it is a dummy file)
     ## (if exists, it means that tags were split into sym and asym at the tag validation step)
     if [[ ${params.lima_barcodetype} = "dual_symmetric" ]] && [ -e ${biosamples_sym} ] ; then
-        echo -e "\nERROR: Symmetric tags are provided in '...' format.\n"
-        echo -e "In the FASTA file, please include only one tag per sample, since these tags are identical.\n"
+        echo -e "\\nERROR: Symmetric tags are provided in '...' format.\\n"
+        echo -e "In the FASTA file, please include only one tag per sample, since these tags are identical.\\n"
         exit 1
     fi
 
@@ -242,8 +211,8 @@ process demux {
 
       if [ ! -e ${biosamples_asym} ]; then
         
-        echo -e "\nERROR: Tags are specified in wrong format"
-        echo -e "Use the '...' format in FASTA file.\n"
+        echo -e "\\nERROR: Tags are specified in wrong format"
+        echo -e "Use the '...' format in FASTA file.\\n"
         exit 1
       
       else
@@ -256,12 +225,12 @@ process demux {
         ## Check the presence of dual barcode combinations
         ## If line count is less than 2, it means there are no samples specified
         if [[ ${params.lima_barcodetype} == "dual_asymmetric" ]] && [[ \$line_count_asym -lt 2 ]]; then
-          echo -e "\nERROR: No asymmetric barcodes detected for demultiplexing.\n"
+          echo -e "\\nERROR: No asymmetric barcodes detected for demultiplexing.\\n"
           return 1
         fi
 
         if [[ ${params.lima_barcodetype} == "dual" ]] && [[ \$line_count_asym -lt 2 ]]; then
-          echo -e "\nWARNING: No asymmetric barcodes detected, consider using '--lima_barcodetype dual_symmetric'.\n"
+          echo -e "\\nWARNING: No asymmetric barcodes detected, consider using '--lima_barcodetype dual_symmetric'.\\n"
         fi
 
       fi  # end of missing asym biosamples
@@ -289,7 +258,7 @@ process demux {
     case ${params.lima_barcodetype} in
 
       "single")
-        echo -e "\nDemultiplexing with LIMA (single barcode)"
+        echo -e "\\nDemultiplexing with LIMA (single barcode)"
         lima --same --single-side \
           --log-file LIMA/_log.txt \
           \$common_args \
@@ -297,7 +266,7 @@ process demux {
         ;;
 
       "dual_symmetric")
-        echo -e "\nDemultiplexing with LIMA (dual symmetric barcodes)"
+        echo -e "\\nDemultiplexing with LIMA (dual symmetric barcodes)"
         lima --same \
           --min-end-score       ${params.lima_minendscore} \
           --min-scoring-regions ${params.lima_minscoringregions} \
@@ -307,7 +276,7 @@ process demux {
         ;;
 
       "dual_asymmetric")
-        echo -e "\nDemultiplexing with LIMA (dual asymmetric barcodes)"
+        echo -e "\\nDemultiplexing with LIMA (dual asymmetric barcodes)"
         lima --different \
           --min-end-score       ${params.lima_minendscore} \
           --min-scoring-regions ${params.lima_minscoringregions} \
@@ -321,7 +290,7 @@ process demux {
         mkdir -p LIMAs LIMAd
 
         if [[ \$line_count_sym -ge 2 ]]; then
-        echo -e "\nDemultiplexing with LIMA (dual symmetric barcodes)"
+        echo -e "\\nDemultiplexing with LIMA (dual symmetric barcodes)"
         lima --same \
           --min-end-score       ${params.lima_minendscore} \
           --min-scoring-regions ${params.lima_minscoringregions} \
@@ -332,7 +301,7 @@ process demux {
         fi
 
         if [[ \$line_count_asym -ge 2 ]]; then
-        echo -e "\nDemultiplexing with LIMA (dual asymmetric barcodes)"
+        echo -e "\\nDemultiplexing with LIMA (dual asymmetric barcodes)"
         lima --different \
           --min-end-score       ${params.lima_minendscore} \
           --min-scoring-regions ${params.lima_minscoringregions} \
@@ -348,7 +317,7 @@ process demux {
     ## Combining symmetric and asymmetric files
     if [ ${params.lima_barcodetype} = "dual" ]; then
 
-      echo -e "\nPooling of symmetric and asymmetric barcodes"
+      echo -e "\\nPooling of symmetric and asymmetric barcodes"
       cd LIMA
       find ../LIMAd -name "*.fq.gz" | parallel -j1 "ln -s {} ."
       find ../LIMAs -name "*.fq.gz" | parallel -j1 "ln -s {} ."
@@ -361,35 +330,35 @@ process demux {
     ## Only user-provided combinations whould be kept (based on `lima --biosample-csv`)
     if [[ ${params.lima_barcodetype} == "dual_asymmetric" ]] || [[ ${params.lima_barcodetype} == "dual" ]]; then
 
-      echo -e "\n..Renaming files from tag IDs to sample names"
+      echo -e "\\n..Renaming files from tag IDs to sample names"
       brename -p "(.+)" -r "{kv}" -k ${file_renaming} LIMA/
 
-      echo -e "\n..Checking for unknown tag combinations"
-      echo -e "\n...Number of unknowns detected:"
+      echo -e "\\n..Checking for unknown tag combinations"
+      echo -e "\\n...Number of unknowns detected:"
       find LIMA -name "lima.*.fq.gz" | wc -l
       
       if [[ ${params.lima_remove_unknown} == "false" ]]; then
 
         if [ -s ${unknown_combinations} ]; then
-          echo -e "\n...Renaming unknown combinations"
+          echo -e "\\n...Renaming unknown combinations"
           brename -p "(.+)" -r "{kv}" -k ${unknown_combinations} LIMA/
         else
-          echo -e "\n...No unknown combinations require renaming"
+          echo -e "\\n...No unknown combinations require renaming"
         fi
 
-        echo -e "\n...Number of unknowns remained:"
+        echo -e "\\n...Number of unknowns remained:"
         find LIMA -name "lima.*.fq.gz" | wc -l
 
       fi
 
-      echo -e "\n...Removing unknowns:"
+      echo -e "\\n...Removing unknowns:"
       find LIMA -name "lima.*.fq.gz" | parallel -j1 "echo {} && rm {}"
 
     fi  # end of dual/asym renaming
 
     if [[ ${params.lima_barcodetype} == "dual_symmetric" ]] || [[ ${params.lima_barcodetype} == "single" ]]; then
 
-      echo -e "\n..Renaming demultiplexed files"
+      echo -e "\\n..Renaming demultiplexed files"
       rename --filename \
         's/^lima.//g; s/--.*\$/.fq.gz/' \
         \$(find LIMA -name "*.fq.gz")
@@ -400,27 +369,27 @@ process demux {
     ## Combine summary stats for dual barcodes (two LIMA runs)
     if [[ ${params.lima_barcodetype} == "dual" ]]; then
 
-      echo -e "\n..Combining dual-barcode log files"
+      echo -e "\\n..Combining dual-barcode log files"
 
       if [ -f "LIMAd/lima.lima.summary" ]; then
-        echo -e "Asymmetric barcodes summary\n\n" >> LIMA/lima.lima.summary
+        echo -e "Asymmetric barcodes summary\\n\\n" >> LIMA/lima.lima.summary
         cat LIMAd/lima.lima.summary >> LIMA/lima.lima.summary
 
-        echo -e "Asymmetric barcodes counts\n\n" >> LIMA/lima.lima.counts
+        echo -e "Asymmetric barcodes counts\\n\\n" >> LIMA/lima.lima.counts
         cat LIMAd/lima.lima.counts >> LIMA/lima.lima.counts
 
-        echo -e "Asymmetric barcodes report\n\n" >> LIMA/lima.lima.report
+        echo -e "Asymmetric barcodes report\\n\\n" >> LIMA/lima.lima.report
         cat LIMAd/lima.lima.report >> LIMA/lima.lima.report
       fi
 
       if [ -f "LIMAs/lima.lima.summary" ]; then
-        echo -e "\n\nSymmetric barcodes summary\n\n" >> LIMA/lima.lima.summary
+        echo -e "\\n\\nSymmetric barcodes summary\\n\\n" >> LIMA/lima.lima.summary
         cat LIMAs/lima.lima.summary >> LIMA/lima.lima.summary
 
-        echo -e "\n\nSymmetric barcodes counts\n\n" >> LIMA/lima.lima.counts
+        echo -e "\\n\\nSymmetric barcodes counts\\n\\n" >> LIMA/lima.lima.counts
         cat LIMAs/lima.lima.counts >> LIMA/lima.lima.counts
 
-        echo -e "\n\nSymmetric barcodes report\n\n" >> LIMA/lima.lima.report
+        echo -e "\\n\\nSymmetric barcodes report\\n\\n" >> LIMA/lima.lima.report
         cat LIMAs/lima.lima.report >> LIMA/lima.lima.report
       fi
 
@@ -436,7 +405,7 @@ process demux {
     # SYMMETRIC  : --ccs --min-score 0 --min-end-score 80 --min-ref-span 0.75 --same --single-end
     # ASYMMETRIC : --ccs --min-score 80 --min-end-score 50 --min-ref-span 0.75 --different --min-scoring-regions 2
 
-    echo -e "\nDemultiplexing finished"
+    echo -e "\\nDemultiplexing finished"
     """
 }
 
@@ -459,7 +428,7 @@ process merge_pe {
 
     script:
     """
-    echo -e "Merging Illumina pair-end reads"
+    echo -e "Merging Illumina pair-end reads\\n"
 
     ## By default, fastp modifies sequences header
     ## e.g., `merged_150_15` means that 150bp are from read1, and 15bp are from read2
@@ -566,14 +535,14 @@ process demux_illumina {
       ${input_fastq} \
       > cutadapt.log
 
-    echo -e "\n..done"
+    echo -e "\\n..done"
 
     ## Remove empty files (no sequences)
-    echo -e "\nRemoving empty files"
+    echo -e "\\nRemoving empty files"
     find . -type f -name "*.fq.gz" -size -29c -print -delete
     echo -e "..Done"
 
-    echo -e "\nDemultiplexing finished"
+    echo -e "\\nDemultiplexing finished"
     """
 }
 
@@ -604,13 +573,13 @@ process disambiguate {
       primer_F.fasta
 
     ## Disambiguate reverse primer
-    echo -e "\nDisambiguating reverse primer"
+    echo -e "\\nDisambiguating reverse primer"
     disambiguate_primers.R \
       ${params.primer_reverse} \
       primer_R.fasta
 
     ## Reverse-complement primers
-    echo -e "\nReverse-complementing primers"
+    echo -e "\\nReverse-complementing primers"
     seqkit seq -r -p --seq-type dna primer_F.fasta > primer_Fr.fasta
     seqkit seq -r -p --seq-type dna primer_R.fasta > primer_Rr.fasta
 
@@ -675,7 +644,7 @@ process primer_check {
       | bedtools merge -i stdin
     }
 
-    echo -e "\nCounting primers"
+    echo -e "\\nCounting primers"
     echo -e "..forward primer"
     count_primers ${primer_F}  >  PF.txt
 
@@ -690,7 +659,7 @@ process primer_check {
 
     ## Sort by seqID and start position, remove overlapping regions,
     ## Find duplicated records
-    echo -e "\nLooking for multiple primer occurrences"
+    echo -e "\\nLooking for multiple primer occurrences"
     
     echo -e "..Processing forward primers"
     if [ -s PF.txt ]; then
@@ -732,7 +701,7 @@ process primer_check {
       runiq multiprimer.txt > multiprimers.txt
       rm multiprimer.txt
 
-      echo -e "\nNumber of artefacts found: " \$(wc -l < multiprimers.txt)
+      echo -e "\\nNumber of artefacts found: " \$(wc -l < multiprimers.txt)
 
       echo -e "..Removing artefacts"
       ## Remove primer artefacts
@@ -754,13 +723,13 @@ process primer_check {
 
     else
 
-      echo -e "\nNo primer artefacts found"
+      echo -e "\\nNo primer artefacts found"
       ln -s ${input} no_multiprimers.fq.gz
     
     fi
     echo -e "..Done"
 
-    echo -e "\nReorienting sequences"
+    echo -e "\\nReorienting sequences"
 
     ## Reverse-complement rev primer
     RR=\$(rc.sh ${params.primer_reverse})
@@ -776,13 +745,13 @@ process primer_check {
       --output ${input.getSimpleName()}_PrimerChecked.fq.gz \
       no_multiprimers.fq.gz
 
-    echo -e "\nAll done"
+    echo -e "\\nAll done"
 
     ## Clean up
     if [ -f no_multiprimers.fq.gz ]; then rm no_multiprimers.fq.gz; fi
 
     ## Remove empty file (no valid sequences)
-    echo -e "\nRemoving empty files"
+    echo -e "\\nRemoving empty files"
     find . -type f -name ${input.getSimpleName()}_PrimerChecked.fq.gz -size -29c -print -delete
     echo -e "..Done"
     
@@ -834,7 +803,7 @@ process itsx {
       tuple val("${task.process}"), val('seqhasher'), eval('seqhasher -v | sed "s/SeqHasher //"'), topic: versions
       tuple val("${task.process}"), val('parallel'), eval('parallel --version | head -n 1 | sed "s/GNU parallel //"'), topic: versions
       tuple val("${task.process}"), val('brename'), eval('brename --help | head -n 4 | tail -1 | sed "s/Version: //"'), topic: versions
-      tuple val("${task.process}"), val('duckdb'), eval('duckdb --version | sed "s/^v//"'), topic: versions
+      tuple val("${task.process}"), val('duckdb'), eval('duckdb --version | cut -d" " -f1 | sed "s/^v//"'), topic: versions
 
     script:
     
@@ -844,10 +813,10 @@ process itsx {
     // singledomain = params.ITSx_singledomain ? "--allow_single_domain 1e-9,0" : ""
 
     """
-    echo "Extraction of rRNA regions using ITSx\n"
+    echo -e "Extraction of rRNA regions using ITSx\\n"
 
     ## Trim primers    
-    echo -e "Trimming primers\n"
+    echo -e "Trimming primers\\n"
 
     ## Reverse-complement rev primer
     RR=\$(rc.sh ${params.primer_reverse})
@@ -863,18 +832,18 @@ process itsx {
       --output ${sampID}_primertrimmed.fq.gz \
       ${input}
 
-    echo -e "..Done\n"
+    echo -e "..Done\\n"
 
     ## Check if there are sequences in the output
     NUMSEQS=\$( seqkit stat --tabular --quiet ${sampID}_primertrimmed.fq.gz | awk -F'\t' 'NR==2 {print \$4}' )
     echo -e "Number of sequences after primer trimming: " \$NUMSEQS
     if [ \$NUMSEQS -lt 1 ]; then
-      echo -e "\nIt looks like no reads remained after trimming the primers\n"
+      echo -e "\\nIt looks like no reads remained after trimming the primers\\n"
       exit 0
     fi
    
     ## Estimate sequence quality and sort sequences by quality
-    echo -e "\nSorting by sequence quality"
+    echo -e "\\nSorting by sequence quality"
     seqkit replace -p "\\s.+" ${sampID}_primertrimmed.fq.gz \
       | phredsort -i - -o - --metric meep --header avgphred,maxee,meep \
       | gzip -1 > ${sampID}_primertrimmed_sorted.fq.gz
@@ -883,7 +852,7 @@ process itsx {
     ## Hash sequences, add sample ID to the header
     ## columns: Sample ID - Hash - PacBioID - AvgPhredScore - MaxEE - MEEP - Sequence - Quality - Length
     ## Convert to Parquet format
-    echo -e "\nCreating hash table"
+    echo -e "\\nCreating hash table"
     seqhasher --hash sha1 --name ${sampID} ${sampID}_primertrimmed_sorted.fq.gz - \
       | seqkit fx2tab --length \
       | sed 's/;/\t/ ; s/;/\t/ ; s/ avgphred=/\t/ ; s/ maxee=/\t/ ; s/ meep=/\t/' \
@@ -895,7 +864,7 @@ process itsx {
     # awk 'NF > 9 {print \$0 }' ${sampID}_hash_table.txt
 
     ## Dereplicate at sample level (use quality-sorted sequences to make sure that the representative sequence is with the highest quality)
-    echo -e "\nDereplicating at sample level"
+    echo -e "\\nDereplicating at sample level"
     seqkit fq2fa -w 0 ${sampID}_primertrimmed_sorted.fq.gz \
       | vsearch \
         --derep_fulllength - \
@@ -912,10 +881,10 @@ process itsx {
     echo -e "..Done"
 
     ## ITSx extraction
-    echo -e "\nITSx extraction"
+    echo -e "\\nITSx extraction"
     ITSx \
       -i derep.fasta \
-      --complement T \
+      --complement ${params.ITSx_complement} \
       --save_regions all \
       --graphical F \
       --detailed_results T \
@@ -951,7 +920,7 @@ process itsx {
 
     ## If partial sequences were required, remove empty sequences
     if [ \$(find . -type f -name "*.full_and_partial.fasta" | wc -l) -gt 0 ]; then
-      echo -e "Partial files found, removing empty sequences\n."
+      echo -e "Partial files found, removing empty sequences\\n."
 
       find . -name "*.full_and_partial.fasta" \
         | parallel -j${task.cpus} "seqkit seq -m 1 -w 0 {} > {.}_tmp.fasta"
@@ -963,7 +932,7 @@ process itsx {
 
 
     ## Remove empty files (no sequences)
-    echo -e "\nRemoving empty files"
+    echo -e "\\nRemoving empty files"
     find . -type f -name "*.fasta" -empty -print -delete
     echo -e "..Done"
 
@@ -972,7 +941,7 @@ process itsx {
     rm ${sampID}_primertrimmed.fq.gz
 
     ## Compress results
-    echo -e "\nCompressing files"
+    echo -e "\\nCompressing files"
 
     parallel -j${task.cpus} "gzip -${params.gzip_compression} {}" ::: \
       ${sampID}_hash_table.txt \
@@ -982,7 +951,7 @@ process itsx {
     ## Convert ITSx output to Parquet
     if [ ${params.ITSx_to_parquet} == true ]; then
 
-      echo -e "\nConverting ITSx output to Parquet"
+      echo -e "\\nConverting ITSx output to Parquet"
       mkdir -p parquet
 
       if [ -f ${sampID}.full.fasta.gz ]; then
@@ -1009,7 +978,7 @@ process itsx {
         ITSx_to_DuckDB.sh -i ${sampID}.LSU.fasta.gz -o parquet/${sampID}.LSU.parquet
       fi
 
-      echo -e "Parquet files created\n"
+      echo -e "Parquet files created\\n"
 
     fi
 
@@ -1123,7 +1092,7 @@ process itsx_collect {
         | parallel -j1 "cat {}" >> LSU_full_and_partial.fasta.gz
     fi
 
-    echo -e "\n..Done"
+    echo -e "\\n..Done"
     """
 }
 
@@ -1158,7 +1127,7 @@ process trim_primers {
     sampID="${input.getSimpleName().replaceAll(/_PrimerChecked/, '')}"
 
     """
-    echo -e "Trimming primers\n"
+    echo -e "Trimming primers\\n"
     echo -e "Input sample: "   ${sampID}
     echo -e "Forward primer: " ${params.primer_forward}
     echo -e "Reverse primer: " ${params.primer_reverse}
@@ -1167,7 +1136,7 @@ process trim_primers {
     RR=\$(rc.sh ${params.primer_reverse})
     echo -e "Reverse primer RC: " "\$RR"
 
-    echo -e "\nTrimming primers"
+    echo -e "\\nTrimming primers"
     cutadapt \
       -a ${params.primer_forward}";required;min_overlap=${params.primer_foverlap}"..."\$RR"";required;min_overlap=${params.primer_roverlap}" \
       --errors ${params.primer_mismatches} \
@@ -1183,7 +1152,7 @@ process trim_primers {
     if [ -n "\$(find . -name ${sampID}_primertrimmed.fq.gz -prune -size +29c)" ]; then 
 
       ## Estimate sequence quality and sort sequences by quality
-      echo -e "\nSorting by sequence quality"
+      echo -e "\\nSorting by sequence quality"
       seqkit replace -p "\\s.+" ${sampID}_primertrimmed.fq.gz \
         | phredsort -i - -o - --metric meep --header avgphred,maxee,meep \
         | gzip -${params.gzip_compression} \
@@ -1195,7 +1164,7 @@ process trim_primers {
       ## Hash sequences, add sample ID to the header
       ## columns: Sample ID - Hash - PacBioID - AvgPhredScore - MaxEE - MEEP - Sequence - Quality - Length
       ## Convert to Parquet format
-      echo -e "\nCreating hash table"
+      echo -e "\\nCreating hash table"
       seqhasher --hash sha1 --name ${sampID} ${sampID}_primertrimmed_sorted.fq.gz - \
         | seqkit fx2tab --length \
         | sed 's/;/\t/ ; s/;/\t/ ; s/ avgphred=/\t/ ; s/ maxee=/\t/ ; s/ meep=/\t/' \
@@ -1207,7 +1176,7 @@ process trim_primers {
       gzip -${params.gzip_compression} ${sampID}_hash_table.txt
 
       ## Dereplicate at sample level
-      echo -e "\nDereplicating at sample level"
+      echo -e "\\nDereplicating at sample level"
       seqkit fq2fa -w 0 ${sampID}_primertrimmed_sorted.fq.gz \
       | vsearch \
         --derep_fulllength - \
@@ -1229,7 +1198,7 @@ process trim_primers {
 
     else
 
-      echo -e "\nNo sequences found after primer removal"
+      echo -e "\\nNo sequences found after primer removal"
       if [ -f ${sampID}_primertrimmed.fq.gz ]; then rm ${sampID}_primertrimmed.fq.gz; fi
 
     fi
@@ -1270,16 +1239,16 @@ process assemble_its {
 
     if [[ -f ${ITS1} && ${S58} && ${ITS2} ]]; then
 
-      echo -e "\n..All parts found"
+      echo -e "\\n..All parts found"
 
       ## Prepare tables for ID matching
-      echo -e "\n..Converting data to tabular format"
+      echo -e "\\n..Converting data to tabular format"
       seqkit fx2tab ${ITS1} | sed 's/\t\$//g' | csvtk add-header -t -n id,ITS1 > tmp_1_ITS1.txt
       seqkit fx2tab ${S58}  | sed 's/\t\$//g' | csvtk add-header -t -n id,58S  > tmp_1_s58.txt
       seqkit fx2tab ${ITS2} | sed 's/\t\$//g' | csvtk add-header -t -n id,ITS2 > tmp_1_ITS2.txt
 
       ## Join ITS fragments
-      echo -e "\n..Joining ITS fragments"
+      echo -e "\\n..Joining ITS fragments"
       csvtk join -t -f   "id" tmp_1_ITS1.txt tmp_1_s58.txt tmp_1_ITS2.txt > tmp_2_ITS1_58S_ITS2.txt
 
       ## Check joining results
@@ -1290,20 +1259,20 @@ process assemble_its {
 
         ## Convert table back to fasta
         ## Remove leading and trailing Ns
-        echo -e "\n..Preparing fasta"
+        echo -e "\\n..Preparing fasta"
         awk 'NR>1 { print \$1 "\t" \$2\$3\$4 }' tmp_2_ITS1_58S_ITS2.txt \
           | seqkit tab2fx -w 0  \
           | seqkit replace -p "^n+|n+\$" -r "" -is -w 0 \
           | gzip -${params.gzip_compression} > ${sampID}_ITS1_58S_ITS2.fasta.gz
 
       else
-        echo "...There are no sequences with all ITS parts present\n"
-        echo -e "\n..Skipping ITS assembly for this sample"
+        echo "...There are no sequences with all ITS parts present\\n"
+        echo -e "\\n..Skipping ITS assembly for this sample"
       fi
 
     else 
-      echo -e "\n..Some or all parts are missing"
-      echo -e "\n..Skipping ITS assembly for this sample"
+      echo -e "\\n..Some or all parts are missing"
+      echo -e "\\n..Skipping ITS assembly for this sample"
     fi
 
     """
@@ -1324,7 +1293,7 @@ process seq_qual {
 
     output:
       path "SeqQualities.parquet", emit: quals
-      tuple val("${task.process}"), val('duckdb'), eval('duckdb --version | sed "s/^v//"'), topic: versions
+      tuple val("${task.process}"), val('duckdb'), eval('duckdb --version | cut -d" " -f1  | sed "s/^v//"'), topic: versions
 
     script:
     def memoryArg = task.memory ? "-m ${task.memory.toMega()}.MB" : ""
@@ -1361,7 +1330,7 @@ process homopolymer {
       path "${input.getSimpleName().replaceAll(/_ITS1_58S_ITS2/, '')}_uch.uc.gz", emit: uch, optional: true
       tuple val("${task.process}"), val('vsearch'), eval('vsearch --version 2>&1 | head -n 1 | sed "s/vsearch //g" | sed "s/,.*//g" | sed "s/^v//" | sed "s/_.*//"'), topic: versions
       tuple val("${task.process}"), val('seqkit'), eval('seqkit version | sed "s/seqkit v//"'), topic: versions
-      tuple val("${task.process}"), val('R'), eval('Rscript -e "cat(R.version.string)" | sed "s/R version //"'),  topic: versions
+      tuple val("${task.process}"), val('R'), eval('Rscript -e "cat(R.version.string)" | sed "s/R version //" | cut -d" " -f1'),  topic: versions
       tuple val("${task.process}"), val('data.table'), eval('Rscript -e "cat(as.character(packageVersion(\'data.table\')))"'),  topic: versions
   
     script:
@@ -1379,7 +1348,7 @@ process homopolymer {
     echo -e "..Done"
 
     ## Re-cluster homopolymer-compressed data
-    echo -e "\nRe-clustering homopolymer-compressed data"
+    echo -e "\\nRe-clustering homopolymer-compressed data"
     vsearch \
       --cluster_size homo_compressed.fa \
       --id ${params.hp_similarity} \
@@ -1403,7 +1372,7 @@ process homopolymer {
 
       ## Substitute homopolymer-comressed sequences with uncompressed ones
       ## (update size annotaions)
-      echo -e "\nExtracting sequences"
+      echo -e "\\nExtracting sequences"
 
       seqkit fx2tab ${input} > inp_tab.txt
       seqkit fx2tab homo_clustered.fa > clust_tab.txt
@@ -1429,8 +1398,8 @@ process homopolymer {
       rm res.fa
 
     else
-      echo -e "Clustering homopolymer-compressed sequences returned to results\n"
-      echo -e "(most likely, sequences were too short)\n"
+      echo -e "Clustering homopolymer-compressed sequences returned to results"
+      echo -e "(most likely, sequences were too short)\\n"
     fi
 
     """
@@ -1460,395 +1429,66 @@ process just_derep {
     sampID="${input.getSimpleName()}"
 
     """
-
-     vsearch \
-          --derep_fulllength ${input} \
-          --output - \
-          --strand both \
-          --fasta_width 0 \
-          --threads 1 \
-          --relabel_sha1 \
-          --sizein --sizeout \
-          --uc ${sampID}_uc.uc \
-          --quiet \
-        | gzip -${params.gzip_compression} \
-        > ${sampID}.fa.gz
-
-    """
-}
-
-
-
-// Reference-based chimera removal
-process chimera_ref {
-
-    label "main_container"
-
-    publishDir "${out_5_chim}", mode: "${params.storagemode}"
-    // cpus 1
-
-    // Add sample ID to the log file
-    tag "${input.getSimpleName().replaceAll(/_Homopolymer_compressed/, '')}"
-
-    input:
-      path input
-      path DB
-
-    output:
-      path "${input.getSimpleName().replaceAll(/_Homopolymer_compressed/, '')}_NoChimera.fa.gz", emit: nonchimeric, optional: true
-      path "${input.getSimpleName().replaceAll(/_Homopolymer_compressed/, '')}_Chimera.fa.gz", emit: chimeric, optional: true
-
-    script:
-    sampID="${input.getSimpleName().replaceAll(/_Homopolymer_compressed/, '')}"
-
-    """
-
-    ## Sample name will be added to the header of chimeric sequences
-    # sampID="\$(basename ${input} _Homopolymer_compressed.fa.gz)"
-
-    ## Reference database based chimera filtering
-    echo -e "Reference-based chimera removal"
-    vsearch \
-      --uchime_ref ${input} \
-      --db ${DB} \
-      --selfid \
-      --fasta_width 0 \
-      --threads ${task.cpus} \
-      --sizein --sizeout \
-      --chimeras chimeras.fasta \
-      --nonchimeras nonchimeras.fasta \
-      --borderline borderline.fasta
-
-    # --selfid = ignore reference sequences that are 100% identical to the query
-    echo -e "..Done"
-
-
-    ## Add borderline sequences to non-chimeric sequences
-    if [ -e borderline.fasta ]
-    then
-        echo -e "\nBorderline sequences were added to non-chimeric sequences"
-        cat borderline.fasta nonchimeras.fasta > nc_bo.fasta
-        mv nc_bo.fasta nonchimeras.fasta
-        rm borderline.fasta
-    fi
-
-    ## Chimeric sequences
-    if [ -e chimeras.fasta ]
-    then
-      ## Add sample ID to the header and compress the file
-      sed 's/>.*/&;sample='"${sampID}"';/' chimeras.fasta \
-        | gzip -${params.gzip_compression} \
-        > "${sampID}_Chimera.fa.gz"
-      rm chimeras.fasta
-    else
-      echo -e "\nNo chimeras detected"
-    fi
-
-    ## Non-chimeric sequences
-    if [ -e nonchimeras.fasta ]
-    then
-      gzip -c nonchimeras.fasta > "${sampID}_NoChimera.fa.gz"
-      rm nonchimeras.fasta
-    else
-      echo "No non-chimeric sequences left"
-    fi
-
-    """
-}
-
-
-// Recovery of ref-based chimeric sequences with high occurrence
-process chimera_rescue {
-
-    label "main_container"
-
-    publishDir "${out_5_chim}", mode: "${params.storagemode}"
-    // cpus 1
-
-    input:
-      path input
-
-    output:
-      path "*_RescuedChimera.fa.gz", emit: rescuedchimeric, optional: true
-
-    script:
-    """
-
-    ## Aggregate chimeric sequences from different samples
-    echo -e "\nAggregating chimeric sequences"
-    find . -name "*_Chimera.fa.gz" \
-      | parallel -j1 "zcat {}" \
-      | seqkit fx2tab \
-      | sed -r 's:\t+:\t:g' | sed 's/\t\$//g' \
-      | gzip -${params.gzip_compression} > All_chimeras.txt.gz
-    echo -e "..Done"
-
-    ### Inspect chimerae occurrence
-    ## Rescue sequences that were annotated as chimeric, 
-    ## but have high occurrence within sequenceing run (e.g., occurrence > 2)
-    echo -e "\nInspecting occurrence of chimeric sequences"
-
-    chimera_rescue.R \
-      "All_chimeras.txt.gz" \
-      ${params.chimera_rescueoccurrence} \
-      "Rescued_Chimeric_sequences.fa.gz"
-
-    echo -e "..Done"
-
-    ## Split rescured sequences by sample
-    if [ -e Rescued_Chimeric_sequences.fa.gz ]
-    then
-      echo -e "\n..Splitting rescued sequences by sample"
-      seqkit split -i \
-        --id-regexp ";sample=(.*);" \
-        --threads ${task.cpus} \
-        -w 0 \
-        -O Rescued_by_sample \
-        Rescued_Chimeric_sequences.fa.gz
-
-      rename \
-        --filename 's/^Rescued_Chimeric_sequences.id_//g; s/.fa.gz/_RescuedChimera.fa.gz/' \
-        \$(find Rescued_by_sample -name "*.fa.gz")
-
-      mv Rescued_by_sample/*_RescuedChimera.fa.gz .
-
-      echo -e "..Done"
-    fi
-
-    ## Remove temporary files
-    rm All_chimeras.txt.gz
-    if [ -f Rescued_Chimeric_sequences.fa.gz ]; then rm Rescued_Chimeric_sequences.fa.gz; fi
-
-    """
-}
-
-
-
-// De novo chimera identification
-// NB! in uchime_denovo, sequences are compared on their plus strand only!
-process chimera_denovo {
-
-    label "main_container"
-
-    publishDir "${out_5_chim}", mode: "${params.storagemode}"
-    // cpus 1
-
-    // Add sample ID to the log file
-    tag "${input.getSimpleName().replaceAll(/_Homopolymer_compressed/, '')}"
-
-    input:
-      path input
-
-    output:
-      path "${input.getSimpleName().replaceAll(/_Homopolymer_compressed/, '')}_DeNovoChim.txt", emit: denovochim, optional: true
-      tuple val("${task.process}"), val('vsearch'), eval('vsearch --version 2>&1 | head -n 1 | sed "s/vsearch //g" | sed "s/,.*//g" | sed "s/^v//" | sed "s/_.*//"'), topic: versions
-
-    script:
-    sampID="${input.getSimpleName().replaceAll(/_Homopolymer_compressed/, '')}"
-
-    """
-
-    ## Input order matters for chimera detection,
-    ## so sequences will be automatically sorted by decreasing abundance first
-
-    echo -e "De novo chimera identification"
+    echo -e "Dereplicating sequences\\n"
 
     vsearch \
-      --uchime_denovo ${input} \
-      --abskew ${params.chimeranov_abskew} \
-      --dn ${params.chimeranov_dn} \
-      --mindiffs ${params.chimeranov_mindiffs} \
-      --mindiv ${params.chimeranov_mindiv} \
-      --minh ${params.chimeranov_minh} \
-      --xn ${params.chimeranov_xn} \
-      --threads 1 \
-      --qmask dust \
-      --sizein --xsize \
-      --fasta_width 0 \
-      --fasta_score \
-      --chimeras - \
-    | seqkit seq --name \
-    | sed 's/;+/;/g ; s/;/\t/g ; s/uchime_denovo=//' \
-    | sed 's/\$/\t${sampID}/' \
-    > ${sampID}_DeNovoChim.txt
-      
-      # --uchimeout uchimeout.txt
-
-    ## Remove file, if empty
-    find . -maxdepth 1 -name ${sampID}_DeNovoChim.txt -size 0 -print -delete
-
-    echo -e "..Done"
-
-    """
-}
-
-// Aggregate de novo chimeras into a single file
-process chimera_denovo_agg {
-
-    label "main_container"
-    // cpus 1
-
-    input:
-      path input
-
-    output:
-      path "DeNovo_Chimera.txt", emit: alldenovochim, optional: true
-
-    script:
-    """
-    echo -e "Aggregating de novo chimeric sequences"
-
-    find . -name "*_DeNovoChim.txt" \
-      | parallel -j1 "cat {}" \
-      > DeNovo_Chimera.txt
-
-    echo -e "..Done"
-
-    """
-}
-
-
-
-// Merge and dereplicate sequences from all samples
-process glob_derep {
-
-    label "main_container"
-
-    // cpus 1
-
-    input:
-      path input
-
-    output:
-      path "Derep_for_clust.fa.gz", emit: globderep
-      path "Derep_for_clust.uc.gz", emit: globderep_uc
-      tuple val("${task.process}"), val('vsearch'), eval('vsearch --version 2>&1 | head -n 1 | sed "s/vsearch //g" | sed "s/,.*//g" | sed "s/^v//" | sed "s/_.*//"'), topic: versions
-
-    script:
-    """
-
-    ## Concatenate non-chimeric sequences
-    # zcat *_NoChimera.fa.gz *_RescuedChimera.fa.gz
-
-    echo -e "\n ===== Files with non-chimeric sequences:"
-    if test -n "\$(find . -maxdepth 1 -name '*_NoChimera.fa.gz' -print -quit)"
-    then
-        ls -l *_NoChimera.fa.gz;
-    else
-        echo "..No files"
-    fi
-
-    echo -e "\n ===== Files with rescued chimeric sequences:"
-    if test -n "\$(find . -maxdepth 1 -name '*_RescuedChimera.fa.gz' -print -quit)"
-    then
-        ls -l *_RescuedChimera.fa.gz;
-    else
-        echo "..No files"
-    fi
-
-    echo -e "\nDereplicating sequences"
-    find . -name "*Chimera.fa.gz" | parallel -j1 \
-      "zcat {}" \
-      | sed '/^>/ s/;sample=.*;/;/' \
-      | vsearch \
-        --derep_fulllength - \
+        --derep_fulllength ${input} \
         --output - \
         --strand both \
         --fasta_width 0 \
         --threads 1 \
         --sizein --sizeout \
-        --uc Derep_for_clust.uc \
-      | gzip -${params.gzip_compression} > Derep_for_clust.fa.gz
-    echo -e "..Done"
-
-    ## Compress UC file
-    echo -e "\nCompressing UC file"
-    gzip -${params.gzip_compression} Derep_for_clust.uc
+        --uc ${sampID}_uc.uc \
+      | gzip -${params.gzip_compression} \
+      > ${sampID}.fa.gz
 
     """
 }
 
 
-// De-novo clustering of sequences into OTUs (for tag-jump removal)
-process otu_clust {
-
-    label "main_container"
-
-    publishDir "${out_6_tj}", mode: "${params.storagemode}"
-    // cpus 10
-
-    input:
-      path input
-
-    output:
-      path "OTUs.fa.gz", emit: otus
-      path "OTUs.uc.gz", emit: otus_uc
-      tuple val("${task.process}"), val('vsearch'), eval('vsearch --version 2>&1 | head -n 1 | sed "s/vsearch //g" | sed "s/,.*//g" | sed "s/^v//" | sed "s/_.*//"'), topic: versions
-
-    script:
-    """
-
-    echo -e "\nClustering sequences"
-    vsearch \
-      --cluster_size ${input} \
-      --id ${params.otu_id} \
-      --iddef ${params.otu_iddef} \
-      --sizein --sizeout \
-      --qmask dust --strand both \
-      --fasta_width 0 \
-      --uc OTUs.uc \
-      --threads ${task.cpus} \
-      --centroids - \
-    | gzip -${params.gzip_compression} > OTUs.fa.gz
-    
-    echo -e "..Done"
-
-    ## Compress UC file
-    echo -e "\nCompressing UC file"
-    pigz -p ${task.cpus} -${params.gzip_compression} OTUs.uc
-
-    """
-}
-
-
-// Pool sequences and add sample ID into header (for OTU and "ASV" table creation)
+// Pool sequences from all samples and add sample ID into header (for OTU and "ASV" table creation)
 process pool_seqs {
 
     label "main_container"
     
-    publishDir "${out_6_tj}", mode: "${params.storagemode}"
+    // publishDir "${out_6_tj}", mode: "${params.storagemode}"
     // cpus 2
 
     input:
-      path input
+      path(input, stageAs: 'sequences/*')
 
     output:
       path "Seq_tab_not_filtered.txt.gz", emit: seqtabnf
-      path "Seq_not_filtered.fa.gz", emit: seqsnf
+      path "Seq_not_filtered.fa.gz",      emit: seqsnf
       tuple val("${task.process}"), val('seqkit'), eval('seqkit version | sed "s/seqkit v//"'), topic: versions
       tuple val("${task.process}"), val('parallel'), eval('parallel --version | head -n 1 | sed "s/GNU parallel //"'), topic: versions
 
     script:
     """
 
-    echo -e "\nPooling and renaming sequences"
+    echo -e "\\nPooling and renaming sequences"
 
     ## If there is a sample ID in the header already, remove it
     parallel -j 1 --group \
+      --rpl '{/:} s:(.*/)?([^/.]+)(\\.[^/]+)*\$:\$2:' \
       "zcat {} \
         | sed -r '/^>/ s/;sample=[^;]*/;/g ; s/;;/;/g' \
-        | sed 's/>.*/&;sample='{/.}';/ ; s/_NoChimera.fa//g ; s/_RescuedChimera.fa//g  ; s/_JoinedPE//g' \
+        | sed 's/>.*/&;sample='{/:}';/ ; s/_NoChimera//g ; s/_RescuedChimera//g  ; s/_JoinedPE//g ; s/_Homopolymer_compressed//g' \
         | sed 's/Rescued_Chimeric_sequences.part_//g' \
         | sed -r '/^>/ s/;;/;/g'" \
-      ::: *.fa.gz \
+      ::: sequences/*.fa.gz \
+      | vsearch --sortbysize - --sizein --sizeout --fasta_width 0 --output - \
+      | sed -r '/^>/ s/;;/;/g' \
       | gzip -${params.gzip_compression} \
       > Seq_not_filtered.fa.gz
 
     echo "..Done"
 
-    echo -e "\nExtracting sequence count table"
+    echo -e "\\nExtracting sequence count table"
     seqkit seq --name Seq_not_filtered.fa.gz \
       | sed 's/;/\t/g; s/size=//; s/sample=// ; s/\t*\$//' \
+      | csvtk -t cut -f 2,1,3 \
+      | csvtk -t add-header -n "SampleID,SeqID,Abundance" \
       | gzip -${params.gzip_compression} \
       > Seq_tab_not_filtered.txt.gz
 
@@ -1858,49 +1498,98 @@ process pool_seqs {
 }
 
 
-// Create OTU table (for tag-jump removal)
-process otu_tab {
+// De-novo clustering of sequences for tag-jump removal
+process tj_preclust {
 
     label "main_container"
 
-    publishDir "${out_6_tj}", mode: "${params.storagemode}"
+    // publishDir "${out_6_tj}", mode: "${params.storagemode}"
     // cpus 10
 
     input:
-      path otus
-      path sample_seqs
+      path input
 
     output:
-      path "OTU_tab_not_filtered.txt.gz", emit: otutab
-      path "Sample_mapping.uc.gz", emit: samples_uc
+      path "TJPreclust.uc.parquet", emit: preclust_uc_parquet
       tuple val("${task.process}"), val('vsearch'), eval('vsearch --version 2>&1 | head -n 1 | sed "s/vsearch //g" | sed "s/,.*//g" | sed "s/^v//" | sed "s/_.*//"'), topic: versions
 
     script:
+    def derep = (params.tj_id as BigDecimal).compareTo(1G) == 0    // to handle floating point comparisons too
     """
-    
-    ## Read mapping (for OTU table)
-    echo -e "\nRead mapping"
+    echo -e "Pre-clustering sequences prior to tag-jump removal\\n"
+
+    echo -e "Running dereplication\\n"
+  
     vsearch \
-      --usearch_global "${sample_seqs}" \
-      --db "${otus}" \
-      --id ${params.otu_id} \
-      --strand both \
-      --qmask none \
-      --dbmask none \
+      --derep_fulllength ${input} \
       --sizein --sizeout \
-      --otutabout "OTU_tab_not_filtered.txt" \
-      --uc Sample_mapping.uc \
-      --threads ${task.cpus}
+      --strand both \
+      --fasta_width 0 \
+      --threads 1 \
+      --uc     Dereplicated.uc \
+      --output Dereplicated.fa
 
-    echo -e "..Done"
+    echo -e "\\nCompressing files"
+    pigz -p ${task.cpus} -${params.gzip_compression} Dereplicated.uc
+    pigz -p ${task.cpus} -${params.gzip_compression} Dereplicated.fa
 
-    ## Compress UC file
-    echo -e "\nCompressing results"
-    pigz -p ${task.cpus} -${params.gzip_compression} OTU_tab_not_filtered.txt
-    pigz -p ${task.cpus} -${params.gzip_compression} Sample_mapping.uc
+    ## Additional clustering (e.g., at 99% similarity)
+    if [[ ${derep} == false ]]; then
 
+      echo -e "\\nAdditional clustering at ${params.tj_id} similarity threshold\\n"
+
+      vsearch \
+        --cluster_size Dereplicated.fa.gz \
+        --id    ${params.tj_id} \
+        --iddef ${params.tj_iddef} \
+        --sizein --sizeout \
+        --qmask dust --strand plus \
+        --maxrejects 128 --maxaccepts 1 \
+        --fasta_width 0 \
+        --threads   ${task.cpus} \
+        --uc        Clustered.uc \
+        --centroids Clustered.fa
+
+      echo -e "\\nCompressing files"
+      pigz -p ${task.cpus} -${params.gzip_compression} Clustered.uc
+      pigz -p ${task.cpus} -${params.gzip_compression} Clustered.fa
+
+    fi
+
+
+    ## Parse UC file
+    if [[ ${derep} == true ]]; then
+
+      echo -e "\\nParsing UC file"
+      ucs --map-only --split-id --rm-dups \
+        -i Dereplicated.uc.gz \
+        -o TJPreclust.uc.parquet
+
+    else
+
+      echo -e "\\nParsing dereplicated UC file"
+      ucs --map-only --split-id --rm-dups \
+        -i Dereplicated.uc.gz \
+        -o Dereplicated.parquet
+
+      echo -e "\\nParsing clustered UC file"
+      ucs --map-only --split-id --rm-dups \
+        -i Clustered.uc.gz \
+        -o Clustered.parquet
+
+      echo -e "\\nCombining dereplication and clustering UC files"
+      merge_tj_memberships.sh \
+        -d Dereplicated.parquet \
+        -c Clustered.parquet \
+        -o TJPreclust.uc.parquet \
+        -t ${task.cpus}
+
+    fi
+
+    echo -e "\\n..Done"
     """
 }
+
 
 
 // Tag-jump removal
@@ -1912,13 +1601,14 @@ process tj {
     // cpus 1
 
     input:
-      path otutab
+      path seqtab  // seq table in long format
+      path precls  // pre-clustered membership 
 
     output:
-      path "OTU_tab_TagJumpFiltered.txt.gz", emit: otutabtj
-      path "TagJump_OTUs.RData", emit: tjs
+      path "Seq_tab_TagJumpFiltered.txt.gz", emit: seqtabtj
+      path "TagJump_scores.qs",              emit: tjs
       path "TagJump_plot.pdf"
-      tuple val("${task.process}"), val('R'), eval('Rscript -e "cat(R.version.string)" | sed "s/R version //"'),  topic: versions
+      tuple val("${task.process}"), val('R'), eval('Rscript -e "cat(R.version.string)" | sed "s/R version //" | cut -d" " -f1'),  topic: versions
       tuple val("${task.process}"), val('data.table'), eval('Rscript -e "cat(as.character(packageVersion(\'data.table\')))"'),  topic: versions
       tuple val("${task.process}"), val('ggplot2'), eval('Rscript -e "cat(as.character(packageVersion(\'ggplot2\')))"'),  topic: versions
 
@@ -1927,15 +1617,18 @@ process tj {
 
     echo -e "Tag-jump removal"
     
-    tag_jump_removal.R \
-      ${otutab} \
-      ${params.tj_f} \
-      ${params.tj_p}
+    tag_jump_removal_longtab.R \
+      --seqtab ${seqtab} \
+      --precls ${precls} \
+      -f       ${params.tj_f} \
+      -p       ${params.tj_p}
 
     echo "..Done"
 
     """
 }
+
+
 
 
 // Prepare a table with non-tag-jumped sequences
@@ -1949,12 +1642,10 @@ process prep_seqtab {
     // cpus 4
 
     input:
-      path seqtabnf
-      path seqsnf
-      path mappings
-      path tagjumps
-      path denovos
-      path quals
+      path seqtab  // tag-jump filtered sequence table (long format)
+      path seqsnf  // sequences in FASTA
+      path denovos // de novo chimera scores
+      path quals   // quality scores
 
     output:
       path "Seqs.parquet",      emit: seq_pq
@@ -1962,7 +1653,7 @@ process prep_seqtab {
       path "Seqs.fa.gz",        emit: seq_fa
       // path "Seqs.RData",     emit: seq_rd   // deprecated
       // path "Seq_tab.txt.gz", emit: seq_tw   // wide table
-      tuple val("${task.process}"), val('R'), eval('Rscript -e "cat(R.version.string)" | sed "s/R version //"'),  topic: versions
+      tuple val("${task.process}"), val('R'), eval('Rscript -e "cat(R.version.string)" | sed "s/R version //" | cut -d" " -f1'),  topic: versions
       tuple val("${task.process}"), val('data.table'), eval('Rscript -e "cat(as.character(packageVersion(\'data.table\')))"'),  topic: versions
       tuple val("${task.process}"), val('arrow'), eval('Rscript -e "cat(as.character(packageVersion(\'arrow\')))"'),  topic: versions
       tuple val("${task.process}"), val('Biostrings'), eval('Rscript -e "cat(as.character(packageVersion(\'Biostrings\')))"'),  topic: versions
@@ -1973,10 +1664,8 @@ process prep_seqtab {
     echo -e "Sequence table creation"
     
     seq_table_assembly.R \
-      --seqtab  ${seqtabnf} \
+      --seqtab  ${seqtab} \
       --fasta   ${seqsnf}   \
-      --mapping ${mappings} \
-      --tagjump ${tagjumps} \
       --chimera ${denovos}  \
       --quality ${quals} \
       --threads ${task.cpus}
@@ -1988,442 +1677,7 @@ process prep_seqtab {
 
 
 
-// Demultiplexing with cutadapt - for Illumina PE reads (only not merged)
-// NB. it's possible to use anchored adapters (e.g., -g ^file:barcodes.fa),
-//     but there could be a preceding nucleotides before the barcode,
-//     therefore, modified barcodes would be used here (e.g., XN{30})
-process demux_illumina_notmerged {
 
-    label "main_container"
-
-    publishDir "${out_1_demux}", mode: "${params.storagemode}"
-    // cpus 20
-
-    input:
-      path input      // tuple of size 2
-      path barcodes   // barcodes_modified.fa (e.g., XN{30})
-
-    output:
-      tuple path("Combined/*.R1.fastq.gz"), path("Combined/*.R2.fastq.gz"), emit: demux_pe, optional: true
-      path "NonMerged_samples.txt", emit: samples_nonm_pe, optional: true
-      tuple val("${task.process}"), val('cutadapt'), eval('cutadapt --version'), topic: versions
-
-    script:
-    """
-    echo -e "\nDemultiplexing not-merged reads"
-
-    echo -e "Input R1: " ${input[0]}
-    echo -e "Input R2: " ${input[1]}
-    echo -e "Barcodes: " ${barcodes}
-
-    ## First round
-    echo -e "\nRound 1:"
-
-    cutadapt -g file:${barcodes} \
-      -o round1-{name}.R1.fastq.gz \
-      -p round1-{name}.R2.fastq.gz \
-      --errors ${params.barcode_errors} \
-      --overlap ${params.barcode_overlap} \
-      --no-indels \
-      --cores ${task.cpus} \
-      ${input[0]} ${input[1]} \
-      > cutadapt_round_1.log
-
-    echo -e ".. round 1 finished"
-    
-    ## Second round
-    echo -e "\nRound 2:"
-
-    cutadapt -g file:${barcodes} \
-      -o round2-{name}.R2.fastq.gz \
-      -p round2-{name}.R1.fastq.gz \
-      --errors ${params.barcode_errors} \
-      --overlap ${params.barcode_overlap} \
-      --no-indels \
-      --cores ${task.cpus} \
-      round1-unknown.R2.fastq.gz round1-unknown.R1.fastq.gz \
-      > cutadapt_round_2.log
-
-    echo -e ".. round 2 finished"
-
-    ## Remove empty files (no sequences)
-    echo -e "\nRemoving empty files"
-    find . -type f -name "round*.fastq.gz" -size -29c -print -delete
-    echo -e "..Done"
-
-    ## Remove unknowns
-    echo -e "\nRemoving unknowns"
-    rm round1-unknown.R{1,2}.fastq.gz
-    rm round2-unknown.R{1,2}.fastq.gz
-    echo -e "..Done"
-
-    ## Combine sequences from round 1 and round 2 for each sample
-    echo -e "\nCombining sequences from round 1 and round 2 for each sample"
-
-    if test -n "\$(find . -maxdepth 1 -name 'round*.fastq.gz' -print -quit)"
-    then
-
-      mkdir -p Combined
-    
-      find . -name "round*.R1.fastq.gz" | sort | parallel -j1 \
-        "cat {} >> Combined/{= s/round1-//; s/round2-// =}"
-
-      find . -name "round*.R2.fastq.gz" | sort | parallel -j1 \
-        "cat {} >> Combined/{= s/round1-//; s/round2-// =}"
-
-      ## Write sample names to the file
-      find Combined -name "*.R1.fastq.gz" \
-        | sed 's/Combined\\///; s/\\.R1\\.fastq\\.gz//' \
-        > NonMerged_samples.txt
-
-      echo -e "..Done"
-
-    else
-        echo "..No files"
-    fi
-
-    ## Clean up
-    echo -e "\nRemoving temporary files"
-    find . -type f -name "round*.fastq.gz" -print -delete
-
-    echo -e "\nDemultiplexing finished"
-    """
-}
-
-
-// Trim primers of nonmerged PE reads
-// + Estimate sequence qualities
-process trim_primers_pe {
-
-    label "main_container"
-
-    publishDir "${out_3_trimPE}", mode: "${params.storagemode}"
-    // cpus 2
-
-    // Add sample ID to the log file
-    tag "${input[0].getSimpleName()}"
-
-    input:
-      path input   // tuple of size 2
-
-    output:
-      tuple path("${input[0].getSimpleName()}_R1.fa.gz"), path("${input[0].getSimpleName()}_R2.fa.gz"), emit: nm_FA, optional: true
-      tuple path("${input[0].getSimpleName()}_hash_table_R1.txt.gz"), path("${input[0].getSimpleName()}_hash_table_R2.txt.gz"), emit: nm_hashes, optional: true
-      tuple path("${input[0].getSimpleName()}_R1.fq.gz"), path("${input[0].getSimpleName()}_R2.fq.gz"), emit: nm_FQ, optional: true
-      tuple path("${input[0].getSimpleName()}_uc_R1.uc.gz"), path("${input[0].getSimpleName()}_uc_R2.uc.gz"), emit: nm_UC, optional: true
-      tuple val("${task.process}"), val('cutadapt'), eval('cutadapt --version'), topic: versions
-      tuple val("${task.process}"), val('seqkit'), eval('seqkit version | sed "s/seqkit v//"'), topic: versions
-      tuple val("${task.process}"), val('vsearch'), eval('vsearch --version 2>&1 | head -n 1 | sed "s/vsearch //g" | sed "s/,.*//g" | sed "s/^v//" | sed "s/_.*//"'), topic: versions
-
-    script:
-    sampID="${input[0].getSimpleName()}"
-    
-    """
-    echo -e "Input sample: " ${sampID}
-    echo -e "Forward primer: " ${params.primer_forward}
-    echo -e "Reverse primer: " ${params.primer_reverse}
-
-    ## Reverse-complement primers
-    FR=\$(rc.sh ${params.primer_forward})
-    RR=\$(rc.sh ${params.primer_reverse})
-    
-    echo -e "Forward primer RC: " "\$FR"
-    echo -e "Reverse primer RC: " "\$RR"
-
-    ## Discard sequences without both primers
-    echo -e "\nChecking primers"
-    
-    echo -e "..Forward strain"
-
-    cutadapt \
-      -a ${params.primer_forward}";required;min_overlap=${params.primer_foverlap}"..."\$RR"";required;min_overlap=${params.primer_roverlap}" \
-      --errors ${params.primer_mismatches} \
-      --cores ${task.cpus} \
-      --action=none \
-      --discard-untrimmed \
-      -o for_R1.fastq.gz -p for_R2.fastq.gz \
-      ${input[0]} ${input[1]} \
-      > cutadapt_1.log
-
-    
-    echo -e "..Reverse strain"
-
-    cutadapt \
-      -a ${params.primer_reverse}";required;min_overlap=${params.primer_roverlap}"..."\$FR"";required;min_overlap=${params.primer_foverlap}" \
-      --errors ${params.primer_mismatches} \
-      --cores ${task.cpus} \
-      --action=none \
-      --discard-untrimmed \
-      -p rev_R1.fastq.gz -o rev_R2.fastq.gz \
-      ${input[0]} ${input[1]} \
-      > cutadapt_2.log
-    
-    # cutadapt \
-    #   -a FWDPRIMER...RCREVPRIMER \
-    #   -A REVPRIMER...RCFWDPRIMER \
-    #   --discard-untrimmed \
-    #   -o out.1.fastq.gz -p out.2.fastq.gz \
-    #   in.1.fastq.gz in.2.fastq.gz
-
-
-    echo -e "\nReorienting"
-
-    if [ -s for_R1.fastq.gz ]; then
-      zcat for_R1.fastq.gz | seqkit replace -p "\\s.+" | gzip -${params.gzip_compression} > OK_R1.fastq.gz
-      zcat for_R2.fastq.gz | seqkit replace -p "\\s.+" | gzip -${params.gzip_compression} > OK_R2.fastq.gz
-    fi
-
-    if [ -s rev_R1.fastq.gz ]; then
-      echo -e "..Adding sequences to the main pool"
-      zcat rev_R1.fastq.gz | seqkit replace -p "\\s.+" | gzip -${params.gzip_compression} >> OK_R1.fastq.gz
-      zcat rev_R2.fastq.gz | seqkit replace -p "\\s.+" | gzip -${params.gzip_compression} >> OK_R2.fastq.gz
-
-    else
-      echo -e "..Probably all sequences are in forward orientation"
-    fi
-
-
-    echo -e "\nTrimming primers"
-    if [ -s OK_R1.fastq.gz]; then
-
-      cutadapt \
-        -a ${params.primer_forward}";required;min_overlap=${params.primer_foverlap}"..."\$RR"";required;min_overlap=${params.primer_roverlap}" \
-        --errors ${params.primer_mismatches} \
-        --cores ${task.cpus} \
-        --action=trim \
-        --discard-untrimmed \
-        --minimum-length ${params.trim_minlen} \
-        --output ${sampID}_R1.fq.gz --paired-output ${sampID}_R2.fq.gz \
-        OK_R1.fastq.gz OK_R2.fastq.gz
-
-    fi
-
-
-    ## Quality estimation and dereplication
-
-    if [ -s ${sampID}_R1.fq.gz ]; then 
-
-      ## Estimate sequence quality (for the extracted region)
-      ## Sequence ID - Hash - Length - Average Phred score
-      echo -e "\nCreating sequence hash table with average sequence quality"
-      
-      seqkit fx2tab --length --avg-qual ${sampID}_R1.fq.gz \
-        | hash_sequences.sh \
-        | awk '{print \$1 "\t" \$6 "\t" \$4 "\t" \$5}' \
-        > tmp_hash_table_R1.txt
-
-      seqkit fx2tab --length --avg-qual ${sampID}_R2.fq.gz \
-        | hash_sequences.sh \
-        | awk '{print \$1 "\t" \$6 "\t" \$4 "\t" \$5}' \
-        > tmp_hash_table_R2.txt
-      
-      echo -e "..Done"
-
-
-      ## Estimating MaxEE
-      echo -e "\nEstimating maximum number of expected errors per sequence"
-
-      vsearch \
-          --fastx_filter ${sampID}_R1.fq.gz \
-          --fastq_qmax 93 \
-          --eeout \
-          --fastaout - \
-        | seqkit seq --name \
-        | sed 's/;ee=/\t/g' \
-        > tmp_ee_R1.txt
-
-      vsearch \
-          --fastx_filter ${sampID}_R2.fq.gz \
-          --fastq_qmax 93 \
-          --eeout \
-          --fastaout - \
-        | seqkit seq --name \
-        | sed 's/;ee=/\t/g' \
-        > tmp_ee_R2.txt
-
-      echo -e "..Done"
-
-
-      echo -e "\nMerging quality estimates"
-
-      max_ee.R \
-        tmp_hash_table_R1.txt \
-        tmp_ee_R1.txt \
-        ${sampID}_hash_table_R1.txt
-
-      max_ee.R \
-        tmp_hash_table_R2.txt \
-        tmp_ee_R2.txt \
-        ${sampID}_hash_table_R2.txt
-
-      echo -e "..Done"
-
-
-      ## Independent dereplication of pair-end reads
-      echo -e "\nDereplicating R1 and R2 (independently)"
-      
-      seqkit fq2fa -w 0 ${sampID}_R1.fq.gz \
-      | vsearch \
-        --derep_fulllength - \
-        --output - \
-        --strand both \
-        --fasta_width 0 \
-        --threads 1 \
-        --relabel_sha1 \
-        --sizein --sizeout \
-        --uc ${sampID}_uc_R1.uc \
-        --quiet \
-      | gzip -${params.gzip_compression} \
-      > ${sampID}_R1.fa.gz
-
-      seqkit fq2fa -w 0 ${sampID}_R2.fq.gz \
-      | vsearch \
-        --derep_fulllength - \
-        --output - \
-        --strand both \
-        --fasta_width 0 \
-        --threads 1 \
-        --relabel_sha1 \
-        --sizein --sizeout \
-        --uc ${sampID}_uc_R2.uc \
-        --quiet \
-      | gzip -${params.gzip_compression} \
-      > ${sampID}_R2.fa.gz
-
-
-      echo -e "..Done"
-
-      ## Compress results
-      echo -e "Compressing result"
-      gzip -${params.gzip_compression} ${sampID}_hash_table_R1.txt
-      gzip -${params.gzip_compression} ${sampID}_hash_table_R2.txt
-      gzip -${params.gzip_compression} ${sampID}_uc_R1.uc
-      gzip -${params.gzip_compression} ${sampID}_uc_R2.uc
-
-
-    else
-      echo -e "\nNo sequences found after primer removal"
-    fi
-
-    ## Clean up
-    if [ -f for_R1.fastq.gz ]; then rm for_R1.fastq.gz; fi
-    if [ -f for_R2.fastq.gz ]; then rm for_R2.fastq.gz; fi
-    if [ -f rev_R1.fastq.gz ]; then rm rev_R1.fastq.gz; fi
-    if [ -f rev_R2.fastq.gz ]; then rm rev_R2.fastq.gz; fi
-    if [ -f OK_R1.fastq.gz  ]; then rm OK_R1.fastq.gz; fi
-    if [ -f OK_R2.fastq.gz  ]; then rm OK_R2.fastq.gz; fi
-  
-    echo -e "..Done"
-
-    """
-}
-
-
-// Combine paired reads into single sequences 
-// by reverse-complementing the reverse read and inserting poly-N padding
-// + Estimate sequence qualities (without N pads!)
-process join_pe {
-
-    label "main_container"
-
-    // publishDir "${out_1_joinPE}", mode: "${params.storagemode}"
-    // cpus 2
-
-    // Add sample ID to the log file
-    tag "${input}"
-
-    input:
-      val input       // Sample name "(e.g., Barcode07_1__IS859)"
-      path all_samples
-
-    output:
-      path "${input}_JoinedPE.fq.gz", emit: jj_FQ, optional: true
-      path "${input}_JoinedPE_hash_table.txt.gz", emit: jj_hashes, optional: true
-
-    script:
-    sampID="${input}"
-    
-    """
-    echo -e "Joining non-merged Illumina reads"
-    echo -e "Input sample: " ${sampID}
-
-    echo -e "\nJoining with N-pads"
-    vsearch \
-      --fastq_join ${input}.R1.fastq.gz \
-      --reverse ${input}.R2.fastq.gz \
-      --join_padgap ${params.illumina_joinpadgap} \
-      --join_padgapq ${params.illumina_joinpadqual} \
-      --fastqout - \
-    | seqkit replace -p "\\s.+" \
-    | gzip -${params.gzip_compression} \
-    > ${sampID}_JoinedPE.fq.gz
-
-    ## Check if there are some sequences in the file
-    if [ -n "\$(find . -name ${sampID}_JoinedPE.fq.gz -prune -size +29c)" ]; then
-
-      echo -e "\nJoining without N-pads (for quality estimation)"
-      vsearch \
-        --fastq_join ${input}.R1.fastq.gz \
-        --reverse ${input}.R2.fastq.gz \
-        --join_padgap "" \
-        --join_padgapq "" \
-        --fastqout - \
-      | seqkit replace -p "\\s.+" \
-      | gzip -${params.gzip_compression} \
-      > tmp_for_qual.fq.gz
-
-
-      ## Estimate sequence quality (without N pads!)
-      ## Sequence ID - Hash - Length - Average Phred score
-      echo -e "\nCreating sequence hash table with average sequence quality"
-        
-      seqkit fx2tab --length --avg-qual tmp_for_qual.fq.gz \
-        | hash_sequences.sh \
-        | awk '{print \$1 "\t" \$6 "\t" \$4 "\t" \$5}' \
-        > tmp_hash_table.txt
-      
-      echo -e "..Done"
-
-      ## Estimating MaxEE
-      echo -e "\nEstimating maximum number of expected errors per sequence"
-
-      vsearch \
-          --fastx_filter tmp_for_qual.fq.gz \
-          --fastq_qmax 93 \
-          --eeout \
-          --fastaout - \
-        | seqkit seq --name \
-        | sed 's/;ee=/\t/g' \
-        > tmp_ee.txt
-
-      echo -e "..Done"
-
-      echo -e "\nMerging quality estimates"
-
-      max_ee.R \
-        tmp_hash_table.txt \
-        tmp_ee.txt \
-        ${sampID}_JoinedPE_hash_table.txt
-
-      echo -e "..Done"
-
-      ## Compress results
-      gzip -${params.gzip_compression} ${sampID}_JoinedPE_hash_table.txt
-
-      ## Clean up
-      rm tmp_for_qual.fq.gz
-      rm tmp_hash_table.txt
-      rm tmp_ee.txt
-    
-    else
-      echo -e "\nIt looks like there are no joined reads"
-    fi
-
-    ## Remove redundant symlinks
-    find -L . -name "*.fastq.gz" | grep -v ${input} | parallel -j1 "rm {}"
-
-    """
-}
 
 
 
@@ -2466,34 +1720,34 @@ process read_counts {
       path "Counts_8.ChimRecov_uniqs.txt",      emit: counts_8_chimrecov_u,  optional: true
       tuple val("${task.process}"), val('seqkit'), eval('seqkit version | sed "s/seqkit v//"'), topic: versions
       tuple val("${task.process}"), val('parallel'), eval('parallel --version | head -n 1 | sed "s/GNU parallel //"'), topic: versions
-      tuple val("${task.process}"), val('R'), eval('Rscript -e "cat(R.version.string)" | sed "s/R version //"'),  topic: versions
+      tuple val("${task.process}"), val('R'), eval('Rscript -e "cat(R.version.string)" | sed "s/R version //" | cut -d" " -f1'),  topic: versions
       tuple val("${task.process}"), val('data.table'), eval('Rscript -e "cat(as.character(packageVersion(\'data.table\')))"'),  topic: versions
 
     script:
 
     """
-    echo -e "Summarizing run statistics\n"
-    echo -e "Counting the number of reads in:\n"
+    echo -e "Summarizing run statistics\\n"
+    echo -e "Counting the number of reads in:\\n"
 
 
     ## Count raw reads
-    echo -e "\n..Raw data"
+    echo -e "\\n..Raw data"
     seqkit stat --basename --tabular --threads ${task.cpus} --quiet \
       1_input/* > Counts_1.RawData.txt
     
     ## Count number of reads passed QC
-    echo -e "\n..Sequenced passed QC"
+    echo -e "\\n..Sequenced passed QC"
     seqkit stat --basename --tabular --threads ${task.cpus} --quiet \
       2_qc/* > Counts_2.QC.txt
     
     ## Count demultiplexed reads
-    echo -e "\n..Demultiplexed data"
+    echo -e "\\n..Demultiplexed data"
     seqkit stat --basename --tabular --threads ${task.cpus} --quiet \
       3_demux/* > Counts_3.Demux.txt
     
 
     ## Count primer-checked reads
-    echo -e "\n..Primer-checked data"
+    echo -e "\\n..Primer-checked data"
     if [ `find 4_primerch -name no_primerchecked 2>/dev/null` ]
     then
       echo -e "... No files found"
@@ -2505,7 +1759,7 @@ process read_counts {
 
 
     ## Count primer-artefacts
-    echo -e "\n..Primer-artefacts"
+    echo -e "\\n..Primer-artefacts"
     if [ `find 4_primerartefacts -name no_multiprimer 2>/dev/null` ]
     then
       echo -e "... No files found"
@@ -2518,7 +1772,7 @@ process read_counts {
 
     ## Count ITSx reads or primer-trimmed reads (if ITSx was not used)
     ## Take number of reads into account (--sizein)
-    echo -e "\n..ITSx- or primer-trimmed data"
+    echo -e "\\n..ITSx- or primer-trimmed data"
     if [ `find 5_itsxtrim \\( -name no_itsx -o -name no_primertrim \\) 2>/dev/null` ]
     then
       echo -e "... No files found"
@@ -2532,7 +1786,7 @@ process read_counts {
 
 
     ## Count homopolymer-correction results
-    echo -e "\n..Counting homopolymer-corrected reads"
+    echo -e "\\n..Counting homopolymer-corrected reads"
     if [ `find 5_homopolymers \\( -name no_homopolymer \\) 2>/dev/null` ]
     then
       echo -e "... No files found"
@@ -2545,7 +1799,7 @@ process read_counts {
     fi
     
     ## Count number of reads for reference-based chimeras
-    echo -e "\n..Reference-based chimeras"
+    echo -e "\\n..Reference-based chimeras"
     if [ `find 6_chimref -name no_chimref 2>/dev/null` ]
     then
       echo -e "... No files found"
@@ -2567,7 +1821,7 @@ process read_counts {
 
 
     ## Number of de novo chimeras (read counts are not taken into account!)
-    echo -e "\n..De novo chimeras"
+    echo -e "\\n..De novo chimeras"
     if [ `find 7_chimdenov -name no_chimdenovo 2>/dev/null` ]
     then
       echo -e "... No files found"
@@ -2578,7 +1832,7 @@ process read_counts {
 
 
     ## Rescued chimeras
-    echo -e "\n..Rescued chimeric sequences"
+    echo -e "\\n..Rescued chimeric sequences"
     if [ `find 8_chimrecov -name no_chimrescued 2>/dev/null` ]
     then
       echo -e "... No files found"
@@ -2616,6 +1870,7 @@ process read_counts {
       --chimrecovu   Counts_8.ChimRecov_uniqs.txt \
       --tj           ${samples_tj} \
       --seqtab       ${seqtab} \
+      --maxchim      ${params.max_ChimeraScore} \
       --threads      ${task.cpus}
 
     """
@@ -2647,33 +1902,33 @@ process quick_stats {
       path "Counts_4.PrimerArtefacts.txt",      emit: counts_4_primerartef, optional: true
       tuple val("${task.process}"), val('seqkit'), eval('seqkit version | sed "s/seqkit v//"'), topic: versions
       tuple val("${task.process}"), val('parallel'), eval('parallel --version | head -n 1 | sed "s/GNU parallel //"'), topic: versions
-      tuple val("${task.process}"), val('R'), eval('Rscript -e "cat(R.version.string)" | sed "s/R version //"'),  topic: versions
+      tuple val("${task.process}"), val('R'), eval('Rscript -e "cat(R.version.string)" | sed "s/R version //" | cut -d" " -f1'),  topic: versions
       tuple val("${task.process}"), val('data.table'), eval('Rscript -e "cat(as.character(packageVersion(\'data.table\')))"'),  topic: versions
 
     script:
 
     """
-    echo -e "Summarizing run statistics\n"
-    echo -e "Counting the number of reads in:\n"
+    echo -e "Summarizing run statistics\\n"
+    echo -e "Counting the number of reads in:\\n"
 
 
     ## Count raw reads
-    echo -e "\n..Raw data"
+    echo -e "\\n..Raw data"
     seqkit stat --basename --tabular --threads ${task.cpus} \
       1_input/* > Counts_1.RawData.txt
     
     ## Count number of reads passed QC
-    echo -e "\n..Sequenced passed QC"
+    echo -e "\\n..Sequenced passed QC"
     seqkit stat --basename --tabular --threads ${task.cpus} \
       2_qc/* > Counts_2.QC.txt
     
     ## Count demultiplexed reads
-    echo -e "\n..Demultiplexed data"
+    echo -e "\\n..Demultiplexed data"
     seqkit stat --basename --tabular --threads ${task.cpus} \
       3_demux/* > Counts_3.Demux.txt
 
     ## Count primer-checked reads
-    echo -e "\n..Primer-checked data"
+    echo -e "\\n..Primer-checked data"
     if [ `find 4_primerch -name no_primerchecked 2>/dev/null` ]
     then
       echo -e "... No files found"
@@ -2684,7 +1939,7 @@ process quick_stats {
     fi
 
     ## Count primer-artefacts
-    echo -e "\n..Primer-areifacts"
+    echo -e "\\n..Primer-areifacts"
     if [ `find 4_primerartefacts -name no_multiprimer 2>/dev/null` ]
     then
       echo -e "... No files found"
@@ -2706,6 +1961,36 @@ process quick_stats {
     """
 }
 
+// Auto documentation of analysis procedures
+// (generate narrative description of methods with references)
+process document_analysis_s1 {
+
+    label "main_container"
+
+    publishDir "${out_tracedir}", mode: 'copy', overwrite: true
+    // cpus 1
+
+    input:
+      path versions       // "software_versions.yml"
+      path params         // "pipeline_params.tsv"
+
+    output:
+      path "README_Step1_Methods.txt",  emit: docs
+
+
+    script:
+    """
+    echo -e "Descriptive summary generation\\n"
+
+    document_s1.R \
+      ${versions} \
+      ${params} \
+      README_Step1_Methods.txt
+
+    """
+}
+
+
 
 
 //  The default workflow - Step-1
@@ -2715,7 +2000,13 @@ workflow S1 {
   disambiguate()
 
 
-  // Demultiplex data
+  /*
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      Demultiplex data
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  */
+
+  // Run demultiplexing
   if( params.demultiplexed == false ){
     
     // Input file with barcodes (FASTA)
@@ -2780,7 +2071,7 @@ workflow S1 {
 
     } // end of PacBio-specific tasks
 
-   // Illumina 
+    // Illumina 
     if ( params.seqplatform == "Illumina" ) {
       
       // Input file with multiplexed pair-end reads (FASTQ.gz)
@@ -2884,330 +2175,54 @@ workflow S1 {
   }  // end of pre-demultiplexed branch
 
 
+  /*
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      ITS extraction or primer trimming
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  */
 
-    // Extract ITS
-    if(params.its_region == "full" || params.its_region == "ITS1" || params.its_region == "ITS2" || params.its_region == "SSU" || params.its_region == "LSU"){
+  // Extract ITS
+  if(params.its_region == "full" || params.its_region == "ITS1" || params.its_region == "ITS2" || params.its_region == "SSU" || params.its_region == "LSU"){
 
-      // Run ITSx
-      itsx(primer_check.out.fq_primer_checked)
+    // Run ITSx
+    itsx(primer_check.out.fq_primer_checked)
 
-      // Merge tables with sequence qualities
-      seq_qual(itsx.out.hashes.collect())
-    }
+    // Merge tables with sequence qualities
+    seq_qual(itsx.out.hashes.collect())
+  }
 
-    // Trim the primers (instead of ITS extraction)
-    if(params.its_region == "none"){
+  // Trim the primers (instead of ITS extraction)
+  if(params.its_region == "none"){
       
-      // Trim primers with cutadapt
-      trim_primers(primer_check.out.fq_primer_checked)
+    // Trim primers with cutadapt
+    trim_primers(primer_check.out.fq_primer_checked)
 
-      // Merge tables with sequence qualities
-      seq_qual(trim_primers.out.hashes.collect())
-    }
+    // Merge tables with sequence qualities
+    seq_qual(trim_primers.out.hashes.collect())
+  }
 
-    // Trim the primers, run ITSx, and assemble near-full-length ITS
-    if(params.its_region == "ITS1_5.8S_ITS2"){
+  // Trim the primers, run ITSx, and assemble near-full-length ITS
+  if(params.its_region == "ITS1_5.8S_ITS2"){
 
-      // Run ITSx
-      itsx(primer_check.out.fq_primer_checked)
+    // Run ITSx
+    itsx(primer_check.out.fq_primer_checked)
 
-      // Assemble ITS1-5.8S-ITS2 from ITSx-extracted parts
-      if (params.ITSx_partial == 0) {
-        assemble_its(
-          itsx.out.itsx_its1,
-          itsx.out.itsx_58s,
-          itsx.out.itsx_its2)
-      } else {
-        assemble_its(
-          itsx.out.itsx_its1_part,
-          itsx.out.itsx_58s,
-          itsx.out.itsx_its2_part)
-      }
-
-      // Merge tables with sequence qualities
-      seq_qual(itsx.out.hashes.collect())
-    }
-
-
-    // Homopolymer compression
-    if(params.hp == true){
-
-        // --Full-length ITS sequences
-        if(params.its_region == "full"){
-          homopolymer(itsx.out.itsx_full)
-        }
-        // --ITS1 sequences
-        if(params.its_region == "ITS1"){
-          if (params.ITSx_partial == 0) {
-            homopolymer(itsx.out.itsx_its1)
-          } else {
-            homopolymer(itsx.out.itsx_its1_part)
-          }
-        }
-        // --ITS2 sequences
-        if(params.its_region == "ITS2"){
-          if (params.ITSx_partial == 0) {
-            homopolymer(itsx.out.itsx_its2)
-          } else {
-            homopolymer(itsx.out.itsx_its2_part)
-          }
-        }
-        // --SSU sequences
-        if(params.its_region == "SSU"){
-          if (params.ITSx_partial == 0) {
-            homopolymer(itsx.out.itsx_ssu)
-          } else {
-            homopolymer(itsx.out.itsx_ssu_part)
-          }
-        }
-        // --LSU sequences
-        if(params.its_region == "LSU"){
-          if (params.ITSx_partial == 0) {
-            homopolymer(itsx.out.itsx_lsu)
-          } else {
-            homopolymer(itsx.out.itsx_lsu_part)
-          }
-        }
-
-        // --Primer-trimmed sequences
-        if(params.its_region == "none"){
-          homopolymer(trim_primers.out.primertrimmed_fa)
-        }
-        // Near-full-length ITS
-        if(params.its_region == "ITS1_5.8S_ITS2"){
-          homopolymer(assemble_its.out.itsnf)
-        }
-    
-        // Reference-based chimera removal
-        ch_chimerabd = Channel.value(params.chimera_db)
-        chimera_ref(homopolymer.out.hc, ch_chimerabd)
-    
-        // De novo chimera search
-        chimera_denovo(homopolymer.out.hc)
-
+    // Assemble ITS1-5.8S-ITS2 from ITSx-extracted parts
+    if (params.ITSx_partial == 0) {
+      assemble_its(
+        itsx.out.itsx_its1,
+        itsx.out.itsx_58s,
+        itsx.out.itsx_its2)
     } else {
-      // No homopolymer comression is required,
-      // Just dereplicate the data
+      assemble_its(
+        itsx.out.itsx_its1_part,
+        itsx.out.itsx_58s,
+        itsx.out.itsx_its2_part)
+    }
 
-      if(params.its_region == "full" || params.its_region == "ITS1" || params.its_region == "ITS2" || params.its_region == "SSU" || params.its_region == "LSU"){
-        
-        // --Full-length ITS sequences
-        if(params.its_region == "full"){
-          just_derep(itsx.out.itsx_full)
-        }
-        // --ITS1 sequences
-        if(params.its_region == "ITS1"){
-          if (params.ITSx_partial == 0) {
-            just_derep(itsx.out.itsx_its1)
-          } else {
-            just_derep(itsx.out.itsx_its1_part)
-          }
-        }
-        // --ITS2 sequences
-        if(params.its_region == "ITS2"){
-          if (params.ITSx_partial == 0) {
-            just_derep(itsx.out.itsx_its2)
-          } else {
-            just_derep(itsx.out.itsx_its2_part)
-          }
-        }
-        // --SSU sequences
-        if(params.its_region == "SSU"){
-          if (params.ITSx_partial == 0) {
-            just_derep(itsx.out.itsx_ssu)
-          } else {
-            just_derep(itsx.out.itsx_ssu_part)
-          }
-        }
-        // --LSU sequences
-        if(params.its_region == "LSU"){
-          if (params.ITSx_partial == 0) {
-            just_derep(itsx.out.itsx_lsu)
-          } else {
-            just_derep(itsx.out.itsx_lsu_part)
-          }
-        }
-
-        // Reference-based chimera removal
-        ch_chimerabd = Channel.value(params.chimera_db)
-        chimera_ref(just_derep.out.nhc, ch_chimerabd)
-
-        // De novo chimera search
-        chimera_denovo(just_derep.out.nhc)
-
-      }  // end of ITS
-
-      // --Primer-trimmed sequences are already dereplicated
-      if(params.its_region == "none"){
-          
-        // just_derep(trim_primers.out.primertrimmed_fa)
-
-        // Reference-based chimera removal
-        ch_chimerabd = Channel.value(params.chimera_db)
-        chimera_ref(trim_primers.out.primertrimmed_fa, ch_chimerabd)
-
-        // De novo chimera search
-        chimera_denovo(trim_primers.out.primertrimmed_fa)
-      }
-
-      // Assembled ITS is also primer trimmed and dereplicated
-      if(params.its_region == "ITS1_5.8S_ITS2"){
-
-        // Reference-based chimera removal
-        ch_chimerabd = Channel.value(params.chimera_db)
-        chimera_ref(assemble_its.out.itsnf, ch_chimerabd)
-
-        // De novo chimera search
-        chimera_denovo(assemble_its.out.itsnf)
-      }
-
-    } // end of homopolymer correction condition
-
-    // Chimera rescue
-    ch_chimerafiles = chimera_ref.out.chimeric.collect()
-    chimera_rescue(ch_chimerafiles)
-
-    // Aggregate de novo chimeras into a single file
-    chimera_denovo_agg(chimera_denovo.out.denovochim.collect())
-
-    // Create channel with filtered reads
-    ch_filteredseqs = chimera_ref.out.nonchimeric
-      .concat(chimera_rescue.out.rescuedchimeric)
-      .collect()
-
-    // Global dereplication
-    glob_derep(ch_filteredseqs)
-
-    // Pool sequences (for a final sequence table)
-    pool_seqs(ch_filteredseqs)
-
-    // OTU clustering
-    otu_clust(glob_derep.out.globderep)
-
-    // Create OTU table
-    otu_tab(
-      otu_clust.out.otus,
-      pool_seqs.out.seqsnf)
-
-    // Tag-jump removal
-    tj(otu_tab.out.otutab)
-
-
-    // Check optional channel with de novo chimera scores
-    ch_denovoscores = chimera_denovo_agg.out.alldenovochim.ifEmpty(file('DeNovo_Chimera.txt'))
-
-    // Create sequence table
-    prep_seqtab(
-      pool_seqs.out.seqtabnf,               // non-filtered sequence table
-      pool_seqs.out.seqsnf,                 // Sequences in FASTA format
-      otu_tab.out.samples_uc,               // sequence mapping to OTUs
-      tj.out.tjs,                           // tag-jumped OTU list
-      ch_denovoscores,                      // de novo chimera scores
-      seq_qual.out.quals                    // sequence qualities
-      )
-
-
-    
-    //// Read count summary
-    
-      // Initial data - Per-sample input channels
-      if( params.demultiplexed == false ){
-
-        if(params.seqplatform == "PacBio"){
-          ch_all_demux = demux.out.samples_demux.flatten().collect()
-        }
-
-        if(params.seqplatform == "Illumina"){
-          ch_all_demux = demux_illumina.out.samples_demux.flatten().collect()
-        }
-
-      } else {
-        ch_all_demux = Channel.fromPath( params.input + '/*.{fastq.gz,fastq,fq.gz,fq}' ).flatten().collect()
-      }
-        
-      // Primer-checked and multiprimer sequences
-      ch_all_primerchecked = primer_check.out.fq_primer_checked.flatten().collect().ifEmpty(file("no_primerchecked"))
-      ch_all_primerartefacts = primer_check.out.primerartefacts.flatten().collect().ifEmpty(file("no_multiprimer"))
-      
-      // ITSx and primer trimming channel
-      if(params.its_region == "full"){
-        ch_all_trim = itsx.out.itsx_full.flatten().collect().ifEmpty(file("no_itsx"))
-      }
-      if(params.its_region == "ITS1"){
-        if (params.ITSx_partial == 0) {
-          ch_all_trim = itsx.out.itsx_its1.flatten().collect().ifEmpty(file("no_itsx"))
-        } else {
-          ch_all_trim = itsx.out.itsx_its1_part.flatten().collect().ifEmpty(file("no_itsx"))
-        }
-      }
-      if(params.its_region == "ITS2"){
-        if (params.ITSx_partial == 0) {
-          ch_all_trim = itsx.out.itsx_its2.flatten().collect().ifEmpty(file("no_itsx"))
-        } else {
-          ch_all_trim = itsx.out.itsx_its2_part.flatten().collect().ifEmpty(file("no_itsx"))
-        }
-      }
-      if(params.its_region == "SSU"){
-        if (params.ITSx_partial == 0) {
-          ch_all_trim = itsx.out.itsx_ssu.flatten().collect().ifEmpty(file("no_itsx"))
-        } else {
-          ch_all_trim = itsx.out.itsx_ssu_part.flatten().collect().ifEmpty(file("no_itsx"))
-        }
-      }
-      if(params.its_region == "LSU"){
-        if (params.ITSx_partial == 0) {
-          ch_all_trim = itsx.out.itsx_lsu.flatten().collect().ifEmpty(file("no_itsx"))
-        } else {
-          ch_all_trim = itsx.out.itsx_lsu_part.flatten().collect().ifEmpty(file("no_itsx"))
-        }
-      }
-      if(params.its_region == "ITS1_5.8S_ITS2"){
-        ch_all_trim = assemble_its.out.itsnf.flatten().collect().ifEmpty(file("no_itsx"))
-      }
-      if(params.its_region == "none"){
-        ch_all_trim = trim_primers.out.primertrimmed_fq.flatten().collect().ifEmpty(file("no_primertrim"))
-      }
-
-      // Homopolymer-correction channel
-      if(params.hp == true){
-        ch_homopolymers = homopolymer.out.uch.flatten().collect().ifEmpty(file("no_homopolymer"))
-      } else {
-        ch_homopolymers = file("no_homopolymer")
-      }
-
-      // Chimeric channels
-      ch_chimref     = chimera_ref.out.chimeric.flatten().collect().ifEmpty(file("no_chimref"))
-      ch_chimdenovo  = chimera_denovo.out.denovochim.flatten().collect().ifEmpty(file("no_chimdenovo"))
-      ch_chimrescued = chimera_rescue.out.rescuedchimeric.flatten().collect().ifEmpty(file("no_chimrescued"))
-
-      // Tag-jump filtering channel
-      ch_tj = tj.out.tjs
-
-
-      // Count reads and prepare summary stats for the run
-      // Currently, implemented only for PacBio
-      // For Illumina, need replace:
-      //   `ch_input` -> `ch_inputR1` & `ch_inputR2`
-      //   `qc_se`    -> `qc_pe`
-
-      if(params.seqplatform == "PacBio"){
-
-      read_counts(
-          ch_input,                // input data
-          qc_se.out.filtered,      // data that passed QC
-          ch_all_demux,            // demultiplexed sequences per sample
-          ch_all_primerchecked,    // primer-cheched sequences
-          ch_all_primerartefacts,  // multiprimer artefacts
-          ch_all_trim,             // ITSx-extracted or primer-trimmed sequences
-          ch_homopolymers,         // Homopolymer stats
-          ch_chimref,              // Reference-based chimeras
-          ch_chimdenovo,           // De novo chimeras
-          ch_chimrescued,          // Rescued chimeras
-          ch_tj,                   // Tag-jump filtering stats
-          prep_seqtab.out.seq_pq   // Final table with sequences (in Parquet format)
-          )
-
-      } // end of read_counts for PacBio
+    // Merge tables with sequence qualities
+    seq_qual(itsx.out.hashes.collect())
+  }
 
 
   // Collect ITSx-extracted sequences
@@ -3241,11 +2256,305 @@ workflow S1 {
       ch_cc_lsu_part
       )
 
+  } // end of ITSx-extracted sequences
+  
+
+  /*
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      Homopolymer compression & chimera removal
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  */
+
+  // Homopolymer compression
+  if(params.hp == true){
+
+    // --Full-length ITS sequences
+    if(params.its_region == "full"){
+      homopolymer(itsx.out.itsx_full)
+    }
+    // --ITS1 sequences
+    if(params.its_region == "ITS1"){
+      if (params.ITSx_partial == 0) {
+        homopolymer(itsx.out.itsx_its1)
+      } else {
+        homopolymer(itsx.out.itsx_its1_part)
+      }
+    }
+    // --ITS2 sequences
+    if(params.its_region == "ITS2"){
+      if (params.ITSx_partial == 0) {
+        homopolymer(itsx.out.itsx_its2)
+      } else {
+        homopolymer(itsx.out.itsx_its2_part)
+      }
+    }
+    // --SSU sequences
+    if(params.its_region == "SSU"){
+      if (params.ITSx_partial == 0) {
+        homopolymer(itsx.out.itsx_ssu)
+      } else {
+        homopolymer(itsx.out.itsx_ssu_part)
+      }
+    }
+    // --LSU sequences
+    if(params.its_region == "LSU"){
+      if (params.ITSx_partial == 0) {
+        homopolymer(itsx.out.itsx_lsu)
+      } else {
+        homopolymer(itsx.out.itsx_lsu_part)
+      }
+    }
+
+    // --Primer-trimmed sequences
+    if(params.its_region == "none"){
+      homopolymer(trim_primers.out.primertrimmed_fa)
+    }
+    // Near-full-length ITS
+    if(params.its_region == "ITS1_5.8S_ITS2"){
+      homopolymer(assemble_its.out.itsnf)
+    }
+
+
+  } else {
+  // No homopolymer comression is required,
+  // Just dereplicate the data
+
+    if(params.its_region == "full" || params.its_region == "ITS1" || params.its_region == "ITS2" || params.its_region == "SSU" || params.its_region == "LSU"){
+      
+      // --Full-length ITS sequences
+      if(params.its_region == "full"){
+        just_derep(itsx.out.itsx_full)
+      }
+      // --ITS1 sequences
+      if(params.its_region == "ITS1"){
+        if (params.ITSx_partial == 0) {
+          just_derep(itsx.out.itsx_its1)
+        } else {
+          just_derep(itsx.out.itsx_its1_part)
+        }
+      }
+      // --ITS2 sequences
+      if(params.its_region == "ITS2"){
+        if (params.ITSx_partial == 0) {
+          just_derep(itsx.out.itsx_its2)
+        } else {
+          just_derep(itsx.out.itsx_its2_part)
+        }
+      }
+      // --SSU sequences
+      if(params.its_region == "SSU"){
+        if (params.ITSx_partial == 0) {
+          just_derep(itsx.out.itsx_ssu)
+        } else {
+          just_derep(itsx.out.itsx_ssu_part)
+        }
+      }
+      // --LSU sequences
+      if(params.its_region == "LSU"){
+        if (params.ITSx_partial == 0) {
+          just_derep(itsx.out.itsx_lsu)
+        } else {
+          just_derep(itsx.out.itsx_lsu_part)
+        }
+      }
+    
+    }  // end of ITS
+
+
+  } // end of homopolymer correction condition
+
+
+  /*
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      Chimera removal
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  */
+
+
+  // Chimera removal (optional)
+  ch_chimerabd = Channel.value(params.chimera_db)
+
+  // Input depends on the selected workflow
+  if(params.hp == true){
+
+    ch_input_for_chim = homopolymer.out.hc
+
+  } else {
+
+    if(params.its_region == "none"){
+      ch_input_for_chim = trim_primers.out.primertrimmed_fa
+    } else if(params.its_region == "ITS1_5.8S_ITS2"){
+      ch_input_for_chim = assemble_its.out.itsnf
+    } else {
+      ch_input_for_chim = just_derep.out.nhc
+    }
+    
   }
   
+  CHIMERA_REMOVAL(ch_input_for_chim, ch_chimerabd)
+
+
+
+  /*
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      Data aggregation
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  */
+
+  // Pool sequences (for a final sequence table)
+  pool_seqs(CHIMERA_REMOVAL.out.filtered)
+
+  // Tag-jump removal
+  if(params.tj == true){
+
+    // Pre-clustering prior to tag-jump removal
+    tj_preclust(pool_seqs.out.seqsnf)
+
+    // Tag-jump removal
+    tj(
+      pool_seqs.out.seqtabnf,
+      tj_preclust.out.preclust_uc_parquet)
+
+    ch_seqtab_after_tj = tj.out.seqtabtj
+    ch_tj_scores       = tj.out.tjs
+
+  } else {
+
+    // Skip tag-jump removal
+    ch_seqtab_after_tj = pool_seqs.out.seqtabnf
+    ch_tj_scores = file("no_tj")
+
+  }
+
+  // Check optional channel with de novo chimera scores
+  ch_denovoscores = CHIMERA_REMOVAL.out.denovo_agg.ifEmpty(file('DeNovo_Chimera.txt'))
+
+  // Create sequence table
+  prep_seqtab(
+    ch_seqtab_after_tj,    // (optionally) tag-jump-filtered sequence table (long format)
+    pool_seqs.out.seqsnf,  // Sequences in FASTA format
+    ch_denovoscores,       // de novo chimera scores
+    seq_qual.out.quals     // sequence qualities
+    )
+
+
+
+  /*
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      Read count summary
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  */
+ 
+  // Initial data - Per-sample input channels
+  if( params.demultiplexed == false ){
+
+    if(params.seqplatform == "PacBio"){
+
+      // Input data and QC = single multiplexed file
+      ch_counts_1 = ch_input
+      ch_counts_2 = qc_se.out.filtered
+
+      ch_all_demux = demux.out.samples_demux.flatten().collect()
+    }
+
+    if(params.seqplatform == "Illumina"){
+      ch_all_demux = demux_illumina.out.samples_demux.flatten().collect()
+    }
+
+  } else {
+  
+    // Input data and QC = several demultiplexed files
+    ch_counts_1 = ch_input.flatten().collect()
+    ch_counts_2 = qc_se.out.filtered.flatten().collect()
+
+    ch_all_demux = Channel.fromPath( params.input + '/*.{fastq.gz,fastq,fq.gz,fq}' ).flatten().collect()
+  }
+  
+
+  // Primer-checked and multiprimer sequences
+  ch_all_primerchecked = primer_check.out.fq_primer_checked.flatten().collect().ifEmpty(file("no_primerchecked"))
+  ch_all_primerartefacts = primer_check.out.primerartefacts.flatten().collect().ifEmpty(file("no_multiprimer"))
+      
+  // ITSx and primer trimming channel
+  if(params.its_region == "full"){
+    ch_all_trim = itsx.out.itsx_full.flatten().collect().ifEmpty(file("no_itsx"))
+  }
+  if(params.its_region == "ITS1"){
+    if (params.ITSx_partial == 0) {
+      ch_all_trim = itsx.out.itsx_its1.flatten().collect().ifEmpty(file("no_itsx"))
+    } else {
+      ch_all_trim = itsx.out.itsx_its1_part.flatten().collect().ifEmpty(file("no_itsx"))
+    }
+  }
+  if(params.its_region == "ITS2"){
+    if (params.ITSx_partial == 0) {
+      ch_all_trim = itsx.out.itsx_its2.flatten().collect().ifEmpty(file("no_itsx"))
+    } else {
+      ch_all_trim = itsx.out.itsx_its2_part.flatten().collect().ifEmpty(file("no_itsx"))
+    }
+  }
+  if(params.its_region == "SSU"){
+    if (params.ITSx_partial == 0) {
+      ch_all_trim = itsx.out.itsx_ssu.flatten().collect().ifEmpty(file("no_itsx"))
+    } else {
+      ch_all_trim = itsx.out.itsx_ssu_part.flatten().collect().ifEmpty(file("no_itsx"))
+    }
+  }
+  if(params.its_region == "LSU"){
+    if (params.ITSx_partial == 0) {
+      ch_all_trim = itsx.out.itsx_lsu.flatten().collect().ifEmpty(file("no_itsx"))
+    } else {
+      ch_all_trim = itsx.out.itsx_lsu_part.flatten().collect().ifEmpty(file("no_itsx"))
+    }
+  }
+  if(params.its_region == "ITS1_5.8S_ITS2"){
+    ch_all_trim = assemble_its.out.itsnf.flatten().collect().ifEmpty(file("no_itsx"))
+  }
+  if(params.its_region == "none"){
+    ch_all_trim = trim_primers.out.primertrimmed_fq.flatten().collect().ifEmpty(file("no_primertrim"))
+  }
+
+  // Homopolymer-correction channel
+  if(params.hp == true){
+    ch_homopolymers = homopolymer.out.uch.flatten().collect().ifEmpty(file("no_homopolymer"))
+  } else {
+    ch_homopolymers = file("no_homopolymer")
+  }
+
+  // Chimeric channels
+  ch_chimref     = CHIMERA_REMOVAL.out.chimeric.flatten().collect().ifEmpty(file("no_chimref"))
+  ch_chimdenovo  = CHIMERA_REMOVAL.out.denovo_agg.flatten().collect().ifEmpty(file("no_chimdenovo"))
+  ch_chimrescued = CHIMERA_REMOVAL.out.rescued.flatten().collect().ifEmpty(file("no_chimrescued"))
+
+  // Count reads and prepare summary stats for the run
+  // Currently, implemented only for PacBio
+  // For Illumina, need replace:
+  //   `ch_input` -> `ch_inputR1` & `ch_inputR2`
+  //   `qc_se`    -> `qc_pe`
+
+  if(params.seqplatform == "PacBio"){
+
+    read_counts(
+      ch_counts_1,             // input data (single multiplexed file or several demultiplexed files)
+      ch_counts_2,             // data that passed QC (single or several demuxed files)
+      ch_all_demux,            // demultiplexed sequences per sample
+      ch_all_primerchecked,    // primer-cheched sequences
+      ch_all_primerartefacts,  // multiprimer artefacts
+      ch_all_trim,             // ITSx-extracted or primer-trimmed sequences
+      ch_homopolymers,         // Homopolymer stats
+      ch_chimref,              // Reference-based chimeras
+      ch_chimdenovo,           // De novo chimeras
+      ch_chimrescued,          // Rescued chimeras
+      ch_tj_scores,            // Tag-jump filtering scores
+      prep_seqtab.out.seq_pq   // Final table with sequences (in Parquet format)
+      )
+
+  } // end of read_counts for PacBio
+
+
   
   // Dump the software versions to a file
-  software_versions_to_yaml(Channel.topic('versions'))
+  ch_versions_yml = software_versions_to_yaml(Channel.topic('versions'))
       .collectFile(
           storeDir: "${params.tracedir}",
           name:     'software_versions.yml',
@@ -3253,8 +2562,20 @@ workflow S1 {
           newLine:  true
       )
 
-  // TODO - Auto documentation of analysis procedures
-  // document_analysis_step1
+  // Dump the parameters to a file
+  ch_params_tsv = dumpParamsTsv()
+    .collectFile(
+        storeDir: "${params.tracedir}",
+        name:     "pipeline_params.tsv",
+        sort:     true,
+        newLine:  true
+    )
+
+  // Document the analysis procedures
+  document_analysis_s1(
+    ch_versions_yml,
+    ch_params_tsv)
+
 }
 
 

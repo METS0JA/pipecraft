@@ -6,26 +6,26 @@
 
 ## Build stage (Rust and Cargo), for runiq
 Bootstrap: docker
-From: rust:1.84.1
+From: rust:1.89.0-slim
 Stage: build
 
 %post
-  # rustup --version   # 1.27.1
-  # rustc  --version   # 1.84.1
-  # cargo  --version   # 1.84.1
+  # rustup --version   # 1.28.2
+  # rustc  --version   # 1.89.0
+  # cargo  --version   # 1.89.0
   cargo install runiq sd
   # runiq --version    # 2.0.0
   # sd    --version    # 1.0.0
 
 ## Main stage
 Bootstrap: docker
-From: rocker/r-ver:4.4.2
+From: rocker/r-ver:4.5.1
 Stage: final
 
 %labels
   Maintainer vladimir.mikryukov@ut.ee
-  R_Version 4.4.2
-  NextITS_container_version 0.8.2
+  R_Version 4.5.1
+  NextITS_container_version 1.1.0
 
 %runscript
   exec "$@"
@@ -37,12 +37,17 @@ Stage: final
   exec Rscript "${@}"
 
 %environment
-  export PATH=$PATH:"/opt/software/conda/bin/"
-  echo 'source' "'/opt/software/conda/init.bash'" | bash
+  export PATH="/opt/software/conda/bin:$PATH"
+  export CONDA_PREFIX="/opt/software/conda"
+  
+  # Source conda initialization if available (for interactive sessions)
+  if [ -f "/opt/software/conda/init.bash" ]; then
+    source "/opt/software/conda/init.bash"
+  fi
 
 ## Install the required dependencies
 %post
-  export R_VERSION=4.4.2
+  export R_VERSION=4.5.1
 
   apt-get update -qq \
   && apt-get -y --no-install-recommends install \
@@ -73,29 +78,32 @@ Stage: final
     ggplot2 \
     doFuture \
     openxlsx \
-    && R -e 'BiocManager::install("Biostrings", ask = FALSE)' \
-    && R -e 'BiocManager::install("ShortRead", ask = FALSE)' \
-    && R -e 'BiocManager::install("DECIPHER", ask = FALSE)' \
-    && R -e 'BiocManager::install("dada2", ask = FALSE)' \
-    && R -e 'BiocManager::install("phyloseq", ask = FALSE)' \
-    && R -e 'remotes::install_github("vmikk/metagMisc")' \
-    && R -e 'remotes::install_cran("qs", type = "source", configure.args = "--with-simd=AVX2")' \
-    && rm -rf /tmp/downloaded_packages/
+    yaml
+
+  R      -e 'BiocManager::install("Biostrings", ask = FALSE)' \
+    && R -e 'BiocManager::install("ShortRead",  ask = FALSE)' \
+    && R -e 'BiocManager::install("DECIPHER",   ask = FALSE)' \
+    && R -e 'BiocManager::install("dada2",      ask = FALSE)' \
+    && R -e 'BiocManager::install("phyloseq",   ask = FALSE)' \
+    && rm -rf /tmp/downloaded_packages
+
+  install2.r --error --skipinstalled geodist phytools \
+    && R -e 'ok <- tryCatch({ remotes::install_github("vmikk/metagMisc"); TRUE }, error=function(e){ message(e); FALSE }); \
+          if (!ok || !requireNamespace("metagMisc", quietly=TRUE)) quit(status=1)' \
+    && R -e 'ok <- tryCatch({ remotes::install_cran("qs2", type = "source", configure.args = "--with-simd=AVX2"); TRUE }, error=function(e){ message(e); FALSE }); \
+          if (!ok || !requireNamespace("qs2", quietly=TRUE)) quit(status=1)' \
+    && rm -rf /tmp/downloaded_packages
 
   ## Install conda
   readonly conda_prefix="/opt/software/conda"
 
   mkdir -p /opt/software
   cd /opt/software
-  curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-  bash ./Miniconda3-latest-Linux-x86_64.sh -u -b -p ${conda_prefix}
-  rm Miniconda3-latest-Linux-x86_64.sh
-
-  ${conda_prefix}/bin/conda config --add channels defaults
-  ${conda_prefix}/bin/conda config --add channels conda-forge
+  curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh"
+  bash Miniforge3-Linux-x86_64.sh -u -b -p ${conda_prefix}
+  rm Miniforge3-Linux-x86_64.sh
   ${conda_prefix}/bin/conda config --add channels bioconda
-  ${conda_prefix}/bin/conda install --quiet --yes mamba "python=3.12"
-  export MAMBA_ROOT_PREFIX=${conda_prefix}
+  ${conda_prefix}/bin/mamba update -y --all
 
   ## Conda initialization script by Antoine Prouvost
   # https://github.com/ds4dm/singularity-conda/blob/main/conda.def
@@ -117,30 +125,30 @@ Stage: final
 
   ## Create conda environment and install software
   ${conda_prefix}/bin/mamba install --quiet --yes \
-    "lima>=2.12.0" \
-    "pbtk>=3.4.0" \
-    "vsearch>=2.29.4" \
+    "lima>=2.13.0" \
+    "pbtk>=3.5.0" \
+    "vsearch>=2.30.0" \
     "swarm>=3.1.5" \
-    "seqkit>=2.9.0" \
+    "seqkit>=2.10.1" \
     "seqfu>=1.22.3" \
-    "fastp>=0.24.0" \
-    "blast>=2.16.0" \
+    "fastp>=1.0.1" \
+    "blast>=2.17.0" \
     "bioawk" \
     "miller>=6.13.0" \
     "xsv>=0.13.0" \
     "bedtools>=2.31.1" \
-    "parallel>=20241122" \
-    "csvtk>=0.31.0" \
+    "parallel>=20250622" \
+    "csvtk>=0.34.0" \
     "itsx>=1.1.3" \
-    "cutadapt>=5.0" \
-    "bbmap>=39.15" \
+    "cutadapt>=5.1" \
+    "bbmap>=39.33" \
     "ripgrep>=14.1.1" \
     "fd-find>=10.2.0" \
     "mmseqs2"
 
   ## seqhasher
   # https://github.com/vmikk/seqhasher
-  wget https://github.com/vmikk/seqhasher/releases/download/1.1.1/seqhasher
+  wget https://github.com/vmikk/seqhasher/releases/download/1.1.2/seqhasher
   chmod +x seqhasher
   mv seqhasher ${conda_prefix}/bin/
 
@@ -167,7 +175,7 @@ Stage: final
 
   ## rush
   # https://github.com/shenwei356/rush
-  wget https://github.com/shenwei356/rush/releases/download/v0.6.0/rush_linux_amd64.tar.gz
+  wget https://github.com/shenwei356/rush/releases/download/v0.7.0/rush_linux_amd64.tar.gz
   tar -xzf rush_linux_amd64.tar.gz
   mv rush ${conda_prefix}/bin/
   rm rush_linux_amd64.tar.gz
@@ -203,7 +211,7 @@ Stage: final
 
   ## DuckDB
   # https://duckdb.org/docs/installation/?version=stable
-  curl -L https://github.com/duckdb/duckdb/releases/download/v1.2.0/duckdb_cli-linux-amd64.zip -o duckdb_cli-linux-amd64.zip \
+  curl -L https://github.com/duckdb/duckdb/releases/download/v1.3.2/duckdb_cli-linux-amd64.zip -o duckdb_cli-linux-amd64.zip \
     && unzip duckdb_cli-linux-amd64.zip -d ${conda_prefix}/bin/ \
     && rm duckdb_cli-linux-amd64.zip
 
@@ -216,6 +224,11 @@ Stage: final
   ## Activate environment
   # source ${conda_prefix}/bin/activate ${conda_prefix}
 
+  ## Ensure software is accessible to any user (NB! avoid slow recursive operations)
+  chmod 755 /opt/software
+  chmod a+rX /opt/software/conda/bin
+  chmod a+rX /opt/software/conda/lib
+  
   ## Use bash to properly activate the conda environment
   echo 'source' "'${conda_prefix}/init.bash'" | bash
 
@@ -229,4 +242,58 @@ Stage: final
 
 
 %test
+  echo "=== Testing R installation and packages ==="
   R --quiet -e "stopifnot(getRversion() == '${R_VERSION}')"
+  
+  echo "Testing R package installations..."
+  R --quiet -e "
+    required_packages <- c('optparse', 'R.utils', 'data.table', 'arrow', 'duckdb', 
+                          'plyr', 'dplyr', 'ggplot2', 'doFuture', 'openxlsx', 'yaml',
+                          'Biostrings', 'ShortRead', 'DECIPHER', 'dada2', 'phyloseq', 
+                          'metagMisc', 'qs2')
+    
+    for(pkg in required_packages) {
+      cat('Testing package:', pkg, '... ')
+      tryCatch({
+        suppressPackageStartupMessages(
+          library(pkg, character.only = TRUE, quietly = TRUE, warn.conflicts = FALSE)
+        )
+        cat('OK\n')
+      }, error = function(e) {
+        cat('FAILED\n')
+        stop('Package ', pkg, ' failed to load: ', e$message)
+      })
+    }
+    cat('All R packages loaded successfully!\n')
+  "
+  
+  echo "=== Testing conda/mamba installed tools ==="
+  ## Source conda environment
+  source /opt/software/conda/init.bash
+  
+  ## Test conda/mamba tools
+  tools_conda="lima bam2fastq vsearch swarm seqkit seqfu fastp blastn bioawk mlr xsv bedtools parallel csvtk ITSx cutadapt bbduk.sh rg fd mmseqs"
+  for tool in $tools_conda; do
+    echo -n "Testing $tool... "
+    if command -v $tool >/dev/null 2>&1; then
+      echo "OK"
+    else
+      echo "FAILED - $tool not found in PATH"
+      exit 1
+    fi
+  done
+  
+  echo "=== Testing manually installed tools ==="
+  ## Test manually installed tools
+  tools_manual="seqhasher phredsort ucs fqgrep rush brename mumu duckdb runiq sd"
+  for tool in $tools_manual; do
+    echo -n "Testing $tool... "
+    if command -v $tool >/dev/null 2>&1; then
+      echo "OK"
+    else
+      echo "FAILED - $tool not found in PATH"
+      exit 1
+    fi
+  done
+  
+  echo "=== All tests passed! Container looks ready for use ==="

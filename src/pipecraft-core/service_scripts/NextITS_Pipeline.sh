@@ -2,6 +2,10 @@
 
 
 export NXF_HOME="/Input/.nextflow"
+export NXF_ANSI_LOG="false"
+export NXF_LOG_COLOR="false"
+export NXF_ANSI="false"
+export TERM="dumb"
 mkdir -p $NXF_HOME
 BASEDIR=$(pwd)
 
@@ -51,4 +55,7 @@ stdbuf -oL -eL nextflow run \
   -work-dir    /Input/Step2_WorkDir \
   --tracedir   /Input/Step2_WorkDir/pipeline_info \
   -ansi-log    false \
-  2>&1 | tee -a /Input/Nextflow__Step2.log
+  2>&1 | sed -E 's/\x1B\[[0-9;]*[A-Za-z]//g' \
+       | tr -d '\r' \
+       | tr -d '▒░' \
+       | tee -a /Input/Nextflow__Step2.log

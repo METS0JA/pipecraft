@@ -74,7 +74,7 @@ export default new Vuex.Store({
             tooltip:
               "demultiplex data to per-sample files based on specified index file. Note that for read1 and read2 will get .R1 and .R2 identifiers when demultiplexing paired-end data",
             scriptName: "demux_paired_end_data.sh",
-            imageName: "pipecraft/cutadapt:4.4",
+            imageName: "pipecraft/cutadapt:5.2",
             serviceName: "demultiplex",
             selected: false,
             showExtra: false,
@@ -154,7 +154,7 @@ export default new Vuex.Store({
           {
             tooltip: "remove primers sequences from the reads",
             scriptName: "cut_primers_paired_end_reads.sh",
-            imageName: "pipecraft/cutadapt:4.4",
+            imageName: "pipecraft/cutadapt:5.2",
             serviceName: "cutadapt",
             selected: false,
             showExtra: false,
@@ -2465,7 +2465,7 @@ export default new Vuex.Store({
       {
         tooltip: "remove primers sequences from the reads",
         scriptName: "cut_primers_paired_end_reads.sh",
-        imageName: "pipecraft/cutadapt:4.4",
+        imageName: "pipecraft/cutadapt:5.2",
         serviceName: "cut primers",
         manualLink:
           "https://pipecraft2-manual.readthedocs.io/en/latest/quicktools.html#cut-primers",
@@ -3153,7 +3153,7 @@ export default new Vuex.Store({
       {
         tooltip: "remove primers sequences from the reads",
         scriptName: "cut_primers_paired_end_reads.sh",
-        imageName: "pipecraft/cutadapt:4.4",
+        imageName: "pipecraft/cutadapt:5.2",
         serviceName: "cut primers",
         manualLink:
           "https://pipecraft2-manual.readthedocs.io/en/latest/quicktools.html#cut-primers",
@@ -4570,7 +4570,7 @@ export default new Vuex.Store({
             rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
           {
-            name: "tj_f ",
+            name: "tj_f",
             value: 0.01,
             disabled: "never",
             tooltip:
@@ -4822,7 +4822,7 @@ export default new Vuex.Store({
           MIXED: "cut_mixed_primers_paired_end_reads.sh",
           SINGLE_END: "cut_primers_single_end_reads.sh",
         },
-        imageName: "pipecraft/cutadapt:4.4",
+        imageName: "pipecraft/cutadapt:5.2",
         serviceName: "cut primers",
         manualLink:
           "https://pipecraft2-manual.readthedocs.io/en/latest/quicktools.html#cut-primers",
@@ -6453,6 +6453,8 @@ export default new Vuex.Store({
           confirmButtonText: 'Confirm',
           showCancelButton: true,
           cancelButtonText: 'Cancel',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
           theme: 'dark'
         });
         
@@ -6479,7 +6481,8 @@ export default new Vuex.Store({
           input: "select",
           inputOptions: extensions,
           inputValue: mostCommonExtension ? state.SUPPORTED_EXTENSIONS.indexOf(mostCommonExtension) : undefined,
-          theme: 'dark'
+          theme: 'dark',
+          inputValidator: (value) => (value === '' || value === null ? 'Please select a file extension.' : undefined)
         });
         if (step1.isDismissed) return;
         
@@ -6488,6 +6491,7 @@ export default new Vuex.Store({
           currentProgressStep: 1,
           input: "select",
           inputOptions: { paired_end: "paired-end", single_end: "single-end" },
+          inputValidator: (value) => (value === '' || value === null ? 'Please select a read type.' : undefined)
         });
         
         // 6. Process results

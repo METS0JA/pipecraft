@@ -3,7 +3,7 @@
 ## Script to validate tags (barcodes) used during sample multiplexing
 ## - Tags should be unique
 ## - Tag names should be unique
-## - Tag names must be alphanumeric and must not contain whitespace, dot, comma, semicolon, or dash
+## - Tag names must be alphanumeric (ASCII-only) and must not contain whitespace, dot, comma, semicolon, or dash
 ## - Sequencing run ID could be present in tag names (before double underscore)
 ## - Checks the presence of positive and negative controls
 ## - Estimates number of unqiue tags and their length
@@ -135,8 +135,13 @@ if(nrow(renamed) > 0){
   print(
     renamed[, .(OriginalName, NewName)],
     nrows = nrow(renamed), trunc.cols = FALSE)
+
+  cat("...Exporting renamed tag names\n")
+  fwrite(x = renamed[ , .(OriginalName, NewName)],
+    file = "tag_names_renamed.tsv", quote = FALSE, sep = "\t", col.names = FALSE)
 }
 
+names(TAGS) <- newnames
 
 
 ## Check tag name uniqness

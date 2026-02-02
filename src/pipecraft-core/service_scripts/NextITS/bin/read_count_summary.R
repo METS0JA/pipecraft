@@ -15,10 +15,10 @@
 #   --chimdenovo   Counts_7.ChimDenov.txt \
 #   --chimrecovn   Counts_8.ChimRecov_reads.txt \
 #   --chimrecovu   Counts_8.ChimRecov_uniqs.txt \
-#   --tj           TagJump_OTUs.RData \
+#   --tj           TagJump_scores.qs \
 #   --seqtab       Seqs.parquet \
+#   --maxchim     0.6 \
 #   --threads      4
-
 
 
 ############################################## Parse input parameters
@@ -46,8 +46,9 @@ option_list <- list(
   make_option("--chimdenovo", action="store", default=NA, type='character', help="Number of de novo chimeras"),
   make_option("--chimrecovn", action="store", default=NA, type='character', help="Number of resued reads for de novo chimeras (false positives)"),
   make_option("--chimrecovu", action="store", default=NA, type='character', help="Number of resued unique sequences detected as de novo chimeras (false positives)"),
-  make_option("--tj",         action="store", default=NA, type='character', help="Tag jump removal data"),
-  make_option("--seqtab",     action="store", default=NA, type='character', help="Final seq table"),
+  make_option("--tj",         action="store", default=NA, type='character', help="Tag jump removal data (serialized in qs format)"),
+  make_option("--seqtab",     action="store", default=NA, type='character', help="Final seq table (Parquet format)"),
+  make_option("--maxchim",    action="store", default=0.6, type='numeric',  help = "Maximum de novo chimera score to remove"),
   make_option(c("-t", "--threads"), action="store", default=4L, type='integer', help="Number of CPU threads for arrow, default 4")
 )
 opt <- parse_args(OptionParser(option_list=option_list))
@@ -82,6 +83,7 @@ CHIMRECOVN  <- opt$chimrecovn
 CHIMRECOVU  <- opt$chimrecovu
 TJ          <- opt$tj
 SEQTAB      <- opt$seqtab
+MAXCHIM     <- opt$maxchim
 CPUTHREADS  <- as.numeric( opt$threads )
 
 ## Log assigned variables
@@ -98,7 +100,8 @@ cat(paste("Counts - Chimera de novo: " ,                               CHIMDENOV
 cat(paste("Counts - Chimera Ref-based recoverd, reads: " ,             CHIMRECOVN, "\n", sep=""))
 cat(paste("Counts - Chimera Ref-based recoverd, unique sequences: " ,  CHIMRECOVU, "\n", sep=""))
 cat(paste("Tag-jump data: " ,                TJ, "\n", sep=""))
-cat(paste("Final sequence table: " ,         SEQTAB, "\n", sep=""))
+cat(paste("Final sequence table: " ,         SEQTAB,  "\n", sep=""))
+cat(paste("Maximum de novo chimera score: ", MAXCHIM, "\n", sep=""))
 cat(paste("Number of CPU threads to use: ",  CPUTHREADS,    "\n", sep=""))
 
 cat("\n")
@@ -118,8 +121,9 @@ cat("\n")
 # CHIMDENOVO  <- "Counts_7.ChimDenov.txt"
 # CHIMRECOVN  <- "Counts_8.ChimRecov_reads.txt"
 # CHIMRECOVU  <- "Counts_8.ChimRecov_uniqs.txt"
-# TJ          <- "Seqs.RData"
-# SEQTAB      <- "TagJump_OTUs.RData"
+# TJ          <- "TagJump_scores.qs"
+# SEQTAB      <- "Seqs.parquet"
+# MAXCHIM     <- 0.6
 # CPUTHREADS  <- 6
 
 
@@ -134,6 +138,8 @@ load_pckg <- function(pkg = "data.table"){
 
 load_pckg("data.table")
 load_pckg("plyr")
+load_pckg("arrow")
+# load_pckg("dplyr")
 load_pckg("metagMisc")
 load_pckg("openxlsx")
 
@@ -189,11 +195,17 @@ cat("..Loading rescued ref-based chimera counts\n")
 CUSTOMCOUNTS$CHIMRECOVN <- fread(CHIMRECOVN)
 SEQKITCOUNTS$CHIMRECOVU <- fread(CHIMRECOVU)
 
-# cat("..Loading tag-jump filtration data\n")
-# TJ
+if(!is.na(TJ) && TJ != "no_tj" && file.exists(TJ)){
+  cat("..Loading tag-jump filtration data\n")
+  TJ <- qs2::qs_read(TJ)
+  tjdata <- TRUE
+} else {
+  cat("..No tag-jump filtration data found\n")
+  tjdata <- FALSE
+} 
 
-# cat("..Loading sequence table\n")
-# SEQTAB
+cat("..Loading sequence table\n")
+SEQTAB <- arrow::open_dataset(SEQTAB)
 
 
 ## Remove NULL-files
@@ -267,15 +279,18 @@ SEQKITCOUNTS <- llply(.data = SEQKITCOUNTS, .fun = seqkit_process)
 CUSTOMCOUNTS <- llply(.data = CUSTOMCOUNTS, .fun = custom_process)
 
 cat("Estimating homopolymer stats\n")
-HOMOPOLY_counts <- HOMOPOLY_data[ , .(
-  N_UniqSequences_AfterITSx_or_PrimerTrimming = .N,
-  N_UniqSequences__AfterHomopolymerCorrection = length(unique(Target))
-  ),
-  by = "SampleID"
-  ]
+if(nrow(HOMOPOLY_data) > 0){
+  HOMOPOLY_counts <- HOMOPOLY_data[ , .(
+    N_UniqSequences_AfterITSx_or_PrimerTrimming = .N,
+    N_UniqSequences_AfterHomopolymerCorrection = length(unique(Target))
+    ),
+    by = "SampleID" ]
+} else {
+  cat("..No homopolymer correction data found\n")
+}
 
-HOMOPOLY_counts[, HomopolymerCorrected_NumUniqSequences := 
-  N_UniqSequences_AfterITSx_or_PrimerTrimming - N_UniqSequences__AfterHomopolymerCorrection ]
+# HOMOPOLY_counts[, Num_HomopolymerCorrectedSequences := 
+#   N_UniqSequences_AfterITSx_or_PrimerTrimming - N_UniqSequences_AfterHomopolymerCorrection ]
 
 
 ## Rename columns
@@ -326,41 +341,138 @@ PER_SAMPLE_COUNTS_merged[ ,
   2)
  ]
 
+## Estimate tag-jump stats
+if(tjdata == TRUE){
+  cat("Estimating tag-jump removal yields\n")
+  TJ_stats <- TJ[ TagJump == TRUE, .(
+      TagJump_Events = .N,
+      TagJump_Reads  = sum(Abundance, na.rm = TRUE)),
+    by = "SampleID" ]
+
+  if(nrow(TJ_stats) > 0){
+    PER_SAMPLE_COUNTS_merged <- merge(
+      x = PER_SAMPLE_COUNTS_merged,
+      y = TJ_stats,
+      by.x = "file", by.y = "SampleID", all.x = TRUE)
+  } else {
+    PER_SAMPLE_COUNTS_merged[ , TagJump_Events := 0 ]
+    PER_SAMPLE_COUNTS_merged[ , TagJump_Reads  := 0 ]
+  }
+}
+
 ## Add homopolymer stats
-cat("Adding homopolymer stats\n")
+if(nrow(HOMOPOLY_data) > 0){
+  cat("Adding homopolymer stats\n")
+  PER_SAMPLE_COUNTS_merged <- merge(
+    x = PER_SAMPLE_COUNTS_merged, 
+    y = HOMOPOLY_counts,
+    by.x = "file", by.y = "SampleID", all.x = TRUE)
+}
+
+## Add de novo chimera stats
+cat("Adding de novo chimera stats\n")
+denovo_stats <- SEQTAB |>
+  dplyr::filter(DeNovo_Chimera_Score >= MAXCHIM) |>
+  dplyr::group_by(SampleID) |>
+  dplyr::summarize(
+    DeNovoChimeras_NumReads    = sum(Abundance, na.rm = TRUE),
+    DeNovoChimeras_NumUniqSeqs = n()) |>
+  dplyr::collect() |>
+  setDT()
+
 PER_SAMPLE_COUNTS_merged <- merge(
-  x = PER_SAMPLE_COUNTS_merged, 
-  y = HOMOPOLY_counts,
+  x = PER_SAMPLE_COUNTS_merged,
+  y = denovo_stats,
   by.x = "file", by.y = "SampleID", all.x = TRUE)
 
 
 
-### ... update
-# .. replace NAs with zero
-# .. reorder columns
+## Number of reads and unique sequences in the sequence table (per sample)
+## Excluding putative de novo chimeras (with score >= MAXCHIM)
+cat("Adding sequence table stats\n")
+seqtab_stats <- SEQTAB |>
+  dplyr::filter(DeNovo_Chimera_Score < MAXCHIM | is.na(DeNovo_Chimera_Score) ) |>
+  dplyr::group_by(SampleID) |>
+  dplyr::summarize(
+    SeqTable_NumReads    = sum(Abundance, na.rm = TRUE),
+    SeqTable_NumUniqSeqs = n()) |>
+  dplyr::collect() |>
+  setDT()
+
+PER_SAMPLE_COUNTS_merged <- merge(
+  x = PER_SAMPLE_COUNTS_merged,
+  y = seqtab_stats,
+  by.x = "file", by.y = "SampleID", all.x = TRUE)
+
+
+## Replace NAs with zeros
+cat("Replacing NAs with zero\n")
+for (j in seq_len(ncol(PER_SAMPLE_COUNTS_merged))){
+  set(PER_SAMPLE_COUNTS_merged, which(is.na(PER_SAMPLE_COUNTS_merged[[j]])), j, 0)
+}
+rm(j)
+
+## Estimate percentage of reads retained (starting from demultiplexed reads)
+cat("Estimating percentage of reads retained\n")
+PER_SAMPLE_COUNTS_merged[ , Percentage_Reads_Retained := round( SeqTable_NumReads / Demultiplexed_Reads * 100, 2) ]
+
+## Estimate percentage of reads retained after ITSx
+if("ITSx_Extracted_Reads" %in% colnames(PER_SAMPLE_COUNTS_merged)){
+  PER_SAMPLE_COUNTS_merged[ , ITSx_Yield_Percent := round( ITSx_Extracted_Reads / PrimerChecked_Reads * 100, 2) ]
+}
+
+### TODO:
 # .. estimate percentages
-# .. add tag-jump summary
-# .. add final counts from the Seq table
 # .. add per-run positive / negative counts (based on default sample names)
+
+
+## Reorder columns
+setcolorder(PER_SAMPLE_COUNTS_merged,
+  skip_absent = TRUE,
+  neworder = c(
+    "file", "Demultiplexed_Reads",
+    "PrimerChecked_Reads", "PrimerArtefacts_Reads", "PrimerArtefacts_Percent", 
+    "ReferenceBasedChimera_Reads", "ReferenceBasedChimera_NumUniqSequences", 
+    "Recovered_ReferenceBasedChimea_Reads", "Recovered_ReferenceBasedChimea_NumUniqSequences", 
+    "DeNovoChimeras_NumReads", "DeNovoChimeras_NumUniqSeqs", 
+    "ITSx_Extracted_Reads", "ITSx_Yield_Percent",
+    "N_UniqSequences_AfterITSx_or_PrimerTrimming", 
+    "N_UniqSequences_AfterHomopolymerCorrection", 
+    # "Num_HomopolymerCorrectedSequences",
+    "TagJump_Reads", "TagJump_Events", 
+    "SeqTable_NumReads", "SeqTable_NumUniqSeqs", 
+    "Percentage_Reads_Retained"))
+
+
+
 
 ## Prepare per-run stats
 cat("Preparing per-run stats\n")
 PER_RUN_COUNTS_merged <- data.table(
-  Total_Number_Of_Reads = RAW$num_seqs,
-  Reads_Passed_QC       = QC$num_seqs,
+  Total_Number_Of_Reads = sum(RAW$num_seqs, na.rm = TRUE),
   Reads_Demultiplexed   = sum(PER_SAMPLE_COUNTS_merged$Demultiplexed_Reads, na.rm = TRUE),
-  Reads_PrimerChecked   = sum(PER_SAMPLE_COUNTS_merged$PrimerChecked_Reads, na.rm = TRUE),
-  UniqSequences_HomopolymerCorrected = sum(PER_SAMPLE_COUNTS_merged$HomopolymerCorrected_NumUniqSequences, na.rm = TRUE)
+  Reads_Passed_QC       = sum(QC$num_seqs, na.rm = TRUE),
+  Reads_PrimerChecked   = sum(PER_SAMPLE_COUNTS_merged$PrimerChecked_Reads, na.rm = TRUE)
   )
+
+if("ITSx_Extracted_Reads" %in% colnames(PER_SAMPLE_COUNTS_merged)){
+  PER_RUN_COUNTS_merged[ , Reads_ITSx_Extracted := sum(PER_SAMPLE_COUNTS_merged$ITSx_Extracted_Reads, na.rm = TRUE) ]
+}
 
 ## Estimate percentage of reads passed primer checking
 cat("..Estimating per-run percentages\n")
 PER_RUN_COUNTS_merged[ , Percentage_Demultiplexed := 
   round(Reads_Demultiplexed / Total_Number_Of_Reads * 100, 1) ]
 
-PER_RUN_COUNTS_merged[ , Percentage_Passed := 
+PER_RUN_COUNTS_merged[ , Percentage_PrimerChecked := 
   round(Reads_PrimerChecked / Total_Number_Of_Reads * 100, 1) ]
 
+## Final per-run num reads
+PER_RUN_COUNTS_merged[ , SeqTable_NumReads := sum(PER_SAMPLE_COUNTS_merged$SeqTable_NumReads, na.rm = TRUE) ]
+PER_RUN_COUNTS_merged[ , Percentage_Reads_Retained := round( SeqTable_NumReads / Total_Number_Of_Reads * 100, 2) ]
+
+NumUniqSeqs <- SEQTAB |> dplyr::select(SeqID) |>   dplyr::summarize(N = n()) |> dplyr::collect()
+PER_RUN_COUNTS_merged$SeqTable_NumUniqueSequences <- NumUniqSeqs$N
 
 ## Export summary stats
 cat("Exporting results\n")
