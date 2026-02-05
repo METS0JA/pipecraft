@@ -1,27 +1,21 @@
 #!/usr/bin/Rscript
 
-## Create an OTU abundance table (wide format) from a dereplicated fasta files and a clustering UC file
+## Make OTU table based on dereplicated sequences and UC file
+ # This is the same as ASV_OTU_merging_script.R, but outputs OTU table in long format
 
 ## Usage:
-# ./ASV_OTU_merging_script.R \
+# ./make_OTU_table_multiRunDir.R \
 #    --derepuc  "Glob_derep.uc" \
 #    --uc       "OTUs.uc" \
 #    --asv      "ASV_table_long.txt" \
-#    --fasta    "OTUs.fasta" \
 #    --rmsingletons TRUE \
-#    --output   "OTU_table.txt"
+#    --output   "OTU_table_long.txt"
 
 ## Input:
 # Glob_derep.uc = UC file from `vsearch --derep_fulllenth ...`
 # OTUs.uc       = UC file from `vsearch --cluster_size ... -uc OTUs.uc`
 # ASV_table_long.txt = tab-delimited 3-column table (SampleID, SequenceID, Abundance), no header
-# OTUs.fasta    = FASTA file containing OTU sequences
-# OTU_table.txt = resulting file
-
-## Notes:
-# `ASV_table_long.txt` could be produced from dereplicated samples using:
-# seqkit seq --name Dereplicated_samples.fasta | awk -F ";" '{print $3 "\t" $1 "\t" $2}' | sed 's/size=//; s/sample=//' > ASV_table_long.txt
-
+# OTU_table_long.txt = resulting file
 
 suppressPackageStartupMessages(library(optparse))
 suppressPackageStartupMessages(library(data.table))
@@ -62,11 +56,6 @@ DUC <- unique(DUC)
 ASV <- merge(x = ASV, y = DUC,
   by.x = "SequenceID", by.y = "ASVall",
   all.x = TRUE)
-
-# ## Check if all ASVs are in the UC file
-# if(any(!unique(ASV$SequenceID) %in% UC$ASV)){
-#   cat("WARNING: not all ASVs are in the UC file!\n")
-# }
 
 ## Clean up, to save some RAM
 rm(DUC)
@@ -116,42 +105,13 @@ OTU <- ASV[ ,
   .(Abundance = sum(Abundance, na.rm = TRUE)), 
   by = c("SampleID", "OTU")]
 
-## Reshape to wide format
-RES <- dcast(data = ASV,
-  formula = OTU ~ SampleID,
-  value.var = "Abundance",
-  fun.aggregate = sum, fill = 0)
-
-## Sort by total OTU abundance
-TotAb <- rowSums(x = RES[, -1])
-RES <- RES[ order(TotAb, decreasing = T) , ]
+## Sort by OTU name
+RES <- OTU[ order(OTU, SampleID) , ]
 
 invisible(gc())
 
-## Add sequences back to the table
-cat(";; Making OTU-sequence dataframe \n")
-suppressMessages(library(Biostrings))
-suppressMessages(library(dplyr))
-# read the FASTA file
-cat(";; Loading input FASTA:", INP_FASTA, "\n")
-fasta_sequences = readDNAStringSet(INP_FASTA)
-sequences = as.character(fasta_sequences)
-# remove the ";sample=.*"  from the sequence names
-names(sequences) = sub(";sample=.*$", "", names(fasta_sequences))
-
-# add the sequences as 2nd column
-seqs_ordered <- sequences[rownames(RES)]
-
-# Make dataframe; OTU IDs as rownames and 2nd col as sequence
-  # Outputting this as a separate file, since it is problmatic to add sequences to large OTU tables
-OTU_sequences <- data.frame(
-  OTU = rownames(RES),
-  Sequence = seqs_ordered,
-  stringsAsFactors = FALSE
-)
-
-## Export table
-cat(";; Exporting OTU table \n")
+## Export table in long format
+cat(";; Exporting table in long format\n")
 cat(OUTPUT, "\n")
 fwrite(x = RES,
   file = OUTPUT,
