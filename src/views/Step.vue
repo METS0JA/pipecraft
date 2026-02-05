@@ -18,7 +18,7 @@
           <span>{{ service.tooltip }}</span>
         </v-tooltip>
         <v-expansion-panel-content>
-          <v-row justify="center">
+          <v-row justify="center" dense no-gutters class="pa-2">
             <v-col
               v-for="(input, i) in service.Inputs"
               :key="input.name"
@@ -27,7 +27,7 @@
               :lg="input.type === 'combobox' ? 6 : 3"
               :md="input.type === 'combobox' ? 8 : 4"
               :sm="input.type === 'combobox' ? 12 : 3"
-              style="height: fit-content; width: fit-content"
+              class="pa-2"
             >
               <v-container v-if="input.type === 'combobox'"
                 ><InputCombo
@@ -36,6 +36,12 @@
                   :list="'Inputs'"
               /></v-container>
               <v-container v-if="input.type === 'numeric'"
+                ><InputNumeric
+                  :serviceIndex="index"
+                  :inputIndex="i"
+                  :list="'Inputs'"
+              /></v-container>
+              <v-container v-if="input.type === 'text'"
                 ><InputNumeric
                   :serviceIndex="index"
                   :inputIndex="i"
@@ -105,8 +111,10 @@
             v-if="service.extraInputs.length > 0 && service.showExtra == true"
           ></v-divider>
           <v-row
-            style="margin-top: 10px"
             justify="center"
+            dense
+            no-gutters
+            class="pa-2"
             v-if="service.extraInputs.length > 0 && service.showExtra == true"
           >
             <v-col
@@ -117,7 +125,7 @@
               :lg="input.type === 'combobox' ? 6 : 3"
               :md="input.type === 'combobox' ? 8 : 4"
               :sm="input.type === 'combobox' ? 12 : 3"
-              style="height: fit-content; width: fit-content"
+              class="pa-2"
             >
               <v-container v-if="input.type === 'combobox'"
                 ><InputCombo
@@ -240,7 +248,8 @@ export default {
 span {
   width: 34px;
 }
-.container {
-  padding: 0;
+.v-container {
+  padding: 0 !important;
+  margin: 0 !important;
 }
 </style>

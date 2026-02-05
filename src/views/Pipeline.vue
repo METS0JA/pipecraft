@@ -13,17 +13,16 @@
           <v-card-title
             v-on="on"
             style="justify-content: center; padding: 10px 0px"
-            >{{
-              $store.state.customWorkflowInfo[$route.params.workflowName].title
-            }}</v-card-title
           >
+            {{
+              $store.state.customWorkflowInfo[$route.params.workflowName].title
+            }}
+          </v-card-title>
         </template>
         <span></span>
       </v-tooltip>
-      <v-card-text
-        class="pr-15 pl-15 text-center"
-        style="justify-content: center"
-        >{{
+      <v-card-text class="pr-15 pl-15 text-center" style="justify-content: center">
+        {{
           this.$store.state.customWorkflowInfo[$route.params.workflowName].info
         }}<br />
         <a
@@ -32,12 +31,13 @@
               .link
           "
           target="_blank"
-          >{{
+        >
+          {{
             this.$store.state.customWorkflowInfo[$route.params.workflowName]
               .link
-          }}</a
-        ></v-card-text
-      >
+          }}
+        </a>
+      </v-card-text>
       <v-card-actions v-if="$route.params.workflowName.includes('DADA2')">
         <v-tabs :value="$store.getters.dada2modeIndex">
           <v-tab
@@ -46,29 +46,97 @@
               $store.state.inputDir != ''
             "
             @click="$store.commit('setDADAmode', 'FORWARD')"
-            >PAIRED-END FORWARD</v-tab
           >
+            PAIRED-END FORWARD
+          </v-tab>
           <v-tab
             :disabled="
               $store.state.data.readType == 'single_end' &&
               $store.state.inputDir != ''
             "
             @click="$store.commit('setDADAmode', 'MIXED')"
-            >PAIRED-END MIXED</v-tab
           >
+            PAIRED-END MIXED
+          </v-tab>
           <v-tab
             :disabled="$store.state.data.readType == 'paired_end'"
             @click="$store.commit('setDADAmode', 'SINGLE_END')"
-            >SINGLE-END</v-tab
           >
+            SINGLE-END
+          </v-tab>
         </v-tabs>
+      </v-card-actions>
+      <v-card-actions
+        v-if="
+          $route.params.workflowName == 'OptimOTU' &&
+          $store.state.runInfo.active == true &&
+          $store.state.pullLoader.active == true
+        "
+      >
+        <v-container fluid>
+          <v-row justify="center">
+            <v-col cols="12" class="text-center">
+              <div class="text-h9 mb-4">Pulling image...</div>
+              <v-progress-linear
+                indeterminate
+                color="#1DE9B6"
+                height="10"
+                class="mx-auto"
+                style="max-width: 80%;"
+              ></v-progress-linear>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-card-actions>
+      <v-card-actions
+        v-if="
+          $route.params.workflowName == 'NextITS' &&
+          $store.state.runInfo.active == true &&
+          $store.state.pullLoader.active == true
+        "
+      >
+        <v-container fluid>
+          <v-row justify="center">
+            <v-col cols="12" class="text-center">
+              <div class="text-h9 mb-4">Pulling image...</div>
+              <v-progress-linear
+                indeterminate
+                color="#1DE9B6"
+                height="10"
+                class="mx-auto"
+                style="max-width: 80%;"
+              ></v-progress-linear>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-card-actions>
+      <v-card-actions
+        v-if="
+          $route.params.workflowName == 'FunBarONT' &&
+          $store.state.runInfo.active == true &&
+          $store.state.pullLoader.active == true
+        "
+      >
+        <v-container fluid>
+          <v-row justify="center">
+            <v-col cols="12" class="text-center">
+              <div class="text-h9 mb-4">Pulling image...</div>
+              <v-progress-linear
+                indeterminate
+                color="#1DE9B6"
+                height="10"
+                class="mx-auto"
+                style="max-width: 80%;"
+              ></v-progress-linear>
+            </v-col>
+          </v-row>
+        </v-container>
       </v-card-actions>
     </v-card>
     <v-expansion-panels
       dark
       multiple
       popout
-      style
       :value="
         this.$store.state[this.$route.params.workflowName].length == 1
           ? panel_single
@@ -115,8 +183,9 @@
                         margin-left: auto;
                         margin-right: 10px;
                       "
-                      >mdi-help-circle-outline</v-icon
                     >
+                      mdi-help-circle-outline
+                    </v-icon>
                   </template>
                   <span>Check out the documentation for more info</span>
                 </v-tooltip>
@@ -144,9 +213,14 @@
               :lg="input.type === 'combobox' ? 6 : 3"
               :md="input.type === 'combobox' ? 8 : 4"
               :sm="input.type === 'combobox' ? 12 : 6"
-              style="height: fit-content; width: fit-content"
             >
               <v-container :disabled="true" v-if="input.type === 'numeric'"
+                ><InputNumeric
+                  :serviceIndex="index"
+                  :inputIndex="i"
+                  :list="'Inputs'"
+              /></v-container>
+              <v-container v-if="input.type === 'text'"
                 ><InputNumeric
                   :serviceIndex="index"
                   :inputIndex="i"
@@ -216,8 +290,8 @@
               @click="toggleExtra(index)"
             >
               toggle advance options
-            </v-btn></v-row
-          >
+            </v-btn>
+          </v-row>
           <v-divider
             v-if="service.extraInputs.length > 0 && service.showExtra == true"
           ></v-divider>
@@ -234,7 +308,6 @@
               :lg="input.type === 'combobox' ? 6 : 3"
               :md="input.type === 'combobox' ? 8 : 4"
               :sm="input.type === 'combobox' ? 12 : 6"
-              style="height: fit-content; width: fit-content"
             >
               <v-container v-if="input.type === 'numeric'"
                 ><InputNumeric

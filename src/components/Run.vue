@@ -1099,6 +1099,10 @@ export default {
         return this.runOptimOTU_dev();
       }
 
+      if (workflowName.includes('FunBarONT')) {
+        return this.runFunBarONT();
+      }
+
       return this.runCustomWorkFlow(workflowName);
     },
     // Common setup for all workflows
@@ -1335,7 +1339,117 @@ export default {
         const totalTime = this.toMinsAndSecs(Date.now() - startTime);
         console.log(`Total execution time: ${totalTime}`);
       }
-    }
+    },
+    async runFunBarONT() {
+      let container = null;
+      let log = null;
+      let startTime = null;
+
+      try {
+        const result = await this.confirmRun('FunBarONT');
+        if (!result.isConfirmed) return;
+
+        const setup = await this.setupWorkflow('FunBarONT');
+        startTime = setup.startTime;
+        log = setup.log;
+
+        this.$store.state.runInfo.active = true;
+        this.$store.state.runInfo.containerID = 'funbaront';
+
+        try {
+          await this.$store.dispatch('generateFunBarONTConfig');
+        } catch (error) {
+          console.error('Failed to generate FunBarONT config:', error);
+
+          await Swal.fire({
+            title: "Configuration Error",
+            text: error.code === 'ENOENT' || error.code === 'EACCES'
+              ? "Could not write configuration file. Check file permissions."
+              : "Failed to generate pipeline configuration.",
+            confirmButtonText: "OK",
+            theme: "dark",
+          });
+
+          await this.cleanupWorkflow(container, log, startTime);
+          return;
+        }
+
+        const { container: dockerContainer, stdoutStream, stderrStream } = await this.executeDockerContainer({
+          imageName: 'pipecraft/funbaront:latest',
+          containerName: 'funbaront',
+          command: ['/bin/bash', '-c', 'bash /scripts/submodules/FunBarONT_Pipeline.sh'],
+          env: [
+            `HOST_OS=${this.$store.state.systemSpecs.os}`,
+            `HOST_ARCH=${this.$store.state.systemSpecs.architecture}`,
+            `rawFilesDir=${path.basename(this.$store.state.inputDir)}`
+          ],
+          binds: this.getFunBarONTBinds(),
+          memory: this.$store.state.dockerInfo.MemTotal,
+          cpuCount: Math.round(this.$store.state.dockerInfo.NCPU),
+          userId: this.userId,
+          groupId: this.groupId
+        });
+
+        container = dockerContainer;
+
+        const logPromise = this.handleDemuxedStreams(stdoutStream, stderrStream, log);
+        const data = await container.wait();
+
+        try { stdoutStream.end(); } catch (err) { console.debug('stdoutStream.end failed (likely closed):', err && err.message ? err.message : err); }
+        try { stderrStream.end(); } catch (err) { console.debug('stderrStream.end failed (likely closed):', err && err.message ? err.message : err); }
+
+        let stdout = '';
+        let stderr = '';
+        try {
+          const res = await this.waitWithTimeout(logPromise, 2000);
+          stdout = res.stdout || '';
+          stderr = res.stderr || '';
+        } catch (err) {
+          console.debug('log drain timeout or error:', err && err.message ? err.message : err);
+        }
+
+        await this.cleanupWorkflow(container, log, startTime);
+        if (data.StatusCode === 0) {
+          await Swal.fire({
+            title: "FunBarONT pipeline finished successfully",
+            text: "Results are in your sequences directory",
+            theme: "dark",
+          });
+        } else {
+          await this.handleDockerError({
+            message: stderr || stdout || 'Unknown error',
+            StatusCode: data.StatusCode
+          }, log, container, startTime);
+        }
+      } catch (error) {
+        await this.handleDockerError(error, log, container, startTime);
+      }
+    },
+    getFunBarONTBinds() {
+      const taxonomyConfig = this.$store.state.FunBarONT[2];
+      const workDir = this.$store.state.inputDir || "";
+      const databaseFile = taxonomyConfig?.Inputs?.find(i => i.name === 'database_file')?.value || "";
+
+      if (!databaseFile) {
+        throw new Error("No database file selected for FunBarONT (database_file).");
+      }
+
+      const configPath = isDevelopment == true
+        ? `${slash(process.cwd())}/src/pipecraft-core/service_scripts/FunBarONTConfig.json`
+        : `${process.resourcesPath}/src/pipecraft-core/service_scripts/FunBarONTConfig.json`;
+
+      const scriptDir = isDevelopment == true
+        ? `${slash(process.cwd())}/src/pipecraft-core/service_scripts`
+        : `${process.resourcesPath}/src/pipecraft-core/service_scripts`;
+
+      return [
+        `${workDir}:/Input:rw`,
+        `${workDir}:/sequences:rw`,
+        `${slash(databaseFile)}:/database/database.fasta:ro`,
+        `${configPath}:/scripts/FunBarONTConfig.json:ro`,
+        `${scriptDir}:/scripts:ro`
+      ];
+    },
   },
 };
 </script>
