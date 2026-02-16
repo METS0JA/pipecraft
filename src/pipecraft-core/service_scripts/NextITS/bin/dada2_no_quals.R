@@ -326,7 +326,7 @@ cat("Exporting pre-UC file\n")
 #   object = UC,
 #   file = "DADA2_UC.RData",
 #   compress = "xz")
-qs2::qs_save(x = UC, file = "DADA2_UC.qs",
+qs::qsave(x = UC, file = "DADA2_UC.qs",
   preset = "custom", algorithm = "zstd", compress_level = 15L, nthreads = CPUTHREADS)
 
 ## Summary stats

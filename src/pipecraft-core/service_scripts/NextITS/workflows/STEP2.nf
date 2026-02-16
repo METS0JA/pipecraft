@@ -278,26 +278,50 @@ process merge_buckets {
     publishDir "${params.outdir}/02.Homopolymer", 
                mode: "${params.storagemode}",
                enabled: (params.chunking_n != null && params.chunking_n >= 2) && params.preclustering == "homopolymer",
-               pattern: "PreClustered.uc.gz",
-               saveAs: { filename -> filename == "PreClustered.uc.gz" ? "HomopolymerCompressed.uc.gz" : null }
+               pattern: "PreClustered.{fa,uc}.gz",
+               saveAs: { filename -> 
+                   switch(filename) {
+                       case "PreClustered.fa.gz": return "HomopolymerCompressed.fa.gz"
+                       case "PreClustered.uc.gz": return "HomopolymerCompressed.uc.gz"
+                       default: return null
+                   }
+               }
     
     publishDir "${params.outdir}/02.UNOISE", 
                mode: "${params.storagemode}",
                enabled: (params.chunking_n != null && params.chunking_n >= 2) && params.preclustering == "unoise",
-               pattern: "PreClustered.uc.gz",
-               saveAs: { filename -> filename == "PreClustered.uc.gz" ? "UNOISE.uc.gz" : null }
+               pattern: "PreClustered.{fa,uc}.gz",
+               saveAs: { filename -> 
+                   switch(filename) {
+                       case "PreClustered.fa.gz": return "UNOISE.fa.gz"
+                       case "PreClustered.uc.gz": return "UNOISE.uc.gz"
+                       default: return null
+                   }
+               }
                
     publishDir "${params.outdir}/02.DADA2", 
                mode: "${params.storagemode}",
                enabled: (params.chunking_n != null && params.chunking_n >= 2) && params.preclustering == "dada2",
-               pattern: "PreClustered.uc.gz",
-               saveAs: { filename -> filename == "PreClustered.uc.gz" ? "DADA2_denoised.uc.gz" : null }
+               pattern: "PreClustered.{fa,uc}.gz",
+               saveAs: { filename -> 
+                   switch(filename) {
+                       case "PreClustered.fa.gz": return "DADA2_denoised.fa.gz"
+                       case "PreClustered.uc.gz": return "DADA2_denoised.uc.gz"
+                       default: return null
+                   }
+               }
                
     publishDir "${params.outdir}/02.Preclustered_SWARM_d1", 
                mode: "${params.storagemode}",
                enabled: (params.chunking_n != null && params.chunking_n >= 2) && params.preclustering == "swarm_d1",
-               pattern: "PreClustered.uc.gz",
-               saveAs: { filename -> filename == "PreClustered.uc.gz" ? "SWARM.uc.gz" : null }
+               pattern: "PreClustered.{fa,uc}.gz",
+               saveAs: { filename -> 
+                   switch(filename) {
+                       case "PreClustered.fa.gz": return "SWARM.fa.gz"
+                       case "PreClustered.uc.gz": return "SWARM.uc.gz"
+                       default: return null
+                   }
+               }
     
     // Final clustering results - publish to clustering directory if clustering != "none"
     publishDir "${params.outdir}/03.Clustered_VSEARCH", 
@@ -318,64 +342,17 @@ process merge_buckets {
                    }
                }
     
-    // Final results when no clustering is done (clustering == "none") - publish to preclustering directory
-    publishDir "${params.outdir}/02.Homopolymer", 
-               mode: "${params.storagemode}",
-               enabled: (params.chunking_n != null && params.chunking_n >= 2) && params.clustering == "none" && params.preclustering == "homopolymer",
-               pattern: "Clustered.{fa,uc}.gz",
-               saveAs: { filename -> 
-                   switch(filename) {
-                       case "Clustered.fa.gz": return "HomopolymerCompressed.fa.gz"
-                       case "Clustered.uc.gz": return "HomopolymerCompressed.uc.gz"
-                       default: return null
-                   }
-               }
-               
-    publishDir "${params.outdir}/02.UNOISE", 
-               mode: "${params.storagemode}",
-               enabled: (params.chunking_n != null && params.chunking_n >= 2) && params.clustering == "none" && params.preclustering == "unoise",
-               pattern: "Clustered.{fa,uc}.gz",
-               saveAs: { filename -> 
-                   switch(filename) {
-                       case "Clustered.fa.gz": return "UNOISE.fa.gz"
-                       case "Clustered.uc.gz": return "UNOISE.uc.gz"
-                       default: return null
-                   }
-               }
-               
-    publishDir "${params.outdir}/02.DADA2", 
-               mode: "${params.storagemode}",
-               enabled: (params.chunking_n != null && params.chunking_n >= 2) && params.clustering == "none" && params.preclustering == "dada2",
-               pattern: "Clustered.{fa,uc}.gz",
-               saveAs: { filename -> 
-                   switch(filename) {
-                       case "Clustered.fa.gz": return "DADA2_denoised.fa.gz"
-                       case "Clustered.uc.gz": return "DADA2_denoised.uc.gz"
-                       default: return null
-                   }
-               }
-               
-    publishDir "${params.outdir}/02.Preclustered_SWARM_d1", 
-               mode: "${params.storagemode}",
-               enabled: (params.chunking_n != null && params.chunking_n >= 2) && params.clustering == "none" && params.preclustering == "swarm_d1",
-               pattern: "Clustered.{fa,uc}.gz",
-               saveAs: { filename -> 
-                   switch(filename) {
-                       case "Clustered.fa.gz": return "SWARM_representatives.fa.gz"
-                       case "Clustered.uc.gz": return "SWARM.uc.gz"
-                       default: return null
-                   }
-               }
-
 
     // Since there are name collisions, we need to stage files with unique names
     input:
       path(preclustuc_chunks, stageAs: "pre/?/*")  // UC files for pre-clustering (optional)
+      path(preclustaf_chunks, stageAs: "pre/?/*")  // FASTA files for pre-clustering (optional)
       path(cluster_chunks, stageAs:    "cls/?/*")  // Sequence representatives
       path(clustuc_chunks, stageAs:    "ucs/?/*")  // UC files for clustering
 
     output:
       path "PreClustered.uc.gz", emit: preclustuc_ch, optional: true
+      path "PreClustered.fa.gz", emit: preclustaf_ch, optional: true
       path "Clustered.fa.gz",    emit: cluster_ch
       path "Clustered.uc.gz",    emit: clustuc_ch
 
@@ -401,9 +378,23 @@ process merge_buckets {
       echo -e "..Pre-clustering was not performed. Skipping pooling these data\\n"
     else
       echo -e "..Pre-clustering was performed\\n"
+      
+      echo -e "..Pooling pre-clustered UC files\\n"
       find pre -name "*.uc.gz" \
         | parallel -j 1 "cat {}" \
         > PreClustered.uc.gz
+
+      echo -e "..Pooling pre-clustered FASTA files\\n"
+      find pre -name "*.fa.gz" \
+        | parallel -j 1 "cat {}" \
+        | vsearch \
+            --sortbysize - \
+            --sizein --sizeout \
+            --threads 1 \
+            --fasta_width 0 \
+            --output - \
+        | pigz -p ${task.cpus} -${params.gzip_compression} \
+        > PreClustered.fa.gz
     fi
 
     echo -e "..Done\\n"
@@ -496,6 +487,54 @@ process summarize {
       --seqtab         ${seqtab} \
       --uc             ${uc_parquet} \
       --otus           ${otus_fasta} \
+      --maxmeep        ${params.max_MEEP} \
+      --recoversinglet ${params.recover_lowqsingletons} \
+      --mergesamples   ${params.merge_replicates} \
+      --threads        ${task.cpus}
+
+    """
+}
+
+
+// Summarize dereplicated data
+process summarize_dereplicated_data {
+
+    label "main_container"
+    publishDir "${params.outdir}/04.PooledResults", mode: "${params.storagemode}"
+    // cpus 4
+  
+    input:
+      path(seqtab)          // Sequence tables in long format, parquet
+      path(uc_derep)        // UC file from dereplication
+      path(fasta)           // FASTA file with sequences
+
+    output:
+      path "UC_Pooled.parquet", emit: uc
+      path "OTU_table_wide.txt.gz", emit: otutabwide
+      path "OTU_table_long.txt.gz", emit: otutablong
+      path "OTU_table_wide.RData",  emit: otutabwider
+      path "OTU_table_long.RData",  emit: otutablongr
+      path "OTUs.fa.gz",            emit: seqs
+      tuple val("${task.process}"), val('ucs'), eval('ucs --version | sed "s/ucs //"'), topic: versions
+      tuple val("${task.process}"), val('R'), eval('Rscript -e "cat(R.version.string)" | sed "s/R version //" | cut -d" " -f1'),  topic: versions
+      tuple val("${task.process}"), val('data.table'), eval('Rscript -e "cat(as.character(packageVersion(\'data.table\')))"'),  topic: versions
+      tuple val("${task.process}"), val('arrow'), eval('Rscript -e "cat(as.character(packageVersion(\'arrow\')))"'),  topic: versions
+      tuple val("${task.process}"), val('Biostrings'), eval('Rscript -e "cat(as.character(packageVersion(\'Biostrings\')))"'),  topic: versions
+
+    script:
+    """
+    echo -e "Summarizing clustered data\\n"
+
+    ## Parse UC file from dereplication
+    echo -e "..Parsing dereplicated UC file"
+    ucs --input ${uc_derep} --output UC_Pooled.parquet
+
+    ## Summarize sequence abundance by OTU and sample
+    echo -e "\\n..Summarizing sequence abundance by OTU and sample\\n"
+    summarize_dereplicated_data.R \
+      --seqtab         ${seqtab} \
+      --uc             UC_Pooled.parquet \
+      --seqs           ${fasta} \
       --maxmeep        ${params.max_MEEP} \
       --recoversinglet ${params.recover_lowqsingletons} \
       --mergesamples   ${params.merge_replicates} \
@@ -707,6 +746,17 @@ workflow S2 {
     //   hash-based dereplication first, then additional round of clustering-based derep.
     // But it would add extra complexity to manage and combine two UC files.
 
+    // Prepare sequence table based on dereplicated sequences
+    // (no clustering, pre-clustering, or denoising)
+    if(params.preclustering == "none" & params.clustering == "none"){
+
+      summarize_dereplicated_data(
+        aggregate_sequences.out.seqs_parquet,
+        derepuc_ch,
+        derep_ch
+      )
+    
+    } else {
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -738,12 +788,14 @@ workflow S2 {
 
       // collect UC and FASTA files from all chunks
       preclustuc_chunks = CLUSTERING.out.preclustuc_ch.collect()
+      preclustaf_chunks = CLUSTERING.out.preclustaf_ch.collect()
       cluster_chunks    = CLUSTERING.out.cluster_ch.collect()
       clustuc_chunks    = CLUSTERING.out.clustuc_ch.collect()
 
       // Merge buckets into a single file
       merge_buckets(
         preclustuc_chunks,
+        preclustaf_chunks,
         cluster_chunks,
         clustuc_chunks)
 
@@ -784,9 +836,11 @@ workflow S2 {
       )
     }
 
-    // Run statistics
-    // run_summary()
+  } // end of preclustering == "none" & clustering == "none"
 
+
+  // Run statistics
+  // run_summary()
 
   // Dump the software versions to a file
   ch_versions_yml = software_versions_to_yaml(Channel.topic('versions'))

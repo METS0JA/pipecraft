@@ -1,11 +1,11 @@
 #!/usr/bin/env Rscript
 
-## Script to pool remove low-quality singletons and summarize sequence abundance at OTU level (per sample)
+## Script to pool dereplicated sequences (non-clustered or denoised), remove low-quality data, and summarize sequence abundance per sample
 
 # Input:
 #   1. Sequence tables in long format with de novo chimeras removed (`Seqs.parquet`)
-#   2. UC file                         (`UC_Pooled.parquet`)
-#   3. FASTA file with OTU sequences   (`Clustered.fa.gz`)
+#   2. UC file from dereplication      (`UC_Pooled.parquet`)
+#   3. FASTA file with sequences       (`Dereplicated.fa.gz`)
 #   4. Max MEEP score
 
 # Outputs:
@@ -14,10 +14,10 @@
 #  - FASTA file with sequences   (`OTUs.fa.gz`)
 
 ## Usage:
-# ./summarize_clustered_data.R \
+# ./summarize_dereplicated_data.R \
 #    --seqtab  "Seqs.parquet" \
 #    --uc      "UC_Pooled.parquet" \
-#    --otus    "Clustered.fa.gz" \
+#    --seqs    "Dereplicated.fa.gz" \
 #    --maxmeep 0.6 \
 #    --recoversinglet TRUE \
 #    --mergesamples TRUE \
@@ -28,8 +28,8 @@
 # MEEP score of 0.6 corresponds approximately to the average Phred score of 22.2
 
 ## Singleton recovery:
-# If enabled, then singleton OTUs with MEEP score <= 0.6 & will be preserved
-# Otherwise, singleton OTUs will be removed
+# If enabled, then singleton sequences with MEEP score <= 0.6 & will be preserved
+# Otherwise, low-quality singleton sequences will be removed
 
 
 ############################################## Parse input parameters
@@ -46,7 +46,7 @@ suppressPackageStartupMessages(require(optparse))
 option_list <- list(
   make_option("--seqtab",  action="store", default=NA,  type='character', help="Sequence tables in long format with de novo chimeras removed (Parquet format)"),
   make_option("--uc",      action="store", default=NA,  type='character', help="UC file (Parquet format)"),
-  make_option("--otus",    action="store", default=NA,  type='character', help="FASTA file with OTU sequences"),
+  make_option("--seqs",    action="store", default=NA,  type='character', help="FASTA file with sequences"),
   make_option("--maxmeep", action="store", default=0.5, type='double', help="Max MEEP score"),
   make_option("--recoversinglet", action="store", default=TRUE, type='logical', help="Recover singletons"),
   make_option(c("-m", "--mergesamples"), action="store", default=FALSE, type='logical', help="Merge sample replicates (default, false)"),
@@ -74,8 +74,8 @@ if(is.na(opt$uc)){
   cat("Input file is not specified: UC file is required.\n", file=stderr())
   stop()
 }
-if(is.na(opt$otus)){
-  cat("Input file is not specified: FASTA file with OTU sequences.\n", file=stderr())
+if(is.na(opt$seqs)){
+  cat("Input file is not specified: FASTA file with sequences.\n", file=stderr())
   stop()
 }
 if(opt$recoversinglet == TRUE && is.na(opt$maxmeep)){
@@ -89,7 +89,7 @@ UCF           <- opt$uc
 MAXMEEP       <- as.numeric( opt$maxmeep )
 RECOV_SINGLET <- as.logical(opt$recoversinglet)
 MERGE_SAMPLES <- as.logical(opt$mergesamples)
-OTUS          <- opt$otus
+SEQS          <- opt$seqs
 
 CPUTHREADS <- as.numeric( opt$threads )
 # SCRIPTDIR  <- opt$scriptdir
@@ -100,7 +100,7 @@ cat(paste("UC file (Parquet format): ",         UCF,           "\n", sep=""))
 cat(paste("Max MEEP score: ",                   MAXMEEP,       "\n", sep=""))
 cat(paste("Low-quality singleton recovery: ",   RECOV_SINGLET, "\n", sep=""))
 cat(paste("Merge sample replicates: ",          MERGE_SAMPLES, "\n", sep=""))
-cat(paste("OTU sequences: ",                    OTUS,          "\n", sep=""))
+cat(paste("Sequences: ",                        SEQS,          "\n", sep=""))
 cat(paste("Number of CPU threads to use: ",     CPUTHREADS,    "\n", sep=""))
 # cat(paste("Directory containing source scripts: ", SCRIPTDIR, "\n", sep=""))
 
@@ -115,7 +115,7 @@ cat("\n")
 # MAXMEEP       <- 0.5
 # RECOV_SINGLET <- TRUE
 # MERGE_SAMPLES <- TRUE
-# OTUS          <- "Clustered.fa.gz"
+# SEQS          <- "Dereplicated.fa.gz"
 # CPUTHREADS    <- 4
 
 
@@ -154,8 +154,7 @@ set_cpu_count(CPUTHREADS)              # for arrow
 
 ## Load sequence tables
 cat("\n..Loading sequence tables\n")
-TAB <- arrow::read_parquet(SEQTAB)
-setDT(TAB)
+TAB <- arrow::read_parquet(SEQTAB) |> setDT()
 cat("... Total number of records: ",             nrow(TAB), "\n")
 cat("... Total number unique sequences: ",       length(unique(TAB$Sequence)), "\n")
 cat("... Total number unique samples (files): ", length(unique(TAB$SampleID)), "\n")
@@ -163,49 +162,50 @@ cat("... Total number unique samples (files): ", length(unique(TAB$SampleID)), "
 ## Load UC file for globally dereplicated sequences
 cat("..Loading pooled UC file\n")
 UC <- open_dataset(UCF) |> dplyr::collect() |> setDT()
+setnames(UC, new = c("SeqID", "DerepID"))
 
-## Add OTU IDs to seq table
-cat("... Adding OTU IDs to sequence table\n")
+## Add dereplicated IDs to seq table
+cat("... Adding dereplicated IDs to sequence table\n")
 cat(".... Number of records in sequence table before merging: ", nrow(TAB), "\n")
 TAB <- merge(x = TAB, y = UC, by = "SeqID", all.x = TRUE)
 cat(".... Number of records in sequence table after merging: ",  nrow(TAB), "\n")
 
-## Remove NA OTUs -- probably excluded seqs
-if(any(is.na(TAB$OTU))){
-  cat("WARNING: not all sequences were assigned to OTUs\n")
+## Remove NA IDs -- probably excluded seqs
+if(any(is.na(TAB$DerepID))){
+  cat("WARNING: not all sequences are present in the dereplicated data (could be due to length-filteing)\n")
   cat("..Removing missing/excluded sequences\n")
-  cat(".. ", sum(is.na(TAB$OTU)), " sequences with total abundance ", 
-      sum(TAB[ is.na(OTU) ]$Abundance, na.rm = TRUE), " reads will be excluded\n")
-  TAB <- TAB[ ! is.na(OTU) ]
+  cat(".. ", sum(is.na(TAB$DerepID)), " sequences with total abundance ", 
+      sum(TAB[ is.na(DerepID) ]$Abundance, na.rm = TRUE), " reads will be excluded\n")
+  TAB <- TAB[ ! is.na(DerepID) ]
 }
 
 
-## Find singleton OTUs
-cat("\n..Finding singleton OTUs\n")
-SINGLETONS <- TAB[ , .(Abundance = sum(Abundance, na.rm = TRUE)), by = .(OTU) ][ Abundance < 2 ]
-cat("... Number of singleton OTUs: ", nrow(SINGLETONS), "\n")
+## Find singleton sequences
+cat("\n..Finding singleton sequences\n")
+SINGLETONS <- TAB[ , .(Abundance = sum(Abundance, na.rm = TRUE)), by = .(DerepID) ][ Abundance < 2 ]
+cat("... Number of singleton sequences: ", nrow(SINGLETONS), "\n")
 
 ## If singleton recovery is reqired
 if(RECOV_SINGLET == TRUE && nrow(SINGLETONS) > 0){
 
   ## Add quality scores
-  SINGLETONS <- merge(x = SINGLETONS, y = TAB[ , .(SeqID, MEEP)], by.x = "OTU", by.y = "SeqID", all.x = TRUE)
+  SINGLETONS <- merge(x = SINGLETONS, y = TAB[ , .(SeqID, MEEP)], by.x = "DerepID", by.y = "SeqID", all.x = TRUE)
 
   ## Filter by MEEP score
   SINGLETONS <- SINGLETONS[ MEEP > MAXMEEP ]
-  cat("... Number of singleton OTUs after filtering by MEEP score: ", nrow(SINGLETONS), "\n")
+  cat("... Number of singleton sequences after filtering by MEEP score: ", nrow(SINGLETONS), "\n")
 
 }
 
 if(nrow(SINGLETONS) > 0){
-  cat("..Removing singleton OTUs\n")
-  TAB <- TAB[ ! OTU %in% SINGLETONS$OTU ]
-  cat("... Number of records in sequence table after removing singleton OTUs: ", nrow(TAB), "\n")
+  cat("..Removing singleton sequences\n")
+  TAB <- TAB[ ! DerepID %in% SINGLETONS$DerepID ]
+  cat("... Number of records in sequence table after removing singleton sequences: ", nrow(TAB), "\n")
 }
 
 
-## Summarize abundance by sample and OTU
-cat("\n..Summarizing OTU abundance\n")
+## Summarize abundance by sample and dereplicated ID
+cat("\n..Summarizing sequence abundance\n")
 if(MERGE_SAMPLES == TRUE){
 
   cat("\n... Merging sample replicates (e.g., re-sequenced samples)\n")
@@ -217,16 +217,16 @@ if(MERGE_SAMPLES == TRUE){
   cat(".... Summarizing abundance by sample and OTU\n")
   RES <- TAB[ , 
     .( Abundance  = sum(Abundance,  na.rm = TRUE) ),
-    by = c("OTU", "SampleName") ]
+    by = c("DerepID", "SampleName") ]
 
   setnames(x = RES, old = "SampleName", new = "SampleID")
 
 } else {
 
-  cat("... Summarizing abundance by sample and OTU\n")
+  cat("... Summarizing abundance by sample and dereplicated ID\n")
   RES <- TAB[ , 
     .( Abundance  = sum(Abundance,  na.rm = TRUE) ),
-    by = c("OTU", "SampleID") ]
+    by = c("DerepID", "SampleID") ]
 
 }
 
@@ -234,16 +234,16 @@ if(MERGE_SAMPLES == TRUE){
 cat("\nReshaping table into wide format\n")
 
 ## Check if we can reshape the table in a single pass
-n_otu <- length(unique(RES$OTU))
+n_seq <- length(unique(RES$DerepID))
 n_smp <- length(unique(RES$SampleID))
-n_cll <- as.numeric(n_otu) * as.numeric(n_smp)
-cat("...In total, there are ", n_otu, " OTUs and ",  n_smp, " samples\n")
+n_cll <- as.numeric(n_seq) * as.numeric(n_smp)
+cat("...In total, there are ", n_seq, " sequences and ",  n_smp, " samples\n")
 cat("...The total number of cells in the wide table will be ", n_cll, "\n")
 
 ## Reshape data in one pass
 if(n_cll < 50000000){
   REW <- dcast(data = RES, 
-    formula = OTU ~ SampleID, 
+    formula = DerepID ~ SampleID, 
     fun.aggregate = sum, fill = 0, value.var = "Abundance")
 } else {
 ## Split data into chunks, reshape, and merge back
@@ -277,11 +277,11 @@ if(n_cll < 50000000){
       ## Reshape to wide
       res <- dcast(
         data = RES[ SampleID %in% x , ],
-        formula = OTU ~ SampleID,
+        formula = DerepID ~ SampleID,
         fill = 0, fun.aggregate = sum, value.var = "Abundance")
       
       ## Create key on a data.table (should improve merging speed)
-      setkey(res, OTU)
+      setkey(res, DerepID)
       
       return(res)
       },
@@ -291,7 +291,7 @@ if(n_cll < 50000000){
   cat("..Merging data into a single wide table\n")
 
   ## Merge chunks into a single wide table
-  merge_dt <- function(x,y){ data.table::merge.data.table(x, y, by = "OTU", all = TRUE) }
+  merge_dt <- function(x,y){ data.table::merge.data.table(x, y, by = "DerepID", all = TRUE) }
   REW <- Reduce(f = merge_dt, x = REWL)
   cat("...Merging finished\n")
 
@@ -346,23 +346,13 @@ cat("..Exporting wide table [tab-delimited]\n")
 fwrite(x = REW, file = "OTU_table_wide.txt.gz", sep = "\t", compress = "gzip")
 
 
-cat("\nExporting OTU sequences to FASTA\n")
+cat("\nExporting sequences to FASTA\n")
 
 cat("..Preparing sequences\n")
 
-## Take sequences from the data (NB! there are a several different sequence per OTU)
-# SQS <- unique(RES[, .(OTU) ])
-# tmp_OTUs <- unique(TAB[ OTU %in% SQS$OTU & SeqID == OTU , .(OTU, Sequence) ])
-# SQS <- merge(x = SQS, y = tmp_OTUs, by = "OTU", all.x = TRUE)
-# rm(tmp_OTUs)
-# 
-# cat("...Preparing XStringSet object\n")
-# SQF <- DNAStringSet(x = SQS$Sequence)
-# names(SQF) <- SQS$OTU
-
-## Take sequnces from the OTU file
+## Take sequnces from the FASTA file
 cat("... Loading FASTA file\n")
-SQS <- readDNAStringSet(filepath = OTUS, format="fasta")
+SQS <- readDNAStringSet(filepath = SEQS, format="fasta")
 cat("... Extracting sequence IDs\n")
 names(SQS) <- tstrsplit(x = names(SQS), split = ";", keep = 1)[[1]]
 
@@ -371,11 +361,11 @@ if(any(duplicated(names(SQS)))){
 }
 
 cat("... Subsetting OTUs\n")
-SQF <- SQS[ names(SQS) %in% unique(REW$OTU) ]
+SQF <- SQS[ names(SQS) %in% unique(REW$DerepID) ]
 
-cat("....Total number of OTUs in input sequences: ", length(SQS), "\n")
-cat("....Number of OTUs to export: ",                length(SQF), "\n")
-cat("....Number of OTUs in the OTU table: ",         nrow(REW),   "\n")
+cat("....Total number of sequences in input FASTA: ",   length(SQS), "\n")
+cat("....Number of sequences to export: ",              length(SQF), "\n")
+cat("....Number of sequences in the abundance table: ", nrow(REW),   "\n")
 
 cat("... Writing FASTA file\n")
 writeXStringSet(x = SQF,

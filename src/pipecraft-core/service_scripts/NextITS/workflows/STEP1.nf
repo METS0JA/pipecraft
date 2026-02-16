@@ -389,8 +389,9 @@ process demux {
         echo -e "\\n\\nSymmetric barcodes counts\\n\\n" >> LIMA/lima.lima.counts
         cat LIMAs/lima.lima.counts >> LIMA/lima.lima.counts
 
-        echo -e "\\n\\nSymmetric barcodes report\\n\\n" >> LIMA/lima.lima.report
-        cat LIMAs/lima.lima.report >> LIMA/lima.lima.report
+        ## Reports should be identical for symmetric and asymmetric barcodes, so no need to combine them
+        # echo -e "\\n\\nSymmetric barcodes report\\n\\n" >> LIMA/lima.lima.report
+        # cat LIMAs/lima.lima.report >> LIMA/lima.lima.report
       fi
 
     fi  # end of dual logs pooling
@@ -787,7 +788,7 @@ process itsx {
       path "${input.getSimpleName().replaceAll(/_PrimerChecked/, '')}.problematic.txt", optional: true
       path "${input.getSimpleName().replaceAll(/_PrimerChecked/, '')}_no_detections.fasta.gz", emit: itsx_nondetects, optional: true
       path "${input.getSimpleName().replaceAll(/_PrimerChecked/, '')}.summary.txt",        emit: itsx_summary, optional: true
-      path "${input.getSimpleName().replaceAll(/_PrimerChecked/, '')}.extraction.results", emit: itsx_details, optional: true
+      path "${input.getSimpleName().replaceAll(/_PrimerChecked/, '')}.extraction.results.gz", emit: itsx_details, optional: true
       path "${input.getSimpleName().replaceAll(/_PrimerChecked/, '')}.SSU.full_and_partial.fasta.gz",  emit: itsx_ssu_part,  optional: true
       path "${input.getSimpleName().replaceAll(/_PrimerChecked/, '')}.ITS1.full_and_partial.fasta.gz", emit: itsx_its1_part, optional: true
       path "${input.getSimpleName().replaceAll(/_PrimerChecked/, '')}.5_8S.full_and_partial.fasta.gz", emit: itsx_58s_part,  optional: true
@@ -946,7 +947,8 @@ process itsx {
     parallel -j${task.cpus} "gzip -${params.gzip_compression} {}" ::: \
       ${sampID}_hash_table.txt \
       ${sampID}_uc.uc \
-      *.fasta
+      *.fasta \
+      ${sampID}.extraction.results
 
     ## Convert ITSx output to Parquet
     if [ ${params.ITSx_to_parquet} == true ]; then
