@@ -16,14 +16,14 @@
           style="justify-content: center; padding: 10px 0px"
         >
           <a :href="$store.getters.linkify(input.tooltip)" target="_blank">{{
-            input.name.replace(/_/g, " ")
+            displayName
           }}</a></v-card-title
         >
         <v-card-title
           v-else
           v-on="on"
           style="justify-content: center; padding: 10px 0px"
-          >{{ input.name.replace(/_/g, " ") }}</v-card-title
+          >{{ displayName }}</v-card-title
         >
       </template>
       <span>{{ input.tooltip }}</span>
@@ -63,6 +63,10 @@ export default {
     },
     inputData() {
       return this.$store.state.data;
+    },
+    displayName() {
+      const name = this.input.displayName || this.input.name;
+      return name.replace(/_/g, " ");
     },
   },
   methods: {

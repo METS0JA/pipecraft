@@ -26,7 +26,7 @@
                 <a
                   :href="$store.getters.linkify(input.tooltip)"
                   target="_blank"
-                  >{{ input.name.replace(/_/g, " ") }}</a
+                  >{{ displayName }}</a
                 >
               </div>
             </template></v-checkbox
@@ -45,7 +45,7 @@
           >
             <template v-slot:label>
               <div style="color: black">
-                {{ input.name.replace(/_/g, " ") }}
+                {{ displayName }}
               </div>
             </template></v-checkbox
           >
@@ -88,6 +88,10 @@ export default {
     },
     inputData() {
       return this.$store.state.data;
+    },
+    displayName() {
+      const name = this.input.displayName || this.input.name;
+      return name.replace(/_/g, " ");
     },
   },
   methods: {

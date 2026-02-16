@@ -1313,6 +1313,125 @@ export default new Vuex.Store({
             ],
           },
           {
+            scriptName: "clustering_swarm.sh",
+            tooltip: "tick the checkbox to cluster reads with SWARM",
+            imageName: "pipecraft/vsearch_dada2:2",
+            serviceName: "swarm",
+            selected: false,
+            showExtra: false,
+            extraInputs: [
+              {
+                name: "swarm_threads",
+                displayName: "cores",
+                value: 4,
+                disabled: "never",
+                tooltip: "Number of CPU cores to use",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "swarm_boundary",
+                displayName: "boundary",
+                value: 3,
+                disabled: "never",
+                tooltip:
+                  "Fastidious option (d=1 only): minimum mass of large swarms",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "swarm_ceiling",
+                displayName: "ceiling",
+                value: 1000,
+                disabled: "never",
+                tooltip:
+                  "Fastidious option (d=1 only): max memory in MB for Bloom filter",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "swarm_bloom_bits",
+                displayName: "bloom bits",
+                value: 16,
+                disabled: "never",
+                tooltip:
+                  "Fastidious option (d=1 only): number of bits for Bloom filter",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "swarm_match",
+                displayName: "match",
+                value: 5,
+                disabled: "never",
+                tooltip:
+                  "Pairwise alignment (d>1 only): reward for nucleotide match",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "swarm_mismatch",
+                displayName: "mismatch",
+                value: 4,
+                disabled: "never",
+                tooltip:
+                  "Pairwise alignment (d>1 only): penalty for nucleotide mismatch",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "swarm_gap_open",
+                displayName: "gap opening",
+                value: 12,
+                disabled: "never",
+                tooltip:
+                  "Pairwise alignment (d>1 only): penalty for gap opening",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "swarm_gap_ext",
+                displayName: "gap extension",
+                value: 4,
+                disabled: "never",
+                tooltip:
+                  "Pairwise alignment (d>1 only): penalty for gap extension",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+            ],
+            Inputs: [
+              {
+                name: "swarm_d",
+                displayName: "d",
+                value: 1,
+                disabled: "never",
+                tooltip:
+                  "Clustering resolution: maximum number of differences between sequences in a swarm",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "swarm_no_break",
+                displayName: "no OTU breaking",
+                value: true,
+                disabled: "never",
+                tooltip:
+                  "Prevent OTU breaking: keep all amplicons in the same swarm",
+                type: "bool",
+              },
+              {
+                name: "swarm_fastidious",
+                displayName: "fastidious",
+                value: false,
+                disabled: "never",
+                tooltip:
+                  "Fastidious mode (d=1 only): link nearby low-abundance swarms to large swarms",
+                type: "bool",
+              },
+            ],
+          },
+          {
             scriptName: "clustering_unoise.sh",
             tooltip:
               "tick the checkbox to cluster reads with vsearch --cluster_unoise (and optionally remove chimeras with --uchime3_denovo)",
