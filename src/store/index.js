@@ -1315,7 +1315,7 @@ export default new Vuex.Store({
           {
             scriptName: "clustering_swarm.sh",
             tooltip: "tick the checkbox to cluster reads with SWARM",
-            imageName: "pipecraft/vsearch_dada2:2",
+            imageName: "pipecraft/swarm:3.0",
             serviceName: "swarm",
             selected: false,
             showExtra: false,
@@ -1335,7 +1335,7 @@ export default new Vuex.Store({
                 value: 3,
                 disabled: "never",
                 tooltip:
-                  "Fastidious option (d=1 only): minimum mass of large swarms",
+                  "Fastidious option (requires fastidious=true AND d=1): minimum mass of large swarms",
                 type: "numeric",
                 rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
               },
@@ -1345,7 +1345,7 @@ export default new Vuex.Store({
                 value: 1000,
                 disabled: "never",
                 tooltip:
-                  "Fastidious option (d=1 only): max memory in MB for Bloom filter",
+                  "Fastidious option (requires fastidious=true AND d=1): max memory in MB for Bloom filter",
                 type: "numeric",
                 rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
               },
@@ -1355,7 +1355,7 @@ export default new Vuex.Store({
                 value: 16,
                 disabled: "never",
                 tooltip:
-                  "Fastidious option (d=1 only): number of bits for Bloom filter",
+                  "Fastidious option (requires fastidious=true AND d=1): number of bits for Bloom filter",
                 type: "numeric",
                 rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
               },

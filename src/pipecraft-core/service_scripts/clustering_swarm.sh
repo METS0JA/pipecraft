@@ -13,22 +13,8 @@
 # pigz
 ################################################
 
-# Optional container image for SWARM execution
-swarm_container_image=${SWARM_CONTAINER_IMAGE}
-swarm_exec() {
-    if [[ -n "$swarm_container_image" ]]; then
-        if ! command -v docker >/dev/null 2>&1; then
-            printf "[ERROR] docker not found but SWARM_CONTAINER_IMAGE is set.\n" >&2
-            exit 1
-        fi
-        docker run --rm -v "$PWD":/data -w /data "$swarm_container_image" swarm "$@"
-    else
-        swarm "$@"
-    fi
-}
-
 # Checking tool versions
-swarm_version=$(swarm_exec --version 2>&1 | head -n1 | awk '{print $2}')
+swarm_version=$(swarm --version 2>&1 | head -n1 | awk '{print $2}')
 vsearch_version=$(vsearch --version 2>&1 | head -n1 | awk '{print $2}' | sed 's/,//g')
 seqkit_version=$(seqkit version 2>&1 | awk '{print $2}')
 printf "# swarm (version %s)\n" "$swarm_version"
@@ -37,7 +23,7 @@ printf "# seqkit (version %s)\n" "$seqkit_version"
 
 # Load variables (these can be set in the environment or upstream)
 # SWARM clustering options with defaults:
-swarm_d=${swarm_d:1}                      # Resolution (differences), default 1.
+swarm_d=${swarm_d:-1}                      # Resolution (differences), default 1.
 swarm_no_break=${swarm_no_break}           # If defined (default "true"), adds --no-otu-breaking.
 # Fastidious options (only applicable if swarm_d == 1)
 swarm_boundary=${swarm_boundary}           # default 3
@@ -51,10 +37,10 @@ swarm_network_file=${swarm_network_file}   # Filename for network output.
 swarm_log=${swarm_log}                     # Log filename.
 swarm_mothur=${swarm_mothur}               # Flag for mothur-like output.
 swarm_uclust_file=${swarm_uclust_file}     # Filename for UCLUST-like output.
-# Default output filenames:
+# Default output filenames (base names only; output_dir is added later):
 swarm_output_file=${swarm_output_file:-amplicon.swarms}
 swarm_stats_file=${swarm_stats_file:-amplicon.stats}
-swarm_seeds_file=${swarm_seeds_file:-amplicons.fasta}
+swarm_seeds_file=${swarm_seeds_file:-swarm_clusters.fasta}
 # Pairwise alignment advanced options (only when swarm_d > 1)
 swarm_match=${swarm_match}                 # Default reward for nucleotide match, default 5.
 swarm_mismatch=${swarm_mismatch}           # Default penalty for mismatch, default 4.
@@ -62,7 +48,7 @@ swarm_gap_open=${swarm_gap_open}           # Gap open penalty, default 12.
 swarm_gap_ext=${swarm_gap_ext}             # Gap extension penalty, default 4.
 swarm_disable_sse3=${swarm_disable_sse3}   # Flag, default "true" to disable SSE3.
 # Thread setting: default to 4 but can be overridden.
-swarm_threads=${swarm_threads:4}
+swarm_threads=${swarm_threads:-4}
 
 # File format and input file variables
 fileFormat=${fileFormat}                   # "fasta", "fastq", etc.
@@ -72,7 +58,7 @@ fasta_file=${fasta_file}                   # Single-end input file; if FASTQ, co
 source /scripts/submodules/framework.functions.sh
 
 # Define output directory for swarm clustering
-output_dir=$"/input/clustering_out"
+output_dir=$"/input/clustering_out_swarm"
 export output_dir
 
 ###############################
@@ -113,13 +99,21 @@ for seqrun in $DIRS; do
         fi
         output_dir=$"/input/multiRunDir/${seqrun%%/*}/clustering_out_swarm"
         export output_dir
-        output_fastas+=("$output_dir/swarm_clusters.fasta")
+        mkdir -p "$output_dir"
+        swarm_output_path="$output_dir/$swarm_output_file"
+        swarm_stats_path="$output_dir/$swarm_stats_file"
+        swarm_seeds_path="$output_dir/$swarm_seeds_file"
+        output_fastas+=("$swarm_seeds_path")
         first_file_check
         prepare_SE_env
     else
         output_dir=$"/input/clustering_out_swarm"
         export output_dir
-        output_fastas=("$output_dir/swarm_clusters.fasta")
+        mkdir -p "$output_dir"
+        swarm_output_path="$output_dir/$swarm_output_file"
+        swarm_stats_path="$output_dir/$swarm_stats_file"
+        swarm_seeds_path="$output_dir/$swarm_seeds_file"
+        output_fastas=("$swarm_seeds_path")
         first_file_check
         prepare_SE_env
     fi
@@ -180,14 +174,15 @@ for seqrun in $DIRS; do
     if [[ "$swarm_no_break" == "true" ]]; then
         swarm_opts+=" -n"
     fi
-    # If resolution is 1, add fastidious options if provided
+    # If resolution is 1, add fastidious options ONLY if fastidious mode is enabled
     if [[ "$swarm_d" -eq 1 ]]; then
-        [[ -n "$swarm_boundary" ]] && swarm_opts+=" -b ${swarm_boundary}"
-        [[ -n "$swarm_ceiling" ]] && swarm_opts+=" -c ${swarm_ceiling}"
         if [[ "$swarm_fastidious" == "true" ]]; then
             swarm_opts+=" -f"
+            # Add fastidious-specific options only when fastidious mode is enabled
+            [[ -n "$swarm_boundary" ]] && swarm_opts+=" -b ${swarm_boundary}"
+            [[ -n "$swarm_ceiling" ]] && swarm_opts+=" -c ${swarm_ceiling}"
+            [[ -n "$swarm_bloom_bits" ]] && swarm_opts+=" -y ${swarm_bloom_bits}"
         fi
-        [[ -n "$swarm_bloom_bits" ]] && swarm_opts+=" -y ${swarm_bloom_bits}"
     else
         # For d > 1, add pairwise alignment advanced options if provided
         [[ -n "$swarm_match" ]] && swarm_opts+=" -m ${swarm_match}"
@@ -200,9 +195,9 @@ for seqrun in $DIRS; do
     fi
     # Append default output options: enable usearch abundance (-z)
     swarm_opts+=" -z"
-    swarm_opts+=" -o ${swarm_output_file}"
-    swarm_opts+=" -s ${swarm_stats_file}"
-    swarm_opts+=" -w ${swarm_seeds_file}"
+    swarm_opts+=" -o ${swarm_output_path}"
+    swarm_opts+=" -s ${swarm_stats_path}"
+    swarm_opts+=" -w ${swarm_seeds_path}"
     # Add threads option
     swarm_opts+=" -t ${swarm_threads}"
     # Additional input/output options if set by user
@@ -217,7 +212,7 @@ for seqrun in $DIRS; do
 
     ### Clustering with SWARM
     printf "Clustering with SWARM ...\n"
-    swarm_exec $swarm_opts tempdir/Glob_derep.fasta
+    swarm $swarm_opts tempdir/Glob_derep.fasta
     if [[ $? -ne 0 ]]; then
         printf "Error: SWARM clustering failed.\n" >&2
         exit 1
@@ -226,6 +221,13 @@ for seqrun in $DIRS; do
     #################################################
     ### CLEAN UP AND COMPILE FINAL README FILE
     #################################################
+    ### Create README.txt with clustering details
+    input_file_count=$(ls -1 *."$fileFormat" 2>/dev/null | wc -l)
+    if [[ $input_file_count -gt 0 ]]; then
+        total_reads=$(seqkit stats -T *."$fileFormat" | awk 'NR>1 {sum+=$4} END {print sum+0}')
+    else
+        total_reads=0
+    fi
     if [[ "$was_fastq" == "true" ]]; then
         mkdir -p "$output_dir/clustering_input_to_FASTA"
         mv *.fasta "$output_dir/clustering_input_to_FASTA"
@@ -233,27 +235,38 @@ for seqrun in $DIRS; do
     if [[ $debugger != "true" ]]; then
         rm -rf tempdir dereplicated_sequences
     fi
-
-    ### Create README.txt with clustering details
-    count_features "$output_dir/swarm_clusters.fasta"
+    cluster_count=$(grep -c "^>" "$swarm_seeds_path" 2>/dev/null || echo 0)
     end=$(date +%s)
     runtime=$((end - start))
-    printf "# Sequences were clustered into swarm_clusters using SWARM clustering with advanced options.
+    seeds_basename=$(basename "$swarm_seeds_path")
+    swarms_basename=$(basename "$swarm_output_path")
+    stats_basename=$(basename "$swarm_stats_path")
+    printf "# Reads were clustered using SWARM (see 'Core command' below for the used settings).
 Start time: %s
 End time: %s
 Runtime: %s seconds
 
 Files in 'clustering_out_swarm' directory:
 --------------------------------------------
-swarm_clusters.fasta       = FASTA formatted representative OTU sequences (seed sequences).
+%s       = FASTA formatted representative swarm-cluster sequences (seed sequences).
 %s               = SWARM cluster assignment file.
 %s               = SWARM statistics file.
+
+Input files processed               = %s
+Total input reads                   = %s
+Number of seed sequences (clusters) = %s
 
 Core command ->
 swarm %s tempdir/Glob_derep.fasta
 
 NOTE: OTU table generation is not included in this workflow.
-" "$start_time" "$(date)" "$runtime" "${swarm_output_file}" "${swarm_stats_file}" "$swarm_opts" > "$output_dir/README.txt"
+" "$start_time" "$(date)" "$runtime" "$seeds_basename" "$swarms_basename" "$stats_basename" "$input_file_count" "$total_reads" "$cluster_count" "$swarm_opts" > "$output_dir/README.txt"
+
+    if [[ "$was_fastq" == "true" ]]; then
+        printf "\n\nInput was fastq; converted those to fasta before clustering.\nConverted fasta files in directory 'clustering_input_to_FASTA'\n" >> "$output_dir/README.txt"
+    fi
+
+    printf "\n\n##############################################\n###Third-party applications for this process:\n#swarm (version $swarm_version)\n    #citation: Swarm v3: towards tera-scale amplicon clustering. Mahé F, Czech L, Stamatakis A, Quince C, de Vargas C, Dunthorn M, Rognes T. (2021) Bioinformatics doi: 10.1093/bioinformatics/btab493\n    #https://github.com/torognes/swarm\n#vsearch (version $vsearch_version)\n    #citation: Rognes T, Flouri T, Nichols B, Quince C, Mahé F (2016) VSEARCH: a versatile open source tool for metagenomics PeerJ 4:e2584\n    #https://github.com/torognes/vsearch\n#GNU Parallel (version 20260122)\n    #Citation: Tange, O. (2021, April 22). GNU Parallel 20210422 ('Ever Given'). Zenodo. https://doi.org/10.5281/zenodo.4710607\n################################################\n" >> "$output_dir/README.txt"
 
     printf "\nDONE for run: %s\nTotal time: %s sec.\n" "$seqrun" "$runtime"
 
