@@ -209,6 +209,13 @@ DUAL <- grepl(pattern = "\\.\\.\\.", x = as.character(TAGS))
 
 if(any(DUAL)){
   cat("Barcode type detected: Dual\n")
+
+  if(any(!DUAL)){
+    cat("WARNING: mixture of single and dual tags detected!\n")
+    print(names(TAGS)[ !DUAL ])
+    stop("\nPlease fix the tag sequences (remove single tags or add double dots to dual tags)!\n")
+  }
+
 } else {
   cat("Barcode type detected: Single (or dual symmetric)\n")
 }
@@ -331,6 +338,31 @@ if(any(DUAL) == TRUE){
   }
 
 
+  ## Find unique barcode combinations (taking into account reverse complements)
+  dtt[, tag_pair_unordered := paste(
+      pmin(Tag1, Tag2),
+      pmax(Tag1, Tag2),
+    sep="|") ]
+
+  dtt[, tag_pair_ordered := paste(Tag1, Tag2, sep="|") ]
+
+  ## Swapped-pair ambiguity: X-Y exists AND Y-X exists (cannot disambiguate if you don't know direction)
+  swapped <- dtt[, .(
+    n_samples = .N,
+    n_ordered   = uniqueN(tag_pair_ordered),
+    samples     = paste(sort(SampleID), collapse=", "),
+    ordered_set = paste(sort(unique(tag_pair_ordered)), collapse=", ")
+  ), by = tag_pair_unordered][ n_samples > 1 ]
+
+  if(nrow(swapped) > 0){
+    cat("\nWARNING: swapped-pair tag ambiguity detected!\n")
+    cat("..Number of swapped-pair tag combinations: ", nrow(swapped), "\n")
+    cat("..Swapped-pair tag combinations: ", "\n")
+    print(swapped[ , .(samples, tag_pair_unordered) ])
+    stop("\nIt is impossible to assign sample ID to sequences with swapped-pair tag combinations!\nPlease fix the tag sequences (e.g., combine primer sequence with the tag sequence!\n")
+  }
+
+
   ## Prepare biosample table for LIMA
   # https://lima.how/faq/biosample.html
   cat("\nExporting biosample tables: 'biosamples_sym.csv' and 'biosamples_asym.csv'\n")
@@ -339,6 +371,8 @@ if(any(DUAL) == TRUE){
     Barcodes     = dtt$Barcodes,
     `Bio Sample` = dtt$SampleID,
     TagSymmetry  = dtt$TagSymmetry)
+
+  setorder(x = res, `Bio Sample`)
 
   fwrite(
     x = res[ TagSymmetry %in% "symmetric", .(Barcodes, `Bio Sample`) ] ,
@@ -354,6 +388,20 @@ if(any(DUAL) == TRUE){
   ## File for sample renaming
   res[ , OldName := paste0("lima.", Barcodes, ".fq.gz") ]
   res[ , NewName := paste0(`Bio Sample`, ".fq.gz") ]
+
+  ## The order of tags can be different in the FASTQ file names
+  ## Ensure that we keep track of both options (x--y and y--x)
+  tmp <- copy(res)
+  tmp[ , c("ID1", "ID2") := tstrsplit(x = Barcodes, split = "--", keep = 1:2) ]
+  tmp[ , Barcodes := paste0(ID2, "--", ID1) ]
+  tmp[ , OldName := paste0("lima.", Barcodes, ".fq.gz") ]
+  tmp[ , ID1 := NULL ]
+  tmp[ , ID2 := NULL ]
+
+  res <- rbind(res, tmp)
+  rm(tmp)
+  res <- unique(res, by = "OldName")
+  setorder(x = res, Barcodes)
 
   cat("Exporting file naming scheme: 'file_renaming.tsv'\n")
 
@@ -396,11 +444,23 @@ if(any(DUAL) == TRUE){
     RUNID <- "unknown"
   }
 
-  UNKN[ , IDS      := paste0(ID1, "--", ID2) ]
-  UNKN[ , OldName  := paste0("lima.", IDS, ".fq.gz") ]
-  UNKN[ , Barcodes := paste0(Tag1, "_", Tag2) ]
-  UNKN[ , NewName  := paste0(RUNID, "__", Barcodes, ".fq.gz") ]
+  UNKN1 <- copy(UNKN)
+  UNKN1[ , IDS      := paste0(ID1, "--", ID2) ]
+  UNKN1[ , OldName  := paste0("lima.", IDS, ".fq.gz") ]
+  UNKN1[ , Barcodes := paste0(Tag1, "_", Tag2) ]
+  UNKN1[ , NewName  := paste0(RUNID, "__", Barcodes, ".fq.gz") ]
   
+  UNKN2 <- copy(UNKN)
+  UNKN2[ , IDS      := paste0(ID2, "--", ID1) ]
+  UNKN2[ , OldName  := paste0("lima.", IDS, ".fq.gz") ]
+  UNKN2[ , Barcodes := paste0(Tag2, "_", Tag1) ]
+  UNKN2[ , NewName  := paste0(RUNID, "__", Barcodes, ".fq.gz") ]
+  
+  UNKN <- rbind(UNKN1, UNKN2)
+  rm(UNKN1, UNKN2)
+  UNKN <- unique(UNKN, by = "OldName")
+  setorder(x = UNKN, OldName)
+
   ## Remove known combinations
   UNKN <- UNKN[ !IDS %in% res$Barcodes ]
 
