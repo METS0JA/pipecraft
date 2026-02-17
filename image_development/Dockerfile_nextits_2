@@ -19,6 +19,8 @@ RUN set -eux; \
     NXF_VER="${NEXTFLOW_VERSION}" curl -s https://get.nextflow.io | bash ; \
     mv nextflow "${NXF_HOME}/nextflow"; \
     chmod 0755 "${NXF_HOME}/nextflow"; \
+    "${NXF_HOME}"/nextflow plugin install nf-schema@2.4.1; \
+    rm -rf ./.nextflow; \
     ## Pull NextITS into $NEXTITS_DIR
     git clone --depth 1 --branch "${NEXTITS_VERSION}" https://github.com/vmikk/NextITS "${NEXTITS_DIR}" ; \
     rm -rf "${NEXTITS_DIR}/.git" ; \
