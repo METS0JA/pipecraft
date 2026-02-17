@@ -7,9 +7,9 @@
 ################################################
 ### Third-party applications:
 # swarm (v3.1.6)
-# vsearch (for dereplication v2.23.0)
-# GNU Parallel (20210422)
-# seqkit (v2.3.0)
+# vsearch (v2.30.4)
+# GNU Parallel (20260122)
+# seqkit (v2.12.0)
 # pigz
 ################################################
 
