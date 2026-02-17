@@ -6,15 +6,29 @@
 
 ################################################
 ### Third-party applications:
-# swarm (v3.1.5)
+# swarm (v3.1.6)
 # vsearch (for dereplication v2.23.0)
 # GNU Parallel (20210422)
 # seqkit (v2.3.0)
 # pigz
 ################################################
 
+# Optional container image for SWARM execution
+swarm_container_image=${SWARM_CONTAINER_IMAGE}
+swarm_exec() {
+    if [[ -n "$swarm_container_image" ]]; then
+        if ! command -v docker >/dev/null 2>&1; then
+            printf "[ERROR] docker not found but SWARM_CONTAINER_IMAGE is set.\n" >&2
+            exit 1
+        fi
+        docker run --rm -v "$PWD":/data -w /data "$swarm_container_image" swarm "$@"
+    else
+        swarm "$@"
+    fi
+}
+
 # Checking tool versions
-swarm_version=$(swarm --version 2>&1 | head -n1 | awk '{print $2}')
+swarm_version=$(swarm_exec --version 2>&1 | head -n1 | awk '{print $2}')
 vsearch_version=$(vsearch --version 2>&1 | head -n1 | awk '{print $2}' | sed 's/,//g')
 seqkit_version=$(seqkit version 2>&1 | awk '{print $2}')
 printf "# swarm (version %s)\n" "$swarm_version"
@@ -203,7 +217,7 @@ for seqrun in $DIRS; do
 
     ### Clustering with SWARM
     printf "Clustering with SWARM ...\n"
-    swarm $swarm_opts tempdir/Glob_derep.fasta
+    swarm_exec $swarm_opts tempdir/Glob_derep.fasta
     if [[ $? -ne 0 ]]; then
         printf "Error: SWARM clustering failed.\n" >&2
         exit 1

@@ -1,0 +1,36 @@
+# SWARM - Dockerfile, minimal container
+# Build with: docker build --tag pipecraft/swarm:3.0 --file image_development/Dockerfile_swarm .
+
+FROM debian:bookworm-slim
+
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+ENV CONDA_PREFIX="/opt/conda"
+ENV PATH="${CONDA_PREFIX}/bin:${PATH}"
+
+RUN apt-get update -qq \
+  && apt-get -y --no-install-recommends install \
+    bzip2 \
+    ca-certificates \
+    curl \
+    gawk \
+    gzip \
+    pigz \
+    tar \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
+
+# Install Miniforge and SWARM (bioconda)
+RUN mkdir -p /opt \
+  && cd /opt \
+  && curl -fsSLO https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh \
+  && bash ./Miniforge3-Linux-x86_64.sh -u -b -p ${CONDA_PREFIX} \
+  && rm Miniforge3-Linux-x86_64.sh \
+  && ${CONDA_PREFIX}/bin/conda config --add channels conda-forge \
+  && ${CONDA_PREFIX}/bin/conda config --add channels bioconda \
+  && ${CONDA_PREFIX}/bin/conda install -y -c conda-forge mamba \
+  && ${CONDA_PREFIX}/bin/mamba install -y \
+    "swarm>=3.1.6" \
+  && ${CONDA_PREFIX}/bin/mamba clean --all --yes
+
+WORKDIR /data
