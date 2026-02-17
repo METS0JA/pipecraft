@@ -1,0 +1,10 @@
+
+# Stage 1 (Nextflow - minimal stage)
+FROM nextflow/nextflow:25.10.2 AS nextflow
+
+## Build stage 3 - Main
+FROM vmikk/nextits:1.1.0 AS main
+
+# Copy Nextflow binary from the Nextflow stage
+COPY --from=nextflow /usr/local/bin/nextflow /usr/local/bin/nextflow
+

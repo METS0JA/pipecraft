@@ -9,6 +9,28 @@
   echo -e "Output: " Step1_Results/"$1"
   echo -e "Temporary workdirs: " Step1_WorkDirs/"$1"
   BASEDIR=$(pwd)
+  resolve_nextflow() {
+    local nf_bin
+    nf_bin="$(command -v nextflow || true)"
+    if [ -z "$nf_bin" ] && [ -x /usr/local/bin/nextflow ]; then
+      nf_bin="/usr/local/bin/nextflow"
+    fi
+    if [ -z "$nf_bin" ]; then
+      echo "ERROR: nextflow not found in PATH." >&2
+      exit 127
+    fi
+    echo "$nf_bin"
+  }
+
+  run_nextflow() {
+    local nf_bin
+    nf_bin="$(resolve_nextflow)"
+    if command -v stdbuf >/dev/null 2>&1; then
+      stdbuf -oL -eL "$nf_bin" "$@"
+    else
+      "$nf_bin" "$@"
+    fi
+  }
   ## Create output directories
   mkdir -p Step1_Results/"$1"
   mkdir -p Step1_WorkDirs/"$1"
@@ -16,8 +38,7 @@
 
 
 ## Step-1 - with pre-demultiplexed data
-stdbuf -oL -eL nextflow run \
-  vmikk/NextITS -r main \
+run_nextflow run /scripts/NextITS \
   -resume \
   --step "Step1" \
   --storagemode "copy" \

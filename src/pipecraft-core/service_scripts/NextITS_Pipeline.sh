@@ -12,6 +12,7 @@ BASEDIR=$(pwd)
 fix_permissions() {
   # Try different possible locations for the NextITS scripts
   for dir in \
+    "/scripts/NextITS/bin" \
     "$NXF_HOME/assets/vmikk/NextITS/bin" \
     "/Input/.nextflow/assets/vmikk/NextITS/bin" \
     "$HOME/.nextflow/assets/vmikk/NextITS/bin" \
@@ -35,8 +36,14 @@ fix_permissions
 ls -la
 
 ## Run Step-1 for all sequencing runs
-find /Input/ -type d -not -path /Input/ | sort \
-  | parallel -j1 --joblog Step1.log \
+find /Input/ -mindepth 1 -maxdepth 1 -type d \
+  ! -name ".nextflow" \
+  ! -name "Step1_Results" \
+  ! -name "Step1_WorkDirs" \
+  ! -name "Step2_Results" \
+  ! -name "Step2_WorkDir" \
+  | sort \
+  | parallel -j1 --joblog /Input/Step1.log \
   "/scripts/submodules/NextITS_Step1.sh {/}"
 
 
@@ -44,8 +51,7 @@ find /Input/ -type d -not -path /Input/ | sort \
 
 ## Step-2 - standard VSEARCH clustering
 
-stdbuf -oL -eL nextflow run \
-  vmikk/NextITS -r main \
+stdbuf -oL -eL nextflow run /scripts/NextITS \
   -resume \
   --storagemode "copy" \
   -params-file /scripts/NextFlowConfig.json \

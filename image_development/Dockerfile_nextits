@@ -24,6 +24,9 @@ ENV SHELL=/bin/bash
 LABEL org.opencontainers.image.authors="vladimir.mikryukov@ut.ee"
 LABEL org.opencontainers.image.version="1.1.0"
 
+# Copy Nextflow binary from the Nextflow stage
+COPY --from=nextflow /usr/local/bin/nextflow /usr/local/bin/nextflow
+
 RUN apt-get update -qq \
   && apt-get -y --no-install-recommends install \
     tar zip unzip pigz gzip zstd xz-utils bzip2 coreutils \
