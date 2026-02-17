@@ -1,7 +1,4 @@
-# SWARM - Dockerfile, minimal container
-# Build with: docker build --tag pipecraft/swarm:3.0 --file image_development/Dockerfile_swarm .
-
-FROM debian:bookworm-slim
+FROM ubuntu:22.04
 
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
