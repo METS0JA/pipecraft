@@ -55,8 +55,18 @@ export default {
 .fade-leave-to {
   opacity: 0;
 }
-#app {
-  background: url("assets/bg.jpg") no-repeat center center fixed !important;
-  background-size: cover;
+html,
+body,
+#app,
+.v-application,
+.v-application--wrap {
+  height: 100%;
+}
+
+.v-application,
+.v-application--wrap {
+  background: url("assets/bg.jpg") no-repeat center top fixed !important;
+  background-size: 100% auto !important;
+  background-color: #000 !important;
 }
 </style>

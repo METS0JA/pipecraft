@@ -1,30 +1,30 @@
 <template>
   <div class="container" >
     <v-card width="85%" style="margin: auto; background-color: rgb(0 0 0 / 40%)">
-      <v-card-title style="color: black" class="py-10">RESOURCE MANAGER</v-card-title>
+      <v-card-title style="color: white" class="py-10">RESOURCE MANAGER</v-card-title>
       <v-divider></v-divider>
       <v-card-subtitle
         v-if="!isDockerActive"
-        style="color: black; display: flex; align-items: center"
+        style="color: white; display: flex; align-items: center"
       >
         CPU:
         <v-progress-linear
           rounded
           reverse
-          color="black"
+          color="white"
           buffer-value="0"
           stream
           style="margin-left: 10px; width: 40px"
         ></v-progress-linear>
       </v-card-subtitle>
-      <v-card-subtitle v-else style="color: black"
+      <v-card-subtitle v-else style="color: white"
         >CPU: {{ ncpu }}</v-card-subtitle
       >
       <v-slider
         class="px-5"
         v-model="ncpu"
-        color="black"
-        track-color="black"
+        color="white"
+        track-color="white"
         step="1"
         ticks="always"
         tick-size="5"
@@ -32,24 +32,24 @@
         :max="processors"
         :tick-labels="tickLabelsCPU"
         height="100"
-        style="color: black"
+        style="color: white"
       ></v-slider>
       <v-divider></v-divider>
       <v-card-subtitle
         v-if="!isDockerActive"
-        style="color: black; display: flex; align-items: center"
+        style="color: white; display: flex; align-items: center"
       >
         RAM:
         <v-progress-linear
           rounded
           reverse
-          color="black"
+          color="white"
           buffer-value="0"
           stream
           style="margin-left: 10px; width: 40px"
         ></v-progress-linear>
       </v-card-subtitle>
-      <v-card-subtitle v-else style="color: black">
+      <v-card-subtitle v-else style="color: white">
         RAM:
         {{ memtotal }}
         GB</v-card-subtitle
@@ -57,9 +57,9 @@
 
       <v-slider
         class="px-5"
-        color="black"
+        color="white"
         v-model="memtotal"
-        track-color="black"
+        track-color="white"
         step="1"
         ticks="always"
         tick-size="5"
@@ -67,7 +67,7 @@
         :max="memory"
         :tick-labels="tickLabelsMEM"
         height="100"
-        style="color: black"
+        style="color: white"
       ></v-slider>
       <div style="display: flex; justify-content: center">
         <v-btn v-if="this.$store.state.OStype != 'Linux'"
@@ -83,7 +83,7 @@
           style="margin: auto"
           class="ma-5"
           outlined
-          color="black"
+          color="white"
         >
           Apply & restart docker
         </v-btn>
