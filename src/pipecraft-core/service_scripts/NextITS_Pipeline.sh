@@ -1,37 +1,12 @@
 #!/bin/bash
 
 
-export NXF_HOME="/Input/.nextflow"
+export NXF_HOME="/opt/software/conda/bin"
 export NXF_ANSI_LOG="false"
 export NXF_LOG_COLOR="false"
 export NXF_ANSI="false"
 export TERM="dumb"
-mkdir -p $NXF_HOME
 BASEDIR=$(pwd)
-
-fix_permissions() {
-  # Try different possible locations for the NextITS scripts
-  for dir in \
-    "/scripts/NextITS/bin" \
-    "$NXF_HOME/assets/vmikk/NextITS/bin" \
-    "/Input/.nextflow/assets/vmikk/NextITS/bin" \
-    "$HOME/.nextflow/assets/vmikk/NextITS/bin" \
-    "./work/*/vmikk/NextITS/bin"
-  do
-    if [ -d "$dir" ]; then
-      echo "Setting permissions for scripts in $dir"
-      find "$dir" -name "*.R" -exec chmod +x {} \; 2>/dev/null
-      find "$dir" -name "*.py" -exec chmod +x {} \; 2>/dev/null
-      find "$dir" -name "*.sh" -exec chmod +x {} \; 2>/dev/null
-      # Also fix line endings in case they're causing issues
-      find "$dir" -name "*.R" -exec sed -i 's/\r$//' {} \; 2>/dev/null
-      find "$dir" -name "*.py" -exec sed -i 's/\r$//' {} \; 2>/dev/null
-      find "$dir" -name "*.sh" -exec sed -i 's/\r$//' {} \; 2>/dev/null
-    fi
-  done
-}
-
-fix_permissions
 
 ls -la
 
@@ -51,7 +26,8 @@ find /Input/ -mindepth 1 -maxdepth 1 -type d \
 
 ## Step-2 - standard VSEARCH clustering
 
-stdbuf -oL -eL nextflow run /scripts/NextITS \
+stdbuf -oL -eL \
+  nextflow run /opt/pipelines/NextITS/main.nf \
   -resume \
   --storagemode "copy" \
   -params-file /scripts/NextFlowConfig.json \

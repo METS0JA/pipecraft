@@ -38,7 +38,7 @@
 
 
 ## Step-1 - with pre-demultiplexed data
-run_nextflow run /scripts/NextITS \
+run_nextflow run /opt/pipelines/NextITS/main.nf \
   -resume \
   --step "Step1" \
   --storagemode "copy" \
