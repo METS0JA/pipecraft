@@ -1314,7 +1314,7 @@ export default new Vuex.Store({
           },
           {
             scriptName: "clustering_swarm.sh",
-            tooltip: "Cluster sequences into OTUs using SWARM - a robust method that builds clusters by iteratively linking similar sequences. Unlike similarity-threshold methods, SWARM uses a local linkage approach for more natural OTU boundaries.",
+            tooltip: "tick the checkbox to cluster reads with SWARM",
             imageName: "pipecraft/swarm:3.0",
             serviceName: "swarm",
             selected: false,
@@ -1325,7 +1325,7 @@ export default new Vuex.Store({
                 displayName: "cores",
                 value: 4,
                 disabled: "never",
-                tooltip: "Number of CPU cores to use for parallel processing. Higher values speed up clustering on multi-core machines.",
+                tooltip: "Number of CPU cores to use",
                 type: "numeric",
                 rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
               },
@@ -1335,7 +1335,7 @@ export default new Vuex.Store({
                 value: 3,
                 disabled: "never",
                 tooltip:
-                  "[Fastidious, d=1 only] Minimum size (total sequence count) a swarm must have to be considered 'large'. Small swarms with rare sequences are grafted onto large swarms only if those large swarms meet this threshold. Default 3 is usually fine.",
+                  "Fastidious option (requires fastidious=true AND d=1): minimum mass of large swarms",
                 type: "numeric",
                 rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
               },
@@ -1345,7 +1345,7 @@ export default new Vuex.Store({
                 value: 1000,
                 disabled: "never",
                 tooltip:
-                  "[Fastidious, d=1 only] Maximum RAM (in MB) that SWARM may use for its internal Bloom filter data structure during the fastidious pass. Increase this if SWARM reports memory errors on large datasets.",
+                  "Fastidious option (requires fastidious=true AND d=1): max memory in MB for Bloom filter",
                 type: "numeric",
                 rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
               },
@@ -1355,7 +1355,7 @@ export default new Vuex.Store({
                 value: 16,
                 disabled: "never",
                 tooltip:
-                  "[Fastidious, d=1 only] Controls the accuracy vs. memory trade-off of the Bloom filter (8–64 bits). Higher values reduce false positives and give more accurate results but use more RAM. Default 16 is a good balance.",
+                  "Fastidious option (requires fastidious=true AND d=1): number of bits for Bloom filter",
                 type: "numeric",
                 rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
               },
@@ -1365,7 +1365,7 @@ export default new Vuex.Store({
                 value: 5,
                 disabled: "never",
                 tooltip:
-                  "[d>1 only] Score added when two aligned nucleotides are identical. Higher values make SWARM prefer alignments with more matching bases.",
+                  "Pairwise alignment (d>1 only): reward for nucleotide match",
                 type: "numeric",
                 rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
               },
@@ -1375,7 +1375,7 @@ export default new Vuex.Store({
                 value: 4,
                 disabled: "never",
                 tooltip:
-                  "[d>1 only] Penalty subtracted when two aligned nucleotides differ. Higher values make SWARM stricter about accepting sequences with substitutions into the same OTU.",
+                  "Pairwise alignment (d>1 only): penalty for nucleotide mismatch",
                 type: "numeric",
                 rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
               },
@@ -1385,7 +1385,7 @@ export default new Vuex.Store({
                 value: 12,
                 disabled: "never",
                 tooltip:
-                  "[d>1 only] Penalty for starting an insertion or deletion (indel) in the alignment. Higher values discourage gaps, making SWARM prefer sequences that differ by substitutions rather than insertions/deletions.",
+                  "Pairwise alignment (d>1 only): penalty for gap opening",
                 type: "numeric",
                 rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
               },
@@ -1395,7 +1395,7 @@ export default new Vuex.Store({
                 value: 4,
                 disabled: "never",
                 tooltip:
-                  "[d>1 only] Penalty applied for each additional position of an existing gap. Keeping this lower than gap opening allows longer gaps to be preferred over many short ones.",
+                  "Pairwise alignment (d>1 only): penalty for gap extension",
                 type: "numeric",
                 rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
               },
@@ -1407,7 +1407,7 @@ export default new Vuex.Store({
                 value: 1,
                 disabled: "never",
                 tooltip:
-                  "Maximum number of differences (mismatches/indels) allowed between two sequences to be grouped into the same OTU. d=1 (default) is recommended for most amplicon studies — use d>1 only if you expect higher intra-species variation.",
+                  "Clustering resolution: maximum number of differences between sequences in a swarm",
                 type: "numeric",
                 rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
               },
@@ -1417,7 +1417,7 @@ export default new Vuex.Store({
                 value: true,
                 disabled: "never",
                 tooltip:
-                  "When enabled, SWARM skips its OTU-breaking step and keeps the cluster intact as a single OTU. Recommended to leave ON — turning it off can artificially split a genuine OTU into pieces.",
+                  "Prevent OTU breaking: keep all amplicons in the same swarm",
                 type: "bool",
               },
               {
@@ -1426,7 +1426,7 @@ export default new Vuex.Store({
                 value: true,
                 disabled: "never",
                 tooltip:
-                  "When ON, rare small OTUs (likely belonging to a larger OTU) are grafted onto the nearest abundant OTU. This reduces the number of spurious singleton OTUs and gives cleaner results. Only works with d=1.",
+                  "Fastidious mode (d=1 only): link nearby low-abundance swarms to large swarms",
                 type: "bool",
               },
             ],
