@@ -5,7 +5,8 @@
     :disabled="
       Object.values(inputData).includes(input.disabled) ||
       $store.state.runInfo.active == true ||
-      $store.getters.check_depends_on(input)
+      $store.getters.check_depends_on(input) ||
+      isConditionallyDisabled
     "
   >
     <v-tooltip top>
@@ -72,6 +73,52 @@ export default {
     displayName() {
       const name = this.input.displayName || this.input.name;
       return name.replace(/_/g, " ");
+    },
+    service() {
+      if (this.$route.params.workflowName) {
+        return this.$store.state[this.$route.params.workflowName][
+          this.$attrs.serviceIndex
+        ];
+      } else {
+        return this.$store.state.selectedSteps[this.$route.params.order]
+          .services[this.$attrs.serviceIndex];
+      }
+    },
+    isConditionallyDisabled() {
+      // Check if this is a SWARM service
+      if (this.service.serviceName !== "swarm") {
+        return false;
+      }
+
+      // Get the d and fastidious values from the Inputs
+      const swarmInputs = this.service.Inputs;
+      const dValue = Number(swarmInputs[0]?.value ?? 1); // swarm_d is Inputs[0]
+      const fastidiousValue = swarmInputs[2]?.value; // swarm_fastidious is Inputs[2]
+
+      const inputName = this.input.name;
+
+      // Fastidious options (boundary, ceiling, bloom_bits): disable if NOT (d=1 AND fastidious=true)
+      if (
+        ["swarm_boundary", "swarm_ceiling", "swarm_bloom_bits"].includes(
+          inputName
+        )
+      ) {
+        return !(dValue === 1 && fastidiousValue === true);
+      }
+
+      // Alignment options (match, mismatch, gap_open, gap_ext): disable if NOT (d>1)
+      if (
+        [
+          "swarm_match",
+          "swarm_mismatch",
+          "swarm_gap_open",
+          "swarm_gap_ext",
+        ].includes(inputName)
+      ) {
+        return !(dValue > 1);
+      }
+
+      return false;
     },
   },
   methods: {
