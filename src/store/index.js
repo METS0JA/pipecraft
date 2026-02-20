@@ -5768,17 +5768,50 @@ SINGLE-END is for PacBio data, but can be also used for single-end read Illumina
       }
     },
     inputUpdate(state, payload) {
-      state.selectedSteps[payload.stepIndex].services[payload.serviceIndex][
-        payload.listName
-      ][payload.inputIndex].value = payload.value;
+      const service =
+        state.selectedSteps[payload.stepIndex].services[payload.serviceIndex];
+      service[payload.listName][payload.inputIndex].value = payload.value;
+
+      if (
+        service.serviceName === "swarm" &&
+        payload.listName === "Inputs" &&
+        service[payload.listName][payload.inputIndex].name === "swarm_d"
+      ) {
+        const dValue = Number(payload.value);
+        if (dValue !== 1) {
+          const fastidiousInput = service.Inputs.find(
+            (input) => input.name === "swarm_fastidious"
+          );
+          if (fastidiousInput) {
+            fastidiousInput.value = false;
+          }
+        }
+      }
     },
     premadeInputUpdate(state, payload) {
-      const input = state[payload.workflowName][payload.serviceIndex][payload.listName][payload.inputIndex];
+      const service = state[payload.workflowName][payload.serviceIndex];
+      const input = service[payload.listName][payload.inputIndex];
       input.value = payload.value;
+
+      if (
+        service.serviceName === "swarm" &&
+        payload.listName === "Inputs" &&
+        input.name === "swarm_d"
+      ) {
+        const dValue = Number(payload.value);
+        if (dValue !== 1) {
+          const fastidiousInput = service.Inputs.find(
+            (item) => item.name === "swarm_fastidious"
+          );
+          if (fastidiousInput) {
+            fastidiousInput.value = false;
+          }
+        }
+      }
       
       // Call onChange handler if it exists
       if (input.onChange) {
-        input.onChange(state[payload.workflowName][payload.serviceIndex], payload.value);
+        input.onChange(service, payload.value);
       }
     },
     toggleActive(state, payload) {

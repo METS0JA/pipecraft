@@ -5,7 +5,8 @@
     :disabled="
       Object.values(inputData).includes(input.disabled) ||
       $store.state.runInfo.active == true ||
-      $store.getters.check_depends_on(input)
+      $store.getters.check_depends_on(input) ||
+      isConditionallyDisabled
     "
   >
     <v-tooltip top>
@@ -64,6 +65,29 @@ export default {
     displayName() {
       const name = this.input.displayName || this.input.name;
       return name.replace(/_/g, " ");
+    },
+    service() {
+      if (this.$route.params.workflowName) {
+        return this.$store.state[this.$route.params.workflowName][
+          this.$attrs.serviceIndex
+        ];
+      } else {
+        return this.$store.state.selectedSteps[this.$route.params.order]
+          .services[this.$attrs.serviceIndex];
+      }
+    },
+    isConditionallyDisabled() {
+      if (this.service.serviceName !== "swarm") {
+        return false;
+      }
+
+      if (this.input.name === "swarm_fastidious") {
+        const swarmInputs = this.service.Inputs;
+        const dValue = Number(swarmInputs[0]?.value ?? 1);
+        return dValue !== 1;
+      }
+
+      return false;
     },
   },
   methods: {
