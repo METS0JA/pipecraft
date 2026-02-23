@@ -251,12 +251,12 @@ export default new Vuex.Store({
                 value: null,
                 disabled: "never",
                 tooltip:
-                  "discard sequences with more than the specified number of bases. Note that if 'trunc length' setting is specified, then 'max length' SHOULD NOT be lower than 'trunc length' (otherwise all reads are discared) [empty field = no action taken]",
+                  "discard sequences with more than the specified number of bases (0 or empty field = no action taken). Note that if 'trunc length' setting is specified, then 'max length' SHOULD NOT be lower than 'trunc length' (otherwise all reads are discared)",
                 type: "numeric",
                 rules: [
                   (v) =>
-                    (v >= 1) | (v == "") ||
-                    "ERROR: specify values >= 1 or leave it empty (=no action taken)",
+                    (v >= 0) | (v == "") ||
+                    "ERROR: specify values >= 0",
                 ],
               },
               {
@@ -273,12 +273,12 @@ export default new Vuex.Store({
                 value: null,
                 disabled: "never",
                 tooltip:
-                  "discard sequences with more than the specified number of expected errors per base (empty field = no action taken)",
+                  "discard sequences with more than the specified number of expected errors per base (0 or empty field = no action taken)",
                 type: "numeric",
                 rules: [
                   (v) =>
-                    (v >= 0.001) | (v == "") ||
-                    "ERROR: specify values >=0.001 or leave it empty (= no action taken)",
+                    (v >= 0) | (v == "") ||
+                    "ERROR: specify values >=0.001",
                 ],
               },
               {
@@ -286,12 +286,12 @@ export default new Vuex.Store({
                 value: null,
                 disabled: "never",
                 tooltip:
-                  "tuncate sequences starting from the first base with the specified base quality score value or lower (empty field = no action taken)",
+                  "tuncate sequences starting from the first base with the specified base quality score value or lower (0 or empty field = no action taken)",
                 type: "numeric",
                 rules: [
                   (v) =>
-                    (v >= 1) | (v == "") ||
-                    "ERROR: specify values >=1 or leave it empty (= no action taken)",
+                    (v >= 0) | (v == "") ||
+                    "ERROR: specify values >=0",
                 ],
               },
               {
@@ -299,12 +299,12 @@ export default new Vuex.Store({
                 value: null,
                 disabled: "never",
                 tooltip:
-                  "runcate sequences so that their total expected error is not higher than the specified value (empty field = no action taken)",
+                  "truncate sequences so that their total expected error is not higher than the specified value (0 or empty field = no action taken)",
                 type: "numeric",
                 rules: [
                   (v) =>
-                    (v >= 0.001) | (v == "") ||
-                    "ERROR: specify values >=0.001 or leave it empty (= no action taken)",
+                    (v >= 0) | (v == "") ||
+                    "ERROR: specify values >=0.001",
                 ],
               },
             ],
@@ -341,12 +341,12 @@ export default new Vuex.Store({
                 value: null,
                 disabled: "never",
                 tooltip:
-                  "truncate sequences to the specified length. Shorter sequences are discarded; thus if specified, check that 'min length' setting is lower than 'trunc length' ('min length' therefore has basically no effect) [empty field = no action taken]",
+                  "truncate sequences to the specified length (0 or empty field = no action taken). Shorter sequences are discarded; thus if specified, check that 'min length' setting is lower than 'trunc length' ('min length' therefore has basically no effect)",
                 type: "numeric",
                 rules: [
                   (v) =>
-                    (v >= 5) | (v == "") ||
-                    "ERROR: specify values >= 5 or leave it empty (=no action taken)",
+                    (v >= 0) | (v == "") ||
+                    "ERROR: specify values >= 0",
                 ],
               },
               {
@@ -354,7 +354,7 @@ export default new Vuex.Store({
                 value: 41,
                 disabled: "never",
                 tooltip:
-                  "specify the maximum quality score accepted when reading FASTQ files. The default is 41, which is usual for recent Sanger/Illumina 1.8+ files. For PacBio data use 93",
+                  "specify the maximum quality score accepted when reading FASTQ files. The default is 41, which is usual for recent Sanger/Illumina 1.8+ files. For PacBio data use 93 or see what is the maximum quality score in your data via QualityCheck module",
                 type: "numeric",
                 rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
               },
@@ -589,27 +589,27 @@ export default new Vuex.Store({
                 value: 2,
                 disabled: "never",
                 tooltip:
-                  "truncate reads at the first instance of a quality score less than or equal to truncQ",
+                  "truncate reads at the first instance of a quality score less than or equal to truncQ (0 = no truncation)",
                 type: "numeric",
-                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+                rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
               },
               {
                 name: "truncLen",
                 value: 0,
                 disabled: "never",
                 tooltip:
-                  "truncate reads after truncLen bases (applies to R1 reads when working with paired-end data). Reads shorter than this are discarded. Explore quality profiles (with QualityCheck module) and see whether poor quality ends needs to be truncated",
+                  "truncate reads after truncLen bases (applies to R1 reads when working with paired-end data; 0 = no truncation). Reads shorter than this are discarded. Explore quality profiles (with QualityCheck module) and see whether poor quality ends needs to be truncated",
                 type: "numeric",
-                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+                rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
               },
               {
                 name: "truncLen_R2",
                 value: 0,
                 disabled: "single_end",
                 tooltip:
-                  "applies only for paired-end data. Truncate R2 reads after truncLen bases. Reads shorter than this are discarded. Explore quality profiles (with QualityCheck module) and see whether poor quality ends needs to be truncated",
+                  "applies only for paired-end data. Truncate R2 reads after truncLen bases (0 = no truncation). Reads shorter than this are discarded. Explore quality profiles (with QualityCheck module) and see whether poor quality ends needs to be truncated",
                 type: "numeric",
-                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+                rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
               },
               {
                 name: "maxLen",
@@ -703,7 +703,7 @@ export default new Vuex.Store({
               },
               {
                 name: "max_length",
-                value: 600,
+                value: 999,
                 disabled: "never",
                 tooltip: "maximum length of the merged sequence",
                 type: "numeric",
@@ -2577,7 +2577,7 @@ export default new Vuex.Store({
           },
           {
             name: "max_length",
-            value: 600,
+            value: 999,
             disabled: "never",
             tooltip: "maximum length of the merged sequence",
             type: "numeric",
@@ -2652,22 +2652,13 @@ export default new Vuex.Store({
             value: null,
             disabled: "never",
             tooltip:
-              "discard sequences with more than the specified number of bases. Note that if 'trunc length' setting is specified, then 'max length' SHOULD NOT be lower than 'trunc length' (otherwise all reads are discared)",
+              "discard sequences with more than the specified number of bases (0 or empty field = no action taken). Note that if 'trunc length' setting is specified, then 'max length' SHOULD NOT be lower than 'trunc length' (otherwise all reads are discared)",
             type: "numeric",
             rules: [
               (v) =>
-                (v >= 1) | (v == "") ||
-                "ERROR: specify values >= 1 or leave it empty (=no action taken)",
+                (v >= 0) | (v == "") ||
+                "ERROR: specify values >= 0",
             ],
-          },
-          {
-            name: "qmax",
-            value: 41,
-            disabled: "never",
-            tooltip:
-              "specify the maximum quality score accepted when reading FASTQ files. The default is 41, which is usual for recent Sanger/Illumina 1.8+ files. For PacBio data use 93",
-            type: "numeric",
-            rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
           {
             name: "qmin",
@@ -2683,12 +2674,38 @@ export default new Vuex.Store({
             value: null,
             disabled: "never",
             tooltip:
-              "discard sequences with more than the specified number of expected errors per base",
+              "discard sequences with more than the specified number of expected errors per base (0 or empty field = no action taken)",
             type: "numeric",
             rules: [
               (v) =>
-                (v >= 0.001) | (v == "") ||
-                "ERROR: specify values >=0.001 or leave it empty (= no action taken)",
+                (v >= 0) | (v == "") ||
+                "ERROR: specify values >=0.001",
+            ],
+          },
+          {
+            name: "truncqual",
+            value: null,
+            disabled: "never",
+            tooltip:
+              "tuncate sequences starting from the first base with the specified base quality score value or lower (0 or empty field = no action taken)",
+            type: "numeric",
+            rules: [
+              (v) =>
+                (v >= 0) | (v == "") ||
+                "ERROR: specify values >=0",
+            ],
+          },
+          {
+            name: "truncee",
+            value: null,
+            disabled: "never",
+            tooltip:
+              "truncate sequences so that their total expected error is not higher than the specified value (0 or empty field = no action taken)",
+            type: "numeric",
+            rules: [
+              (v) =>
+                (v >= 0) | (v == "") ||
+                "ERROR: specify values >=0.001",
             ],
           },
         ],
@@ -2700,7 +2717,7 @@ export default new Vuex.Store({
             tooltip:
               "maximum number of expected errors per sequence. Sequences with higher error rates will be discarded",
             type: "numeric",
-            rules: [(v) => v >= 0.001 || "ERROR: specify values >= 0.001"],
+            rules: [(v) => v >= 0.001 || "ERROR: specify values >=0.001"],
           },
           {
             name: "maxNs",
@@ -2725,13 +2742,22 @@ export default new Vuex.Store({
             value: null,
             disabled: "never",
             tooltip:
-              "truncate sequences to the specified length. Shorter sequences are discarded; thus if specified, check that 'min length' setting is lower than 'trunc length' ('min length' therefore has basically no effect)",
+              "truncate sequences to the specified length (0 or empty field = no action taken). Shorter sequences are discarded; thus if specified, check that 'min length' setting is lower than 'trunc length' ('min length' therefore has basically no effect)",
             type: "numeric",
             rules: [
               (v) =>
-                (v >= 5) | (v == "") ||
-                "ERROR: specify values >= 5 or leave it empty (=no action taken)",
+                (v >= 0) | (v == "") ||
+                "ERROR: specify values >= 0",
             ],
+          },
+          {
+            name: "qmax",
+            value: 41,
+            disabled: "never",
+            tooltip:
+              "specify the maximum quality score accepted when reading FASTQ files. The default is 41, which is usual for recent Sanger/Illumina 1.8+ files. For PacBio data use 93 or see what is the maximum quality score in your data via QualityCheck module",
+            type: "numeric",
+            rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
         ],
       },
@@ -3265,7 +3291,7 @@ export default new Vuex.Store({
           },
           {
             name: "max_length",
-            value: 600,
+            value: 999,
             disabled: "never",
             tooltip: "maximum length of the merged sequence",
             type: "numeric",
@@ -3340,22 +3366,13 @@ export default new Vuex.Store({
             value: null,
             disabled: "never",
             tooltip:
-              "discard sequences with more than the specified number of bases. Note that if 'trunc length' setting is specified, then 'max length' SHOULD NOT be lower than 'trunc length' (otherwise all reads are discared)",
+              "discard sequences with more than the specified number of bases (0 or empty field = no action taken). Note that if 'trunc length' setting is specified, then 'max length' SHOULD NOT be lower than 'trunc length' (otherwise all reads are discared)",
             type: "numeric",
             rules: [
               (v) =>
-                (v >= 1) | (v == "") ||
-                "ERROR: specify values >= 1 or leave it empty (=no action taken)",
+                (v >= 0) | (v == "") ||
+                "ERROR: specify values >= 0",
             ],
-          },
-          {
-            name: "qmax",
-            value: 41,
-            disabled: "never",
-            tooltip:
-              "specify the maximum quality score accepted when reading FASTQ files. The default is 41, which is usual for recent Sanger/Illumina 1.8+ files. For PacBio data use 93",
-            type: "numeric",
-            rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
           {
             name: "qmin",
@@ -3371,12 +3388,38 @@ export default new Vuex.Store({
             value: null,
             disabled: "never",
             tooltip:
-              "discard sequences with more than the specified number of expected errors per base",
+              "discard sequences with more than the specified number of expected errors per base (0 or empty field = no action taken)",
             type: "numeric",
             rules: [
               (v) =>
-                (v >= 0.001) | (v == "") ||
-                "ERROR: specify values >=0.001 or leave it empty (= no action taken)",
+                (v >= 0) | (v == "") ||
+                "ERROR: specify values >=0.001",
+            ],
+          },
+          {
+            name: "truncqual",
+            value: null,
+            disabled: "never",
+            tooltip:
+              "tuncate sequences starting from the first base with the specified base quality score value or lower (0 or empty field = no action taken)",
+            type: "numeric",
+            rules: [
+              (v) =>
+                (v >= 0) | (v == "") ||
+                "ERROR: specify values >=0",
+            ],
+          },
+          {
+            name: "truncee",
+            value: null,
+            disabled: "never",
+            tooltip:
+              "truncate sequences so that their total expected error is not higher than the specified value (0 or empty field = no action taken)",
+            type: "numeric",
+            rules: [
+              (v) =>
+                (v >= 0) | (v == "") ||
+                "ERROR: specify values >=0.001",
             ],
           },
         ],
@@ -3388,7 +3431,7 @@ export default new Vuex.Store({
             tooltip:
               "maximum number of expected errors per sequence. Sequences with higher error rates will be discarded",
             type: "numeric",
-            rules: [(v) => v >= 0.001 || "ERROR: specify values >= 0.001"],
+            rules: [(v) => v >= 0.001 || "ERROR: specify values >=0.001"],
           },
           {
             name: "maxNs",
@@ -3413,13 +3456,22 @@ export default new Vuex.Store({
             value: null,
             disabled: "never",
             tooltip:
-              "truncate sequences to the specified length. Shorter sequences are discarded; thus if specified, check that 'min length' setting is lower than 'trunc length' ('min length' therefore has basically no effect)",
+              "truncate sequences to the specified length (0 or empty field = no action taken). Shorter sequences are discarded; thus if specified, check that 'min length' setting is lower than 'trunc length' ('min length' therefore has basically no effect)",
             type: "numeric",
             rules: [
               (v) =>
-                (v >= 5) | (v == "") ||
-                "ERROR: specify values >= 5 or leave it empty (=no action taken)",
+                (v >= 0) | (v == "") ||
+                "ERROR: specify values >= 0",
             ],
+          },
+          {
+            name: "qmax",
+            value: 41,
+            disabled: "never",
+            tooltip:
+              "specify the maximum quality score accepted when reading FASTQ files. The default is 41, which is usual for recent Sanger/Illumina 1.8+ files. For PacBio data use 93 or see what is the maximum quality score in your data via QualityCheck module",
+            type: "numeric",
+            rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
           },
         ],
       },
@@ -5186,27 +5238,27 @@ export default new Vuex.Store({
             value: 2,
             disabled: "never",
             tooltip:
-              "truncate reads at the first instance of a quality score less than or equal to truncQ",
+              "truncate reads at the first instance of a quality score less than or equal to truncQ (0 = no truncation)",
             type: "numeric",
-            rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+            rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
           },
           {
             name: "truncLen",
             value: 0,
             disabled: "never",
             tooltip:
-              "truncate reads after truncLen bases (applies to R1 reads when working with paired-end data). Reads shorter than this are discarded. Explore quality profiles (with QualityCheck module) see whether poor quality ends needs to truncated",
+              "truncate reads after truncLen bases (applies to R1 reads when working with paired-end data; 0 = no truncation). Reads shorter than this are discarded. Explore quality profiles (with QualityCheck module) see whether poor quality ends needs to truncated",
             type: "numeric",
-            rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+            rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
           },
           {
             name: "truncLen_R2",
             value: 0,
             disabled: "single_end",
             tooltip:
-              "truncate R2 reads after truncLen bases. Reads shorter than this are discarded. Explore quality profiles (with QualityCheck module) see whether poor quality ends needs to truncated",
+              "truncate R2 reads after truncLen bases (0 = no truncation). Reads shorter than this are discarded. Explore quality profiles (with QualityCheck module) see whether poor quality ends needs to truncated",
             type: "numeric",
-            rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+            rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
           },
           {
             name: "maxLen",
