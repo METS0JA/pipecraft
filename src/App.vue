@@ -60,13 +60,14 @@ body,
 #app,
 .v-application,
 .v-application--wrap {
+  min-height: 100vh;
   height: 100%;
 }
 
 .v-application,
 .v-application--wrap {
-  background: url("assets/bg.jpg") no-repeat center top fixed !important;
-  background-size: 100% auto !important;
+  background: url("assets/bg.jpg") no-repeat center center !important;
+  background-size: cover !important;
   background-color: #000 !important;
 }
 </style>
