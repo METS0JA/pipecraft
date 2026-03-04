@@ -34,27 +34,27 @@ source /scripts/submodules/framework.functions.sh
 output_dir=$"/input/qualFiltered_out"
 
 #additional options, if selection != undefined
-if [[ $max_length == null ]] || [[ -z $max_length ]]; then
+if [[ $max_length == null ]] || [[ -z $max_length ]] || [[ $max_length == 0 ]]; then
     max_length=$""
 else
     max_length=$"--fastq_maxlen $max_length"
 fi
-if [[ $maxee_rate == null ]] || [[ -z $maxee_rate ]]; then
+if [[ $maxee_rate == null ]] || [[ -z $maxee_rate ]] || [[ $maxee_rate == 0 ]]; then
     maxee_rate=$""
 else
     maxee_rate=$"--fastq_maxee_rate $maxee_rate"
 fi
-if [[ $trunc_length == null ]] || [[ -z $trunc_length ]]; then
+if [[ $trunc_length == null ]] || [[ -z $trunc_length ]] || [[ $trunc_length == 0 ]]; then
     trunc_length=$""
 else
     trunc_length=$"--fastq_trunclen $trunc_length"
 fi
-if [[ $truncqual == null ]] || [[ -z $truncqual ]]; then
+if [[ $truncqual == null ]] || [[ -z $truncqual ]] || [[ $truncqual == 0 ]]; then
     truncqual=$""
 else
     truncqual=$"--fastq_truncqual $truncqual"
 fi
-if [[ $truncee == null ]] || [[ -z $truncee ]]; then
+if [[ $truncee == null ]] || [[ -z $truncee ]] || [[ $truncee == 0 ]]; then
     truncee=$""
 else
     truncee=$"--fastq_truncee $truncee"
