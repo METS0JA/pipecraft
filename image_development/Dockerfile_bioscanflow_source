@@ -40,11 +40,12 @@ RUN apt-get update && apt-get install -y \
     zlib1g-dev \
     git \
     build-essential \
+    autoconf \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python packages that aren't in apt
 RUN pip3 install --no-cache-dir --break-system-packages \
-    cutadapt==4.9 \
+    cutadapt==5.2 \
     pysam==0.22.1 \
     xmltodict==0.13.0 \
     xopen==2.0.2 \
@@ -65,13 +66,16 @@ RUN apt-get update && apt-get install -y \
     bbmap \
     ncbi-blast+ \
     mafft \
-    vsearch \
     samtools \
     pigz \
     && rm -rf /var/lib/apt/lists/*
 
+RUN git clone --branch v2.30.4 https://github.com/torognes/vsearch.git \
+    && cd vsearch && ./autogen.sh && ./configure && make && make install \
+    && cd .. && rm -rf vsearch
+
 # Install seqkit
-RUN wget https://github.com/shenwei356/seqkit/releases/download/v2.8.2/seqkit_linux_amd64.tar.gz && \
+RUN wget https://github.com/shenwei356/seqkit/releases/download/v2.13.0/seqkit_linux_amd64.tar.gz && \
     tar -xzf seqkit_linux_amd64.tar.gz && \
     mv seqkit /usr/local/bin/ && \
     rm seqkit_linux_amd64.tar.gz

@@ -363,7 +363,7 @@ export default new Vuex.Store({
           {
             tooltip: "quality filtering with trimmomatic",
             scriptName: "quality_filtering_paired_end_trimmomatic.sh",
-            imageName: "pipecraft/trimmomatic:0.39",
+            imageName: "pipecraft/trimmomatic:0.40",
             serviceName: "trimmomatic",
             selected: false,
             showExtra: false,

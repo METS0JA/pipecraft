@@ -93,7 +93,7 @@ RUN source activate funbaront && \
     samtools \
     bcftools \
     racon \
-    vsearch \
+    vsearch=2.30.4 \
     && conda clean -afy
 
 # Stage 2: Quality control and filtering
@@ -117,7 +117,7 @@ RUN source activate funbaront && \
     hmmer \
     blast \
     entrez-direct \
-    seqkit \
+    seqkit=2.13.0 \
     && conda clean -afy
 
 # Stage 5: Workflow management

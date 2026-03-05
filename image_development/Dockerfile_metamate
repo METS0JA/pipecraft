@@ -4,7 +4,7 @@ FROM continuumio/miniconda3:25.1.1-2
 
 RUN conda install -y -c bioconda -c conda-forge \
     metamate=0.4.3 \
-    seqkit=2.10.0 && \
+    seqkit=2.13.0 && \
     conda clean --all --yes
 
 # Create default specifications file

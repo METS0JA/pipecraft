@@ -104,9 +104,9 @@ RUN cd /opt/software \
 RUN /opt/software/conda/bin/mamba install -y \
     "lima>=2.13.0" \
     "pbtk>=3.5.0" \
-    "vsearch>=2.30.3" \
+    "vsearch>=2.30.4" \
     "swarm>=3.1.6" \
-    "seqkit>=2.12.0" \
+    "seqkit>=2.13.0" \
     "seqfu>=1.23.0" \
     "fastp>=1.0.1" \
     "blast>=2.17.0" \

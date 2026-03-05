@@ -5,7 +5,7 @@
 
 ################################################
 ###Third-party applications:
-#trimmomatic v0.39
+#trimmomatic v0.40
     #citation: Bolger, A. M., Lohse, M., & Usadel, B. (2014). Trimmomatic: A flexible trimmer for Illumina Sequence Data. Bioinformatics, btu1
     #Distributed under the GNU GENERAL PUBLIC LICENE
     #https://github.com/usadellab/Trimmomatic
@@ -67,7 +67,7 @@ for file in *.$fileFormat; do
     ###############################
     ### Start quality filtering ###
     ###############################
-    checkerror=$(java -jar /Trimmomatic-0.39/trimmomatic-0.39.jar SE \
+    checkerror=$(java -jar /trimmomatic.jar SE \
     $input.$extension \
     $output_dir/$input.$extension \
     -phred$phred \
@@ -109,12 +109,12 @@ Files in 'qualFiltered_out/FASTA':
 # *.fasta                   = quality filtered sequences in FASTA format.
 
 Core commands ->
-quality filtering: trimmomatic-0.39.jar SE input_file output_file -phred$phred $LEADING $TRAILING SLIDINGWINDOW:$window_size:$required_qual MINLEN:$min_length -threads $threads
+quality filtering: trimmomatic.jar SE input_file output_file -phred$phred $LEADING $TRAILING SLIDINGWINDOW:$window_size:$required_qual MINLEN:$min_length -threads $threads
 convert output fastq files to FASTA: seqkit fq2fa -t dna --line-width 0 input_file -o FASTA/output_file.fasta
 
 ##############################################
 ###Third-party applications for this process:
-#trimmomatic v0.39 for quality filtering
+#trimmomatic v0.40 for quality filtering
     #citation: Bolger, A. M., Lohse, M., & Usadel, B. (2014). Trimmomatic: A flexible trimmer for Illumina Sequence Data. Bioinformatics, btu1
     #https://github.com/usadellab/Trimmomatic
 #seqkit v2.3.0 for converting filtered fastq to fasta 
