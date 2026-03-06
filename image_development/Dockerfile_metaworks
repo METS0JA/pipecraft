@@ -14,12 +14,16 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Install miniconda
-ENV CONDA_DIR /opt/conda
+ENV CONDA_DIR=/opt/conda
 RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
     /bin/bash ~/miniconda.sh -b -p /opt/conda
 
 # Put conda in path so we can use conda activate
 ENV PATH=$CONDA_DIR/bin:$PATH
+
+RUN conda config --set allow_conda_downgrades true \
+    && echo "yes" | conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main || true \
+    && echo "yes" | conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r || true
 
 # Install Metaworks
 RUN wget https://github.com/terrimporter/MetaWorks/releases/download/v1.12.0/MetaWorks1.12.0.zip

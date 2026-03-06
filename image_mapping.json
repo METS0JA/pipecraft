@@ -1,0 +1,109 @@
+{
+  "images": [
+    {
+      "name": "bioscanflow",
+      "dockerfile": "image_development/Dockerfile_bioscanflow",
+      "context": ".",
+      "image": "pipecraft/bioscanflow",
+      "tags": ["1"]
+    },
+    {
+      "name": "blast",
+      "dockerfile": "image_development/Dockerfile_BLAST",
+      "context": ".",
+      "image": "pipecraft/blast",
+      "tags": ["2.16"]
+    },
+    {
+      "name": "cutadapt",
+      "dockerfile": "image_development/Dockerfile_cutadapt",
+      "context": ".",
+      "image": "pipecraft/cutadapt",
+      "tags": ["5.2"]
+    },
+    {
+      "name": "deicode",
+      "dockerfile": "image_development/Dockerfile_deicode",
+      "context": ".",
+      "image": "pipecraft/deicode",
+      "tags": ["0.2.4"]
+    },
+    {
+      "name": "fastp",
+      "dockerfile": "image_development/Dockerfile_fastp",
+      "context": ".",
+      "image": "pipecraft/fastp",
+      "tags": ["0.23.2"]
+    },
+    {
+      "name": "funbaront",
+      "dockerfile": "image_development/Dockerfile_funbaront",
+      "context": ".",
+      "image": "pipecraft/funbaront",
+      "tags": ["1"]
+    },
+    {
+      "name": "itsx",
+      "dockerfile": "image_development/Dockerfile_ITSx",
+      "context": ".",
+      "image": "pipecraft/itsx",
+      "tags": ["1.1.3"]
+    },
+    {
+      "name": "metamate",
+      "dockerfile": "image_development/Dockerfile_metamate",
+      "context": ".",
+      "image": "pipecraft/metamate",
+      "tags": ["0.4.3"]
+    },
+    {
+      "name": "metaworks",
+      "dockerfile": "image_development/Dockerfile_metaworks",
+      "context": ".",
+      "image": "pipecraft/metaworks",
+      "tags": ["1.12.0"]
+    },
+    {
+      "name": "nextits",
+      "dockerfile": "image_development/Dockerfile_nextits",
+      "context": ".",
+      "image": "pipecraft/nextits",
+      "tags": ["1.1.0"]
+    },
+    {
+      "name": "optimotu",
+      "dockerfile": "image_development/Dockerfile_optimOTU",
+      "context": ".",
+      "image": "pipecraft/optimotu",
+      "tags": ["5.1"]
+    },
+    {
+      "name": "reorient",
+      "dockerfile": "image_development/Dockerfile_reorient",
+      "context": ".",
+      "image": "pipecraft/reorient",
+      "tags": ["1"]
+    },
+    {
+      "name": "trimmomatic",
+      "dockerfile": "image_development/Dockerfile_trimmomatic",
+      "context": ".",
+      "image": "pipecraft/trimmomatic",
+      "tags": ["0.40"]
+    },
+    {
+      "name": "vsearch",
+      "dockerfile": "image_development/Dockerfile_vsearch",
+      "context": ".",
+      "image": "pipecraft/vsearch",
+      "tags": ["2.30.4"]
+    },
+    {
+      "name": "vsearch_dada2",
+      "dockerfile": "image_development/Dockerfile_vsearch_dada2_v3",
+      "context": ".",
+      "image": "pipecraft/vsearch_dada2",
+      "tags": ["3"]
+    }
+  ]
+}
