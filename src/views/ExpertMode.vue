@@ -265,7 +265,7 @@ export default {
         },
         {
           info: "Run a vsearch container with an attached host folder and exectue a script from it",
-          cmd: "docker run -v users/Tom/Files/:/Files pipecraft/vsearch:2.18 ./Files/script.sh",
+          cmd: "docker run -v users/Tom/Files/:/Files pipecraft/vsearch:2.30.4 ./Files/script.sh",
         },
       ],
     };

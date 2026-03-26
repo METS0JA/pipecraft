@@ -1,12 +1,22 @@
-FROM quay.io/qiime2/core:2022.2
+FROM mambaorg/micromamba:1.5.7 AS builder
 
-RUN conda config --add channels defaults \
-  && conda config --add channels bioconda \
-  && conda config --add channels conda-forge \
-  && conda config --set channel_priority flexible \
-  && conda install -y -n base -c conda-forge deicode=0.2.4 \
-  && R -e "install.packages('optparse', dependencies=TRUE, repos='http://cran.rstudio.com/')" \
-  && conda clean --all --yes
+ENV CONDA_OVERRIDE_CUDA=0
+ENV MAMBA_DOCKERFILE_ACTIVATE=1
 
-COPY src/pipecraft-core/service_scripts/rpca.py /usr/local/lib/python3.8/site-packages/deicode/rpca.py
-COPY src/pipecraft-core/service_scripts/_standalone_rpca.py /usr/local/lib/python3.8/site-packages/deicode/scripts/_standalone_rpca.py
+RUN micromamba install -y -n base -c conda-forge ca-certificates \
+  && micromamba create -y -n qiime2 -c qiime2 -c conda-forge -c bioconda -c defaults \
+     --strict-channel-priority qiime2=2022.8.* python=3.8 \
+  && micromamba install -y -n qiime2 -c qiime2 -c conda-forge -c bioconda -c defaults deicode=0.2.4 r-base \
+  && micromamba run -n qiime2 R -e "install.packages('optparse', dependencies=TRUE, repos='http://cran.rstudio.com/')" \
+  && micromamba clean -a -y
+
+FROM mambaorg/micromamba:1.5.7
+
+ENV CONDA_OVERRIDE_CUDA=0
+ENV MAMBA_DOCKERFILE_ACTIVATE=1
+ENV PATH=/opt/conda/envs/qiime2/bin:$PATH
+
+COPY --from=builder /opt/conda/envs/qiime2 /opt/conda/envs/qiime2
+
+COPY src/pipecraft-core/service_scripts/rpca.py /opt/conda/envs/qiime2/lib/python3.8/site-packages/deicode/rpca.py
+COPY src/pipecraft-core/service_scripts/_standalone_rpca.py /opt/conda/envs/qiime2/lib/python3.8/site-packages/deicode/scripts/_standalone_rpca.py

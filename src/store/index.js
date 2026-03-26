@@ -2077,7 +2077,7 @@ export default new Vuex.Store({
             tooltip:
               "assign taxonomy with BLAST",
             scriptName: "taxonomy_BLAST.sh",
-            imageName: "pipecraft/blast:2.14",
+            imageName: "pipecraft/blast:2.16",
             serviceName: "BLAST",
             selected: false,
             showExtra: false,
@@ -4531,7 +4531,7 @@ export default new Vuex.Store({
         tooltip:
           "Settings for STEP_1 (sequence filtering processes per sequencing run) in NextITS pipeline",
         scriptName: "",
-        imageName: "pipecraft/nextits:1.0.0",
+        imageName: "pipecraft/nextits:1.1.0",
         serviceName: "Step_1",
         manualLink: "https://pipecraft2-manual.readthedocs.io/en/latest/pre-defined_pipelines.html#nextits",
         disabled: "never",
@@ -4696,7 +4696,7 @@ export default new Vuex.Store({
       {
         tooltip: "Settings for STEP_2 (clustering) in NextITS pipeline",
         scriptName: "",
-        imageName: "pipecraft/nextits:1.0.0",
+        imageName: "pipecraft/nextits:1.1.0",
         serviceName: "Step_2",
         manualLink: "https://pipecraft2-manual.readthedocs.io/en/latest/pre-defined_pipelines.html#nextits",
         disabled: "never",
@@ -4879,7 +4879,7 @@ export default new Vuex.Store({
       {
         tooltip: "General pipeline configuration options",
         scriptName: "FunBarONT_Pipeline.sh",
-        imageName: "pipecraft/funbaront:latest",
+        imageName: "pipecraft/funbaront:1",
         serviceName: "pipeline options",
         manualLink: "https://github.com/mdziurzynski/ont_fungal_barcoding_pipeline",
         disabled: "never",
@@ -4994,7 +4994,7 @@ export default new Vuex.Store({
       {
         tooltip: "VSEARCH clustering parameters",
         scriptName: "FunBarONT_Pipeline.sh",
-        imageName: "pipecraft/funbaront:latest",
+        imageName: "pipecraft/funbaront:1",
         serviceName: "VSEARCH clustering",
         manualLink: "https://github.com/torognes/vsearch",
         disabled: "never",
@@ -5026,7 +5026,7 @@ export default new Vuex.Store({
       {
         tooltip: "Taxonomy assignment using BLAST against reference database. BLAST database will be automatically created from the provided reference file.",
         scriptName: "FunBarONT_Pipeline.sh",
-        imageName: "pipecraft/funbaront:latest",
+        imageName: "pipecraft/funbaront:1",
         serviceName: "taxonomy assignment",
         manualLink: "https://blast.ncbi.nlm.nih.gov/Blast.cgi",
         disabled: "never",

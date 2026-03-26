@@ -38,7 +38,7 @@ RUN Rscript -e 'install.packages("data.table", dependencies=TRUE , repos="https:
     && Rscript -e 'install.packages("devtools", dependencies=TRUE, repos = "https://cloud.r-project.org/")' \
     && Rscript -e 'install.packages("seqinr", dependencies=TRUE, repos = "https://cloud.r-project.org/")'
 RUN Rscript -e 'install.packages("BiocManager")'
-RUN Rscript -e 'BiocManager::install(version = "3.20", ask=FALSE)'
+RUN Rscript -e 'BiocManager::install(version = "3.22", ask=FALSE)'
 RUN Rscript -e 'BiocManager::install("dada2")'
 RUN Rscript -e 'remotes::install_github("tobiasgf/lulu")'
 RUN wget https://ftp.ncbi.nlm.nih.gov/genomes/TOOLS/ORFfinder/linux-i64/ORFfinder.gz
