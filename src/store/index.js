@@ -2339,6 +2339,53 @@ export default new Vuex.Store({
               },
             ],
           },
+          {
+            tooltip:
+              "assign taxonomy with BOLDigger3 (query against BOLD Systems v5 online database)",
+            scriptName: "taxonomy_boldigger3.sh",
+            imageName: "pipecraft/boldigger3:2.2.0",
+            serviceName: "BOLDigger3",
+            selected: false,
+            showExtra: false,
+            extraInputs: [],
+            Inputs: [
+              {
+                name: "fasta_file",
+                btnName: "select fasta",
+                value: "undefined",
+                disabled: "never",
+                tooltip:
+                  "Select a fasta file containing sequences to query against BOLD Systems v5 [fasta file must be in the SELECT WORKDIR directory]",
+                type: "file",
+              },
+              {
+                name: "database",
+                value: 1,
+                disabled: "never",
+                tooltip:
+                  "BOLD v5 database number (1-8): 1 = ANIMAL LIBRARY (PUBLIC); 2 = ANIMAL SPECIES-LEVEL LIBRARY (PUBLIC + PRIVATE); 3 = ANIMAL LIBRARY (PUBLIC + PRIVATE); 4 = VALIDATED CANADIAN ARTHROPOD LIBRARY; 5 = PLANT LIBRARY (PUBLIC); 6 = FUNGI LIBRARY (PUBLIC); 7 = ANIMAL SECONDARY MARKERS (PUBLIC); 8 = VALIDATED ANIMAL RED LIST LIBRARY",
+                type: "numeric",
+                rules: [(v) => (v >= 1 && v <= 8) || "ERROR: specify a value between 1 and 8"],
+              },
+              {
+                name: "mode",
+                value: 1,
+                disabled: "never",
+                tooltip:
+                  "Operating mode (1-3): 1 = Rapid Species Search (fastest, up to 1000 seqs/batch, ~10000 seqs/hour); 2 = Genus and Species Search (200 seqs/batch); 3 = Exhaustive Search (most thorough, 100 seqs/batch)",
+                type: "numeric",
+                rules: [(v) => (v >= 1 && v <= 3) || "ERROR: specify a value between 1 and 3"],
+              },
+              {
+                name: "thresholds",
+                value: "97 95 90 85",
+                disabled: "never",
+                tooltip:
+                  "Similarity thresholds (space-separated) for taxonomic levels: Species Genus Family Order [Class]. Up to 5 values. Defaults: '97 95 90 85'. Example: '99 97' sets Species=99%, Genus=97%, Family/Order/Class use defaults.",
+                type: "text",
+              },
+            ],
+          },
         ],
       },
       {
@@ -4828,7 +4875,7 @@ export default new Vuex.Store({
         ],
         Inputs: [
           {
-            name: "clustering_method",
+            name: "clustering",
             items: ["vsearch", "swarm", "unoise"],
             value: "vsearch",
             disabled: "never",
@@ -4862,7 +4909,7 @@ export default new Vuex.Store({
             type: "bool",
           },
           {
-            name: "preclustering_method",
+            name: "preclustering",
             items: ["none", "swarm_d1", "unoise"],
             value: "none",
             disabled: "never",
@@ -4888,7 +4935,7 @@ export default new Vuex.Store({
         extraInputs: [],
         Inputs: [
           {
-            name: "use_itsx",
+            name: "use_ITSx",
             value: true,
             disabled: "never",
             tooltip: "Set to false if you want to omit extraction of full ITS region using ITSx",
@@ -5003,17 +5050,17 @@ export default new Vuex.Store({
         extraInputs: [],
         Inputs: [
           {
-            name: "vsearch_cluster_id",
+            name: "similarity_threshold",
             value: 0.95,
             disabled: "never",
-            tooltip: "VSEARCH clustering identity threshold (0-1). Sequences with similarity above this threshold will be clustered together.",
+            tooltip: "Similarity threshold (0-1). Sequences with similarity above this threshold will be clustered together.",
             max: 1,
             min: 0,
             step: 0.01,
             type: "slide"
           },
           {
-            name: "vsearch_cluster_strand",
+            name: "strands",
             items: ["both", "plus"],
             value: "both",
             disabled: "never",
