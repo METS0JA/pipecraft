@@ -5,22 +5,17 @@ import os from "os";
 import fs from "fs";
 import path from "path";
 import { pullImageAsync, imageExists } from "dockerode-utils";
+import { getDockerodeOptionsFromContextSync } from "../utils/dockerContext";
 var _ = require("lodash");
 const Swal = require("sweetalert2");
 const slash = require("slash");
 const { dialog } = require("@electron/remote");
 const isDevelopment = process.env.NODE_ENV !== "production";
-const DockerDesktopLinux = !fs.existsSync("/var/run/docker.sock");
-const socketPath =
-  os.platform() === "win32"
-    ? "//./pipe/docker_engine"
-    : DockerDesktopLinux
-    ? `${os.homedir()}/.docker/desktop/docker.sock`
-    : "/var/run/docker.sock";
 
 function getDockerInstance() {
   const Docker = require("dockerode");
-  return new Docker({ socketPath });
+  const options = getDockerodeOptionsFromContextSync();
+  return new Docker(options);
 }
 
 Vue.use(Vuex);
@@ -6583,8 +6578,8 @@ export default new Vuex.Store({
         throw error;
       }
     },
-    async imageCheck({ state, commit }, imageName) {
-      const docker = getDockerInstance(state);
+    async imageCheck({ commit }, imageName) {
+      const docker = getDockerInstance();
       console.log(imageName);
       
       let gotImg = await imageExists(docker, imageName);
@@ -6637,9 +6632,9 @@ export default new Vuex.Store({
         }
       }
     },
-    async clearContainerConflicts({ state }, Hostname) {
+    async clearContainerConflicts(_, Hostname) {
       console.log(Hostname);
-      const docker = getDockerInstance(state)
+      const docker = getDockerInstance()
       let container = docker.getContainer(Hostname);
       let nameConflicts = await container
         .remove({ force: true })
@@ -6820,12 +6815,12 @@ export default new Vuex.Store({
       }
     },
     async fetchDockerInfo({ commit, state }) {
-      const docker = getDockerInstance(state)
       if (state.OStype === 'Linux') {
         state.dockerInfo.NCPU = os.cpus().length
         state.dockerInfo.MemTotal = os.totalmem()
       } else {
         try {
+          const docker = getDockerInstance()
           const info = await docker.info();
           commit("setDockerInfo", info);
         } catch (error) {
@@ -7036,10 +7031,10 @@ export default new Vuex.Store({
         return null;
       }
     },
-    async startDockerStatusMonitoring({ commit, state }) {
-      const docker = getDockerInstance(state);
+    async startDockerStatusMonitoring({ commit }) {
       const checkDockerStatus = async () => {
         try {
+          const docker = getDockerInstance();
           await docker.version();
           commit("updateDockerStatus", "running");
         } catch (error) {
