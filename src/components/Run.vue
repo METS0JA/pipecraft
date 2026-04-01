@@ -826,7 +826,7 @@ export default {
         }
         
         const { container: dockerContainer, stdoutStream, stderrStream } = await this.executeDockerContainer({
-          imageName: 'pipecraft/optimotu:5.1',
+          imageName: 'pipecraft/optimotu:5.1-pc1.2.0',
           containerName: 'optimotu',
           command: ['/scripts/run_optimotu_dev.sh'],
           env: [
@@ -899,11 +899,11 @@ export default {
           this.$store.state.runInfo.active = true;
           this.$store.state.runInfo.containerID = 'optimotu';
           await this.$store.dispatch('generateOptimOTUYamlConfig');
-          await this.$store.dispatch('imageCheck', 'pipecraft/optimotu:5.1');
+          await this.$store.dispatch('imageCheck', 'pipecraft/optimotu:5.1-pc1.2.0');
           await this.$store.dispatch('clearContainerConflicts', 'optimotu');
           try {            
             const container = await this.$docker.createContainer({
-              Image: 'pipecraft/optimotu:5.1',
+              Image: 'pipecraft/optimotu:5.1-pc1.2.0',
               name: 'optimotu',
               Cmd: ['/scripts/run_optimotu.sh'],
               Tty: true,
@@ -1005,7 +1005,7 @@ export default {
           console.log(props);
           await this.$store.dispatch('clearContainerConflicts', "Step_1");
           await this.$store.dispatch('clearContainerConflicts', "Step_2");
-          await this.$store.dispatch('imageCheck', "pipecraft/nextits:1.1.0");
+          await this.$store.dispatch('imageCheck', "pipecraft/nextits:1.1.0-pc1.2.0");
           const escChar = String.fromCharCode(27);
           const ansiEscapePattern = new RegExp(
             `${escChar}\\[[0-9;]*[A-Za-z]`,
@@ -1037,7 +1037,7 @@ export default {
           let promise = new Promise((resolve, reject) => {
             this.$docker
               .run(
-                "pipecraft/nextits:1.1.0",
+                "pipecraft/nextits:1.1.0-pc1.2.0",
                 ["bash", "-c", `bash /scripts/NextITS_Pipeline.sh`],
                 false,
                 props,
@@ -1376,7 +1376,7 @@ export default {
         }
 
         const { container: dockerContainer, stdoutStream, stderrStream } = await this.executeDockerContainer({
-          imageName: 'pipecraft/funbaront:latest',
+          imageName: 'pipecraft/funbaront:1-pc1.2.0',
           containerName: 'funbaront',
           command: ['/bin/bash', '-c', 'bash /scripts/submodules/FunBarONT_Pipeline.sh'],
           env: [

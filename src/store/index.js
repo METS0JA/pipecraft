@@ -82,7 +82,7 @@ export default new Vuex.Store({
             tooltip:
               "demultiplex data to per-sample files based on specified index file. Note that for read1 and read2 will get .R1 and .R2 identifiers when demultiplexing paired-end data",
             scriptName: "demux_paired_end_data.sh",
-            imageName: "pipecraft/cutadapt:5.2",
+            imageName: "pipecraft/cutadapt:5.2-pc1.2.0",
             serviceName: "demultiplex",
             selected: false,
             showExtra: false,
@@ -162,7 +162,7 @@ export default new Vuex.Store({
           {
             tooltip: "remove primers sequences from the reads",
             scriptName: "cut_primers_paired_end_reads.sh",
-            imageName: "pipecraft/cutadapt:5.2",
+            imageName: "pipecraft/cutadapt:5.2-pc1.2.0",
             serviceName: "cutadapt",
             selected: false,
             showExtra: false,
@@ -241,7 +241,7 @@ export default new Vuex.Store({
           {
             tooltip: "quality filtering with vsearch",
             scriptName: "quality_filtering_paired_end_vsearch.sh",
-            imageName: 'pipecraft/vsearch_dada2:3',
+            imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
             serviceName: "vsearch",
             selected: false,
             showExtra: false,
@@ -363,7 +363,7 @@ export default new Vuex.Store({
           {
             tooltip: "quality filtering with trimmomatic",
             scriptName: "quality_filtering_paired_end_trimmomatic.sh",
-            imageName: "pipecraft/trimmomatic:0.40",
+            imageName: "pipecraft/trimmomatic:0.40-pc1.2.0",
             serviceName: "trimmomatic",
             selected: false,
             showExtra: false,
@@ -436,7 +436,7 @@ export default new Vuex.Store({
           {
             tooltip: "quality filtering with fastp",
             scriptName: "quality_filtering_paired_end_fastp.sh",
-            imageName: "pipecraft/fastp:0.23.2",
+            imageName: "pipecraft/fastp:0.23.2-pc1.2.0",
             serviceName: "fastp",
             selected: false,
             showExtra: false,
@@ -579,7 +579,7 @@ export default new Vuex.Store({
           {
             tooltip: "quality filtering with DADA2 'filterAndTrim' function",
             scriptName: "quality_filtering_paired_end_dada2.sh",
-            imageName: 'pipecraft/vsearch_dada2:3',
+            imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
             serviceName: "DADA2",
             selected: false,
             showExtra: false,
@@ -677,7 +677,7 @@ export default new Vuex.Store({
           {
             tooltip: "assemble paired-end reads with vsearch",
             scriptName: "assemble_paired_end_data_vsearch.sh",
-            imageName: 'pipecraft/vsearch_dada2:3',
+            imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
             serviceName: "vsearch",
             disabled: "single_end",
             selected: false,
@@ -766,7 +766,7 @@ export default new Vuex.Store({
             tooltip:
               "denoise and assemble paired-end reads with DADA2 'mergePairs' and 'dada' functions. Note that only FASTA is outputted!",
             scriptName: "assemble_paired_end_data_dada2.sh",
-            imageName: 'pipecraft/vsearch_dada2:3',
+            imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
             serviceName: "DADA2_denoise_and_merge",
             selected: false,
             disabled: "single_end",
@@ -891,7 +891,7 @@ export default new Vuex.Store({
             tooltip:
               "tick the checkbox to filter chimeras with vsearch --uchime_denovo",
             scriptName: "chimera_filtering_vsearch.sh",
-            imageName: 'pipecraft/vsearch_dada2:3',
+            imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
             serviceName: "uchime_denovo",
             selected: false,
             showExtra: false,
@@ -962,7 +962,7 @@ export default new Vuex.Store({
             tooltip:
               "tick the checkbox to filter chimeras with vsearch --uchime3_denovo [for denoised sequences]",
             scriptName: "chimera_filtering_vsearch_uchime3.sh",
-            imageName: 'pipecraft/vsearch_dada2:3',
+            imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
             serviceName: "uchime3_denovo",
             selected: false,
             showExtra: false,
@@ -1028,7 +1028,7 @@ export default new Vuex.Store({
             tooltip:
               "if data set consists of ITS sequences; identify and extract the ITS regions using ITSx",
             scriptName: "ITS_extractor.sh",
-            imageName: "pipecraft/itsx:1.1.3",
+            imageName: "pipecraft/itsx:1.1.3-pc1.2.0",
             serviceName: "itsx",
             selected: false,
             showExtra: false,
@@ -1146,7 +1146,7 @@ export default new Vuex.Store({
           {
             scriptName: "clustering_vsearch.sh",
             tooltip: "tick the checkbox to cluster reads with vsearch",
-            imageName: 'pipecraft/vsearch_dada2:3',
+            imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
             serviceName: "vsearch",
             selected: false,
             showExtra: false,
@@ -1240,7 +1240,7 @@ export default new Vuex.Store({
             scriptName: "clustering_unoise.sh",
             tooltip:
               "tick the checkbox to cluster reads with vsearch --cluster_unoise (and optionally remove chimeras with --uchime3_denovo)",
-            imageName: 'pipecraft/vsearch_dada2:3',
+            imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
             serviceName: "unoise3",
             selected: false,
             showExtra: false,
@@ -1357,7 +1357,7 @@ export default new Vuex.Store({
           {
             scriptName: "tag_jump_removal.sh",
             tooltip: "filter out putative tag-jumps in the ASVs table (using UNCROSS2)",
-            imageName: 'pipecraft/vsearch_dada2:3',
+            imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
             serviceName: "filter_tag-jumps",
             selected: false,
             showExtra: false,
@@ -1407,7 +1407,7 @@ export default new Vuex.Store({
             scriptName: "clustering_vsearch_ASVs2OTUs.sh",
             tooltip:
               "clustering ASVs to OTUs with vsearch; and making an OTU table",
-            imageName: 'pipecraft/vsearch_dada2:3',
+            imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
             serviceName: "ASV_to_OTU",
             selected: false,
             showExtra: false,
@@ -1521,7 +1521,7 @@ export default new Vuex.Store({
           {
             tooltip: "postclustering with LULU algorithm to collapse consistently co-occurring daughter-OTUs",
             scriptName: "lulu.sh",
-            imageName: 'pipecraft/vsearch_dada2:3',
+            imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
             serviceName: "LULU_post-clustering",
             selected: false,
             showExtra: false,
@@ -1647,7 +1647,7 @@ export default new Vuex.Store({
             tooltip:
               "applies to DADA2 output ASV table (rds). Collaplse identical ASVs or/and filter ASVs by length [SELECT WORKDIR (data format, extension and read types are irrelevant here)]",
             scriptName: "table_filtering_dada2.sh",
-            imageName: 'pipecraft/vsearch_dada2:3',
+            imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
             serviceName: "DADA2 collapse ASVs",
             disabled: "never",
             selected: false,
@@ -1704,7 +1704,7 @@ export default new Vuex.Store({
             tooltip:
               "metaMATE (metabarcoding Multiple Abundance Threshold Evaluator) analyses a set of amplicons derived through metabarcoding of a mitochondrial coding locus to determine putative NUMT and other erroneous sequences",
             scriptName: "metamate.sh",
-            imageName: "pipecraft/metamate:0.4.3",
+            imageName: "pipecraft/metamate:0.4.3-pc1.2.0",
             serviceName: "metaMATE",
             selected: false,
             showExtra: false,
@@ -1874,7 +1874,7 @@ export default new Vuex.Store({
             tooltip:
               "search open reading frames with ORFfinder and remove potential NUMTs and off-target sequences",
             scriptName: "ORFfinder.sh",
-            imageName: "pipecraft/metaworks:1.12.0",
+            imageName: "pipecraft/metaworks:1.12.0-pc1.2.0",
             serviceName: "ORF-finder",
             selected: false,
             showExtra: false,
@@ -1954,7 +1954,7 @@ export default new Vuex.Store({
             tooltip:
               "DEICODE (Robust Aitchison PCA on sparse compositional metabarcoding data)",
             scriptName: "DEICODE.sh",
-            imageName: "pipecraft/deicode:0.2.4",
+            imageName: "pipecraft/deicode:0.2.4-pc1.2.0",
             serviceName: "DEICODE",
             selected: false,
             showExtra: false,
@@ -2004,7 +2004,7 @@ export default new Vuex.Store({
             tooltip:
               "BlasCh: False positive chimera detection and recovery. This tool automatically detects .chimeras.fasta files and sample FASTA files in the selected working directory, creates self-databases, and performs chimera analysis.",
             scriptName: "blasch.sh",
-            imageName: "pipecraft/blast:2.16",
+            imageName: "pipecraft/blast:2.16-pc1.2.0",
             serviceName: "BlasCh",
             selected: false,
             showExtra: false,
@@ -2077,7 +2077,7 @@ export default new Vuex.Store({
             tooltip:
               "assign taxonomy with BLAST",
             scriptName: "taxonomy_BLAST.sh",
-            imageName: "pipecraft/blast:2.16",
+            imageName: "pipecraft/blast:2.16-pc1.2.0",
             serviceName: "BLAST",
             selected: false,
             showExtra: false,
@@ -2176,7 +2176,7 @@ export default new Vuex.Store({
             tooltip:
               "assign taxonomy with RDP Classifier",
             scriptName: "taxonomy_RDP.sh",
-            imageName: "pipecraft/metaworks:1.12.0",
+            imageName: "pipecraft/metaworks:1.12.0-pc1.2.0",
             serviceName: "RDP_classifier",
             selected: false,
             showExtra: false,
@@ -2230,7 +2230,7 @@ export default new Vuex.Store({
             tooltip:
               "assign taxonomy with SINTAX classifier (in vsearch)",
             scriptName: "taxonomy_sintax.sh",
-            imageName: 'pipecraft/vsearch_dada2:3',
+            imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
             serviceName: "sintax",
             selected: false,
             showExtra: false,
@@ -2293,7 +2293,7 @@ export default new Vuex.Store({
             tooltip:
               "assign taxonomy with DADA2 'assignTaxonomy' function (RDP naive Bayesian classifier)",
             scriptName: "taxonomy_dada2.sh",
-            imageName: 'pipecraft/vsearch_dada2:3',
+            imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
             serviceName: "DADA2 classifier",
             disabled: "never",
             selected: false,
@@ -2348,7 +2348,7 @@ export default new Vuex.Store({
           {
             tooltip: "reorient reads based on specified primer sequences",
             scriptName: "reorient_paired_end_reads.sh",
-            imageName: "pipecraft/reorient:1",
+            imageName: "pipecraft/reorient:1-pc1.2.0",
             serviceName: "reorient",
             selected: false,
             showExtra: false,
@@ -2386,7 +2386,7 @@ export default new Vuex.Store({
             tooltip:
               "sequence file [fasta(.gz)/fastq(.gz)] statistics per file (number of seqs, min length, average length, max length)",
             scriptName: "seqkit_stats.sh",
-            imageName: 'pipecraft/vsearch_dada2:3',
+            imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
             serviceName: "seqkit stats",
             selected: false,
             showExtra: false,
@@ -2406,7 +2406,7 @@ export default new Vuex.Store({
             tooltip:
               "compare sequences in a fasta file with themselves using vsearch (global alignment) or BLAST (local alignment)",
             scriptName: "self_comparison.sh",
-            imageName: 'pipecraft/vsearch_dada2:3',
+            imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
             serviceName: "self-comparison",
             selected: false,
             showExtra: false,
@@ -2473,7 +2473,7 @@ export default new Vuex.Store({
       {
         tooltip: "remove primers sequences from the reads",
         scriptName: "cut_primers_paired_end_reads.sh",
-        imageName: "pipecraft/cutadapt:5.2",
+        imageName: "pipecraft/cutadapt:5.2-pc1.2.0",
         serviceName: "cut primers",
         manualLink:
           "https://pipecraft2-manual.readthedocs.io/en/latest/quicktools.html#cut-primers",
@@ -2549,7 +2549,7 @@ export default new Vuex.Store({
       {
         tooltip: "assemble paired-end reads with vsearch",
         scriptName: "assemble_paired_end_data_vsearch.sh",
-        imageName: 'pipecraft/vsearch_dada2:3',
+        imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
         serviceName: "merge reads",
         manualLink:
           "https://pipecraft2-manual.readthedocs.io/en/latest/quicktools.html#merge-vsearch",
@@ -2639,7 +2639,7 @@ export default new Vuex.Store({
       {
         tooltip: "quality filtering with vsearch",
         scriptName: "quality_filtering_paired_end_vsearch.sh",
-        imageName: 'pipecraft/vsearch_dada2:3',
+        imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
         serviceName: "quality filtering",
         manualLink:
           "https://pipecraft2-manual.readthedocs.io/en/latest/quicktools.html#qfilt-vsearch",
@@ -2765,7 +2765,7 @@ export default new Vuex.Store({
         tooltip:
           "chimera filtering with vsearch. Untick the checkbox to skip this step",
         scriptName: "chimera_filtering_vsearch.sh",
-        imageName: 'pipecraft/vsearch_dada2:3',
+        imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
         serviceName: "chimera filtering",
         manualLink:
           "https://pipecraft2-manual.readthedocs.io/en/latest/quicktools.html#chimera-filtering",
@@ -2839,7 +2839,7 @@ export default new Vuex.Store({
         tooltip:
           "if data set consists of ITS sequences; identify and extract the ITS regions using ITSx. Select appropriate ITSx output region for CLUSTERING after the process is finished",
         scriptName: "ITS_extractor.sh",
-        imageName: "pipecraft/itsx:1.1.3",
+        imageName: "pipecraft/itsx:1.1.3-pc1.2.0",
         serviceName: "itsx",
         manualLink:
           "https://pipecraft2-manual.readthedocs.io/en/latest/quicktools.html#id17",
@@ -2972,7 +2972,7 @@ export default new Vuex.Store({
       {
         tooltip: "cluster reads to OTUs with vsearch",
         scriptName: "clustering_vsearch.sh",
-        imageName: 'pipecraft/vsearch_dada2:3',
+        imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
         serviceName: "clustering",
         manualLink:
           "https://pipecraft2-manual.readthedocs.io/en/latest/quicktools.html#clustering-vsearch",
@@ -3068,7 +3068,7 @@ export default new Vuex.Store({
       {
         tooltip: "Filter tag-jumps and/or filter OTUs by length",
         scriptName: "curate_table_wf.sh",
-        imageName: 'pipecraft/vsearch_dada2:3',
+        imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
         serviceName: "curate OTU table",
         manualLink:
           "empty",
@@ -3154,7 +3154,7 @@ export default new Vuex.Store({
         tooltip: "Merge sequencing runs if working with multuple runs in the 'multiRunDir' directory. \
         Samples with the same name across runs are not merged together.",
         scriptName: "merge_runs_vsearch_wf.sh",
-        imageName: 'pipecraft/vsearch_dada2:3', 
+        imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0', 
         serviceName: "Merge sequencing runs",
         manualLink: "https://pipecraft2-manual.readthedocs.io/en/latest/pre-defined_pipelines.html#merge-sequencing-runs",
         disabled: "never",
@@ -3187,7 +3187,7 @@ export default new Vuex.Store({
       {
         tooltip: "remove primers sequences from the reads",
         scriptName: "cut_primers_paired_end_reads.sh",
-        imageName: "pipecraft/cutadapt:5.2",
+        imageName: "pipecraft/cutadapt:5.2-pc1.2.0",
         serviceName: "cut primers",
         manualLink:
           "https://pipecraft2-manual.readthedocs.io/en/latest/quicktools.html#cut-primers",
@@ -3263,7 +3263,7 @@ export default new Vuex.Store({
       {
         tooltip: "assemble paired-end reads with vsearch",
         scriptName: "assemble_paired_end_data_vsearch.sh",
-        imageName: 'pipecraft/vsearch_dada2:3',
+        imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
         serviceName: "merge reads",
         manualLink:
           "https://pipecraft2-manual.readthedocs.io/en/latest/quicktools.html#merge-vsearch",
@@ -3353,7 +3353,7 @@ export default new Vuex.Store({
       {
         tooltip: "quality filtering with vsearch",
         scriptName: "quality_filtering_paired_end_vsearch.sh",
-        imageName: 'pipecraft/vsearch_dada2:3',
+        imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
         serviceName: "quality filtering",
         manualLink:
           "https://pipecraft2-manual.readthedocs.io/en/latest/quicktools.html#qfilt-vsearch",
@@ -3479,7 +3479,7 @@ export default new Vuex.Store({
         tooltip:
           "if data set consists of ITS sequences; identify and extract the ITS regions using ITSx. Select appropriate ITSx output region for UNOISE after the process is finished",
         scriptName: "ITS_extractor.sh",
-        imageName: "pipecraft/itsx:1.1.3",
+        imageName: "pipecraft/itsx:1.1.3-pc1.2.0",
         serviceName: "itsx",
         manualLink:
           "https://pipecraft2-manual.readthedocs.io/en/latest/quicktools.html#id17",
@@ -3612,7 +3612,7 @@ export default new Vuex.Store({
         scriptName: "clustering_unoise.sh",
         tooltip:
           "cluster reads with vsearch --cluster_unoise (and optionally remove chimeras with --uchime3_denovo)",
-        imageName: 'pipecraft/vsearch_dada2:3',
+        imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
         serviceName: "unoise3",
         disabled: "never",
         selected: "always",
@@ -3723,7 +3723,7 @@ export default new Vuex.Store({
       {
         tooltip: "Filter tag-jumps and/or filter zOTUs by length (if zOTUs are clustered to OTUs in the clustering step, then this step will be applied also to the OTUs)",
         scriptName: "curate_table_wf.sh",
-        imageName: 'pipecraft/vsearch_dada2:3',
+        imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
         serviceName: "curate OTU table",
         manualLink:
           "empty",
@@ -3809,7 +3809,7 @@ export default new Vuex.Store({
         tooltip: "Merge sequencing runs if working with multuple runs in the 'multiRunDir' directory. \
         Samples with the same name across runs are not merged together",
         scriptName: "merge_runs_unoise_wf.sh",
-        imageName: 'pipecraft/vsearch_dada2:3', 
+        imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0', 
         serviceName: "Merge sequencing runs",
         manualLink: "https://pipecraft2-manual.readthedocs.io/en/latest/pre-defined_pipelines.html#merge-sequencing-runs",
         disabled: "never",
@@ -4049,7 +4049,7 @@ export default new Vuex.Store({
       {
         tooltip: "Specify target taxa and sequence orientation",
         scriptName:"xxx.sh",
-        imageName: "pipecraft/optimotu:5.1",
+        imageName: "pipecraft/optimotu:5.1-pc1.2.0",
         serviceName: "target taxa and sequence orientation",
         manualLink: "https://pipecraft2-manual.readthedocs.io/en/latest/pre-defined_pipelines.html#target-taxa-and-sequence-orientation",
         disabled: "never",
@@ -4122,7 +4122,7 @@ export default new Vuex.Store({
                     in the positive control samples, and their presence in other samples is indicative of cross-contamination. 
                     In practice both types are treated the same by the pipeline, they are just reported separately.`,
         scriptName:"xxx.sh",
-        imageName: "pipecraft/optimotu:5",
+        imageName: "pipecraft/optimotu:5-pc1.2.0",
         serviceName: "control sequences",
         manualLink:
           "https://pipecraft2-manual.readthedocs.io/en/latest/pre-defined_pipelines.html#control-sequences",
@@ -4152,7 +4152,7 @@ export default new Vuex.Store({
       {
         tooltip: "remove primers sequences and trim the reads; discards all reads that contain N's (ambiguous bases) for following dada2 denoising",
         scriptName: "xxx.sh",
-        imageName: "pipecraft/optimotu:5",
+        imageName: "pipecraft/optimotu:5-pc1.2.0",
         serviceName: "cut primers and trim reads",
         manualLink:
           "https://pipecraft2-manual.readthedocs.io/en/latest/pre-defined_pipelines.html#cut-primers-and-trim-reads",
@@ -4250,7 +4250,7 @@ export default new Vuex.Store({
       {
         tooltip: "quality filtering with DADA2 'filterAndTrim' function",
         scriptName: "xxx.sh",
-        imageName: "pipecraft/optimotu:5",
+        imageName: "pipecraft/optimotu:5-pc1.2.0",
         serviceName: "quality filtering",
         manualLink:
           "https://pipecraft2-manual.readthedocs.io/en/latest/pre-defined_pipelines.html#id12",
@@ -4283,7 +4283,7 @@ export default new Vuex.Store({
         tooltip: `NON-COSTUMIZABLE SETTINGS here! DADA2 denoising with learnErrors(), dada() and mergePairs() functions with default DADA2 parameters. 
                   Sequences with binned quality scores, as produced by newer Illumina sequencers, are automatically detected, and the error model is adjusted accordingly.`,
         scriptName: "xxx.sh",
-        imageName: "pipecraft/optimotu:5",
+        imageName: "pipecraft/optimotu:5-pc1.2.0",
         serviceName: "denoising and merging paired-end reads",
         manualLink:
           "https://pipecraft2-manual.readthedocs.io/en/latest/pre-defined_pipelines.html#denoising-and-merging-paired-end-reads",
@@ -4296,7 +4296,7 @@ export default new Vuex.Store({
       {
         tooltip: `NON-COSTUMIZABLE SETTINGS here! Chimera filtering with DADA2 'removeBimeraDenovo()' function and vsearch 'uchime_ref' function`,
         scriptName: "xxx.sh",
-        imageName: "pipecraft/optimotu:5",
+        imageName: "pipecraft/optimotu:5-pc1.2.0",
         serviceName: "chimera filtering",
         manualLink:
           "https://pipecraft2-manual.readthedocs.io/en/latest/pre-defined_pipelines.html#id13",
@@ -4309,7 +4309,7 @@ export default new Vuex.Store({
       {
         tooltip: "Filter tag-jumps with UNCROSS2",
         scriptName: "xxx.sh",
-        imageName: "pipecraft/optimotu:5",
+        imageName: "pipecraft/optimotu:5-pc1.2.0",
         serviceName: "filter tag-jumps",
         manualLink:
           "https://pipecraft2-manual.readthedocs.io/en/latest/pre-defined_pipelines.html#filter-tag-jumps",
@@ -4345,7 +4345,7 @@ export default new Vuex.Store({
       {
         tooltip: "Statistical sequence models are used for 1) aligning ASVs prior to use of protax and/or NUMT detection; 2) filtering ASVs to remove spurious sequences",
         scriptName: "xxx.sh",
-        imageName: "pipecraft/optimotu:5",
+        imageName: "pipecraft/optimotu:5-pc1.2.0",
         serviceName: "Amplicon model setting",
         manualLink:
           "https://pipecraft2-manual.readthedocs.io/en/latest/pre-defined_pipelines.html#amplicon-model-setting",
@@ -4458,7 +4458,7 @@ export default new Vuex.Store({
       {
         tooltip: "Settings for Protax classification",
         scriptName: "xxx.sh",
-        imageName: "pipecraft/optimotu:5",
+        imageName: "pipecraft/optimotu:5-pc1.2.0",
         serviceName: "Protax classification",
         manualLink:
           "https://pipecraft2-manual.readthedocs.io/en/latest/pre-defined_pipelines.html#protax-classification",
@@ -4504,7 +4504,7 @@ export default new Vuex.Store({
       {
         tooltip: "Clustering",
         scriptName: "xxx.sh",
-        imageName: "pipecraft/optimotu:5",
+        imageName: "pipecraft/optimotu:5-pc1.2.0",
         serviceName: "Clustering",
         manualLink:
           "https://pipecraft2-manual.readthedocs.io/en/latest/pre-defined_pipelines.html#id14",
@@ -4531,7 +4531,7 @@ export default new Vuex.Store({
         tooltip:
           "Settings for STEP_1 (sequence filtering processes per sequencing run) in NextITS pipeline",
         scriptName: "",
-        imageName: "pipecraft/nextits:1.1.0",
+        imageName: "pipecraft/nextits:1.1.0-pc1.2.0",
         serviceName: "Step_1",
         manualLink: "https://pipecraft2-manual.readthedocs.io/en/latest/pre-defined_pipelines.html#nextits",
         disabled: "never",
@@ -4696,7 +4696,7 @@ export default new Vuex.Store({
       {
         tooltip: "Settings for STEP_2 (clustering) in NextITS pipeline",
         scriptName: "",
-        imageName: "pipecraft/nextits:1.1.0",
+        imageName: "pipecraft/nextits:1.1.0-pc1.2.0",
         serviceName: "Step_2",
         manualLink: "https://pipecraft2-manual.readthedocs.io/en/latest/pre-defined_pipelines.html#nextits",
         disabled: "never",
@@ -4879,7 +4879,7 @@ export default new Vuex.Store({
       {
         tooltip: "General pipeline configuration options",
         scriptName: "FunBarONT_Pipeline.sh",
-        imageName: "pipecraft/funbaront:1",
+        imageName: "pipecraft/funbaront:1-pc1.2.0",
         serviceName: "pipeline options",
         manualLink: "https://github.com/mdziurzynski/ont_fungal_barcoding_pipeline",
         disabled: "never",
@@ -4994,7 +4994,7 @@ export default new Vuex.Store({
       {
         tooltip: "VSEARCH clustering parameters",
         scriptName: "FunBarONT_Pipeline.sh",
-        imageName: "pipecraft/funbaront:1",
+        imageName: "pipecraft/funbaront:1-pc1.2.0",
         serviceName: "VSEARCH clustering",
         manualLink: "https://github.com/torognes/vsearch",
         disabled: "never",
@@ -5026,7 +5026,7 @@ export default new Vuex.Store({
       {
         tooltip: "Taxonomy assignment using BLAST against reference database. BLAST database will be automatically created from the provided reference file.",
         scriptName: "FunBarONT_Pipeline.sh",
-        imageName: "pipecraft/funbaront:1",
+        imageName: "pipecraft/funbaront:1-pc1.2.0",
         serviceName: "taxonomy assignment",
         manualLink: "https://blast.ncbi.nlm.nih.gov/Blast.cgi",
         disabled: "never",
@@ -5117,7 +5117,7 @@ export default new Vuex.Store({
           MIXED: "cut_mixed_primers_paired_end_reads.sh",
           SINGLE_END: "cut_primers_single_end_reads.sh",
         },
-        imageName: "pipecraft/cutadapt:5.2",
+        imageName: "pipecraft/cutadapt:5.2-pc1.2.0",
         serviceName: "cut primers",
         manualLink:
           "https://pipecraft2-manual.readthedocs.io/en/latest/quicktools.html#cut-primers",
@@ -5197,7 +5197,7 @@ export default new Vuex.Store({
           MIXED: "quality_filtering_paired_end_dada2_mixed.sh",
           SINGLE_END: "quality_filtering_single_end_dada2.sh",
         },
-        imageName: 'pipecraft/vsearch_dada2:3',
+        imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
         serviceName: "quality filtering",
         manualLink:
           "https://pipecraft2-manual.readthedocs.io/en/latest/quicktools.html#quality-filtering",
@@ -5295,7 +5295,7 @@ export default new Vuex.Store({
           MIXED: "assemble_paired_end_data_dada2_mixed_wf.sh",
           SINGLE_END: "denoise_single_end_data_dada2.sh",
         },
-        imageName: 'pipecraft/vsearch_dada2:3',
+        imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
         serviceName: "denoise",
         manualLink:
           "https://pipecraft2-manual.readthedocs.io/en/latest/quicktools.html#dada2-denoise",
@@ -5394,7 +5394,7 @@ export default new Vuex.Store({
           MIXED: "assemble_paired_end_data_dada2_mixed_wf.sh",
           SINGLE_END: "disabled.sh",
         },
-        imageName: 'pipecraft/vsearch_dada2:3',
+        imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
         serviceName: "merge Pairs",
         manualLink:
           "https://pipecraft2-manual.readthedocs.io/en/latest/quicktools.html#assemble-paired-end-reads",
@@ -5445,7 +5445,7 @@ export default new Vuex.Store({
           MIXED: "chimera_filtering_dada2_mixed_wf.sh",
           SINGLE_END: "chimera_filtering_dada2_wf.sh",
         },
-        imageName: 'pipecraft/vsearch_dada2:3',
+        imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
         serviceName: "chimera filtering",
         manualLink:
           "https://pipecraft2-manual.readthedocs.io/en/latest/quicktools.html#chimera-filtering",
@@ -5502,7 +5502,7 @@ export default new Vuex.Store({
       {
         tooltip: "Filter tag-jumps, filter ASV by length, collaplse identical ASVs",
         scriptName: "curate_table_wf.sh",
-        imageName: 'pipecraft/vsearch_dada2:3',
+        imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
         serviceName: "curate ASV table",
         manualLink:
           "https://pipecraft2-manual.readthedocs.io/en/latest/quicktools.html#dada2-table-filtering",
@@ -5608,7 +5608,7 @@ export default new Vuex.Store({
       {
         tooltip: "Merge sequencing runs if working with multuple runs in the 'multiRunDir' directory. Samples with the same name across runs are merged together",
         scriptName: "merge_runs_dada2_wf.sh",
-        imageName: 'pipecraft/vsearch_dada2:3', 
+        imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0', 
         serviceName: "Merge sequencing runs",
         manualLink: "https://pipecraft2-manual.readthedocs.io/en/latest/pre-defined_pipelines.html#merge-sequencing-runs",
         disabled: "never",
@@ -6062,8 +6062,8 @@ export default new Vuex.Store({
 
       // Determine the correct image name based on architecture
       const correctImage = specs.architecture === 'arm64'
-        ? 'pipecraft/vsearch_dada2_m:3'
-        : 'pipecraft/vsearch_dada2:3';
+        ? 'pipecraft/vsearch_dada2_m:3-pc1.2.0'
+        : 'pipecraft/vsearch_dada2:3-pc1.2.0';
 
       // Helper to update only relevant services recursively
       function updateVsearchDADA2Images(obj) {
