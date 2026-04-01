@@ -1232,6 +1232,125 @@ export default new Vuex.Store({
             ],
           },
           {
+            scriptName: "clustering_swarm.sh",
+            tooltip: "tick the checkbox to cluster reads with SWARM",
+            imageName: "pipecraft/swarm:3.0",
+            serviceName: "swarm",
+            selected: false,
+            showExtra: false,
+            extraInputs: [
+              {
+                name: "swarm_threads",
+                displayName: "cores",
+                value: 4,
+                disabled: "never",
+                tooltip: "Number of CPU cores to use",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "swarm_boundary",
+                displayName: "boundary",
+                value: 3,
+                disabled: "never",
+                tooltip:
+                  "Fastidious option (requires fastidious=true AND d=1): minimum mass of large swarms",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "swarm_ceiling",
+                displayName: "ceiling",
+                value: 1000,
+                disabled: "never",
+                tooltip:
+                  "Fastidious option (requires fastidious=true AND d=1): max memory in MB for Bloom filter",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "swarm_bloom_bits",
+                displayName: "bloom bits",
+                value: 16,
+                disabled: "never",
+                tooltip:
+                  "Fastidious option (requires fastidious=true AND d=1): number of bits for Bloom filter",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "swarm_match",
+                displayName: "match",
+                value: 5,
+                disabled: "never",
+                tooltip:
+                  "Pairwise alignment (d>1 only): reward for nucleotide match",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "swarm_mismatch",
+                displayName: "mismatch",
+                value: 4,
+                disabled: "never",
+                tooltip:
+                  "Pairwise alignment (d>1 only): penalty for nucleotide mismatch",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "swarm_gap_open",
+                displayName: "gap opening",
+                value: 12,
+                disabled: "never",
+                tooltip:
+                  "Pairwise alignment (d>1 only): penalty for gap opening",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "swarm_gap_ext",
+                displayName: "gap extension",
+                value: 4,
+                disabled: "never",
+                tooltip:
+                  "Pairwise alignment (d>1 only): penalty for gap extension",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+            ],
+            Inputs: [
+              {
+                name: "swarm_d",
+                displayName: "d",
+                value: 1,
+                disabled: "never",
+                tooltip:
+                  "Clustering resolution: maximum number of differences between sequences in a swarm",
+                type: "numeric",
+                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+              },
+              {
+                name: "swarm_no_break",
+                displayName: "no OTU breaking",
+                value: true,
+                disabled: "never",
+                tooltip:
+                  "Prevent OTU breaking: keep all amplicons in the same swarm",
+                type: "bool",
+              },
+              {
+                name: "swarm_fastidious",
+                displayName: "fastidious",
+                value: true,
+                disabled: "never",
+                tooltip:
+                  "Fastidious mode (d=1 only): link nearby low-abundance swarms to large swarms",
+                type: "bool",
+              },
+            ],
+          },
+          {
             scriptName: "clustering_unoise.sh",
             tooltip:
               "tick the checkbox to cluster reads with vsearch --cluster_unoise (and optionally remove chimeras with --uchime3_denovo)",
@@ -6416,24 +6535,59 @@ export default new Vuex.Store({
       }
     },
     inputUpdate(state, payload) {
-      state.selectedSteps[payload.stepIndex].services[payload.serviceIndex][
-        payload.listName
-      ][payload.inputIndex].value = payload.value;
+      const service =
+        state.selectedSteps[payload.stepIndex].services[payload.serviceIndex];
+      service[payload.listName][payload.inputIndex].value = payload.value;
+
+      if (
+        service.serviceName === "swarm" &&
+        payload.listName === "Inputs" &&
+        service[payload.listName][payload.inputIndex].name === "swarm_d"
+      ) {
+        const dValue = Number(payload.value);
+        if (dValue !== 1) {
+          const fastidiousInput = service.Inputs.find(
+            (input) => input.name === "swarm_fastidious"
+          );
+          if (fastidiousInput) {
+            fastidiousInput.value = false;
+          }
+        }
+      }
     },
     premadeInputUpdate(state, payload) {
-      const input = state[payload.workflowName][payload.serviceIndex][payload.listName][payload.inputIndex];
-      if (input.items && 
-          input.items.includes('custom') && 
-          payload.value !== 'custom' && 
-          !input.items.includes(payload.value)) {
+      const service = state[payload.workflowName][payload.serviceIndex];
+      const input = service[payload.listName][payload.inputIndex];
+      if (
+        input.items &&
+        input.items.includes("custom") &&
+        payload.value !== "custom" &&
+        !input.items.includes(payload.value)
+      ) {
         input.items.push(payload.value);
       }
 
       input.value = payload.value;
-      
+
+      if (
+        service.serviceName === "swarm" &&
+        payload.listName === "Inputs" &&
+        input.name === "swarm_d"
+      ) {
+        const dValue = Number(payload.value);
+        if (dValue !== 1) {
+          const fastidiousInput = service.Inputs.find(
+            (item) => item.name === "swarm_fastidious"
+          );
+          if (fastidiousInput) {
+            fastidiousInput.value = false;
+          }
+        }
+      }
+
       // Call onChange handler if it exists (for same-service updates)
       if (input.onChange) {
-        input.onChange(state[payload.workflowName][payload.serviceIndex], payload.value);
+        input.onChange(service, payload.value);
       }
 
       // Handle linked_updates if they exist (for cross-service updates)
@@ -6446,7 +6600,7 @@ export default new Vuex.Store({
             if (targetInput) {
               const newValue = update.getValue(currentValue);
               targetInput.value = newValue;
-              
+
               // If this input has its own linked_updates, process them too
               if (targetInput.linked_updates) {
                 processUpdates(targetInput.linked_updates, newValue);
@@ -6454,7 +6608,7 @@ export default new Vuex.Store({
             }
           });
         };
-    
+
         processUpdates(input.linked_updates, payload.value);
       }
     },

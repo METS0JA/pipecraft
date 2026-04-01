@@ -21,7 +21,7 @@
                 block
                 :rules="input.rules ? input.rules : []"
                 elevation="1"
-                >{{ input.name }}</v-btn
+                >{{ displayName }}</v-btn
               >
             </v-col>
           </v-row>
@@ -50,6 +50,10 @@ export default {
     },
     inputData() {
       return this.$store.state.data;
+    },
+    displayName() {
+      const name = this.input.displayName || this.input.name;
+      return name.replace(/_/g, " ");
     },
   },
   methods: {
