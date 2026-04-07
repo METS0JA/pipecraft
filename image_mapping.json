@@ -104,6 +104,13 @@
       "context": ".",
       "image": "pipecraft/vsearch_dada2",
       "tags": ["3-pc1.2.0"]
+    },
+    {
+      "name": "funbaront",
+      "dockerfile": "image_development/Dockerfile_funbaront",
+      "context": ".",
+      "image": "pipecraft/funbaront",
+      "tags": ["1-pc1.2.0"]
     }
   ]
 }

@@ -8,10 +8,20 @@ import { sync } from "vuex-router-sync";
 import os from 'os'
 import '@mdi/font/css/materialdesignicons.css';
 const Docker = require('dockerode');
+const { getDockerodeOptionsFromContextSync } = require("./utils/dockerContext");
+
+let dockerOptions;
+
+try {
+  dockerOptions = getDockerodeOptionsFromContextSync();
+} catch (error) {
+  console.error(error.message);
+  dockerOptions = {};
+}
 
 Object.defineProperty(Vue.prototype, '$docker', {
   get() {
-    return new Docker();
+    return new Docker(dockerOptions);
   }
 });
 

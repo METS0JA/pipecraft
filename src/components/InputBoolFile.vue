@@ -22,7 +22,13 @@
             v-model="input.active"
           >
             <template v-slot:label>
-
+              <div style="color: black">
+                        <a
+                          :href="$store.getters.linkify(input.tooltip)"
+                          target="_blank"
+                          >{{ displayName }}</a
+                >
+              </div>
             </template></v-checkbox
           >
             <div style="color: black">
@@ -46,7 +52,7 @@
           >
             <template v-slot:label>
               <div style="color: black">
-                {{ input.name.replace(/_/g, " ") }}
+                        {{ displayName }}
               </div>
             </template></v-checkbox
           >
@@ -120,6 +126,10 @@ export default {
       var filename = path.parse(this.input.value).base;
       return filename;
     },
+            displayName() {
+              const name = this.input.displayName || this.input.name;
+              return name.replace(/_/g, " ");
+            },
   },
   methods: {
     toggleActive(value) {

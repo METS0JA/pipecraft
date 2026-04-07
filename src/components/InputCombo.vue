@@ -13,13 +13,13 @@
         <v-tooltip top>
           <template v-slot:activator="{ on }">
             <v-col v-on="on" style="padding: 0" cols="10" offset="0">
-              <v-select
-                @change="inputUpdate(input.value)"
-                v-model="input.value"
-                :items="input.items"
-                :label="input.name"
-                multiple
-              >
+                <v-select
+                  @change="inputUpdate(input.value)"
+                  v-model="input.value"
+                  :items="input.items"
+                  :label="displayName"
+                  multiple
+                >
                 <template v-slot:prepend-item>
                   <v-list-item ripple @click="toggle">
                     <v-list-item-action>
@@ -91,6 +91,10 @@ export default {
     },
     inputData() {
       return this.$store.state.data;
+    },
+    displayName() {
+      const name = this.input.displayName || this.input.name;
+      return name.replace(/_/g, " ");
     },
     All() {
       return this.input.value.length === this.input.items.length;
