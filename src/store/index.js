@@ -1704,7 +1704,7 @@ export default new Vuex.Store({
             tooltip:
               "metaMATE (metabarcoding Multiple Abundance Threshold Evaluator) analyses a set of amplicons derived through metabarcoding of a mitochondrial coding locus to determine putative NUMT and other erroneous sequences",
             scriptName: "metamate.sh",
-            imageName: "pipecraft/metamate:0.4.3-pc1.2.0",
+            imageName: "pipecraft/metamate:0.5.3",
             serviceName: "metaMATE",
             selected: false,
             showExtra: false,
