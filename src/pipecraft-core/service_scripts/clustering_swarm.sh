@@ -23,7 +23,7 @@ printf "# seqkit (version %s)\n" "$seqkit_version"
 
 # Load variables (these can be set in the environment or upstream)
 # SWARM clustering options with defaults:
-swarm_d=${swarm_d:1}                      # Resolution (differences), default 1.
+swarm_d=${swarm_d:-1}                     # Resolution (differences), default 1.
 swarm_no_break=${swarm_no_break}           # If defined (default "true"), adds --no-otu-breaking.
 # Fastidious options (only applicable if swarm_d == 1)
 swarm_boundary=${swarm_boundary}           # default 3
@@ -48,7 +48,7 @@ swarm_gap_open=${swarm_gap_open}           # Gap open penalty, default 12.
 swarm_gap_ext=${swarm_gap_ext}             # Gap extension penalty, default 4.
 swarm_disable_sse3=${swarm_disable_sse3}   # Flag, default "true" to disable SSE3.
 # Thread setting: default to 4 but can be overridden.
-swarm_threads=${swarm_threads:4}
+swarm_threads=${swarm_threads:-4}
 
 # File format and input file variables
 fileFormat=${fileFormat}                   # "fasta", "fastq", etc.
@@ -141,6 +141,7 @@ for seqrun in $DIRS; do
     # Create temporary directories for dereplication
     [[ -d tempdir ]] && rm -rf tempdir
     mkdir -p tempdir
+    [[ -d tempdir2 ]] && rm -rf tempdir2
     [[ -d dereplicated_sequences ]] && rm -rf dereplicated_sequences
     mkdir -p dereplicated_sequences
 
@@ -233,7 +234,7 @@ for seqrun in $DIRS; do
         mv *.fasta "$output_dir/clustering_input_to_FASTA"
     fi
     if [[ $debugger != "true" ]]; then
-        rm -rf tempdir dereplicated_sequences
+        rm -rf tempdir tempdir2 dereplicated_sequences
     fi
     cluster_count=$(grep -c "^>" "$swarm_seeds_path" 2>/dev/null || echo 0)
     end=$(date +%s)
