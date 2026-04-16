@@ -23,21 +23,14 @@
           >
             <template v-slot:label>
               <div style="color: black">
-                        <a
-                          :href="$store.getters.linkify(input.tooltip)"
-                          target="_blank"
-                          >{{ displayName }}</a
+                <a
+                  :href="$store.getters.linkify(input.tooltip)"
+                  target="_blank"
+                  >{{ displayName }}</a
                 >
               </div>
             </template></v-checkbox
           >
-            <div style="color: black">
-              <a
-                :href="$store.getters.linkify(input.tooltip)"
-                target="_blank"
-                >{{ input.name.replace(/_/g, " ") }}</a
-              >
-            </div>
         </v-card-title>
         <v-card-title
           v-else

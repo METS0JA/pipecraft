@@ -52,3 +52,7 @@ RUN metamate --help >/dev/null
 
 RUN mkdir -p /default_specs \
     && echo "[library; n; 0-1/2]" > /default_specs/specifications0.txt
+
+# added OTU mode   
+# Table filtering now depends on the mode. In some cases two tables are now written in the metamate output folder.
+# Added an adaptive filter mode, where abundance thresholds are set and applied per sample instead of a single global threshold

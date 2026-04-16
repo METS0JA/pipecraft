@@ -1852,7 +1852,7 @@ export default new Vuex.Store({
             Inputs: [
               {
                 name: "find_or_dump",
-                items: ["find", "dump", "find_and_dump"],
+                items: ["find", "dump", "find_and_dump", "filter_adaptive"],
                 value: "find",
                 disabled: "never",
                 tooltip:
@@ -1860,6 +1860,32 @@ export default new Vuex.Store({
                   'dump' expects the output folder 'metamate_out' with resultcache file. \
                   If using 'find_and_dump', then dump follows automatically the find function to filter ASVs/OTUs based on the allowed abundance threshold of non-validated (putative artefactual) OTUs/ASVs ['NA abund thresh' setting]",
                 type: "select",
+              },
+              {
+                name: "percentile",
+                value: 0.95,
+                disabled: "never",
+                tooltip:
+                  "filter-adaptive setting; percentile of verified non-authentic ASV abundances to filter out per sample (metaMATE --percentile).",
+                type: "numeric",
+                max: 1,
+                rules: [
+                  (v) => v >= 0 || "ERROR: specify values >= 0",
+                  (v) => v <= 1 || "ERROR: specify values <= 1",
+                ],
+                depends_on:
+                  'state.selectedSteps[0].services[4].Inputs[0].value == "filter_adaptive"',
+              },
+              {
+                name: "criteria",
+                items: ["verified_removed", "estimated_removed"],
+                value: "verified_removed",
+                disabled: "never",
+                tooltip:
+                  "filter-adaptive setting; how per-sample thresholds are calculated (metaMATE --criteria).",
+                type: "select",
+                depends_on:
+                  'state.selectedSteps[0].services[4].Inputs[0].value == "filter_adaptive"',
               },
               {
                 name: "specifications",
@@ -1913,6 +1939,47 @@ export default new Vuex.Store({
                 tooltip:
                   "find/dump setting; select your fasta formatted OTUs/ASVs file for filtering [file must be in the SELECT WORKDIR directory]",
                 type: "file",
+              },
+              {
+                name: "otu_mode",
+                value: false,
+                disabled: "never",
+                tooltip:
+                  "enable OTU mode (metaMATE --uc/--otu_fasta/--otu_table). Use this if you want metaMATE to operate on OTUs rather than ASVs.",
+                type: "bool",
+              },
+              {
+                name: "uc",
+                value: "undefined",
+                btnName: "select uc",
+                disabled: "never",
+                tooltip:
+                  "OTU mode setting; USEARCH/VSEARCH .uc cluster file mapping ASVs to OTUs (metaMATE --uc) [file must be in the SELECT WORKDIR directory].",
+                type: "file",
+                depends_on:
+                  "state.selectedSteps[0].services[4].Inputs.find(i => i.name === 'otu_mode')?.value == true",
+              },
+              {
+                name: "otu_fasta",
+                value: "undefined",
+                btnName: "select fasta",
+                disabled: "never",
+                tooltip:
+                  "OTU mode setting; fasta file containing OTU representative sequences (metaMATE --otu_fasta) [file must be in the SELECT WORKDIR directory].",
+                type: "file",
+                depends_on:
+                  "state.selectedSteps[0].services[4].Inputs.find(i => i.name === 'otu_mode')?.value == true",
+              },
+              {
+                name: "otu_table",
+                value: "undefined",
+                btnName: "select table",
+                disabled: "never",
+                tooltip:
+                  "OTU mode setting; OTU abundance table (CSV/TSV) (metaMATE --otu_table) [file must be in the SELECT WORKDIR directory].",
+                type: "file",
+                depends_on:
+                  "state.selectedSteps[0].services[4].Inputs.find(i => i.name === 'otu_mode')?.value == true",
               },
               {
                 name: "genetic_code",
@@ -7186,13 +7253,20 @@ export default new Vuex.Store({
       }
     },
     async startDockerStatusMonitoring({ commit }) {
+      let lastStatus = null;
       const checkDockerStatus = async () => {
+        let status = "stopped";
         try {
           const docker = getDockerInstance();
           await docker.version();
-          commit("updateDockerStatus", "running");
+          status = "running";
         } catch (error) {
-          commit("updateDockerStatus", "stopped");
+          status = "stopped";
+        }
+
+        if (status !== lastStatus) {
+          lastStatus = status;
+          commit("updateDockerStatus", status);
         }
       };
       // Check immediately

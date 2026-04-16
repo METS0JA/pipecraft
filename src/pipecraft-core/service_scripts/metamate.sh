@@ -12,11 +12,17 @@
     #Distributed under the GNU General Public License
     #https://github.com/tjcreedy/metamate
 ################################################
-mkdir -p /extraFiles2
+# Pipecraft mounts the selected working directory at /input (see Run.vue).
+# Docker may also bind file parent dirs to /extraFilesN; slot numbers depend on
+# input order and visibility, so hardcoding /extraFiles2, /extraFiles5, etc. breaks
+# when inputs are added or depends_on hides fields. User files in the workdir are
+# always available as /input/<basename>.
+
 #load variables
 find_or_dump=${find_or_dump}       # find, dump or find_and_dump
 specifications=${specifications}   # file
 reference_seqs=${reference_seqs}   # file
+reference_seqs2=${reference_seqs2}   # file (optional)
 table=${table}                     # file 
 rep_seqs=${rep_seqs}               # file
 genetic_code=${genetic_code}       # integer
@@ -27,36 +33,48 @@ NA_abund_thresh=${NA_abund_thresh} # float
 bases_variation=${bases_variation} # integer
 taxgroups=${taxgroups}             # file
 cores=${cores}                     # integer
+percentile=${percentile}           # float (0-1), filter-adaptive
+criteria=${criteria}               # verified_removed | estimated_removed, filter-adaptive
+otu_mode=${otu_mode}               # boolean
+uc=${uc}                           # file (.uc)
+otu_fasta=${otu_fasta}             # file (fasta)
+otu_table=${otu_table}             # file (csv/tsv)
 
-# modify the path to the input files
-regex='[^/]*$'
-if [[ $specifications != "/metamate/specifications.txt" ]]; then
-    specifications=$(echo $specifications | grep -oP "$regex")
-    specifications=$(basename $specifications)
-    specifications=$(printf "/extraFiles2/$specifications")
+container_file() {
+    local p="$1"
+    if [[ "$p" == "undefined" ]] || [[ -z "$p" ]]; then
+        echo ""
+        return
+    fi
+    echo "/input/$(basename "$p")"
+}
+
+source /scripts/submodules/framework.functions.sh
+
+# modify the path to the input files (under /input = working directory)
+if [[ "${specifications}" != "/metamate/specifications.txt" ]] && [[ "${specifications}" != "undefined" ]] && [[ -n "${specifications}" ]]; then
+    specifications=$(container_file "$specifications")
 fi
 if [[ $abundance_filt != "true" ]]; then
      specifications="/default_specs/specifications0.txt"
  fi
 
 # Reference seqs (database) handling
-reference_seqs=$(echo $reference_seqs | grep -oP "$regex")
-reference_seqs=$(basename $reference_seqs)
-reference_seqs=$(printf "/extraFiles3/$reference_seqs")
+if [[ "${reference_seqs}" != "undefined" ]] && [[ -n "${reference_seqs}" ]]; then
+    reference_seqs=$(container_file "$reference_seqs")
+fi
 
 # Reference seqs2 handling
 if [[ $reference_seqs2 != "undefined" ]]; then
-    reference_seqs2=$(echo $reference_seqs2 | grep -oP "$regex")
-    reference_seqs2=$(basename $reference_seqs2)
-    reference_seqs2=$(printf "/extraFiles4/$reference_seqs2")
+    reference_seqs2=$(container_file "$reference_seqs2")
 fi
 
 # Feature table handling
-table=$(echo $table | grep -oP "$regex")
-table=$(basename $table)
-table=$(printf "/extraFiles5/$table")
+if [[ "${table}" != "undefined" ]] && [[ -n "${table}" ]]; then
+    table=$(container_file "$table")
+fi
 # check "Sequence" column in the table file
-if grep -q "Sequence" $table; then
+if [[ -n "$table" ]] && [[ -f "$table" ]] && grep -q "Sequence" "$table"; then
     printf '%s\n' "WARNIG]: table file contains a 'Sequence' column. Removing this column before running metaMATE." >&2
     awk 'BEGIN {FS=OFS="\t"} NR==1 {for (i=1; i<=NF; i++) if ($i=="Sequence") col=i} \
         {for (i=1; i<=NF; i++) if (i!=col) printf "%s%s", $i, (i==NF?ORS:OFS)}' $table > $table.temp
@@ -64,18 +82,43 @@ if grep -q "Sequence" $table; then
 fi
 
 # Rep seqs handling
-rep_seqs=$(echo $rep_seqs | grep -oP "$regex")
-rep_seqs=$(basename $rep_seqs)
-rep_seqs=$(printf "/extraFiles6/$rep_seqs")
+rep_seqs=$(container_file "$rep_seqs")
+
+if [[ -z "$rep_seqs" ]] || [[ ! -f "$rep_seqs" ]]; then
+    printf '%s\n' "ERROR]: rep_seqs is missing or not found under /input. Select a FASTA in the PipeCraft working directory." >&2
+    end_process
+fi
+if [[ -z "$table" ]] || [[ ! -f "$table" ]]; then
+    printf '%s\n' "ERROR]: ASV/OTU table is missing or not found under /input. Select a table in the working directory." >&2
+    end_process
+fi
 
 # Taxgroups handling
 if [[ $taxgroups != "undefined" ]]; then
-    taxgroups=$(echo $taxgroups | grep -oP "$regex")
-    taxgroups=$(basename $taxgroups) #basename, needed for macOS
-    taxgroups=$(printf "/extraFiles13/$taxgroups")
+    taxgroups=$(container_file "$taxgroups")
     taxgroups=$"--taxgroups $taxgroups"
 else 
     taxgroups=$""
+fi
+
+# OTU mode handling (files expected to be in the selected working directory)
+otu_args=$""
+if [[ $otu_mode == "true" ]]; then
+    if [[ $uc == "undefined" ]] || [[ $otu_fasta == "undefined" ]] || [[ $otu_table == "undefined" ]]; then
+        printf '%s\n' "ERROR]: OTU mode is enabled, but one or more required files are missing (uc / otu_fasta / otu_table).
+>Quitting" >&2
+        end_process
+    fi
+
+    uc=$(basename "$uc")
+    otu_fasta=$(basename "$otu_fasta")
+    otu_table=$(basename "$otu_table")
+
+    uc="/input/$uc"
+    otu_fasta="/input/$otu_fasta"
+    otu_table="/input/$otu_table"
+
+    otu_args=$"--uc $uc --otu_fasta $otu_fasta --otu_table $otu_table"
 fi
 
 printf "\n specifications file = $specifications\n"
@@ -95,15 +138,10 @@ printf "NA_abund_thresh = $NA_abund_thresh\n"
 printf "bases_variation = $bases_variation\n"
 printf "taxgroups = $taxgroups\n"
 ###############################
-# Source for functions
-source /scripts/submodules/framework.functions.sh
 #output dir
 output_dir=$"/input/metamate_out"
 echo "output_dir = $output_dir"
 
-# activate metamate conda env in the container 
-eval "$(conda shell.bash hook)"
-conda activate metamate
 
 #############################
 ### Start of the workflow ###
@@ -217,7 +255,7 @@ if [[ $find_or_dump == "find" ]] || [[ $find_or_dump == "find_and_dump" ]]; then
         --table $genetic_code \
         --threads $cores \
         --output $output_dir \
-        --overwrite $taxgroups 2>&1)
+        --overwrite $taxgroups $otu_args 2>&1)
     check_app_error
 
     # remove temp table file and assign table to its original name
@@ -226,6 +264,52 @@ if [[ $find_or_dump == "find" ]] || [[ $find_or_dump == "find_and_dump" ]]; then
         rm $table.temp
         table=$original_table
     fi
+
+    # remove shuffled fasta file
+    if [[ -e /input/${rep_seqs_shuffled%.*}_shuffled.fasta ]]; then
+        rm /input/${rep_seqs_shuffled%.*}_shuffled.fasta
+    fi
+fi
+
+### metaMATE-filter-adaptive
+if [[ $find_or_dump == "filter_adaptive" ]]; then
+    # quick check of the reference_seqs file
+    if ! grep -q "^>" $reference_seqs; then
+        printf '%s\n' "ERROR]: reference_seqs file is not a FASTA file.
+        Please provide a fasta.
+        >Quitting" >&2
+        end_process
+    fi
+
+    # remove old $output_dir if exists
+    if [[ -d $output_dir ]]; then
+        rm -rf $output_dir
+    fi
+    mkdir -p $output_dir
+
+    # percentile/criteria defaults if missing
+    if [[ -z "$percentile" ]] || [[ "$percentile" == "undefined" ]]; then
+        percentile="0.95"
+    fi
+    if [[ -z "$criteria" ]] || [[ "$criteria" == "undefined" ]]; then
+        criteria="verified_removed"
+    fi
+
+    printf "# Running metaMATE-filter-adaptive\n"
+    checkerror=$(metamate filter-adaptive \
+        --asvs /input/${rep_seqs_shuffled%.*}_shuffled.fasta \
+        --readmap $table \
+        --references $reference_seqs \
+        --expectedlength $length \
+        --basesvariation $bases_variation \
+        --onlyvarybycodon \
+        --table $genetic_code \
+        --threads $cores \
+        --output $output_dir \
+        --overwrite $taxgroups $otu_args \
+        --percentile $percentile \
+        --criteria $criteria 2>&1)
+    check_app_error
 
     # remove shuffled fasta file
     if [[ -e /input/${rep_seqs_shuffled%.*}_shuffled.fasta ]]; then
@@ -249,7 +333,7 @@ if [[ $find_or_dump == "dump" ]] || [[ $find_or_dump == "find_and_dump" ]]; then
             --resultcache $output_dir/resultcache \
             --output $output_dir/${dump_seqs%.*}_metaMATE.filt \
             --overwrite \
-            --resultindex $result_index 2>&1)
+            --resultindex $result_index $otu_args 2>&1)
             check_app_error
 
         # if find_or_dump == "find_and_dump"
@@ -275,7 +359,7 @@ if [[ $find_or_dump == "dump" ]] || [[ $find_or_dump == "find_and_dump" ]]; then
             --resultcache $output_dir/resultcache \
             --output $output_dir/${dump_seqs%.*}_metaMATE.filt \
             --overwrite \
-            --resultindex $result_index 2>&1)
+            --resultindex $result_index $otu_args 2>&1)
             check_app_error
         fi
 
@@ -286,6 +370,12 @@ if [[ $find_or_dump == "dump" ]] || [[ $find_or_dump == "find_and_dump" ]]; then
         # filter the ASV table; include only the ASVs that are in ${dump_seqs%.*}_metaMATE.filt.list
         out_table=$(basename $table)
         awk -v var="$output_dir/${dump_seqs%.*}" 'NR==1; NR>1 {print $0 | "grep -Fwf "var"_metaMATE.filt.list"}' $table > $output_dir/${out_table%.*}_metaMATE.filt.txt
+
+        # If metaMATE wrote any filtered table(s), keep them alongside Pipecraft outputs
+        if compgen -G "$output_dir/*table*" > /dev/null; then
+            mkdir -p "$output_dir/metamate_tables" || true
+            cp -f $output_dir/*table* "$output_dir/metamate_tables/" 2>/dev/null || true
+        fi
     else 
         printf '%s\n' "ERROR]: cannot find the $output_dir (metaMATE-find output) to start metaMATE-dump.
 Please check that the correct working directory is specified or run metaMATE-find first. Do not use metamate_out as working directory for metaMATE-dump.

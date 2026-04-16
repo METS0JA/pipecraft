@@ -10,7 +10,15 @@ function parseDockerHostToOptions(dockerHost) {
   }
 
   if (dockerHost.startsWith("npipe://")) {
-    return { socketPath: dockerHost };
+    // Docker CLI reports Windows named pipes as npipe://..., but Node expects \\.\pipe\<name>.
+    // Example: npipe:////./pipe/dockerDesktopLinuxEngine -> \\.\pipe\dockerDesktopLinuxEngine
+    const pipeMarker = "/pipe/";
+    const idx = dockerHost.indexOf(pipeMarker);
+    if (idx === -1) {
+      throw new Error(`Unsupported npipe endpoint from context: ${dockerHost}`);
+    }
+    const pipeName = dockerHost.slice(idx + pipeMarker.length);
+    return { socketPath: `\\\\.\\pipe\\${pipeName}` };
   }
 
   if (dockerHost.startsWith("tcp://")) {
