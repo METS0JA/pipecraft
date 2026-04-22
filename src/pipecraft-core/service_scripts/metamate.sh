@@ -12,11 +12,6 @@
     #Distributed under the GNU General Public License
     #https://github.com/tjcreedy/metamate
 ################################################
-# Pipecraft mounts the selected working directory at /input (see Run.vue).
-# Docker may also bind file parent dirs to /extraFilesN; slot numbers depend on
-# input order and visibility, so hardcoding /extraFiles2, /extraFiles5, etc. breaks
-# when inputs are added or depends_on hides fields. User files in the workdir are
-# always available as /input/<basename>.
 
 #load variables
 find_or_dump=${find_or_dump}       # find, dump or find_and_dump
@@ -35,18 +30,42 @@ taxgroups=${taxgroups}             # file
 cores=${cores}                     # integer
 percentile=${percentile}           # float (0-1), filter-adaptive
 criteria=${criteria}               # verified_removed | estimated_removed, filter-adaptive
+realign=${realign}                 # boolean (metaMATE --realign)
+keeptemporaryfiles=${keeptemporaryfiles} # boolean (metaMATE --keeptemporaryfiles)
 otu_mode=${otu_mode}               # boolean
 uc=${uc}                           # file (.uc)
 otu_fasta=${otu_fasta}             # file (fasta)
 otu_table=${otu_table}             # file (csv/tsv)
 
+# Function to convert a UI-provided host file path into the container-visible path.
+# Strategy: prefer `/input/<basename>` (working directory mount), otherwise search `/extraFiles*`
 container_file() {
     local p="$1"
     if [[ "$p" == "undefined" ]] || [[ -z "$p" ]]; then
         echo ""
         return
     fi
-    echo "/input/$(basename "$p")"
+
+    local base
+    base="$(basename "$p")"
+
+    # Prefer the selected working directory mount.
+    if [[ -f "/input/$base" ]]; then
+        echo "/input/$base"
+        return
+    fi
+
+    # Fall back to any extraFiles mount (slot numbers depend on input order/visibility).
+    local d
+    for d in /extraFiles*; do
+        if [[ -d "$d" ]] && [[ -f "$d/$base" ]]; then
+            echo "$d/$base"
+            return
+        fi
+    done
+
+    # Default to /input for clearer error messages downstream.
+    echo "/input/$base"
 }
 
 source /scripts/submodules/framework.functions.sh
@@ -85,11 +104,11 @@ fi
 rep_seqs=$(container_file "$rep_seqs")
 
 if [[ -z "$rep_seqs" ]] || [[ ! -f "$rep_seqs" ]]; then
-    printf '%s\n' "ERROR]: rep_seqs is missing or not found under /input. Select a FASTA in the PipeCraft working directory." >&2
+    printf '%s\n' "ERROR]: rep_seqs is missing or not found in container mounts. Put it in the PipeCraft working directory (/input) or ensure it is selectable as a file input (mounted under /extraFiles*)." >&2
     end_process
 fi
 if [[ -z "$table" ]] || [[ ! -f "$table" ]]; then
-    printf '%s\n' "ERROR]: ASV/OTU table is missing or not found under /input. Select a table in the working directory." >&2
+    printf '%s\n' "ERROR]: ASV/OTU table is missing or not found in container mounts. Put it in the working directory (/input) or ensure it is selectable as a file input (mounted under /extraFiles*)." >&2
     end_process
 fi
 
@@ -101,7 +120,7 @@ else
     taxgroups=$""
 fi
 
-# OTU mode handling (files expected to be in the selected working directory)
+# OTU mode handling
 otu_args=$""
 if [[ $otu_mode == "true" ]]; then
     if [[ $uc == "undefined" ]] || [[ $otu_fasta == "undefined" ]] || [[ $otu_table == "undefined" ]]; then
@@ -110,15 +129,20 @@ if [[ $otu_mode == "true" ]]; then
         end_process
     fi
 
-    uc=$(basename "$uc")
-    otu_fasta=$(basename "$otu_fasta")
-    otu_table=$(basename "$otu_table")
-
-    uc="/input/$uc"
-    otu_fasta="/input/$otu_fasta"
-    otu_table="/input/$otu_table"
+    uc=$(container_file "$uc")
+    otu_fasta=$(container_file "$otu_fasta")
+    otu_table=$(container_file "$otu_table")
 
     otu_args=$"--uc $uc --otu_fasta $otu_fasta --otu_table $otu_table"
+fi
+
+# Optional metaMATE flags (only apply to find/filter-adaptive runs)
+metamate_extra_args=$""
+if [[ "$realign" == "true" ]]; then
+    metamate_extra_args=$"$metamate_extra_args --realign"
+fi
+if [[ "$keeptemporaryfiles" == "true" ]]; then
+    metamate_extra_args=$"$metamate_extra_args --keeptemporaryfiles"
 fi
 
 printf "\n specifications file = $specifications\n"
@@ -255,7 +279,7 @@ if [[ $find_or_dump == "find" ]] || [[ $find_or_dump == "find_and_dump" ]]; then
         --table $genetic_code \
         --threads $cores \
         --output $output_dir \
-        --overwrite $taxgroups $otu_args 2>&1)
+        --overwrite $taxgroups $otu_args $metamate_extra_args 2>&1)
     check_app_error
 
     # remove temp table file and assign table to its original name
@@ -287,6 +311,12 @@ if [[ $find_or_dump == "filter_adaptive" ]]; then
     fi
     mkdir -p $output_dir
 
+    # merge reference seqs files; if reference_seqs2 is provided
+    if [[ $reference_seqs2 != "undefined" ]] && [[ -n "$reference_seqs2" ]]; then
+        cat $reference_seqs $reference_seqs2 > $output_dir/reference_seqs_merged.fasta
+        reference_seqs=$output_dir/reference_seqs_merged.fasta
+    fi
+
     # percentile/criteria defaults if missing
     if [[ -z "$percentile" ]] || [[ "$percentile" == "undefined" ]]; then
         percentile="0.95"
@@ -306,7 +336,7 @@ if [[ $find_or_dump == "filter_adaptive" ]]; then
         --table $genetic_code \
         --threads $cores \
         --output $output_dir \
-        --overwrite $taxgroups $otu_args \
+        --overwrite $taxgroups $otu_args $metamate_extra_args \
         --percentile $percentile \
         --criteria $criteria 2>&1)
     check_app_error
@@ -323,14 +353,18 @@ if [[ $find_or_dump == "dump" ]] || [[ $find_or_dump == "find_and_dump" ]]; then
     # dump output name
     dump_seqs=$(basename $rep_seqs)
 
-    # check for the presence of "metamate_out" dir and "resultcache" file (did metaMATE-find finish)
-    if [[ -d $output_dir ]] && [[ -e $output_dir/resultcache ]] && [[ -e $output_dir/results.csv ]]; then
+    # metaMATE writes outputs as *_resultcache and *_results.csv (not fixed names).
+    resultcache_path=$(ls -1 $output_dir/*_resultcache 2>/dev/null | head -n 1)
+    results_csv_path=$(ls -1 $output_dir/*_results.csv 2>/dev/null | head -n 1)
+
+    # check for the presence of required metaMATE-find outputs
+    if [[ -d $output_dir ]] && [[ -n "$resultcache_path" ]] && [[ -f "$resultcache_path" ]] && [[ -n "$results_csv_path" ]] && [[ -f "$results_csv_path" ]]; then
         # if $find_or_dump == "dump"
         if [[ $find_or_dump == "dump" ]]; then
             printf "# Running metaMATE-dump\n"
             checkerror=$(metamate dump \
             --asvs $rep_seqs \
-            --resultcache $output_dir/resultcache \
+            --resultcache $resultcache_path \
             --output $output_dir/${dump_seqs%.*}_metaMATE.filt \
             --overwrite \
             --resultindex $result_index $otu_args 2>&1)
@@ -356,7 +390,7 @@ if [[ $find_or_dump == "dump" ]] || [[ $find_or_dump == "find_and_dump" ]]; then
             # run metaMATE-dump
             checkerror=$(metamate dump \
             --asvs $rep_seqs \
-            --resultcache $output_dir/resultcache \
+            --resultcache $resultcache_path \
             --output $output_dir/${dump_seqs%.*}_metaMATE.filt \
             --overwrite \
             --resultindex $result_index $otu_args 2>&1)

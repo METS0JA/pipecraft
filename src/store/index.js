@@ -1828,14 +1828,14 @@ export default new Vuex.Store({
                 value: 9,
                 disabled: "never",
                 tooltip:
-                  "find setting; allowed variation in the expected amplicon length in base pairs (metaMATE setting --basevariation)",
+                  "find/filter-adaptive setting; allowed variation in the expected amplicon length in base pairs (metaMATE setting --basesvariation)",
                 type: "numeric",
                 rules: [
                   (v) => v >= 0 || "ERROR: specify values >= 0",
                   (v) => v <= 9999 || "ERROR: specify values <= 999",
                 ],
                 depends_on:
-                  'state.selectedSteps[0].services[4].Inputs[0].value == "find" || state.selectedSteps[0].services[4].Inputs[0].value == "find_and_dump"',
+                  'state.selectedSteps[0].services[4].Inputs[0].value == "find" || state.selectedSteps[0].services[4].Inputs[0].value == "find_and_dump" || state.selectedSteps[0].services[4].Inputs[0].value == "filter_adaptive"',
               },
               {
                 name: "taxgroups",
@@ -1888,8 +1888,29 @@ export default new Vuex.Store({
                   'state.selectedSteps[0].services[4].Inputs[0].value == "filter_adaptive"',
               },
               {
+                name: "realign",
+                value: false,
+                disabled: "never",
+                tooltip:
+                  "if enabled, metaMATE will always run alignment on the supplied ASVs/OTUs, even if they appear already aligned (metaMATE --realign). Ignored if a tree is supplied or when dumping from a resultcache.",
+                type: "bool",
+                depends_on:
+                  'state.selectedSteps[0].services[4].Inputs[0].value == "find" || state.selectedSteps[0].services[4].Inputs[0].value == "find_and_dump" || state.selectedSteps[0].services[4].Inputs[0].value == "filter_adaptive"',
+              },
+              {
+                name: "keeptemporaryfiles",
+                value: false,
+                disabled: "never",
+                tooltip:
+                  "if enabled, keep temporary BBmap result files used during reference matching (metaMATE --keeptemporaryfiles). They will be stored under a 'bbmap' directory inside the output folder.",
+                type: "bool",
+                depends_on:
+                  'state.selectedSteps[0].services[4].Inputs[0].value == "find" || state.selectedSteps[0].services[4].Inputs[0].value == "find_and_dump" || state.selectedSteps[0].services[4].Inputs[0].value == "filter_adaptive"',
+              },
+              {
                 name: "specifications",
                 value: "/metamate/specifications.txt",
+                active: false,
                 btnName: "select file",
                 disabled: "never",
                 tooltip:
@@ -1908,18 +1929,19 @@ export default new Vuex.Store({
                   Can be the same fasta formatted database file that was/would be used for the taxonomy assignment.",
                 type: "file",
                 depends_on:
-                  'state.selectedSteps[0].services[4].Inputs[0].value == "find" || state.selectedSteps[0].services[4].Inputs[0].value == "find_and_dump"',
+                  'state.selectedSteps[0].services[4].Inputs[0].value == "find" || state.selectedSteps[0].services[4].Inputs[0].value == "find_and_dump" || state.selectedSteps[0].services[4].Inputs[0].value == "filter_adaptive"',
               },
               {
                 name: "reference_seqs2",
                 value: "undefined",
+                active: false,
                 btnName: "select fasta",
                 disabled: "never",
                 tooltip:
                   "find setting; you may provide additional reference sequences file (fasta).",
                 type: "boolfile",
                 depends_on:
-                  'state.selectedSteps[0].services[4].Inputs[0].value == "find" || state.selectedSteps[0].services[4].Inputs[0].value == "find_and_dump"',
+                  'state.selectedSteps[0].services[4].Inputs[0].value == "find" || state.selectedSteps[0].services[4].Inputs[0].value == "find_and_dump" || state.selectedSteps[0].services[4].Inputs[0].value == "filter_adaptive"',
               },
               {
                 name: "table",
@@ -1990,10 +2012,10 @@ export default new Vuex.Store({
                 type: "numeric",
                 rules: [
                   (v) => v >= 1 || "ERROR: specify values >= 1",
-                  (v) => v <= 34 || "ERROR: specify values <= 34",
+                  (v) => v <= 33 || "ERROR: specify values <= 33",
                 ],
                 depends_on:
-                  'state.selectedSteps[0].services[4].Inputs[0].value == "find" || state.selectedSteps[0].services[4].Inputs[0].value == "find_and_dump"',
+                  'state.selectedSteps[0].services[4].Inputs[0].value == "find" || state.selectedSteps[0].services[4].Inputs[0].value == "find_and_dump" || state.selectedSteps[0].services[4].Inputs[0].value == "filter_adaptive"',
               },
               {
                 name: "length",
@@ -2007,7 +2029,7 @@ export default new Vuex.Store({
                   (v) => v <= 9999 || "ERROR: specify values <= 9999",
                 ],
                 depends_on:
-                  'state.selectedSteps[0].services[4].Inputs[0].value == "find" || state.selectedSteps[0].services[4].Inputs[0].value == "find_and_dump"',
+                  'state.selectedSteps[0].services[4].Inputs[0].value == "find" || state.selectedSteps[0].services[4].Inputs[0].value == "find_and_dump" || state.selectedSteps[0].services[4].Inputs[0].value == "filter_adaptive"',
               },
               {
                 name: "result_index",
