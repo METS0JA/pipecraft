@@ -1848,19 +1848,6 @@ export default new Vuex.Store({
                   then specify the taxon grouping file",
                 type: "boolfile",
               },
-            ],
-            Inputs: [
-              {
-                name: "find_or_dump",
-                items: ["find", "dump", "find_and_dump", "filter_adaptive"],
-                value: "find",
-                disabled: "never",
-                tooltip:
-                  "find or dump functionality of metaMATE. Settings not relevant to either find or dump are disabled. \
-                  'dump' expects the output folder 'metamate_out' with resultcache file. \
-                  If using 'find_and_dump', then dump follows automatically the find function to filter ASVs/OTUs based on the allowed abundance threshold of non-validated (putative artefactual) OTUs/ASVs ['NA abund thresh' setting]",
-                type: "select",
-              },
               {
                 name: "percentile",
                 value: 0.95,
@@ -1906,6 +1893,19 @@ export default new Vuex.Store({
                 type: "bool",
                 depends_on:
                   'state.selectedSteps[0].services[4].Inputs[0].value == "find" || state.selectedSteps[0].services[4].Inputs[0].value == "find_and_dump" || state.selectedSteps[0].services[4].Inputs[0].value == "filter_adaptive"',
+              },
+            ],
+            Inputs: [
+              {
+                name: "mode",
+                items: ["find", "dump", "find_and_dump", "filter_adaptive"],
+                value: "find",
+                disabled: "never",
+                tooltip:
+                  "find or dump functionality of metaMATE. Settings not relevant to either find or dump are disabled. \
+                  'dump' expects the output folder 'metamate_out' with resultcache file. \
+                  If using 'find_and_dump', then dump follows automatically the find function to filter ASVs/OTUs based on the allowed abundance threshold of non-validated (putative artefactual) OTUs/ASVs ['NA abund thresh' setting]",
+                type: "select",
               },
               {
                 name: "specifications",
@@ -2069,7 +2069,7 @@ export default new Vuex.Store({
                 min: 0,
                 step: 0.01,
                 type: "slide",
-                depends_on: "state.selectedSteps[0].services[4].Inputs[0].value === 'find_and_dump' && state.selectedSteps[0].services[4].Inputs[9].value === true"
+                depends_on: "state.selectedSteps[0].services[4].Inputs[0].value === 'find_and_dump'"
               },
             ],
           },

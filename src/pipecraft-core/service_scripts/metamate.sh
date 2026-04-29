@@ -14,7 +14,9 @@
 ################################################
 
 #load variables
-find_or_dump=${find_or_dump}       # find, dump or find_and_dump
+# "mode" is the UI name; keep backward compatibility with legacy find_or_dump.
+mode=${mode:-$find_or_dump}        # find, dump, find_and_dump, filter_adaptive
+find_or_dump=${mode}
 specifications=${specifications}   # file
 reference_seqs=${reference_seqs}   # file
 reference_seqs2=${reference_seqs2}   # file (optional)
