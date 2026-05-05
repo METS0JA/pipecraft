@@ -96,41 +96,45 @@ fi
 mkdir -p tempdir
 
 ### Check the ASV table
-head -2 $ASV_table | awk 'NR>1{print $2}' | sed -e "s/^/>first_seq\n/" | seqkit seq --validate-seq -w 0
-#2nd column must be the sequence column
-if [[ $? != 0 ]]; then
-    printf '%s\n' "ERROR]: 2nd column does not seem to be SEQUENCE in the $ASV_table.
-    Herein, 2nd column must be the sequence column.
+# 2nd column must be the sequence column.
+first_seq=$(awk 'NR==2{print $2; exit}' "$ASV_table" | tr -d '\r')
+if [[ -z "$first_seq" ]]; then
+    printf '%s\n' "ERROR]: Could not read the 2nd column from $ASV_table.
     >Quitting" >&2
     end_process
-fi
-# must not contain size annotations
-if [[ $(grep -c ";size=" <(head $ASV_table)) > 0 ]]; then
-    printf '%s\n' "ERROR]: found size annotations (;size=) in $ASV_table.
-    Not supported; please remove.
-    >Quitting" >&2
-    end_process
-else
-    export ASV_table
 fi
 
-### Check the ASV fasta
-    # ERROR if "";size=" in the fasta
-if [[ $(grep -c ";size=" <(head $ASV_fasta)) > 0 ]]; then
-    printf '%s\n' "ERROR]: found size annotations (;size=) in $ASV_fasta.
-    Not supported; please remove.
-    >Quitting" >&2
+# Allow standard IUPAC DNA letters (plus '-' for gaps) and require a reasonable length.
+if ! printf '%s' "$first_seq" | grep -Eq '^[ACGTRYSWKMBDHVNacgtryswkmbdhvn-]+$' || [[ ${#first_seq} -lt 20 ]]; then
+    printf '%s\n' "ERROR]: 2nd column does not look like a DNA sequence in the provided feature table.
+    Detected value in row 2, col 2: '$first_seq'
+    If your table does not yet contain a sequence column,
+    run QuickTools --> Utilities --> add sequences to table.
+    >>>Quitting" >&2
     end_process
-else
-    ### Get size annotations for ASVs for clustering (making ASVs.size.fasta from the ASV table where 2nd column is SEQUENCE).
-        #Sum each ROW in the table and print ">" + 1st col + row sum as ";size=" + 2nd col (sequence)
-        #NR>1 skips the first row, which are the col names. 
-    fastasize=$(basename $ASV_fasta | awk 'BEGIN{FS=OFS="."}NF{NF -=1}1')
-    awk 'NR>1{for(i=3;i<=NF;i++) t+=$i; print ">"$1";size="t"\n"$2; t=0}' $ASV_table > $output_dir/$fastasize.size.fasta
-    #export for R
-    ASV_fasta_size=$"$output_dir/$fastasize.size.fasta"
-    export ASV_fasta_size
 fi
+# Remove size annotations from the ASV table automatically, if present.
+# Subsequent steps must use the cleaned table (if created).
+ASV_table_orig="$ASV_table"
+ASV_table_nosize=""
+ASV_table_clean="$ASV_table"
+if head "$ASV_table" | grep -q ";size="; then
+    printf "\nFound ';size=' annotations in %s. Removing them automatically.\n" "$ASV_table"
+    ASV_table_nosize="tempdir/$(basename "$ASV_table" | sed -E 's/\.[^.]+$//').nosize.txt"
+    sed -E 's/;size=[0-9]+//g' "$ASV_table" > "$ASV_table_nosize"
+    ASV_table_clean="$ASV_table_nosize"
+fi
+ASV_table="$ASV_table_clean"
+export ASV_table
+
+### Get size annotations for ASVs for clustering (making ASVs.size.fasta from the ASV table where 2nd column is SEQUENCE).
+    # Sum each ROW in the table and print ">" + 1st col + row sum as ";size=" + 2nd col (sequence)
+    # NR>1 skips the first row, which are the col names.
+fastasize=$(basename "$ASV_fasta" | awk 'BEGIN{FS=OFS="."}NF{NF -=1}1')
+awk 'NR>1{for(i=3;i<=NF;i++) t+=$i; print ">"$1";size="t"\n"$2; t=0}' "$ASV_table" > "$output_dir/$fastasize.size.fasta"
+# export for R
+ASV_fasta_size=$"$output_dir/$fastasize.size.fasta"
+export ASV_fasta_size
 
 ### Clustering
 checkerror=$(vsearch $seqsort \
@@ -198,7 +202,12 @@ fi
 # count features and sequences; outputs variables feature_count, nSeqs, nSample
 count_features "$output_dir/OTU_table.txt"
 input_ASV_count=$(grep -c "^>" $ASV_fasta_size)
-ASV_table_basename=$(basename $ASV_table)
+ASV_table_basename=$(basename "$ASV_table")
+
+# Remove temporary cleaned table if it was created
+if [[ -n "${ASV_table_nosize}" ]] && [[ -f "${ASV_table_nosize}" ]] && [[ "${debugger:-false}" != "true" ]]; then
+    rm -f "$ASV_table_nosize"
+fi
 
 end=$(date +%s) 
 runtime=$((end-start))
