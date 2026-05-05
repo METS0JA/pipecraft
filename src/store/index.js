@@ -1837,17 +1837,19 @@ export default new Vuex.Store({
                 depends_on:
                   'state.selectedSteps[0].services[4].Inputs[0].value == "find" || state.selectedSteps[0].services[4].Inputs[0].value == "global" || state.selectedSteps[0].services[4].Inputs[0].value == "per-sample"',
               },
-              // {
-              //   name: "taxgroups",
-              //   active: false,
-              //   btnName: "select file",
-              //   value: "undefined",
-              //   disabled: "never",
-              //   tooltip:
-              //     "find setting (optional); if sequence binning is to be performed on a per-taxon basis (as in specifications file) \
-              //     then specify the taxon grouping file",
-              //   type: "boolfile",
-              // },
+              {
+                name: "taxgroups",
+                active: false,
+                btnName: "select file",
+                value: "undefined",
+                disabled: "never",
+                tooltip:
+                  "global filter setting (optional); if sequence binning is to be performed on a per-taxon basis (as in specifications file) \
+                  then specify the taxon grouping file",
+                type: "boolfile",
+                depends_on:
+                  'state.selectedSteps[0].services[4].Inputs[0].value == "global"',
+              },
               {
                 name: "percentile",
                 value: 0.95,
