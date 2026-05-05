@@ -326,41 +326,48 @@ def generate_blasch_readme(
     borderline_coverage_threshold,
     start_time,
     total_runtime,
-    databases_created
+    databases_created,
+    nonchimeric_dir=""
 ):
     """
     Generate a comprehensive README.txt file for BlasCh output directory.
     Similar to other PipeCraft modules, providing user-friendly documentation.
     """
     logger.info("Generating BlasCh README file...")
-    
+
     readme_path = os.path.join(output_dir, "README.txt")
-    
+
     # Count input files
     fasta_extensions = [".fasta", ".fa", ".fas"]
     chimeric_files = []
     for ext in fasta_extensions:
         chimeric_files.extend(glob.glob(os.path.join(input_chimeras_dir, f"*chimeras{ext}")))
-    
+
     # Count output files
     non_chimeric_dir = os.path.join(output_dir, "non_chimeric")
     borderline_dir = os.path.join(output_dir, "borderline")
     detailed_results_dir = os.path.join(output_dir, "detailed_results")
-    
+    merged_dir = os.path.join(output_dir, "nonchimeric+rescued_reads")
+
     non_chimeric_count = len([f for f in os.listdir(non_chimeric_dir) if f.endswith('.fasta')]) if os.path.exists(non_chimeric_dir) else 0
     borderline_count = len([f for f in os.listdir(borderline_dir) if f.endswith('.fasta')]) if os.path.exists(borderline_dir) else 0
     chimeric_count = len([f for f in os.listdir(detailed_results_dir) if f.endswith('_chimeric.fasta')]) if os.path.exists(detailed_results_dir) else 0
     multiple_count = len([f for f in os.listdir(detailed_results_dir) if f.endswith('_multiple_alignments.fasta')]) if os.path.exists(detailed_results_dir) else 0
-    
+
+    # Determine whether the merge step actually ran by checking the output folder
+    merged_dir_exists = os.path.isdir(merged_dir) and any(
+        f.endswith('.fasta') for f in os.listdir(merged_dir)
+    ) if os.path.isdir(merged_dir) else False
+    merged_count = len([f for f in os.listdir(merged_dir) if f.endswith('.fasta')]) if merged_dir_exists else 0
+
     try:
         with open(readme_path, 'w') as f:
             f.write("# False positive chimera detection and recovery was performed using BlasCh (see 'Core commands' below for the used settings).\n\n")
-            
+
             f.write("BlasCh (BLAST-based Chimera detection) is a tool designed to identify and recover false positive chimeric sequences\n")
             f.write("from metabarcoding and environmental DNA (eDNA) datasets. The tool uses BLAST alignment analysis to classify\n")
             f.write("sequences into categories based on identity and coverage thresholds.\n\n")
-            
-            
+
             f.write("### INPUT SUMMARY ###\n")
             f.write(f"Input chimeras directory: {input_chimeras_dir}\n")
             f.write(f"Self FASTA directory: {self_fasta_dir}\n")
@@ -368,25 +375,34 @@ def generate_blasch_readme(
                 f.write(f"Reference database: {reference_db}\n")
             else:
                 f.write("Reference database: None (using only self-databases)\n")
+            if merged_dir_exists:
+                f.write(f"Input nonchimeric directory: {nonchimeric_dir}\n")
             f.write(f"Number of chimeras files processed: {len(chimeric_files)}\n")
             f.write(f"Threads used: {threads}\n\n")
-            
+
             f.write("### CLASSIFICATION THRESHOLDS ###\n")
             f.write(f"High identity threshold: {high_identity_threshold}%\n")
             f.write(f"High coverage threshold: {high_coverage_threshold}%\n")
             f.write(f"Borderline identity threshold: {borderline_identity_threshold}%\n")
             f.write(f"Borderline coverage threshold: {borderline_coverage_threshold}%\n\n")
-            
+
             f.write("### OUTPUT SUMMARY ###\n")
             f.write(f"Non-chimeric sequences recovered: {non_chimeric_count} files\n")
             f.write(f"Borderline sequences identified: {borderline_count} files\n")
             f.write(f"Chimeric sequences confirmed: {chimeric_count} files\n")
-            f.write(f"Multiple alignment sequences: {multiple_count} files\n\n")
-            
+            f.write(f"Multiple alignment sequences: {multiple_count} files\n")
+            if merged_dir_exists:
+                f.write(f"Merged nonchimeric+rescued files: {merged_count} files\n")
+            f.write("\n")
+
             f.write("Files in output directory:\n")
             f.write("----------------------------------------\n")
             f.write("# non_chimeric/               = Recovered non-chimeric sequences (high confidence)\n")
             f.write("# borderline/                 = Borderline sequences (moderate confidence)\n")
+            if merged_dir_exists:
+                f.write("# nonchimeric+rescued_reads/  = Merged per-sample files: input nonchimeric sequences\n")
+                f.write("#                               + BlasCh-recovered non-chimeric sequences\n")
+                f.write("#                               (ready for direct use in clustering/downstream analyses)\n")
             f.write("# detailed_results/           = Detailed analysis results including:\n")
             f.write("#   *_chimeric.fasta          = Confirmed chimeric sequences\n")
             f.write("#   *_multiple_alignments.fasta = Sequences with multiple BLAST alignments\n")
@@ -394,7 +410,7 @@ def generate_blasch_readme(
             f.write("# chimera_recovery_report.txt = Summary statistics of the analysis\n")
             f.write("# xml/blast_results.zip       = Compressed BLAST XML results (for reanalysis)\n")
             f.write("# README.txt                  = This documentation file\n\n")
-            
+
             f.write("### CLASSIFICATION LOGIC ###\n")
             f.write("Sequences are classified based on BLAST alignment analysis:\n")
             f.write("1. Sequences with multiple HSPs in first non-self alignment → Multiple alignments\n")
@@ -402,34 +418,39 @@ def generate_blasch_readme(
             f.write("3. Sequences with high identity AND high coverage → Non-chimeric\n")
             f.write("4. Sequences meeting borderline thresholds → Non-chimeric (rescued)\n")
             f.write("5. All other sequences → Borderline or Chimeric\n\n")
-            
+
             f.write("Core commands ->\n")
             f.write("Database creation:\n")
             if databases_created:
                 f.write("makeblastdb -in <input_fasta> -dbtype nucl -out <database_prefix>\n")
             else:
                 f.write("Database creation skipped (using existing XML files)\n")
-            
+
             f.write(f"\nBLAST analysis:\n")
             if databases_created:
-                f.write(f"blastn -query <chimeras_file> -db <self_database> -out <output.xml> -outfmt 5 -num_threads {threads}\n")
                 if reference_db:
-                    f.write(f"blastn -query <chimeras_file> -db {reference_db} -out <output.xml> -outfmt 5 -num_threads {threads}\n")
+                    f.write(f"blastn -query <chimeras_file> -db \"{reference_db} <self_database>\" -out <output.xml> -outfmt 5 -num_threads {threads}\n")
+                else:
+                    f.write(f"blastn -query <chimeras_file> -db <self_database> -out <output.xml> -outfmt 5 -num_threads {threads}\n")
             else:
                 f.write("BLAST analysis skipped (using existing XML files)\n")
-            
+
             f.write(f"\nClassification parameters:\n")
             f.write(f"--high_identity_threshold {high_identity_threshold}\n")
             f.write(f"--high_coverage_threshold {high_coverage_threshold}\n")
             f.write(f"--borderline_identity_threshold {borderline_identity_threshold}\n")
             f.write(f"--borderline_coverage_threshold {borderline_coverage_threshold}\n")
             f.write(f"--threads {threads}\n\n")
-            
+
             f.write("### NOTE ###\n")
             f.write("Sequences classified as 'non-chimeric' or 'borderline' can be considered for inclusion\n")
             f.write("in downstream analyses. The 'borderline' category represents sequences that may be\n")
-            f.write("true sequences but don't meet the strictest quality criteria.\n\n")
-            
+            f.write("true sequences but don't meet the strictest quality criteria.\n")
+            if merged_dir_exists:
+                f.write("The 'nonchimeric+rescued_reads' folder contains the combined sequences per sample\n")
+                f.write("and can be used directly as input for clustering or other downstream steps.\n")
+            f.write("\n")
+
             f.write("If no outputs were generated, check:\n")
             f.write("- Input chimeras files are present and properly formatted\n")
             f.write("- BLAST databases were created successfully\n")
@@ -1272,6 +1293,78 @@ def process_blast_xml_results(
 
 
 ###############################################################################
+#            STEP 5: Merge Input Nonchimeric + BlasCh Rescued Reads           #
+###############################################################################
+
+def merge_nonchimeric_with_rescued(nonchimeric_dir, non_chimeric_out_dir, output_dir):
+    """
+    For each basename.fasta in nonchimeric_dir, merge with the corresponding
+    basename_non_chimeric.fasta from non_chimeric_out_dir and write the combined
+    sequences to output_dir/nonchimeric+rescued_reads/basename.fasta.
+    """
+    if not nonchimeric_dir or not os.path.isdir(nonchimeric_dir):
+        logger.info("No nonchimeric input directory provided or directory not found - skipping merge step.")
+        return
+
+    logger.info("=== Step 5: Merging Input Nonchimeric + BlasCh Rescued Reads ===")
+
+    merged_dir = os.path.join(output_dir, "nonchimeric+rescued_reads")
+    os.makedirs(merged_dir, exist_ok=True)
+
+    fasta_extensions = [".fasta", ".fa", ".fas", ".fna"]
+
+    found_any = False
+    for fname in sorted(os.listdir(nonchimeric_dir)):
+        basename = None
+        for ext in fasta_extensions:
+            if fname.endswith(ext):
+                basename = fname[:-len(ext)]
+                break
+        if basename is None:
+            continue
+
+        found_any = True
+        input_nc_path = os.path.join(nonchimeric_dir, fname)
+        rescued_path = os.path.join(non_chimeric_out_dir, f"{basename}_non_chimeric.fasta")
+        out_path = os.path.join(merged_dir, f"{basename}.fasta")
+
+        sequences = []
+
+        try:
+            recs = list(SeqIO.parse(input_nc_path, "fasta"))
+            sequences.extend(recs)
+            logger.info(f"{basename}: loaded {len(recs)} sequences from input nonchimeric file.")
+        except Exception as e:
+            logger.warning(f"Could not read {input_nc_path}: {e}")
+
+        if os.path.isfile(rescued_path):
+            try:
+                recs = list(SeqIO.parse(rescued_path, "fasta"))
+                sequences.extend(recs)
+                logger.info(f"{basename}: loaded {len(recs)} BlasCh-rescued sequences.")
+            except Exception as e:
+                logger.warning(f"Could not read {rescued_path}: {e}")
+        else:
+            logger.info(f"{basename}: no BlasCh-rescued sequences found (file not present: {rescued_path}).")
+
+        if sequences:
+            try:
+                with open(out_path, "w") as fh:
+                    for rec in sequences:
+                        fh.write(f">{rec.description}\n{str(rec.seq)}\n")
+                logger.info(f"Wrote {len(sequences)} sequences to {out_path}")
+            except Exception as e:
+                logger.error(f"Failed to write merged file {out_path}: {e}")
+        else:
+            logger.warning(f"{basename}: no sequences to write for merged output.")
+
+    if not found_any:
+        logger.warning(f"No FASTA files found in nonchimeric directory: {nonchimeric_dir}")
+
+    logger.info(f"Merge complete. Combined files written to {merged_dir}\n")
+
+
+###############################################################################
 #                                 main()                                      #
 ###############################################################################
 
@@ -1299,6 +1392,10 @@ def main():
                         help="Coverage threshold for borderline => non-chimeric.")
     parser.add_argument("--borderline_identity_threshold", type=float, default=80.0,
                         help="Identity threshold for borderline => non-chimeric.")
+    parser.add_argument("--nonchimeric_dir", default="",
+                        help="Directory containing pre-existing non-chimeric FASTA files (basename.fasta). "
+                             "When provided, these are merged with BlasCh-recovered sequences into "
+                             "output_dir/nonchimeric+rescued_reads/.")
 
     args = parser.parse_args()
 
@@ -1351,7 +1448,12 @@ def main():
         databases_created=blast_needed
     )
 
-    # 5. Generate README file
+    # 5. Merge input nonchimeric + rescued reads (if nonchimeric_dir provided)
+    if args.nonchimeric_dir:
+        non_chimeric_out_dir = os.path.join(args.output_dir, "non_chimeric")
+        merge_nonchimeric_with_rescued(args.nonchimeric_dir, non_chimeric_out_dir, args.output_dir)
+
+    # 6. Generate README file
     total_runtime = time.time() - start_timestamp
     generate_blasch_readme(
         output_dir=args.output_dir,
@@ -1365,7 +1467,8 @@ def main():
         borderline_coverage_threshold=args.borderline_coverage_threshold,
         start_time=start_time,
         total_runtime=total_runtime,
-        databases_created=blast_needed
+        databases_created=blast_needed,
+        nonchimeric_dir=args.nonchimeric_dir
     )
 
     logger.info("Pipeline complete. Check your --output_dir for results.\n")

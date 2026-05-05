@@ -73,6 +73,16 @@ blasch_args="$blasch_args --high_identity_threshold $identity"
 blasch_args="$blasch_args --borderline_coverage_threshold $borderline_coverage"
 blasch_args="$blasch_args --borderline_identity_threshold $borderline_identity"
 
+# Add nonchimeric folder if present in working directory
+nonchimeric_input_dir="$workingDir/nonchimeric"
+if [[ -d "$nonchimeric_input_dir" ]]; then
+    blasch_args="$blasch_args --nonchimeric_dir $nonchimeric_input_dir"
+    printf "Found nonchimeric folder: $nonchimeric_input_dir\n"
+    printf "  -> Merged output will be written to: $blasch_output_dir/nonchimeric+rescued_reads/\n"
+else
+    printf "No nonchimeric folder found in working directory ($nonchimeric_input_dir) - skipping merge step.\n"
+fi
+
 # Add reference database if provided
 if [[ "$reference_db" != "undefined" ]] && [[ -n "$reference_db" ]]; then
     # Convert to container path format
@@ -118,6 +128,9 @@ printf "- Multiple alignment sequences: detailed_results/*_multiple_alignments.f
 printf "- Analysis report: chimera_recovery_report.txt\n"
 printf "- Detailed results: detailed_results/*_sequence_details.csv\n"
 printf "- Compressed XML files: xml/blast_results.zip\n"
+if [[ -d "$nonchimeric_input_dir" ]]; then
+    printf "- Combined nonchimeric+rescued: nonchimeric+rescued_reads/*.fasta\n"
+fi
 
 #end
 printf "\nDone\n"
