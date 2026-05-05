@@ -1,22 +1,10 @@
 #!/bin/bash
 
-# metaMATE v0.4.3 (https://github.com/tjcreedy/metamate) software for 
+# metaMATE v0.5.4 (https://github.com/tjcreedy/metamate) software for 
  #  removel of nuclear pseudogenes and sequencing artefacts from mitochondrial metabarcode data
 
-# Input = fasta file of the OTUs/ASVs and the OTU/ASV table.
-
-################################################
-###Third-party applications:
-# metaMATE v0.4.3
-    #citation: Andújar, C., Creedy, T.J., Arribas, P., López, H., Salces-Castellano, A., Pérez-Delgado, A.J., Vogler, A.P. and Emerson, B.C. (2021), Validated removal of nuclear pseudogenes and sequencing artefacts from mitochondrial metabarcode data. Mol Ecol Resour, 21: 1772-1787. https://doi.org/10.1111/1755-0998.13337
-    #Distributed under the GNU General Public License
-    #https://github.com/tjcreedy/metamate
-################################################
-
 #load variables
-# "mode" is the UI name; keep backward compatibility with legacy find_or_dump.
-mode=${mode:-$find_or_dump}        # find, dump, find_and_dump, filter_adaptive
-find_or_dump=${mode}
+filter_mode=${filter_mode:-$per-sample}   # global, per-sample
 specifications=${specifications}   # file
 reference_seqs=${reference_seqs}   # file
 reference_seqs2=${reference_seqs2}   # file (optional)
@@ -24,7 +12,7 @@ table=${table}                     # file
 rep_seqs=${rep_seqs}               # file
 genetic_code=${genetic_code}       # integer
 length=${length}                   # integer
-result_index=${result_index}       # integer
+result_index=${result_index}       # integer --_> DELETE!
 abundance_filt=${abundance_filt}   # boolean
 NA_abund_thresh=${NA_abund_thresh} # float
 bases_variation=${bases_variation} # integer
@@ -154,8 +142,7 @@ if [[ $reference_seqs2 != "undefined" ]]; then
 fi
 printf "table file = $table\n"
 printf "rep seqs file = $rep_seqs\n"
-printf "find_or_dump = $find_or_dump\n"
-printf "taxgroups = $taxgroups\n"
+printf "filter_mode = $filter_mode\n"
 printf "cores = $cores\n"
 printf "length = $length\n"
 printf "result_index = $result_index\n"
@@ -229,7 +216,7 @@ checkerror=$(seqkit shuffle --quiet -w 0 $rep_seqs \
 check_app_error
 
 ### metaMATE-find
-if [[ $find_or_dump == "find" ]] || [[ $find_or_dump == "find_and_dump" ]]; then
+if [[ $filter_mode == "global" ]]; then
     # quick check of the specifications file, has to contain "library" | "total" | "clade" | "taxon"
     if ! grep -q -e "library" -e "total" -e "clade" -e "taxon" $specifications; then
         printf '%s\n' "ERROR]: specifications file seems to be wrong. Does not contain any of the terms (library, total, clade, taxon).
@@ -277,7 +264,6 @@ if [[ $find_or_dump == "find" ]] || [[ $find_or_dump == "find_and_dump" ]]; then
         --references $reference_seqs \
         --expectedlength $length \
         --basesvariation $bases_variation \
-        --onlyvarybycodon \
         --table $genetic_code \
         --threads $cores \
         --output $output_dir \
@@ -297,8 +283,8 @@ if [[ $find_or_dump == "find" ]] || [[ $find_or_dump == "find_and_dump" ]]; then
     fi
 fi
 
-### metaMATE-filter-adaptive
-if [[ $find_or_dump == "filter_adaptive" ]]; then
+### metaMATE-filter-adaptive (per-sample filtering)
+if [[ $filter_mode == "per-sample" ]]; then
     # quick check of the reference_seqs file
     if ! grep -q "^>" $reference_seqs; then
         printf '%s\n' "ERROR]: reference_seqs file is not a FASTA file.
@@ -319,22 +305,13 @@ if [[ $find_or_dump == "filter_adaptive" ]]; then
         reference_seqs=$output_dir/reference_seqs_merged.fasta
     fi
 
-    # percentile/criteria defaults if missing
-    if [[ -z "$percentile" ]] || [[ "$percentile" == "undefined" ]]; then
-        percentile="0.95"
-    fi
-    if [[ -z "$criteria" ]] || [[ "$criteria" == "undefined" ]]; then
-        criteria="verified_removed"
-    fi
-
-    printf "# Running metaMATE-filter-adaptive\n"
+    printf "# Running metaMATE-filter-adaptive (per-sample filtering)\n"
     checkerror=$(metamate filter-adaptive \
         --asvs /input/${rep_seqs_shuffled%.*}_shuffled.fasta \
         --readmap $table \
         --references $reference_seqs \
         --expectedlength $length \
         --basesvariation $bases_variation \
-        --onlyvarybycodon \
         --table $genetic_code \
         --threads $cores \
         --output $output_dir \
@@ -350,7 +327,7 @@ if [[ $find_or_dump == "filter_adaptive" ]]; then
 fi
 
 ### metaMATE-dump 	
-if [[ $find_or_dump == "dump" ]] || [[ $find_or_dump == "find_and_dump" ]]; then
+if [[ $filter_mode == "global" ]]; then
 
     # dump output name
     dump_seqs=$(basename $rep_seqs)
@@ -361,43 +338,30 @@ if [[ $find_or_dump == "dump" ]] || [[ $find_or_dump == "find_and_dump" ]]; then
 
     # check for the presence of required metaMATE-find outputs
     if [[ -d $output_dir ]] && [[ -n "$resultcache_path" ]] && [[ -f "$resultcache_path" ]] && [[ -n "$results_csv_path" ]] && [[ -f "$results_csv_path" ]]; then
-        # if $find_or_dump == "dump"
-        if [[ $find_or_dump == "dump" ]]; then
-            printf "# Running metaMATE-dump\n"
-            checkerror=$(metamate dump \
-            --asvs $rep_seqs \
-            --resultcache $resultcache_path \
-            --output $output_dir/${dump_seqs%.*}_metaMATE.filt \
-            --overwrite \
-            --resultindex $result_index $otu_args 2>&1)
-            check_app_error
 
-        # if find_or_dump == "find_and_dump"
-        elif [[ $find_or_dump == "find_and_dump" ]]; then
-            printf "# Running metaMATE-dump\n"
+        printf "# Running metaMATE-dump\n"
 
-            # get the result_index for the specified NA_abund_thresh
-            export NA_abund_thresh
-            export output_dir
-            Rlog=$(Rscript /scripts/submodules/result_index_selection.R 2>&1) 
-            echo $Rlog > $output_dir/result_index_selection.log 
-            wait
+        # get the result_index for the specified NA_abund_thresh
+        export NA_abund_thresh
+        export output_dir
+        Rlog=$(Rscript /scripts/submodules/result_index_selection.R 2>&1) 
+        echo $Rlog > $output_dir/result_index_selection.log 
+        wait
 
-            # read result_index
-            read -r result_index < $output_dir/selected_result_index.txt
-            printf " - selcted result_index = $result_index\n"
+        # read result_index
+        read -r result_index < $output_dir/selected_result_index.txt
+        printf " - selcted result_index = $result_index\n"
 
-            # if no results correspond with the NA_abund_thresh, then get the next best 
+        # if no results correspond with the NA_abund_thresh, then get the next best 
 
-            # run metaMATE-dump
-            checkerror=$(metamate dump \
-            --asvs $rep_seqs \
-            --resultcache $resultcache_path \
-            --output $output_dir/${dump_seqs%.*}_metaMATE.filt \
-            --overwrite \
-            --resultindex $result_index $otu_args 2>&1)
-            check_app_error
-        fi
+        # run metaMATE-dump
+        checkerror=$(metamate dump \
+        --asvs $rep_seqs \
+        --resultcache $resultcache_path \
+        --output $output_dir/${dump_seqs%.*}_metaMATE.filt \
+        --overwrite \
+        --resultindex $result_index $otu_args 2>&1)
+        check_app_error
 
         # generate a list of ASV IDs 
         checkerror=$(seqkit seq -n $output_dir/${dump_seqs%.*}_metaMATE.filt.fasta > $output_dir/${dump_seqs%.*}_metaMATE.filt.list 2>&1)
@@ -445,8 +409,8 @@ if (( $ASVcount > 65536 )); then
 fi
 end=$(date +%s)
 runtime=$((end-start))
-if [[ $find_or_dump == "find" ]] || [[ $find_or_dump == "find_and_dump" ]]; then
 
+if [[ $filter_mode == "global" ]]; then
     printf "### Used metaMATE-find to detect putative NUMT and other erroneous sequences.
 
 Start time: $start_time
@@ -455,18 +419,16 @@ Runtime: $runtime seconds
 
 Input parameters:
 ---------------
-- find_or_dump: ${find_or_dump}
+- filter_mode: ${filter_mode}
 - specifications: $(basename $specifications)
 - reference_seqs: $db1 $db2
 - table: $(basename ${table%.temp})
 - rep_seqs: $(basename $rep_seqs)
 - genetic_code: ${genetic_code}
 - length: ${length}
-- result_index: ${result_index}
 - abundance_filt: ${abundance_filt}
 - NA_abund_thresh: ${NA_abund_thresh}
 - bases_variation: ${bases_variation}
-- taxgroups: ${taxgroups}
 ---------------
 
 Files in 'metamate_out' directory:
@@ -492,13 +454,13 @@ $warn
 
 #################################################
 ###Third-party applications for this process:
-# metaMATE v0.4.3
+# metaMATE v0.5.4
     #citation: Andújar, C., Creedy, T.J., Arribas, P., López, H., Salces-Castellano, A., Pérez-Delgado, A.J., Vogler, A.P. and Emerson, B.C. (2021), Validated removal of nuclear pseudogenes and sequencing artefacts from mitochondrial metabarcode data. Mol Ecol Resour, 21: 1772-1787. https://doi.org/10.1111/1755-0998.13337
     #https://github.com/tjcreedy/metamate
 #################################################" > $output_dir/README.metaMATE-find.txt
 fi
 
-if [[ $find_or_dump == "dump" ]] || [[ $find_or_dump == "find_and_dump" ]]; then
+if [[ $filter_mode == "global" ]]; then
     # count input ASVs
     inASV_count=$(grep -c "^>" $rep_seqs)
     rep_seqs=$(basename $rep_seqs)
@@ -545,18 +507,16 @@ Runtime: $runtime seconds
 
 Input parameters:
 ---------------
-- find_or_dump: ${find_or_dump}
+- filter_mode: ${filter_mode}
 - specifications: $(basename $specifications)
 - reference_seqs: $(basename $reference_seqs)
 - table: $(basename ${table%.temp})
 - rep_seqs: $(basename $rep_seqs)
 - genetic_code: ${genetic_code}
 - length: ${length}
-- result_index: ${result_index}
 - abundance_filt: ${abundance_filt}
 - NA_abund_thresh: ${NA_abund_thresh}
 - bases_variation: ${bases_variation}
-- taxgroups: ${taxgroups}
 ---------------
 
 -Input ($rep_seqs) contained $inASV_count sequences
@@ -576,7 +536,7 @@ Added files to 'metamate_out' directory:
 
 #################################################
 ###Third-party applications for this process:
-# metaMATE v0.4.3
+# metaMATE v0.5.4
     #citation: Andújar, C., Creedy, T.J., Arribas, P., López, H., Salces-Castellano, A., Pérez-Delgado, A.J., Vogler, A.P. and Emerson, B.C. (2021), Validated removal of nuclear pseudogenes and sequencing artefacts from mitochondrial metabarcode data. Mol Ecol Resour, 21: 1772-1787. https://doi.org/10.1111/1755-0998.13337
     #https://github.com/tjcreedy/metamate
 #################################################" > $output_dir/README.metaMATE-dump.txt
@@ -585,6 +545,90 @@ fi
 if [[ -e $output_dir/next_best_set.csv ]]; then
     sed -i "7i\# next_best_set.csv = contains the next best filtering settings as the metaMATE-find results.csv file did not contain NA_abund_thresh of <= $NA_abund_thresh ('nonauthentic_retained_estimate_p')." $output_dir/README.metaMATE-dump.txt
 fi
+
+
+
+# if [[ $filter_mode == "per-sample" ]]; then
+#     # count input ASVs
+#     inASV_count=$(grep -c "^>" $rep_seqs)
+#     rep_seqs=$(basename $rep_seqs)
+#     # count output ASVs
+#     outASV_count=$(grep -c "^>" $output_dir/${dump_seqs%.*}_metaMATE.filt.fasta)
+ 
+#     # count total sequences, skipping header and handling potential Sequence column
+#     nSeqs=$(awk 'BEGIN{FS=OFS="\t"}
+#         NR==1 {
+#             # Find Sequence column if it exists
+#             for(i=1;i<=NF;i++) {
+#                 if($i=="Sequence") seq_col=i
+#                 else if(i>1) header[i]=$i  # Store sample names
+#             }
+#             next
+#         }
+#         {
+#             # Process each row
+#             for(i=2;i<=NF;i++) {
+#                 if(i!=seq_col) {
+#                     sample_sums[i]+=$i  # Sum per sample
+#                     total+=$i           # Overall total
+#                 }
+#             }
+#         }
+#         END{
+#             # Print per-sample sums
+#             print "Sequences per sample:"
+#             for(i=2;i<=NF;i++) {
+#                 if(i!=seq_col) print header[i] ": " sample_sums[i]
+#             }
+#             print "\nTotal sequences: " total
+#         }' $output_dir/${out_table%.*}_metaMATE.filt.txt)
+
+#     echo "$nSeqs" > $output_dir/sequence_counts.txt
+
+#     end=$(date +%s)
+#     runtime=$((end-start))
+#     printf "### Used metaMATE-dump to discard putative NUMT and other erroneous sequences based on the specified threshold from metaMATE-find.
+
+# Start time: $start_time
+# End time: $(date)
+# Runtime: $runtime seconds
+
+# Input parameters:
+# ---------------
+# - filter_mode: ${filter_mode}
+# - reference_seqs: $(basename $reference_seqs)
+# - table: $(basename ${table%.temp})
+# - rep_seqs: $(basename $rep_seqs)
+# - genetic_code: ${genetic_code}
+# - length: ${length}
+# - bases_variation: ${bases_variation}
+# - percentile: ${percentile}
+# - criteria: ${criteria}
+# ---------------
+
+# -Input ($rep_seqs) contained $inASV_count sequences
+# -metaMATE filtered output containes $outASV_count sequences
+
+# Added files to 'metamate_out' directory:
+# ----------------------------------------
+# # ${dump_seqs%.*}_metaMATE.filt.fasta = output of metaMATE-dump function. 
+#                                         Containes $outASV_count sequences.
+# # ${dump_seqs%.*}_metaMATE.filt.list  = a list of sequence IDs from ${dump_seqs%.*}_metaMATE.filt.fasta
+# # ${out_table%.*}_metaMATE.filt.txt = an ASV/OTU table containing the ASVs/OTUs 
+#                                       that are in ${dump_seqs%.*}_metaMATE.filt.fasta file.
+# # selected_result_index.txt = if present, then this file contains the 
+#                               selected resultindex for results.csv file for metaMATE-dump
+
+# # -> more info about the outputs: https://github.com/tjcreedy/metamate?tab=readme-ov-file#outputs 
+
+# #################################################
+# ###Third-party applications for this process:
+# # metaMATE v0.5.4
+#     #citation: Andújar, C., Creedy, T.J., Arribas, P., López, H., Salces-Castellano, A., Pérez-Delgado, A.J., Vogler, A.P. and Emerson, B.C. (2021), Validated removal of nuclear pseudogenes and sequencing artefacts from mitochondrial metabarcode data. Mol Ecol Resour, 21: 1772-1787. https://doi.org/10.1111/1755-0998.13337
+#     #https://github.com/tjcreedy/metamate
+# #################################################" > $output_dir/README.metaMATE.per-sample.txt
+# fi
+
 
 #Done
 printf "\nDONE "
@@ -595,4 +639,3 @@ echo "#variables for all services: "
 echo "workingDir=$output_dir"
 echo "fileFormat=fasta"
 echo "readType=single_end"
-    

@@ -15,8 +15,10 @@
 printf "# Checking tool versions ...\n"
 dada2_version=$(Rscript -e "packageVersion('dada2')" 2>/dev/null | awk '{print $2}' | sed -e "s/‘//g" -e 's/’//g')
 vsearch_version=$(vsearch --version 2>&1 | head -n 1 | awk '{print $2}' | sed -e "s/,//g")
+R_version=$(R --version | head -n1 | cut -d " " -f3)
 printf "# DADA2 version: $dada2_version\n"
 printf "# vsearch version: $vsearch_version\n"
+printf "# R (version $R_version)\n"
 
 start_time=$(date)
 start=$(date +%s)
@@ -47,15 +49,6 @@ else
     printf '%s\n' "ERROR]: Merge sequencing runs is not enabled. Exiting.\n" >&2
     end_process
 fi
-
-# Checking tool versions
-R_version=$(R --version | head -n1 | cut -d " " -f3)
-dada2_version=$(Rscript -e "packageVersion('dada2')" 2>/dev/null | awk '{print $2}' | sed -e "s/‘//g" -e 's/’//g')
-vsearch_version=$(vsearch --version 2>&1 | head -n 1 | awk '{print $2}' | sed -e "s/,//g")
-printf "# Checking tool versions ...\n"
-printf "# R (version $R_version)\n"
-printf "# DADA2 (version $dada2_version)\n"
-printf "# vsearch (version $vsearch_version)\n"
 
 ### Merge ASV tables with dada2 mergeSequenceTables function in R
 printf "# Running DADA2 mergeSequenceTables ...\n"
