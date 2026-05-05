@@ -1835,33 +1835,31 @@ export default new Vuex.Store({
                   (v) => v <= 9999 || "ERROR: specify values <= 999",
                 ],
                 depends_on:
-                  'state.selectedSteps[0].services[4].Inputs[0].value == "find" || state.selectedSteps[0].services[4].Inputs[0].value == "find_and_dump" || state.selectedSteps[0].services[4].Inputs[0].value == "filter_adaptive"',
+                  'state.selectedSteps[0].services[4].Inputs[0].value == "find" || state.selectedSteps[0].services[4].Inputs[0].value == "global" || state.selectedSteps[0].services[4].Inputs[0].value == "per-sample"',
               },
-              {
-                name: "taxgroups",
-                active: false,
-                btnName: "select file",
-                value: "undefined",
-                disabled: "never",
-                tooltip:
-                  "find setting (optional); if sequence binning is to be performed on a per-taxon basis (as in specifications file) \
-                  then specify the taxon grouping file",
-                type: "boolfile",
-              },
+              // {
+              //   name: "taxgroups",
+              //   active: false,
+              //   btnName: "select file",
+              //   value: "undefined",
+              //   disabled: "never",
+              //   tooltip:
+              //     "find setting (optional); if sequence binning is to be performed on a per-taxon basis (as in specifications file) \
+              //     then specify the taxon grouping file",
+              //   type: "boolfile",
+              // },
               {
                 name: "percentile",
                 value: 0.95,
                 disabled: "never",
                 tooltip:
-                  "filter-adaptive setting; percentile of verified non-authentic ASV abundances to filter out per sample (metaMATE --percentile).",
-                type: "numeric",
+                  "per-sample filter setting; percentile of verified non-authentic ASV abundances to filter out per sample (metaMATE --percentile).",
+                min: 0,
                 max: 1,
-                rules: [
-                  (v) => v >= 0 || "ERROR: specify values >= 0",
-                  (v) => v <= 1 || "ERROR: specify values <= 1",
-                ],
+                step: 0.01,
+                type: "slide",
                 depends_on:
-                  'state.selectedSteps[0].services[4].Inputs[0].value == "filter_adaptive"',
+                  'state.selectedSteps[0].services[4].Inputs[0].value == "per-sample"',
               },
               {
                 name: "criteria",
@@ -1872,39 +1870,41 @@ export default new Vuex.Store({
                   "filter-adaptive setting; how per-sample thresholds are calculated (metaMATE --criteria).",
                 type: "select",
                 depends_on:
-                  'state.selectedSteps[0].services[4].Inputs[0].value == "filter_adaptive"',
+                  'state.selectedSteps[0].services[4].Inputs[0].value == "per-sample"',
               },
               {
                 name: "realign",
                 value: false,
                 disabled: "never",
                 tooltip:
-                  "if enabled, metaMATE will always run alignment on the supplied ASVs/OTUs, even if they appear already aligned (metaMATE --realign). Ignored if a tree is supplied or when dumping from a resultcache.",
+                  "if enabled, metaMATE will always run alignment on the supplied ASVs/OTUs, even if they appear already aligned (metaMATE --realign)." +  
+                   "Ignored if a tree is supplied or when dumping from a resultcache.",
                 type: "bool",
                 depends_on:
-                  'state.selectedSteps[0].services[4].Inputs[0].value == "find" || state.selectedSteps[0].services[4].Inputs[0].value == "find_and_dump" || state.selectedSteps[0].services[4].Inputs[0].value == "filter_adaptive"',
+                  'state.selectedSteps[0].services[4].Inputs[0].value == "find" || state.selectedSteps[0].services[4].Inputs[0].value == "global" || state.selectedSteps[0].services[4].Inputs[0].value == "per-sample"',
               },
               {
                 name: "keeptemporaryfiles",
                 value: false,
                 disabled: "never",
                 tooltip:
-                  "if enabled, keep temporary BBmap result files used during reference matching (metaMATE --keeptemporaryfiles). They will be stored under a 'bbmap' directory inside the output folder.",
+                  "if enabled, keep temporary BBmap result files used during reference matching (metaMATE --keeptemporaryfiles). " +
+                  "They will be stored under a 'bbmap' directory inside the output folder.",
                 type: "bool",
                 depends_on:
-                  'state.selectedSteps[0].services[4].Inputs[0].value == "find" || state.selectedSteps[0].services[4].Inputs[0].value == "find_and_dump" || state.selectedSteps[0].services[4].Inputs[0].value == "filter_adaptive"',
+                  'state.selectedSteps[0].services[4].Inputs[0].value == "find" || state.selectedSteps[0].services[4].Inputs[0].value == "global" || state.selectedSteps[0].services[4].Inputs[0].value == "per-sample"',
               },
             ],
             Inputs: [
               {
-                name: "mode",
-                items: ["find", "dump", "find_and_dump", "filter_adaptive"],
-                value: "find",
+                name: "filter_mode",
+                items: ["global", "per-sample"],
+                value: "per-sample",
                 disabled: "never",
                 tooltip:
-                  "find or dump functionality of metaMATE. Settings not relevant to either find or dump are disabled. \
-                  'dump' expects the output folder 'metamate_out' with resultcache file. \
-                  If using 'find_and_dump', then dump follows automatically the find function to filter ASVs/OTUs based on the allowed abundance threshold of non-validated (putative artefactual) OTUs/ASVs ['NA abund thresh' setting]",
+                  "find/dump/filter-adaptive functionality of metaMATE. Settings not relevant to either global filter or per-sample filter are disabled.\n " +
+                  "If using 'global filter', then dump follows automatically the find function to filter ASVs/OTUs based" +
+                  "on the allowed abundance threshold of non-validated (putative artefactual) OTUs/ASVs ['NA abund thresh' setting]",
                 type: "select",
               },
               {
@@ -1914,10 +1914,12 @@ export default new Vuex.Store({
                 btnName: "select file",
                 disabled: "never",
                 tooltip:
-                  "find setting; select specifications file for metaMATE-find function. By default, using the 'default' metaMATE specifications file: https://github.com/tjcreedy/metamate/blob/main/specifications.txt",
+                  "global filter setting; \
+                  select specifications file for metaMATE-find function. \
+                  By default, using the 'default' metaMATE specifications file: https://github.com/tjcreedy/metamate/blob/main/specifications.txt",
                 type: "boolfile",
                 depends_on:
-                  'state.selectedSteps[0].services[4].Inputs[0].value == "find" || state.selectedSteps[0].services[4].Inputs[0].value == "find_and_dump"',
+                  'state.selectedSteps[0].services[4].Inputs[0].value == "global"',
               },
               {
                 name: "reference_seqs",
@@ -1925,11 +1927,12 @@ export default new Vuex.Store({
                 btnName: "select fasta",
                 disabled: "never",
                 tooltip:
-                  "find setting; reference sequences file (fasta) that represent known species that are likely to occur in the dataset. \
-                  Can be the same fasta formatted database file that was/would be used for the taxonomy assignment.",
+                  "reference sequences file (fasta). \
+                  Can be the same fasta formatted database file that was/would be used for the taxonomy assignment. \
+                  This file is used for identifying verified authentic features in the dataset.",
                 type: "file",
                 depends_on:
-                  'state.selectedSteps[0].services[4].Inputs[0].value == "find" || state.selectedSteps[0].services[4].Inputs[0].value == "find_and_dump" || state.selectedSteps[0].services[4].Inputs[0].value == "filter_adaptive"',
+                  'state.selectedSteps[0].services[4].Inputs[0].value == "find" || state.selectedSteps[0].services[4].Inputs[0].value == "global" || state.selectedSteps[0].services[4].Inputs[0].value == "per-sample"',
               },
               {
                 name: "reference_seqs2",
@@ -1938,10 +1941,10 @@ export default new Vuex.Store({
                 btnName: "select fasta",
                 disabled: "never",
                 tooltip:
-                  "find setting; you may provide additional reference sequences file (fasta).",
+                  "you may provide additional reference sequences file (fasta).",
                 type: "boolfile",
                 depends_on:
-                  'state.selectedSteps[0].services[4].Inputs[0].value == "find" || state.selectedSteps[0].services[4].Inputs[0].value == "find_and_dump" || state.selectedSteps[0].services[4].Inputs[0].value == "filter_adaptive"',
+                  'state.selectedSteps[0].services[4].Inputs[0].value == "find" || state.selectedSteps[0].services[4].Inputs[0].value == "global" || state.selectedSteps[0].services[4].Inputs[0].value == "per-sample"',
               },
               {
                 name: "table",
@@ -1950,7 +1953,7 @@ export default new Vuex.Store({
                 value: "undefined",
                 disabled: "never",
                 tooltip:
-                  "find setting; select your OTU/ASV table; samples are COLUMNS and ASVs/OTUs are ROWS [file must be in the SELECT WORKDIR directory]",
+                  "select feature (ASV/OTU) table; samples as COLUMNS [file must be in the SELECT WORKDIR directory]",
                 type: "file",
               },
               {
@@ -1959,7 +1962,7 @@ export default new Vuex.Store({
                 btnName: "select fasta",
                 disabled: "never",
                 tooltip:
-                  "find/dump setting; select your fasta formatted OTUs/ASVs file for filtering [file must be in the SELECT WORKDIR directory]",
+                  "fasta file corresponding to features in 'table' file [file must be in the SELECT WORKDIR directory]",
                 type: "file",
               },
               {
@@ -1967,7 +1970,8 @@ export default new Vuex.Store({
                 value: false,
                 disabled: "never",
                 tooltip:
-                  "enable OTU mode (metaMATE --uc/--otu_fasta/--otu_table). Use this if you want metaMATE to operate on OTUs rather than ASVs.",
+                  "Enable OTU mode to operate on OTUs rather than ASVs (needs additional files: uc, otu_fasta, otu_table). \
+                  Authenticity of OTUs is determined based on the authenticity of ASVs within an OTU.",
                 type: "bool",
               },
               {
@@ -1998,7 +2002,7 @@ export default new Vuex.Store({
                 btnName: "select table",
                 disabled: "never",
                 tooltip:
-                  "OTU mode setting; OTU abundance table (CSV/TSV) (metaMATE --otu_table) [file must be in the SELECT WORKDIR directory].",
+                  "OTU mode setting; OTU table (samples a COLUMNS) (metaMATE --otu_table) [file must be in the SELECT WORKDIR directory].",
                 type: "file",
                 depends_on:
                   "state.selectedSteps[0].services[4].Inputs.find(i => i.name === 'otu_mode')?.value == true",
@@ -2008,58 +2012,48 @@ export default new Vuex.Store({
                 value: 5,
                 disabled: "never",
                 tooltip:
-                  "find setting; 5 = invertebrate mitochondrial code. Use 1 for rbcL. Specify values from 1 to 33",
+                  "translation table used to translate input sequences when checking for stop codons. \
+                  5 = invertebrate mitochondrial code; use 1 for rbcL/standard code. Values 1-33.",
                 type: "numeric",
                 rules: [
                   (v) => v >= 1 || "ERROR: specify values >= 1",
                   (v) => v <= 33 || "ERROR: specify values <= 33",
                 ],
                 depends_on:
-                  'state.selectedSteps[0].services[4].Inputs[0].value == "find" || state.selectedSteps[0].services[4].Inputs[0].value == "find_and_dump" || state.selectedSteps[0].services[4].Inputs[0].value == "filter_adaptive"',
+                  'state.selectedSteps[0].services[4].Inputs[0].value == "find" || state.selectedSteps[0].services[4].Inputs[0].value == "global" || state.selectedSteps[0].services[4].Inputs[0].value == "per-sample"',
               },
               {
                 name: "length",
                 value: 418,
                 disabled: "never",
                 tooltip:
-                  "find setting; the expected length of the target amplicon (metaMATE setting --expectedlength); allow variations with 'base_variation' setting",
+                  "the expected length of the target amplicon (metaMATE setting --expectedlength); allow variations with 'base_variation' setting",
                 type: "numeric",
                 rules: [
-                  (v) => v >= 1 || "ERROR: specify values >= 1",
+                  (v) => v >= 9 || "ERROR: specify values >= 9",
                   (v) => v <= 9999 || "ERROR: specify values <= 9999",
                 ],
                 depends_on:
-                  'state.selectedSteps[0].services[4].Inputs[0].value == "find" || state.selectedSteps[0].services[4].Inputs[0].value == "find_and_dump" || state.selectedSteps[0].services[4].Inputs[0].value == "filter_adaptive"',
-              },
-              {
-                name: "result_index",
-                value: 1,
-                disabled: "never",
-                tooltip:
-                  "dump setting; specify the result index from the 'results.csv' file (1st column) (this is 'metaMATE-find' output located in 'metamate_out' folder)",
-                type: "numeric",
-                rules: [(v) => v >= 1 || "ERROR: specify values >= 0"],
-                depends_on:
-                  'state.selectedSteps[0].services[4].Inputs[0].value == "dump"',
+                  'state.selectedSteps[0].services[4].Inputs[0].value == "find" || state.selectedSteps[0].services[4].Inputs[0].value == "global" || state.selectedSteps[0].services[4].Inputs[0].value == "per-sample"',
               },
               {
                 name: "abundance_filt",
                 value: true,
                 disabled: "never",
                 tooltip:
-                  "if FALSE, then NA_abund_thresh is ineffective, and no filtering is done based on the ASV abundances, \
+                  "global filter setting;if FALSE, then NA_abund_thresh is ineffective, and no filtering is done based on the ASV abundances, \
                   i.e., filter only based on length, basesvariation and genetic_code. \
                   If TRUE, then NA_abund_thresh will be applied.",
                 type: "bool",
                 depends_on:
-                  'state.selectedSteps[0].services[4].Inputs[0].value == "find_and_dump"',
+                  'state.selectedSteps[0].services[4].Inputs[0].value == "global"',
               },
               {
                 name: "NA_abund_thresh",
                 value: 0.05,
                 disabled: "never",
                 tooltip:
-                  "find_and_dump setting; if performing simultaneous find and dump, then automatically filter the input sequences with \
+                  "global filter setting; automatically filter the input sequences with \
                   the allowed abundance threshold of non-validated (putative artefactual) OTUs/ASVs. \
                   E.g. if NA_abund_thresh = 0.05, then for metaMATE-dump, select the result_index that corresponds to \
                   setting with the highest accuracy score (column 'accuracy_score' in the results.csv) among settings \
@@ -2069,7 +2063,7 @@ export default new Vuex.Store({
                 min: 0,
                 step: 0.01,
                 type: "slide",
-                depends_on: "state.selectedSteps[0].services[4].Inputs[0].value === 'find_and_dump'"
+                depends_on: "state.selectedSteps[0].services[4].Inputs[0].value === 'global'"
               },
             ],
           },
@@ -2132,7 +2126,8 @@ export default new Vuex.Store({
                 value: 5,
                 disabled: "never",
                 tooltip:
-                  "5 = invertebrate mitochondrial code. Use 1 for rbcL. Specify values from 1 to 33; see https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi",
+                "translation table used to translate input sequences when checking for stop codons. \
+                  5 = invertebrate mitochondrial code; use 1 for rbcL/standard code. Values 1-33.",
                 type: "numeric",
                 rules: [
                   (v) => v >= 1 || "ERROR: specify values >= 1",
@@ -2150,56 +2145,6 @@ export default new Vuex.Store({
                   (v) => v >= 1 || "ERROR: specify values >= 1",
                   (v) => v <= 34 || "ERROR: specify values <= 34",
                 ],
-              },
-            ],
-          },
-          {
-            tooltip:
-              "DEICODE (Robust Aitchison PCA on sparse compositional metabarcoding data)",
-            scriptName: "DEICODE.sh",
-            imageName: "pipecraft/deicode:0.2.4-pc1.2.0",
-            serviceName: "DEICODE",
-            selected: false,
-            showExtra: false,
-            extraInputs: [],
-            Inputs: [
-              {
-                name: "table",
-                active: false,
-                btnName: "select file",
-                value: "undefined",
-                disabled: "never",
-                tooltip:
-                  "select tab-delimited OTU/ASV table [file must be in the SELECT WORKDIR directory]",
-                type: "file",
-              },
-              {
-                name: "subset_IDs",
-                active: false,
-                btnName: "select file",
-                value: "undefined",
-                disabled: "never",
-                tooltip:
-                  "select list of OTU/ASV IDs for analysing a subset from the full table",
-                type: "boolfile",
-              },
-              {
-                name: "min_otu_reads",
-                value: 10,
-                disabled: "never",
-                tooltip:
-                  "cutoff for reads per OTU/ASV. OTUs/ASVs with lower reads then specified cutoff will be excluded from the analysis",
-                type: "numeric",
-                rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
-              },
-              {
-                name: "min_sample_reads",
-                value: 500,
-                disabled: "never",
-                tooltip:
-                  "cutoff for reads per sample. Samples with lower reads then specified cutoff will be excluded from the analysis",
-                type: "numeric",
-                rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
               },
             ],
           },
@@ -2270,8 +2215,59 @@ export default new Vuex.Store({
               },
             ],
           },
+          {
+            tooltip:
+              "DEICODE (Robust Aitchison PCA on sparse compositional metabarcoding data)",
+            scriptName: "DEICODE.sh",
+            imageName: "pipecraft/deicode:0.2.4-pc1.2.0",
+            serviceName: "DEICODE",
+            selected: false,
+            showExtra: false,
+            extraInputs: [],
+            Inputs: [
+              {
+                name: "table",
+                active: false,
+                btnName: "select file",
+                value: "undefined",
+                disabled: "never",
+                tooltip:
+                  "select tab-delimited OTU/ASV table [file must be in the SELECT WORKDIR directory]",
+                type: "file",
+              },
+              {
+                name: "subset_IDs",
+                active: false,
+                btnName: "select file",
+                value: "undefined",
+                disabled: "never",
+                tooltip:
+                  "select list of OTU/ASV IDs for analysing a subset from the full table",
+                type: "boolfile",
+              },
+              {
+                name: "min_otu_reads",
+                value: 10,
+                disabled: "never",
+                tooltip:
+                  "cutoff for reads per OTU/ASV. OTUs/ASVs with lower reads then specified cutoff will be excluded from the analysis",
+                type: "numeric",
+                rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
+              },
+              {
+                name: "min_sample_reads",
+                value: 500,
+                disabled: "never",
+                tooltip:
+                  "cutoff for reads per sample. Samples with lower reads then specified cutoff will be excluded from the analysis",
+                type: "numeric",
+                rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
+              },
+            ],
+          },
         ],
       },
+      
       {
         stepName: "assign taxonomy",
         disabled: "never",
@@ -2596,6 +2592,55 @@ export default new Vuex.Store({
         disabled: "never",
         services: [
           {
+            tooltip:
+              "sequence file [fasta(.gz)/fastq(.gz)] statistics per file (number of seqs, min length, average length, max length)",
+            scriptName: "seqkit_stats.sh",
+            imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
+            serviceName: "seqkit stats",
+            selected: false,
+            showExtra: false,
+            extraInputs: [],
+            Inputs: [
+              {
+                name: "seqkit_stats",
+                value:
+                  "seqkit stats",
+                disabled: "never",
+                type: "link",
+                tooltip: "check the box above to run seqkit stats for a files in the folder [SELECT WORKDIR] with specified file extension",
+              },
+            ],
+          },
+          {
+            tooltip:
+              "add sequences to feature table (2nd column) from corresponding fasta file (ASVs.fasta + ASVs_table.txt -> ASVs_table_wSeqs.txt)",
+            scriptName: "add_sequences_to_table.sh",
+            imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
+            serviceName: "add sequences to table",
+            selected: false,
+            showExtra: false,
+            extraInputs: [],
+            Inputs: [
+              {
+                name: "table",
+                value: "undefined",
+                btnName: "select table",
+                disabled: "never",
+                tooltip: "select a feature table (wide format, tab-delimited, features in ROWs, samples in COLUMNS)" +
+                " where you need to add sequences [table file must be in the SELECT WORKDIR directory]",
+                type: "file",
+              },
+              {
+                name: "fasta_file",
+                value: "undefined",
+                btnName: "select fasta",
+                disabled: "never",
+                tooltip: "select a corresponding fasta file containing sequences that are subjected to addition to the table [fasta file must be in the SELECT WORKDIR directory]",
+                type: "file",
+              },
+            ],
+          },
+          {
             tooltip: "reorient reads based on specified primer sequences",
             scriptName: "reorient_paired_end_reads.sh",
             imageName: "pipecraft/reorient:1-pc1.2.0",
@@ -2632,26 +2677,7 @@ export default new Vuex.Store({
               },
             ],
           },
-          {
-            tooltip:
-              "sequence file [fasta(.gz)/fastq(.gz)] statistics per file (number of seqs, min length, average length, max length)",
-            scriptName: "seqkit_stats.sh",
-            imageName: 'pipecraft/vsearch_dada2:3-pc1.2.0',
-            serviceName: "seqkit stats",
-            selected: false,
-            showExtra: false,
-            extraInputs: [],
-            Inputs: [
-              {
-                name: "seqkit_stats",
-                value:
-                  "seqkit stats",
-                disabled: "never",
-                type: "link",
-                tooltip: "check the box above to run seqkit stats for a files in the folder [SELECT WORKDIR] with specified file extension",
-              },
-            ],
-          },
+
           {
             tooltip:
               "compare sequences in a fasta file with themselves using vsearch (global alignment) or BLAST (local alignment)",
@@ -5719,7 +5745,8 @@ export default new Vuex.Store({
             step: 1,
             disabled: "never",
             tooltip:
-              "Default is 4. Only sequences with at least this many mismatches to seq are considered as possible 'parents' when flagging one-off chimeras. This is disabled when identifying exact chimeras",
+              "Default is 4. Only sequences with at least this many mismatches to seq are considered as possible 'parents' \
+              when flagging one-off chimeras. This is disabled when identifying exact chimeras",
             type: "slide",
             rules: [],
           },
@@ -5743,7 +5770,8 @@ export default new Vuex.Store({
             value: "consensus",
             disabled: "never",
             tooltip:
-              "'consensus' - the samples are independently checked for chimeras, and a consensus decision on each sequence variant is made. If 'pooled', the samples are all pooled together for chimera identification. If 'per-sample', the samples are independently checked for chimeras",
+              "'consensus' - the samples are independently checked for chimeras, and a consensus decision on each sequence variant is made. \
+              If 'pooled', the samples are all pooled together for chimera identification. If 'per-sample', the samples are independently checked for chimeras",
             type: "select",
           },
 
@@ -5769,7 +5797,8 @@ export default new Vuex.Store({
             step: 0.01,
             disabled: "never",
             tooltip:
-              "for filtering tag-jumps; f-parameter of UNCROSS2, which defines the expected tag-jumps rate. Default is 0.03 (equivalent to 3%). A higher value enforces stricter filtering. Value 0 means OFF, no tag-jumps filtering",
+              "for filtering tag-jumps; f-parameter of UNCROSS2, which defines the expected tag-jumps rate. \
+              Default is 0.03 (equivalent to 3%). A higher value enforces stricter filtering. Value 0 means OFF, no tag-jumps filtering",
             type: "slide",
             rules: [],
             onChange: (service, value) => {
@@ -5784,7 +5813,8 @@ export default new Vuex.Store({
             value: 1,
             disabled: "never",
             tooltip:
-              "for filtering tag-jumps; p-parameter, which controls the severity of tag-jump removal. It adjusts the exponent in the UNCROSS formula. Default is 1. Opt for 0.5 or 0.3 to steepen the curve. Value 0 means OFF, no tag-jumps filtering",
+              "for filtering tag-jumps; p-parameter, which controls the severity of tag-jump removal. \
+              It adjusts the exponent in the UNCROSS formula. Default is 1. Opt for 0.5 or 0.3 to steepen the curve. Value 0 means OFF, no tag-jumps filtering",
             type: "numeric",
             rules: [(v) => v > 0 || "OFF. Turn ON with > 0.01"],
             onChange: (service, value) => {
