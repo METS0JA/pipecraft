@@ -159,6 +159,9 @@ Rlog=$(Rscript /scripts/submodules/ASVs2OTUs.R 2>&1)
 echo $Rlog > $output_dir/ASVs2OTUs.log 
 wait
 
+### Remove size annotations from the OTUs.uc file
+sed -i -E 's/;size=[0-9]+//g' "$output_dir/OTUs.uc"
+
 ### Discard singleton OTUs
 if [[ $remove_singletons == "TRUE"  ]]; then
     printf "Discarding singletons ... \n"
