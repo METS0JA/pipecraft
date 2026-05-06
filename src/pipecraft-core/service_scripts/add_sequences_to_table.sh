@@ -52,8 +52,6 @@ Runtime: $runtime seconds
 Input table  = $(basename "$table_in")
 Input FASTA  = $(basename "$fasta_in")
 Output table = $output_name
+" > "$output_dir/README_add_sequences_to_table.txt"
 
-Core command -> 
-Rscript /scripts/submodules/add_sequences_to_table.R --table $table_in --fasta_file $fasta_in
-" > "$output_dir/README.txt"
 
