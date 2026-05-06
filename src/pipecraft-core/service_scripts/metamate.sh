@@ -140,9 +140,13 @@ printf "reference seqs file = $reference_seqs\n"
 if [[ $reference_seqs2 != "undefined" ]]; then
     printf "reference seqs file2 = $reference_seqs2\n"
 fi
+printf "filter mode = $filter_mode\n"
+printf "otu mode = $otu_mode\n"
+printf "uc file = $uc\n"
+printf "otu fasta file = $otu_fasta\n"
+printf "otu table file = $otu_table\n"
 printf "table file = $table\n"
 printf "rep seqs file = $rep_seqs\n"
-printf "filter_mode = $filter_mode\n"
 printf "cores = $cores\n"
 printf "length = $length\n"
 printf "result_index = $result_index\n"
@@ -548,7 +552,20 @@ fi
 
 
 
-# if [[ $filter_mode == "per-sample" ]]; then
+if [[ $filter_mode == "per-sample" ]]; then
+
+    # rename native metaMATE outputs to more informative names
+    mv $output_dir/filter-adaptive_table_filtered.txt $output_dir/feature_table.txt
+    mv $output_dir/filter-adaptive.fasta $output_dir/features.fasta
+    # rename "*_control.txt" to passes_and_fails.txt
+    control_candidates=("$output_dir"/*_control.txt)
+    if [[ ${#control_candidates[@]} -eq 1 ]] && [[ -f "${control_candidates[0]}" ]]; then
+        mv "${control_candidates[0]}" "$output_dir/passes_and_fails.txt"
+    fi
+    # remove the csv files, not needed
+    rm -f $output_dir/filter-adaptive_table.csv
+
+fi
 #     # count input ASVs
 #     inASV_count=$(grep -c "^>" $rep_seqs)
 #     rep_seqs=$(basename $rep_seqs)
