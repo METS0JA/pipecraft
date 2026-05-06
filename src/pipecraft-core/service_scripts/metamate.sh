@@ -60,13 +60,24 @@ container_file() {
 
 source /scripts/submodules/framework.functions.sh
 
-# modify the path to the input files (under /input = working directory)
-if [[ "${specifications}" != "/metamate/specifications.txt" ]] && [[ "${specifications}" != "undefined" ]] && [[ -n "${specifications}" ]]; then
-    specifications=$(container_file "$specifications")
+# Specifications file handling
+# - If abundance_filt is disabled, force a minimal default spec (bundled in image)
+# - Otherwise, if user didn't provide a spec, fall back to metaMATE's bundled default specifications.txt
+# - Otherwise, map the user-provided host path into the container mounts
+if [[ "$abundance_filt" != "true" ]]; then
+    specifications="/default_specs/specifications0.txt"
+    printf '%s\n' "NOTICE]: abundance_filt is not 'true' — forcing default metaMATE specifications: $specifications" >&2
+else
+    if [[ -z "$specifications" ]] || [[ "$specifications" == "undefined" ]]; then
+        specifications="/metamate/specifications.txt"
+        printf '%s\n' "NOTICE]: no specifications file provided — using bundled metaMATE default: $specifications" >&2
+    elif [[ "$specifications" != "/metamate/specifications.txt" ]]; then
+        specifications=$(container_file "$specifications")
+        printf '%s\n' "NOTICE]: using user-provided metaMATE specifications: $specifications" >&2
+    else
+        printf '%s\n' "NOTICE]: using bundled metaMATE specifications: $specifications" >&2
+    fi
 fi
-if [[ $abundance_filt != "true" ]]; then
-     specifications="/default_specs/specifications0.txt"
- fi
 
 # Reference seqs (database) handling
 if [[ "${reference_seqs}" != "undefined" ]] && [[ -n "${reference_seqs}" ]]; then

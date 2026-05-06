@@ -2206,15 +2206,6 @@ export default new Vuex.Store({
                 type: "numeric",
                 rules: [(v) => v >= 50 && v <= 100 || "ERROR: specify values between 50-100"],
               },
-              {
-                name: "threads",
-                value: 8,
-                disabled: "never",
-                tooltip:
-                  "Number of CPU threads to use for BLAST analysis",
-                type: "numeric",
-                rules: [(v) => v >= 1 && v <= 64 || "ERROR: specify values between 1-64"],
-              },
             ],
           },
           {
@@ -5188,14 +5179,6 @@ export default new Vuex.Store({
             rules: [(v) => v >= 0 && v <= 100 || "ERROR: specify values between 0 and 100"]
           },
           {
-            name: "cpu_threads",
-            value: 8,
-            disabled: "never",
-            tooltip: "Number of CPU threads to use for processing",
-            type: "numeric",
-            rules: [(v) => v >= 1 || "ERROR: specify values >= 1"]
-          },
-          {
             name: "medaka_model",
             value: "r1041_e82_400bps_hac_variant_v4.3.0",
             disabled: "never",
@@ -7022,7 +7005,7 @@ export default new Vuex.Store({
         const useItsx = pipelineConfig.Inputs.find(i => i.name === 'use_itsx')?.value ?? true;
         const outputAllPolished = pipelineConfig.Inputs.find(i => i.name === 'output_all_polished_seqs')?.value ?? false;
         const relAbuThreshold = pipelineConfig.Inputs.find(i => i.name === 'rel_abu_threshold')?.value ?? 10;
-        const cpuThreads = pipelineConfig.Inputs.find(i => i.name === 'cpu_threads')?.value ?? 8;
+        const cpuThreads = state.dockerInfo?.NCPU ?? 8;
         const medakaModel = pipelineConfig.Inputs.find(i => i.name === 'medaka_model')?.value || "r1041_e82_400bps_hac_variant_v4.3.0";
         const chopperQuality = pipelineConfig.Inputs.find(i => i.name === 'chopper_quality')?.value ?? 10;
         const chopperMinLength = pipelineConfig.Inputs.find(i => i.name === 'chopper_min_read_length')?.value ?? 150;
