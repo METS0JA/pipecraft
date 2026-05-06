@@ -488,7 +488,13 @@ if [[ $filter_mode == "global" ]]; then
             # Find Sequence column if it exists
             for(i=1;i<=NF;i++) {
                 if($i=="Sequence") seq_col=i
-                else if(i>1) header[i]=$i  # Store sample names
+                else if(i>1) {
+                    h=$i
+                    gsub(/\r/,"",h)
+                    gsub(/\n/,"",h)
+                    gsub(/^[[:space:]]+|[[:space:]]+$/,"",h)
+                    header[i]=h  # Store sample names (sanitized)
+                }
             }
             next
         }
@@ -503,11 +509,11 @@ if [[ $filter_mode == "global" ]]; then
         }
         END{
             # Print per-sample sums
-            print "Sequences per sample:"
+            printf "Sequences per sample:\n"
             for(i=2;i<=NF;i++) {
-                if(i!=seq_col) print header[i] ": " sample_sums[i]
+                if(i!=seq_col) printf "%s: %s\n", header[i], sample_sums[i]
             }
-            print "\nTotal sequences: " total
+            printf "\nTotal sequences: %s\n", total
         }' $output_dir/${out_table%.*}_metaMATE.filt.txt)
 
     echo "$nSeqs" > $output_dir/sequence_counts.txt
@@ -562,7 +568,7 @@ if [[ -e $output_dir/next_best_set.csv ]]; then
 fi
 
 
-
+### README for metaMATE filter-adaptive (per-sample) mode
 if [[ $filter_mode == "per-sample" ]]; then
 
     # rename native metaMATE outputs to more informative names
@@ -575,90 +581,123 @@ if [[ $filter_mode == "per-sample" ]]; then
     fi
     # remove the csv files, not needed
     rm -f $output_dir/filter-adaptive_table.csv
+    rm -f $output_dir/*_ASVcounts.csv
 
-fi
-#     # count input ASVs
-#     inASV_count=$(grep -c "^>" $rep_seqs)
-#     rep_seqs=$(basename $rep_seqs)
-#     # count output ASVs
-#     outASV_count=$(grep -c "^>" $output_dir/${dump_seqs%.*}_metaMATE.filt.fasta)
+    # count input ASVs
+    inASV_count=$(grep -c "^>" $rep_seqs)
+    rep_seqs=$(basename $rep_seqs)
+
+    # count input OTUs
+    if [[ $otu_mode == "true" ]]; then
+        inOTU_count=$(grep -c "^>" $otu_fasta)
+        otu_fasta=$(basename $otu_fasta)
+        otu_table=$(basename $otu_table)
+        uc=$(basename $uc)
+    fi
+
+    # count output features
+    outASV_count=$(grep -c "^>" $output_dir/features.fasta)
  
-#     # count total sequences, skipping header and handling potential Sequence column
-#     nSeqs=$(awk 'BEGIN{FS=OFS="\t"}
-#         NR==1 {
-#             # Find Sequence column if it exists
-#             for(i=1;i<=NF;i++) {
-#                 if($i=="Sequence") seq_col=i
-#                 else if(i>1) header[i]=$i  # Store sample names
-#             }
-#             next
-#         }
-#         {
-#             # Process each row
-#             for(i=2;i<=NF;i++) {
-#                 if(i!=seq_col) {
-#                     sample_sums[i]+=$i  # Sum per sample
-#                     total+=$i           # Overall total
-#                 }
-#             }
-#         }
-#         END{
-#             # Print per-sample sums
-#             print "Sequences per sample:"
-#             for(i=2;i<=NF;i++) {
-#                 if(i!=seq_col) print header[i] ": " sample_sums[i]
-#             }
-#             print "\nTotal sequences: " total
-#         }' $output_dir/${out_table%.*}_metaMATE.filt.txt)
+    # count total sequences, skipping header and handling potential Sequence column
+    nSeqs=$(awk 'BEGIN{FS=OFS="\t"}
+        NR==1 {
+            # Find Sequence column if it exists
+            for(i=1;i<=NF;i++) {
+                if($i=="Sequence") seq_col=i
+                else if(i>1) {
+                    h=$i
+                    gsub(/\r/,"",h)
+                    gsub(/\n/,"",h)
+                    gsub(/^[[:space:]]+|[[:space:]]+$/,"",h)
+                    header[i]=h  # Store sample names (sanitized)
+                }
+            }
+            next
+        }
+        {
+            # Process each row
+            for(i=2;i<=NF;i++) {
+                if(i!=seq_col) {
+                    sample_sums[i]+=$i  # Sum per sample
+                    total+=$i           # Overall total
+                }
+            }
+        }
+        END{
+            # Print per-sample sums
+            printf "Sequences per sample:\n"
+            for(i=2;i<=NF;i++) {
+                if(i!=seq_col) printf "%s: %s\n", header[i], sample_sums[i]
+            }
+            printf "\nTotal sequences: %s\n", total
+        }' $output_dir/feature_table.txt)
 
-#     echo "$nSeqs" > $output_dir/sequence_counts.txt
+    echo "$nSeqs" > $output_dir/sequence_counts.txt
 
-#     end=$(date +%s)
-#     runtime=$((end-start))
-#     printf "### Used metaMATE-dump to discard putative NUMT and other erroneous sequences based on the specified threshold from metaMATE-find.
+    end=$(date +%s)
+    runtime=$((end-start))
+    
+    cat > "$output_dir/README.metaMATE.per-sample.txt" <<EOF
+### Used metaMATE filter-adaptive mode to discard putative NUMT and other erroneous sequences.
 
-# Start time: $start_time
-# End time: $(date)
-# Runtime: $runtime seconds
+Start time: $start_time
+End time: $(date)
+Runtime: $runtime seconds
 
-# Input parameters:
-# ---------------
-# - filter_mode: ${filter_mode}
-# - reference_seqs: $(basename $reference_seqs)
-# - table: $(basename ${table%.temp})
-# - rep_seqs: $(basename $rep_seqs)
-# - genetic_code: ${genetic_code}
-# - length: ${length}
-# - bases_variation: ${bases_variation}
-# - percentile: ${percentile}
-# - criteria: ${criteria}
-# ---------------
+Input parameters:
+---------------
+- filter_mode: ${filter_mode}
+- reference_seqs: $(basename $reference_seqs)
+- table: $(basename ${table%.temp})
+- rep_seqs: $(basename $rep_seqs)
+- genetic_code: ${genetic_code}
+- length: ${length}
+- bases_variation: ${bases_variation}
+- percentile: ${percentile}
+- criteria: ${criteria}
+- otu mode: ${otu_mode}
+- uc file: ${uc}
+- otu fasta file: ${otu_fasta}
+- otu table file: ${otu_table}
+---------------
+EOF
 
-# -Input ($rep_seqs) contained $inASV_count sequences
-# -metaMATE filtered output containes $outASV_count sequences
+    if [[ $otu_mode == "true" ]]; then
+        printf "\n-Input ($otu_fasta) contained $inOTU_count OTUs.
+-metaMATE filtered output containes $outASV_count OTUs.\n" >> "$output_dir/README.metaMATE.per-sample.txt"
+    else
+        printf "\n-Input ($rep_seqs) contained $inASV_count features.
+-metaMATE filtered output containes $outASV_count features.\n" >> "$output_dir/README.metaMATE.per-sample.txt"
+    fi
 
-# Added files to 'metamate_out' directory:
-# ----------------------------------------
-# # ${dump_seqs%.*}_metaMATE.filt.fasta = output of metaMATE-dump function. 
-#                                         Containes $outASV_count sequences.
-# # ${dump_seqs%.*}_metaMATE.filt.list  = a list of sequence IDs from ${dump_seqs%.*}_metaMATE.filt.fasta
-# # ${out_table%.*}_metaMATE.filt.txt = an ASV/OTU table containing the ASVs/OTUs 
-#                                       that are in ${dump_seqs%.*}_metaMATE.filt.fasta file.
-# # selected_result_index.txt = if present, then this file contains the 
-#                               selected resultindex for results.csv file for metaMATE-dump
+    cat >> "$output_dir/README.metaMATE.per-sample.txt" <<EOF
 
-# # -> more info about the outputs: https://github.com/tjcreedy/metamate?tab=readme-ov-file#outputs 
+Added files to 'metamate_out' directory:
+----------------------------------------
+# features.fasta = metaMATE filtered features. Containes $outASV_count features.
+# feature_table.txt = metaMATE filtered feature table.
+# passes_and_fails.txt = list of features with refpass, lenghtfails and stopfails.
+                            refpass = feature that perfectly matched the reference sequence
+                            lenghtfails = feature did not pass the length filter
+                            stopfails = feature did not pass the stop codon filter
+# filter-adaptive_summary.csv = summary of applied thresholds, authentic and non-authentic features for each sample
+# otu_summary.csv [if otu mode = TRUE ] = summary of ASV and OTU_Status (Authentic, Non-Authentic, Unclassified.
+                                          Authentic: feature that perfectly matched the reference sequence
+                                          Non-Authentic: feature that did not pass the genetic code translation or length filter
+                                          Unclassified: feature that was not classified as Authentic or Non-Authentic
 
-# #################################################
-# ###Third-party applications for this process:
-# # metaMATE v0.5.4
-#     #citation: Andújar, C., Creedy, T.J., Arribas, P., López, H., Salces-Castellano, A., Pérez-Delgado, A.J., Vogler, A.P. and Emerson, B.C. (2021), Validated removal of nuclear pseudogenes and sequencing artefacts from mitochondrial metabarcode data. Mol Ecol Resour, 21: 1772-1787. https://doi.org/10.1111/1755-0998.13337
-#     #https://github.com/tjcreedy/metamate
-# #################################################" > $output_dir/README.metaMATE.per-sample.txt
-# fi
+# -> more info about the outputs: https://github.com/tjcreedy/metamate?tab=readme-ov-file#outputs
 
+#################################################
+###Third-party applications for this process:
+# metaMATE v0.5.4
+    #citation: Andújar, C., Creedy, T.J., Arribas, P., López, H., Salces-Castellano, A., Pérez-Delgado, A.J., Vogler, A.P. and Emerson, B.C. (2021), Validated removal of nuclear pseudogenes and sequencing artefacts from mitochondrial metabarcode data. Mol Ecol Resour, 21: 1772-1787. https://doi.org/10.1111/1755-0998.13337
+    #https://github.com/tjcreedy/metamate
+#################################################
+EOF
+fi
 
-#Done
+# Done
 printf "\nDONE "
 printf "Total time: $runtime sec.\n "
 
