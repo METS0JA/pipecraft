@@ -17,6 +17,10 @@ source /scripts/submodules/framework.functions.sh
 #output dirs
 mkdir -p $blasch_output_dir
 
+# Always use ResourceManager CPU allocation (Run.vue injects `cores` from dockerInfo.NCPU).
+# This intentionally overrides any per-module "threads" input.
+threads="$cores"
+
 #############################
 #  BLAST-based Chimera      #
 #  Detection and Recovery   #
