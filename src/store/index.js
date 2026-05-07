@@ -144,7 +144,7 @@ export default new Vuex.Store({
                 tooltip:
                   "the index search window size. The default 35 means that the forward index is searched among the first 35 bp and the reverse index among the last 35 bp. This search restriction prevents random index matches in the middle of the sequence",
                 type: "numeric",
-                rules: [(v) => v >= 1 || "ERROR: specify values >= 1"],
+                rules: [(v) => v >= 0 || "ERROR: specify values >= 0"],
               },
             ],
           },
