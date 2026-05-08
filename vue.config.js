@@ -51,7 +51,11 @@ module.exports = {
           target: [
             {
               target: "dmg",
-              arch: ["arm64", "x64" ]  // Architectures specified in target
+              // Building both arm64 + x64 DMGs in one run can intermittently fail on
+              // GitHub macOS runners (hdiutil detach "Resource busy"). Publish arm64
+              // DMG for now; if you want a single artifact for both, switch to a
+              // universal build later.
+              arch: ["arm64"]
             }
           ],
           icon: "build/icon.icns", 

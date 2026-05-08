@@ -1,0 +1,62 @@
+name: Create release tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag_prefix:
+        description: "Tag prefix (default: v)"
+        required: false
+        default: "v"
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    name: Tag current commit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (selected branch)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Read version from package.json
+        id: version
+        shell: bash
+        run: |
+          node -e "const p=require('./package.json'); process.stdout.write(String(p.version||''));" > .version
+          VERSION="$(cat .version)"
+          if [ -z "$VERSION" ]; then
+            echo "package.json version is empty" >&2
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Create and push tag
+        shell: bash
+        env:
+          TAG_PREFIX: ${{ inputs.tag_prefix }}
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          TAG="${TAG_PREFIX}${VERSION}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          if git rev-parse -q --verify "refs/tags/${TAG}" >/dev/null; then
+            echo "Tag ${TAG} already exists locally." >&2
+            exit 1
+          fi
+          if git ls-remote --exit-code --tags origin "refs/tags/${TAG}" >/dev/null 2>&1; then
+            echo "Tag ${TAG} already exists on remote." >&2
+            exit 1
+          fi
+
+          git tag "${TAG}"
+          git push origin "${TAG}"
+
+      - name: Summary
+        shell: bash
+        run: |
+          echo "Created tag ${{ inputs.tag_prefix }}${{ steps.version.outputs.version }} on ${GITHUB_SHA}"

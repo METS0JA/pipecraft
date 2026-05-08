@@ -23,6 +23,7 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "electron:build": "vue-cli-service electron:build",
+    "electron:publish": "vue-cli-service electron:build -- --publish always",
     "electron:serve": "vue-cli-service electron:serve",
     "docker:build": "node scripts/docker/build_images.js",
     "docker:build:dry": "node scripts/docker/build_images.js --dry-run",
@@ -106,7 +107,9 @@
     "parserOptions": {
       "parser": "babel-eslint"
     },
-    "rules": {}
+    "rules": {
+      "no-console": "off"
+    }
   },
   "browserslist": [
     "> 1%",
