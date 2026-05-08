@@ -29,6 +29,11 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-latest, windows-latest, ubuntu-latest]
+    # electron-builder getCiTag() must see a tag or TRAVIS_TAG, or GitHubPublisher skips
+    # with: publish is not "always" and build is not on tag (vue-cli child processes
+    # sometimes miss GITHUB_REF_TYPE; TRAVIS_TAG is checked first in getCiTag).
+    env:
+      TRAVIS_TAG: ${{ github.ref_name }}
 
     steps:
       - name: Checkout
@@ -37,6 +42,7 @@ jobs:
           # Full history + tags so electron-builder detects "on tag" in CI (shallow clones
           # can trigger: publish is not "always" and build is not on tag).
           fetch-depth: 0
+          ref: ${{ github.ref }}
 
       - name: Use Node.js
         uses: actions/setup-node@v4
