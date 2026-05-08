@@ -49,16 +49,15 @@ module.exports = {
         appImage: {
           artifactName: "${productName}-${version}-linux-${arch}.AppImage",
         },
-        mac: { 
+        mac: {
           target: [
             {
               target: "dmg",
-              // Building both arm64 + x64 DMGs in one run can intermittently fail on
-              // GitHub macOS runners (hdiutil detach "Resource busy"). Publish arm64
-              // DMG for now; if you want a single artifact for both, switch to a
-              // universal build later.
-              arch: ["arm64"]
-            }
+              // One universal binary + single DMG: Intel (x64) and Apple Silicon (arm64)
+              // without building two separate DMGs in one job (avoids intermittent
+              // GitHub runner hdiutil "Resource busy" when producing arm64 + x64 images).
+              arch: ["universal"],
+            },
           ],
           icon: "build/icon.icns", 
           hardenedRuntime: true,      // Required for macOS 10.15+ (Catalina)
