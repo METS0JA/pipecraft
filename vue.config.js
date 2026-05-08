@@ -11,6 +11,9 @@ module.exports = {
             provider: "github",
             owner: "METS0JA",
             repo: "pipecraft",
+            // Must match GitHub: if a published release already exists for the tag,
+            // electron-builder cannot publish as draft (see GH "existing type not compatible").
+            releaseType: "release",
           },
         ],
         // Windows: NSIS enables electron-updater; portable builds do not support auto-update.

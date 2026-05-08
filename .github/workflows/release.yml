@@ -33,6 +33,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # Full history + tags so electron-builder detects "on tag" in CI (shallow clones
+          # can trigger: publish is not "always" and build is not on tag).
+          fetch-depth: 0
 
       - name: Use Node.js
         uses: actions/setup-node@v4
