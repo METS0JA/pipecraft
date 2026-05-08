@@ -53,16 +53,37 @@ jobs:
           p12-file-base64: ${{ secrets.MAC_CERTS_P12 }}
           p12-password: ${{ secrets.MAC_CERTS_PASSWORD }}
 
-      - name: Build and publish to GitHub Releases
+      - name: Build and publish to GitHub Releases (Windows)
+        if: runner.os == 'Windows'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Some environments inject WIN_CSC_LINK/CSC_LINK; unset to avoid electron-builder
-          # attempting Windows code signing with an invalid path.
-          WIN_CSC_LINK: ""
-          CSC_LINK: ""
-          # Notarization (macOS only — afterSign hook uses these)
+        shell: pwsh
+        run: |
+          # Some environments inject code-signing variables. If present, electron-builder
+          # will try to sign and fail. Remove them explicitly.
+          Remove-Item Env:WIN_CSC_LINK -ErrorAction SilentlyContinue
+          Remove-Item Env:CSC_LINK -ErrorAction SilentlyContinue
+          Remove-Item Env:CSC_KEY_PASSWORD -ErrorAction SilentlyContinue
+          yarn electron:build -- --publish always
+
+      - name: Build and publish to GitHub Releases (macOS)
+        if: runner.os == 'macOS'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Notarization (afterSign hook uses these)
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+        shell: bash
+        run: |
+          # If CSC_* variables are injected, electron-builder will attempt to import a cert
+          # and can fail. We use the imported Keychain cert instead.
+          unset CSC_LINK CSC_KEY_PASSWORD WIN_CSC_LINK
+          yarn electron:build -- --publish always
+
+      - name: Build and publish to GitHub Releases (Linux)
+        if: runner.os == 'Linux'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: yarn electron:build -- --publish always
 
       - name: Upload Linux extract-and-run helper
