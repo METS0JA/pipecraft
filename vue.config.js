@@ -5,23 +5,34 @@ module.exports = {
       nodeIntegration: true,
       externals: ["dockerode", "node-pty-prebuilt-multiarch"],
       builderOptions: {
-        publish: ["github"],
+        // Explicit GitHub target so CI publishes without relying on git remote metadata.
+        publish: [
+          {
+            provider: "github",
+            owner: "METS0JA",
+            repo: "pipecraft",
+          },
+        ],
+        // Windows: NSIS enables electron-updater; portable builds do not support auto-update.
         win: {
           icon: "build/icon.ico",
           target: [
             {
-              target: "portable",
-              arch: ["x64"]
-            }
-          ]
+              target: "nsis",
+              arch: ["x64"],
+            },
+          ],
         },
+        // Linux: single AppImage for releases. FUSE-free option: APPIMAGE_EXTRACT_AND_RUN=1 or
+        // build/linux-extract-and-run.sh beside the downloaded .AppImage.
         linux: {
-          target: ["deb", "rpm", "AppImage"],  // Build both DEB and RPM packages
-          icon: "build/icons",     // Directory containing multiple icon sizes
+          target: ["AppImage"],
+          icon: "build/icons",
           category: "Science",
           maintainer: "PipeCraft2 Team: martin.metsoja@ut.ee, sten.anslan@ut.ee",
           vendor: "PipeCraft2",
-          synopsis: "Bioinformatics application that implements various popular tools for metabarcoding data analyses.",
+          synopsis:
+            "Bioinformatics application that implements various popular tools for metabarcoding data analyses.",
           description: "PipeCraft is a desktop application for metabarcoding data analysis.",
           desktop: {
             Name: "PipeCraft2",
@@ -30,8 +41,11 @@ module.exports = {
             Terminal: false,
             Type: "Application",
             StartupNotify: true,
-            StartupWMClass: "pipecraft"
-          }
+            StartupWMClass: "pipecraft",
+          },
+        },
+        appImage: {
+          artifactName: "${productName}-${version}-linux-${arch}.AppImage",
         },
         mac: { 
           target: [
@@ -45,7 +59,6 @@ module.exports = {
           gatekeeperAssess: false,    // Skip Gatekeeper assessment
           entitlements: "build/entitlements.mac.plist",        // Path to entitlements
           entitlementsInherit: "build/entitlements.mac.plist", // Child process entitlements
-          identity: "MARTIN METSOJA (3CYD3SH29Q)", // Your signing identity 
         },
         afterSign: "build/notarize.js",
         appx: {

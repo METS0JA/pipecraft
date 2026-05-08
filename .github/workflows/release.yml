@@ -1,0 +1,70 @@
+# Build and publish installers to GitHub Releases when a version tag is pushed (e.g. v1.2.0).
+#
+# Required repo secrets for signed + notarized macOS builds:
+#   APPLE_ID                  — Apple ID email
+#   APPLE_APP_SPECIFIC_PASSWORD — app-specific password (not your Apple ID password)
+#   MAC_CERTS_P12             — base64-encoded .p12 distribution certificate
+#   MAC_CERTS_PASSWORD        — password for the .p12 file
+#
+# Optional (Windows code signing):
+#   CSC_LINK — path or base64 for signing cert; see https://www.electron.build/code-signing
+#
+# Linux builds produce a single AppImage. For FUSE-free runs, use build/linux-extract-and-run.sh
+# next to the downloaded artifact (also uploaded beside release assets on the Linux job).
+
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    name: Publish (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Import Apple codesign certificates
+        if: runner.os == 'macOS'
+        uses: Apple-Actions/import-codesign-certs@v7.0.0
+        with:
+          p12-file-base64: ${{ secrets.MAC_CERTS_P12 }}
+          p12-password: ${{ secrets.MAC_CERTS_PASSWORD }}
+
+      - name: Build and publish to GitHub Releases
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Notarization (macOS only — afterSign hook uses these)
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          # Optional Windows signing
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+        run: yarn electron:build -- --publish always
+
+      - name: Upload Linux extract-and-run helper
+        if: runner.os == 'Linux'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload "${GITHUB_REF_NAME}" "build/linux-extract-and-run.sh" --clobber
