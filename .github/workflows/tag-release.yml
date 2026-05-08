@@ -2,11 +2,6 @@ name: Create release tag
 
 on:
   workflow_dispatch:
-    inputs:
-      tag_prefix:
-        description: "Tag prefix (default: v)"
-        required: false
-        default: "v"
 
 permissions:
   contents: write
@@ -35,11 +30,9 @@ jobs:
 
       - name: Create and push tag
         shell: bash
-        env:
-          TAG_PREFIX: ${{ inputs.tag_prefix }}
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-          TAG="${TAG_PREFIX}${VERSION}"
+          TAG="v${VERSION}"
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -59,4 +52,4 @@ jobs:
       - name: Summary
         shell: bash
         run: |
-          echo "Created tag ${{ inputs.tag_prefix }}${{ steps.version.outputs.version }} on ${GITHUB_SHA}"
+          echo "Created tag v${{ steps.version.outputs.version }} on ${GITHUB_SHA}"
