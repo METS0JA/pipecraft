@@ -9,8 +9,7 @@
 # Optional (Windows code signing):
 #   CSC_LINK — path or base64 for signing cert; see https://www.electron.build/code-signing
 #
-# Linux builds produce a single AppImage. For FUSE-free runs, use build/linux-extract-and-run.sh
-# next to the downloaded artifact (also uploaded beside release assets on the Linux job).
+# Linux builds produce a single AppImage.
 
 name: Release
 
@@ -100,14 +99,3 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: yarn electron:publish
-
-      - name: Upload Linux extract-and-run helper
-        if: runner.os == 'Linux'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # electron-builder should create the release, but in case publishing is skipped/failed
-          # we create an empty release so the helper can still be uploaded.
-          gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1 || \
-            gh release create "${GITHUB_REF_NAME}" --title "${GITHUB_REF_NAME}" --notes ""
-          gh release upload "${GITHUB_REF_NAME}" "build/linux-extract-and-run.sh" --clobber

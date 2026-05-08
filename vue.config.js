@@ -23,8 +23,7 @@ module.exports = {
             },
           ],
         },
-        // Linux: single AppImage for releases. FUSE-free option: APPIMAGE_EXTRACT_AND_RUN=1 or
-        // build/linux-extract-and-run.sh beside the downloaded .AppImage.
+        // Linux: single AppImage for releases. FUSE-free option: APPIMAGE_EXTRACT_AND_RUN=1.
         linux: {
           target: ["AppImage"],
           icon: "build/icons",
